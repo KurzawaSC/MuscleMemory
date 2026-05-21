@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MuscleMemory.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:MuscleMemory.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="MuscleMemory"
+    
+    Shell.BackgroundColor="#FF4040"
+    Shell.ForegroundColor="#FFFFFF"
+    Shell.TitleColor="#FFFFFF"
+    
+    Shell.TabBarBackgroundColor="#FFFFFF"
+    Shell.TabBarForegroundColor="#FF4040"
+    Shell.TabBarUnselectedColor="#000000"
+    Shell.TabBarTitleColor="#FF4040">
+
+    <TabBar>
+
+        <Tab Title="List" Icon="exercise_list_icon.png">
+            <ShellContent 
+                Title="Exercise List"
+                ContentTemplate="{DataTemplate views:ExerciseListPage}"
+                Route="ExerciseListPage" />
+        </Tab>
+
+        <Tab Title="Workout" Icon="workout_list_icon.png">
+            <ShellContent 
+                Title="Start Workout"
+                ContentTemplate="{DataTemplate views:WorkoutListPage}"
+                Route="WorkoutListPage" />
+        </Tab>
+
+        <Tab Title="Settings" Icon="settings_icon.png">
+            <ShellContent 
+                Title="Settings"
+                ContentTemplate="{DataTemplate views:SettingsPage}"
+                Route="SettingsPage" />
+        </Tab>
+
+    </TabBar>
+
+</Shell>

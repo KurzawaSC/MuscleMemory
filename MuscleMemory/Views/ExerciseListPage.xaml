@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="MuscleMemory.Views.ExerciseListPage"
+             x:DataType="viewmodels:ExerciseListViewModel"
+             Title="Exercise List"
+             BackgroundColor="{StaticResource SolidWhite}">
+
+    <Grid>
+        <VerticalStackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center" 
+                             Spacing="20"
+                             IsVisible="{Binding IsEmpty}">
+            <Image Source="empty_exercise_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
+            <Label Text="Your exercise list is empty.&#10;Tap + to add your first!" 
+                   TextColor="{StaticResource TranslucentBlack}" 
+                   FontSize="18" 
+                   HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+        <CollectionView ItemsSource="{Binding Exercises}" Margin="20">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Exercise">
+                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Name}" 
+                               TextColor="{StaticResource SolidBlack}" 
+                               FontSize="18" 
+                               VerticalOptions="Center"/>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Margin="20"
+              HeightRequest="60" 
+              WidthRequest="60"
+              HorizontalOptions="End" 
+              VerticalOptions="End">
+
+            <Border BackgroundColor="{StaticResource PrimaryRed}" StrokeThickness="0">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.3" />
+                </Border.Shadow>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="30"/>
+                </Border.StrokeShape>
+            </Border>
+
+            <Image Source="plus_icon.png"
+                   WidthRequest="24"
+                   HeightRequest="24"
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   InputTransparent="True">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{StaticResource SolidWhite}" />
+                </Image.Behaviors>
+            </Image>
+
+            <Button BackgroundColor="Transparent" 
+                    Clicked="OnAddButtonClicked" 
+                    CornerRadius="30" />
+        </Grid>
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             x:Class="MuscleMemory.Views.SettingsPage"
+             x:DataType="viewmodels:SettingsViewModel"
+             Title="Settings"
+             BackgroundColor="{StaticResource SolidWhite}">
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+
+        <Button Text="Export data"
+                Command="{Binding ExportDataCommand}"
+                ImageSource="export_data_icon.png"
+                ContentLayout="Left, 15"
+                BackgroundColor="{StaticResource SolidWhite}"
+                TextColor="{StaticResource SolidBlack}"
+                BorderColor="{StaticResource TranslucentBlack}"
+                BorderWidth="1"
+                FontSize="18"
+                HeightRequest="60"
+                HorizontalOptions="Fill" />
+
+        <Button Text="Erease data"
+                Command="{Binding EraseDataCommand}"
+                ImageSource="erease_data_icon.png"
+                ContentLayout="Left, 15"
+                BackgroundColor="{StaticResource SolidWhite}"
+                TextColor="{StaticResource PrimaryRed}"
+                BorderColor="{StaticResource TranslucentBlack}"
+                BorderWidth="1"
+                FontSize="18"
+                HeightRequest="60"
+                HorizontalOptions="Fill" />
+
+    </VerticalStackLayout>
+</ContentPage>
