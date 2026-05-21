@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+             x:Class="MuscleMemory.Views.WorkoutListPage"
+             x:DataType="viewmodels:WorkoutListViewModel"
+             Title="Start Workout"
+             BackgroundColor="{StaticResource SolidWhite}">
+
+    <Grid>
+        <VerticalStackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center" 
+                             Spacing="20"
+                             IsVisible="{Binding IsEmpty}">
+            <Image Source="empty_workout_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
+            <Label Text="No workouts added yet.&#10;Tap + to create one!" 
+                   TextColor="{StaticResource TranslucentBlack}" 
+                   FontSize="18" 
+                   HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+        <CollectionView ItemsSource="{Binding Workouts}" Margin="20">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Workout">
+                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Name}" 
+                                   TextColor="{StaticResource SolidBlack}" 
+                                   FontSize="20" 
+                                   FontAttributes="Bold" 
+                                   VerticalOptions="Center"/>
+
+                            <Button Grid.Column="1" 
+                                    Text="Start" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
+                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="{StaticResource PrimaryRed}" 
+                                    TextColor="{StaticResource SolidWhite}" 
+                                    FontAttributes="Bold" 
+                                    CornerRadius="8"
+                                    HeightRequest="40"
+                                    Padding="15,0"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Border Margin="20" 
+                HeightRequest="60" 
+                WidthRequest="60"
+                BackgroundColor="{StaticResource PrimaryRed}"
+                StrokeThickness="0"
+                HorizontalOptions="End" 
+                VerticalOptions="End">
+
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.3" />
+            </Border.Shadow>
+
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="30"/>
+            </Border.StrokeShape>
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding NavigateToAddWorkoutCommand}" />
+            </Border.GestureRecognizers>
+
+            <Image Source="plus_icon.png"
+                   WidthRequest="24"
+                   HeightRequest="24"
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center">
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{StaticResource SolidWhite}" />
+                </Image.Behaviors>
+            </Image>
+        </Border>
+    </Grid>
+
+</ContentPage>

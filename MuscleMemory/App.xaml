@@ -1,0 +1,18 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MuscleMemory"
+             x:Class="MuscleMemory.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="PrimaryRed">#FF4040</Color>
+            <Color x:Key="SolidBlack">#000000</Color>
+            <Color x:Key="TranslucentBlack">#99000000</Color>
+            <Color x:Key="SolidWhite">#FFFFFF</Color>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

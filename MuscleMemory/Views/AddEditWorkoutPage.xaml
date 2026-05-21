@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             xmlns:models="clr-namespace:MuscleMemory.Models"
+             x:Class="MuscleMemory.Views.AddEditWorkoutPage"
+             x:DataType="viewmodels:AddEditWorkoutViewModel"
+             Title="Create Workout"
+             BackgroundColor="{StaticResource SolidWhite}">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+
+        <Border Grid.Row="0" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+            </Border.StrokeShape>
+            <Entry Text="{Binding WorkoutName}"
+                   Placeholder="Workout name"
+                   PlaceholderColor="{StaticResource TranslucentBlack}"
+                   TextColor="{StaticResource SolidBlack}"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   ClearButtonVisibility="WhileEditing"/>
+        </Border>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
+                    <Label Text="You have no exercises in&#10;that workout, let's add&#10;more!"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{StaticResource TranslucentBlack}"
+                           FontSize="18" />
+                    <Button Text="Add exercise +" 
+                            Clicked="OnAddExerciseClicked"
+                            BackgroundColor="Transparent" 
+                            TextColor="{StaticResource PrimaryRed}"
+                            FontAttributes="Bold"
+                            FontSize="18"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.Header>
+                <Button Text="Add exercise +" 
+                        Clicked="OnAddExerciseClicked"
+                        BackgroundColor="Transparent" 
+                        TextColor="{StaticResource PrimaryRed}"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        HorizontalOptions="End"
+                        Margin="0,0,0,15"/>
+            </CollectionView.Header>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:WorkoutExercise">
+                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold"/>
+                                <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
+                                <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
+                                <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
+                            </VerticalStackLayout>
+
+                            <ImageButton Grid.Column="1" 
+                                         Source="erease_data_icon.png" 
+                                         WidthRequest="24" 
+                                         HeightRequest="24"
+                                         VerticalOptions="Center"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                         CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="2"
+                Text="Save"
+                Command="{Binding SaveWorkoutCommand}"
+                BackgroundColor="{StaticResource PrimaryRed}"
+                TextColor="{StaticResource SolidWhite}"
+                FontAttributes="Bold"
+                FontSize="18"
+                CornerRadius="25"
+                HeightRequest="50"
+                Margin="0,20,0,0"/>
+    </Grid>
+
+</ContentPage>
