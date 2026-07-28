@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="MuscleMemory/MuscleMemory.csproj" />
+  <Project Path="MuscleMemory/MuscleMemory.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

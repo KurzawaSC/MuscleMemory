@@ -40,6 +40,8 @@ public static class MauiProgram
         // Rejestracja Kreatora Treningów (Transient = za każdym wejściem tworzy się nowy, czysty obiekt)
         builder.Services.AddTransient<AddEditWorkoutPage>();
         builder.Services.AddTransient<AddEditWorkoutViewModel>();
+        builder.Services.AddTransient<ActiveWorkoutViewModel>();
+        builder.Services.AddTransient<ActiveWorkoutPage>();
 
         return builder.Build();
     }
