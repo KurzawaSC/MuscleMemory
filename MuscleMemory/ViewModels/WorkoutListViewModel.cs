@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
+using MuscleMemory.Views;
+using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
@@ -49,14 +50,17 @@ public partial class WorkoutListViewModel : ObservableObject
 
     // Przejście do właściwego treningu (przekazujemy ID wybranego treningu!)
     [RelayCommand]
-    private async Task StartWorkout(Workout selectedWorkout)
+    private async Task StartWorkoutAsync(Workout selectedWorkout)
     {
+        if (selectedWorkout == null) return;
+
+        // Pakujemy nasz trening do słownika pod kluczem "Workout"
         var navigationParameter = new Dictionary<string, object>
         {
-            { "WorkoutId", selectedWorkout.Id }
+            { "Workout", selectedWorkout }
         };
 
-        // Z tym parametrem udamy się do ekranu ActiveWorkoutPage
-        await Shell.Current.GoToAsync("ActiveWorkoutPage", navigationParameter);
+        // Przechodzimy na ActiveWorkoutPage, przekazując paczkę
+        await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
     }
 }

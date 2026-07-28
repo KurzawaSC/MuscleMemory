@@ -20,6 +20,7 @@ public class DatabaseContext
         // DODANE LINIE:
         await _connection.CreateTableAsync<Workout>();
         await _connection.CreateTableAsync<WorkoutExercise>();
+        await _connection!.CreateTableAsync<WorkoutSet>();
     }
 
     // Metoda do pobierania wszystkich ćwiczeń
@@ -81,5 +82,29 @@ public class DatabaseContext
         await _connection!.DeleteAllAsync<WorkoutExercise>();
         await _connection!.DeleteAllAsync<Workout>();
         await _connection!.DeleteAllAsync<Exercise>();
+        await _connection!.DeleteAllAsync<WorkoutSet>();
+    }
+
+    public async Task SaveSetAsync(WorkoutSet set)
+    {
+        await InitAsync();
+        await _connection!.InsertAsync(set);
+    }
+
+    public async Task<List<WorkoutSet>> GetSetsForWorkoutExerciseAsync(int workoutExerciseId)
+    {
+        await InitAsync();
+        return await _connection!.Table<WorkoutSet>()
+                                 .Where(s => s.WorkoutExerciseId == workoutExerciseId)
+                                 .ToListAsync();
+    }
+
+    public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
+    {
+        await InitAsync();
+        // Pobieramy z tabeli WorkoutExercise tylko te wpisy, które należą do tego treningu
+        return await _connection!.Table<WorkoutExercise>()
+                                 .Where(we => we.WorkoutId == workoutId)
+                                 .ToListAsync();
     }
 }
