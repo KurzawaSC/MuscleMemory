@@ -7,7 +7,7 @@
              x:Class="MuscleMemory.Views.WorkoutListPage"
              x:DataType="viewmodels:WorkoutListViewModel"
              Title="Start Workout"
-             BackgroundColor="{StaticResource SolidWhite}">
+             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
     <Grid>
         <VerticalStackLayout HorizontalOptions="Center" 
@@ -16,8 +16,9 @@
                              IsVisible="{Binding IsEmpty}">
             <Image Source="empty_workout_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
             <Label Text="No workouts added yet.&#10;Tap + to create one!" 
-                   TextColor="{StaticResource TranslucentBlack}" 
+                   TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" 
                    FontSize="18" 
+                   FontFamily="LilitaOne"
                    HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
         <CollectionView ItemsSource="{Binding Workouts}" Margin="20">
@@ -26,26 +27,43 @@
                     <SwipeView Margin="0,0,0,10">
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
-                                <SwipeItem Text="Delete" BackgroundColor="#E74C3C" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}" />
+                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}">
+                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{StaticResource PrimaryRed}" StrokeThickness="1.5">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Label Text="Delete" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
+                                    </Border>
+                                </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.RightItems>
                         <SwipeView.LeftItems>
                             <SwipeItems Mode="Reveal">
-                                <SwipeItem Text="Edit" BackgroundColor="#34495E" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}" CommandParameter="{Binding .}" />
+                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}" CommandParameter="{Binding .}">
+                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{StaticResource SolidBlack}" StrokeThickness="1.5">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Label Text="Edit" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
+                                    </Border>
+                                </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.LeftItems>
 
-                        <Border Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" BackgroundColor="{StaticResource SolidWhite}">
+                        <Border Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
+                            <Border.Shadow>
+                                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                            </Border.Shadow>
                             <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="8" />
+                                <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
 
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" 
                                        Text="{Binding Name}" 
-                                       TextColor="{StaticResource SolidBlack}" 
+                                       TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
                                        FontSize="20" 
-                                       FontAttributes="Bold" 
+                                       FontFamily="LilitaOne"
                                        VerticalOptions="Center"/>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
@@ -53,8 +71,8 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ViewHistoryCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent" 
-                                            TextColor="{StaticResource SolidBlack}" 
-                                            BorderColor="{StaticResource TranslucentBlack}"
+                                            TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
+                                            BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
                                             FontFamily="LilitaOne"
@@ -89,7 +107,7 @@
                 VerticalOptions="End">
 
             <Border.Shadow>
-                <Shadow Brush="Black" Offset="0,4" Radius="8" Opacity="0.3" />
+                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Border.Shadow>
 
             <Border.StrokeShape>
@@ -104,7 +122,8 @@
                    WidthRequest="24"
                    HeightRequest="24"
                    HorizontalOptions="Center" 
-                   VerticalOptions="Center">
+                   VerticalOptions="Center"
+                   InputTransparent="True">
                 <Image.Behaviors>
                     <toolkit:IconTintColorBehavior TintColor="{StaticResource SolidWhite}" />
                 </Image.Behaviors>
