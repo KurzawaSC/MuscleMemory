@@ -6,7 +6,7 @@
              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
              x:DataType="viewmodels:ExerciseHistoryViewModel"
              Title="{Binding ExerciseName}"
-             BackgroundColor="{StaticResource SolidWhite}">
+             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
     <Grid>
         <VerticalStackLayout HorizontalOptions="Center" 
@@ -14,41 +14,45 @@
                              Spacing="20"
                              IsVisible="{Binding IsEmpty}">
             <Label Text="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!" 
-                   TextColor="{StaticResource TranslucentBlack}" 
+                   TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" 
                    FontSize="18" 
+                   FontFamily="LilitaOne"
                    HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
         
         <CollectionView ItemsSource="{Binding History}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ExerciseHistoryEntry">
-                    <Border Margin="0,0,0,15" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                        </Border.Shadow>
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
+                            <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold" />
-                                <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
+                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontSize="18" FontFamily="LilitaOne" />
+                                <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="16" />
                             </Grid>
                             
                                                         <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="4" />
+                                    <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout>
                                     <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="#EEEEEE">
-                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="0" Text="Set" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="2" Text="Reps" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
                                     </Grid>
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="models:WorkoutSet">
                                                 <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="Transparent">
-                                                    <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
-                                                    <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
-                                                    <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" HorizontalTextAlignment="Center" />
                                                 </Grid>
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
@@ -62,3 +66,4 @@
         </CollectionView>
     </Grid>
 </ContentPage>
+
