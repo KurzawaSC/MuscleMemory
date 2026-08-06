@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Data;
@@ -41,11 +41,34 @@ public partial class ExerciseListViewModel : ObservableObject
     public async Task SaveNewExerciseAsync(string exerciseName)
     {
         var newDoc = new Exercise { Name = exerciseName };
-
-        // Zapis do SQLite
         await _dbContext.AddExerciseAsync(newDoc);
-
-        // Odświeżenie listy (automatycznie zmieni stan IsEmpty/IsNotEmpty)
         await LoadExercisesAsync();
+    }
+
+    [RelayCommand]
+    public async Task DeleteExerciseAsync(Exercise exercise)
+    {
+        if (exercise == null) return;
+        
+        bool answer = await Shell.Current.DisplayAlert("Delete Exercise", $"Are you sure you want to delete '{exercise.Name}'?", "Yes", "No");
+        if (answer)
+        {
+            await _dbContext.DeleteExerciseAsync(exercise.Id);
+            await LoadExercisesAsync();
+        }
+    }
+
+    [RelayCommand]
+    public async Task EditExerciseAsync(Exercise exercise)
+    {
+        if (exercise == null) return;
+        
+        string newName = await Shell.Current.DisplayPromptAsync("Edit Exercise", "Enter new name for the exercise:", initialValue: exercise.Name);
+        if (!string.IsNullOrWhiteSpace(newName) && newName != exercise.Name)
+        {
+            exercise.Name = newName.Trim();
+            await _dbContext.UpdateExerciseAsync(exercise);
+            await LoadExercisesAsync();
+        }
     }
 }

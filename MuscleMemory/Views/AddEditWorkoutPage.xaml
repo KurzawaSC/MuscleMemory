@@ -57,6 +57,9 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnEditExerciseTapped" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold"/>
@@ -65,13 +68,32 @@
                                 <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
                             </VerticalStackLayout>
 
-                            <ImageButton Grid.Column="1" 
-                                         Source="erease_data_icon.png" 
-                                         WidthRequest="24" 
-                                         HeightRequest="24"
-                                         VerticalOptions="Center"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
-                                         CommandParameter="{Binding .}" />
+                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                <Button Text="Edit" 
+                                        Clicked="OnEditButtonClicked"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent" 
+                                        TextColor="{StaticResource SolidBlack}" 
+                                        BorderColor="{StaticResource TranslucentBlack}"
+                                        BorderWidth="1"
+                                        FontAttributes="Bold" 
+                                        FontFamily="LilitaOne"
+                                        CornerRadius="20"
+                                        HeightRequest="36"
+                                        Padding="10,0"/>
+                                <Button Text="Delete" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent" 
+                                        TextColor="{StaticResource PrimaryRed}" 
+                                        BorderColor="{StaticResource PrimaryRed}"
+                                        BorderWidth="1"
+                                        FontAttributes="Bold" 
+                                        FontFamily="LilitaOne"
+                                        CornerRadius="20"
+                                        HeightRequest="36"
+                                        Padding="10,0"/>
+                            </HorizontalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>

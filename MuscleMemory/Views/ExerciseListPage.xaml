@@ -27,10 +27,39 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
-                        <Label Text="{Binding Name}" 
-                               TextColor="{StaticResource SolidBlack}" 
-                               FontSize="18" 
-                               VerticalOptions="Center"/>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Name}" 
+                                   TextColor="{StaticResource SolidBlack}" 
+                                   FontSize="18" 
+                                   VerticalOptions="Center"/>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                <Button Text="Edit" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=EditExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent" 
+                                        TextColor="{StaticResource SolidBlack}" 
+                                        BorderColor="{StaticResource TranslucentBlack}"
+                                        BorderWidth="1"
+                                        FontAttributes="Bold" 
+                                        FontFamily="LilitaOne"
+                                        CornerRadius="20"
+                                        HeightRequest="40"
+                                        Padding="15,0"/>
+                                <Button Text="Delete" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=DeleteExerciseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent" 
+                                        TextColor="{StaticResource PrimaryRed}" 
+                                        BorderColor="{StaticResource PrimaryRed}"
+                                        BorderWidth="1"
+                                        FontAttributes="Bold" 
+                                        FontFamily="LilitaOne"
+                                        CornerRadius="20"
+                                        HeightRequest="40"
+                                        Padding="15,0"/>
+                            </HorizontalStackLayout>
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

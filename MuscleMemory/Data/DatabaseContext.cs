@@ -166,4 +166,38 @@ public class DatabaseContext
                                  .Where(we => we.WorkoutId == workoutId)
                                  .ToListAsync();
     }
+
+    public async Task DeleteWorkoutAsync(int workoutId)
+    {
+        await InitAsync();
+        await _connection!.DeleteAsync<Workout>(workoutId);
+        await _connection!.ExecuteAsync("DELETE FROM WorkoutExercise WHERE WorkoutId = ?", workoutId);
+    }
+
+    public async Task DeleteExerciseAsync(int exerciseId)
+    {
+        await InitAsync();
+        await _connection!.DeleteAsync<Exercise>(exerciseId);
+    }
+
+    public async Task UpdateExerciseAsync(Exercise exercise)
+    {
+        await InitAsync();
+        await _connection!.UpdateAsync(exercise);
+    }
+
+    public async Task UpdateFullWorkoutAsync(Workout workout, List<WorkoutExercise> exercises)
+    {
+        await InitAsync();
+        await _connection!.UpdateAsync(workout);
+
+        await _connection!.ExecuteAsync("DELETE FROM WorkoutExercise WHERE WorkoutId = ?", workout.Id);
+
+        foreach (var exerciseDetails in exercises)
+        {
+            exerciseDetails.WorkoutId = workout.Id;
+            exerciseDetails.Id = 0; 
+            await _connection.InsertAsync(exerciseDetails);
+        }
+    }
 }
