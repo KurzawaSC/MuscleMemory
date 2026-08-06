@@ -4,4 +4,3 @@
 // Jak przyjdzie czas na ich implementację, usuniemy je stąd i stworzymy pełne pliki .xaml
 public class RestTimerPage : ContentPage { }
 public class WorkoutSummaryPage : ContentPage { }
-public class ExerciseHistoryPage : ContentPage { }

@@ -23,58 +23,59 @@
         <CollectionView ItemsSource="{Binding Workouts}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Workout">
-                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
+                    <SwipeView Margin="0,0,0,10">
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Reveal">
+                                <SwipeItem Text="Delete" BackgroundColor="#E74C3C" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.LeftItems>
+                            <SwipeItems Mode="Reveal">
+                                <SwipeItem Text="Edit" BackgroundColor="#34495E" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}" CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
 
-                        <Grid ColumnDefinitions="*, Auto">
-                            <Label Grid.Column="0" 
-                                   Text="{Binding Name}" 
-                                   TextColor="{StaticResource SolidBlack}" 
-                                   FontSize="20" 
-                                   FontAttributes="Bold" 
-                                   VerticalOptions="Center"/>
+                        <Border Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" BackgroundColor="{StaticResource SolidWhite}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
 
-                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                <Button Text="Edit" 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="Transparent" 
-                                        TextColor="{StaticResource SolidBlack}" 
-                                        BorderColor="{StaticResource TranslucentBlack}"
-                                        BorderWidth="1"
-                                        FontAttributes="Bold" 
-                                        FontFamily="LilitaOne"
-                                        CornerRadius="20"
-                                        HeightRequest="40"
-                                        Padding="15,0"/>
-                                <Button Text="Delete" 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="Transparent" 
-                                        TextColor="{StaticResource PrimaryRed}" 
-                                        BorderColor="{StaticResource PrimaryRed}"
-                                        BorderWidth="1"
-                                        FontAttributes="Bold" 
-                                        FontFamily="LilitaOne"
-                                        CornerRadius="20"
-                                        HeightRequest="40"
-                                        Padding="15,0"/>
-                                <Button Text="Start" 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="{StaticResource PrimaryRed}" 
-                                        TextColor="{StaticResource SolidWhite}" 
-                                        BorderWidth="0"
-                                        FontAttributes="Bold" 
-                                        FontFamily="LilitaOne"
-                                        CornerRadius="20"
-                                        HeightRequest="40"
-                                        Padding="15,0"/>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </Border>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding Name}" 
+                                       TextColor="{StaticResource SolidBlack}" 
+                                       FontSize="20" 
+                                       FontAttributes="Bold" 
+                                       VerticalOptions="Center"/>
+
+                                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                    <Button Text="History" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ViewHistoryCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" 
+                                            TextColor="{StaticResource SolidBlack}" 
+                                            BorderColor="{StaticResource TranslucentBlack}"
+                                            BorderWidth="1"
+                                            FontAttributes="Bold" 
+                                            FontFamily="LilitaOne"
+                                            CornerRadius="20"
+                                            HeightRequest="40"
+                                            Padding="15,0"/>
+                                    <Button Text="Start" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="{StaticResource PrimaryRed}" 
+                                            TextColor="{StaticResource SolidWhite}" 
+                                            BorderWidth="0"
+                                            FontAttributes="Bold" 
+                                            FontFamily="LilitaOne"
+                                            CornerRadius="20"
+                                            HeightRequest="40"
+                                            Padding="15,0"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </SwipeView>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
