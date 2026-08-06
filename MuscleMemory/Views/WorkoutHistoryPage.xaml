@@ -16,6 +16,7 @@
             <Label Text="No history available for this workout yet.&#10;Complete a session to see your progress!" 
                    TextColor="{StaticResource TranslucentBlack}" 
                    FontSize="18" 
+                   FontFamily="LilitaOne"
                    HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
         
@@ -23,12 +24,15 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:WorkoutHistorySession">
                     <Border Margin="0,0,0,15" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                        </Border.Shadow>
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
+                            <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource PrimaryRed}" FontSize="18" FontAttributes="Bold" />
+                                <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource PrimaryRed}" FontSize="18" FontFamily="LilitaOne" />
                                 <Label Grid.Column="1" Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
                             </Grid>
                             <Label Text="{Binding TotalVolume, StringFormat='Total Volume: {0} kg'}" TextColor="{StaticResource SolidBlack}" FontSize="16" />
@@ -37,16 +41,16 @@
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:WorkoutHistoryExercise">
                                         <VerticalStackLayout Spacing="5" Margin="0,10,0,0">
-                                            <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="16" FontAttributes="Bold" />
+                                            <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="16" FontFamily="LilitaOne" />
                                                                                         <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
                                                 <Border.StrokeShape>
-                                                    <RoundRectangle CornerRadius="4" />
+                                                    <RoundRectangle CornerRadius="12" />
                                                 </Border.StrokeShape>
                                                 <VerticalStackLayout>
                                                     <Grid ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="#EEEEEE">
-                                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                                        <Label Grid.Column="1" Text="Weight" TextColor="{StaticResource SolidBlack}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                                        <Label Grid.Column="1" Text="Weight" TextColor="{StaticResource SolidBlack}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
                                                     </Grid>
                                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                                         <BindableLayout.ItemTemplate>

@@ -5,27 +5,30 @@
                x:Class="MuscleMemory.Views.ConfigureExercisePopup">
 
     <Border BackgroundColor="{StaticResource SolidWhite}" Padding="20" WidthRequest="300">
+        <Border.Shadow>
+            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+        </Border.Shadow>
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="12" />
+            <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <VerticalStackLayout Spacing="20">
-            <Label x:Name="ExerciseNameTitle" FontAttributes="Bold" FontSize="22" TextColor="{StaticResource PrimaryRed}" HorizontalOptions="Center"/>
+            <Label x:Name="ExerciseNameTitle" FontFamily="LilitaOne" FontSize="22" TextColor="{StaticResource PrimaryRed}" HorizontalOptions="Center"/>
 
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto" RowSpacing="15">
-                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
-                <Entry Grid.Row="0" Grid.Column="1" x:Name="SetsEntry" Keyboard="Numeric" Text="3" FontSize="18"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Entry Grid.Row="0" Grid.Column="1" x:Name="SetsEntry" Keyboard="Numeric" Text="3" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
-                <Entry Grid.Row="1" Grid.Column="1" x:Name="RepsEntry" Keyboard="Numeric" Text="10" FontSize="18"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="RepsEntry" Keyboard="Numeric" Text="10" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
-                <Entry Grid.Row="2" Grid.Column="1" x:Name="BreakEntry" Keyboard="Numeric" Text="60" FontSize="18"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Entry Grid.Row="2" Grid.Column="1" x:Name="BreakEntry" Keyboard="Numeric" Text="60" FontFamily="LilitaOne" FontSize="18"/>
             </Grid>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
-                <Button Grid.Column="0" Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="Transparent" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" FontSize="18"/>
-                <Button Grid.Column="1" x:Name="AddButton" Text="Add" Clicked="OnAddClicked" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryRed}" FontAttributes="Bold" FontSize="18"/>
+                <Button Grid.Column="0" Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="Transparent" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" FontSize="18"/>
+                <Button Grid.Column="1" x:Name="AddButton" Text="Add" Clicked="OnAddClicked" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" FontSize="18"/>
             </Grid>
         </VerticalStackLayout>
     </Border>
