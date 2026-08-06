@@ -1,7 +1,8 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MuscleMemory"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MuscleMemory.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,10 @@
             <Color x:Key="SolidBlack">#000000</Color>
             <Color x:Key="TranslucentBlack">#99000000</Color>
             <Color x:Key="SolidWhite">#FFFFFF</Color>
+
+            <!-- Convertery z CommunityToolkit.Maui -->
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
@@ -16,3 +21,4 @@
         </ResourceDictionary>
     </Application.Resources>
 </Application>
+
