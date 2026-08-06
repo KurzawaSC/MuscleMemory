@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
+using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -70,5 +71,13 @@ public partial class ExerciseListViewModel : ObservableObject
             await _dbContext.UpdateExerciseAsync(exercise);
             await LoadExercisesAsync();
         }
+    }
+
+    [RelayCommand]
+    public async Task ViewHistoryAsync(Exercise exercise)
+    {
+        if (exercise == null) return;
+        
+        await Shell.Current.GoToAsync($"{nameof(ExerciseHistoryPage)}?ExerciseId={exercise.Id}&ExerciseName={exercise.Name}");
     }
 }
