@@ -17,6 +17,5 @@ public class WorkoutExercise
     public int Reps { get; set; }
     public int BreakTimeInSeconds { get; set; }
 
-    [Ignore]
     public string ExerciseName { get; set; } = string.Empty;
 }

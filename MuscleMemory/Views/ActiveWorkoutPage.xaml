@@ -8,121 +8,330 @@
              Title="Workout"
              BackgroundColor="{StaticResource SolidWhite}">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20">
+    <!-- Root wrapper to host both the main workout view and the completion overlay -->
+    <Grid>
+        <!-- Outer Grid: rows = Header | Progress pill | Exercise name | Inputs | Sets list | Finish button -->
+        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
 
-        <!-- 1. HEADER: Tytuł i stoper -->
-        <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
-            <Label Text="{Binding WorkoutTitle}" 
-                   FontSize="24" 
-                   FontFamily="LilitaOne"
-                   TextColor="{StaticResource SolidBlack}" 
-                   HorizontalTextAlignment="Center"/>
-            <Label Text="{Binding TimerText}" 
-                   FontSize="48" 
-                   FontFamily="LilitaOne"
-                   TextColor="{StaticResource PrimaryRed}" 
-                   HorizontalTextAlignment="Center"/>
-        </VerticalStackLayout>
+            <!-- 1. HEADER: Tytuł i stoper -->
+            <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
+                <Label Text="{Binding WorkoutTitle}"
+                       FontSize="24"
+                       FontFamily="LilitaOne"
+                       TextColor="{StaticResource SolidBlack}"
+                       HorizontalTextAlignment="Center"/>
+                <Label Text="{Binding TimerText}"
+                       FontSize="48"
+                       FontFamily="LilitaOne"
+                       TextColor="{StaticResource PrimaryRed}"
+                       HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
 
-        <!-- 2. POZIOMA LISTA ĆWICZEŃ -->
-        <CollectionView Grid.Row="1" 
-                        ItemsSource="{Binding Exercises}" 
-                        SelectedItem="{Binding CurrentExercise, Mode=TwoWay}"
-                        SelectionMode="Single"
-                        HeightRequest="50"
-                        Margin="0,0,0,20">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:WorkoutExercise">
-                    <Border Padding="15,10" Stroke="{StaticResource PrimaryRed}" StrokeThickness="1" BackgroundColor="{StaticResource SolidWhite}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="20" />
-                        </Border.StrokeShape>
-                        <Label Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="14" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        <!-- 3. AKTUALNIE WYBRANE ĆWICZENIE -->
-        <Label Grid.Row="2" 
-               Text="{Binding CurrentExerciseName}" 
-               FontSize="24" 
-               FontFamily="LilitaOne"
-               TextColor="{StaticResource SolidBlack}" 
-               HorizontalOptions="Center" 
-               Margin="0,0,0,20"/>
-
-        <!-- 4. INPUTY: Waga i Powtórzenia -->
-        <VerticalStackLayout Grid.Row="3" Spacing="20">
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
-                <VerticalStackLayout Grid.Column="0" Spacing="10">
-                    <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
-                    <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
-                    </Border>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Grid.Column="1" Spacing="10">
-                    <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
-                    <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
-                    </Border>
-                </VerticalStackLayout>
+            <!-- 2. PROGRESS PILL: "Exercise 2 of 4: Bench Press" ze strzałkami -->
+            <Grid Grid.Row="1" 
+                  ColumnDefinitions="50, *, 50"
+                  Margin="0,0,0,10"
+                  IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                <Button Grid.Column="0" 
+                        Text="&lt;" 
+                        Command="{Binding PreviousExerciseCommand}"
+                        IsEnabled="{Binding HasPreviousExercise}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource PrimaryRed}"
+                        FontFamily="LilitaOne"
+                        FontSize="24"
+                        VerticalOptions="Center">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding HasPreviousExercise}" Value="False">
+                            <Setter Property="Opacity" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Border Grid.Column="1"
+                        HorizontalOptions="Center"
+                        Padding="20,8"
+                        Stroke="{StaticResource PrimaryRed}"
+                        StrokeThickness="1.5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Label Text="{Binding ExerciseProgressText}"
+                           FontFamily="LilitaOne"
+                           FontSize="14"
+                           TextColor="{StaticResource PrimaryRed}"
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="Center"/>
+                </Border>
+                <Button Grid.Column="2" 
+                        Text="&gt;" 
+                        Command="{Binding NextExerciseCommand}"
+                        IsEnabled="{Binding HasNextExercise}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource PrimaryRed}"
+                        FontFamily="LilitaOne"
+                        FontSize="24"
+                        VerticalOptions="Center">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding HasNextExercise}" Value="False">
+                            <Setter Property="Opacity" Value="0" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
             </Grid>
 
-            <Button Text="Save Set" 
-                    Command="{Binding SaveSetCommand}"
-                    BackgroundColor="{StaticResource PrimaryRed}" 
-                    TextColor="{StaticResource SolidWhite}" 
-                    FontFamily="LilitaOne"
-                    FontSize="20"
-                    CornerRadius="30"
-                    HeightRequest="60"/>
-        </VerticalStackLayout>
+            <!-- 3. PROGRESS SERII -->
+            <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
+                <Label Text="{Binding SetProgressText}"
+                       FontSize="16"
+                       FontFamily="LilitaOne"
+                       TextColor="{StaticResource TranslucentBlack}"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
 
-        <!-- 5. NOWOŚĆ: LISTA ZAPISANYCH SERII -->
-        <CollectionView Grid.Row="4" ItemsSource="{Binding CurrentSets}" Margin="0,20,0,0">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:WorkoutSet">
-                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <Grid ColumnDefinitions="Auto, *, Auto">
-                            <Label Grid.Column="0" Text="{Binding SetNumber, StringFormat='Set {0}'}" FontFamily="LilitaOne" FontSize="18" TextColor="{StaticResource TranslucentBlack}" VerticalOptions="Center"/>
-                            <Label Grid.Column="2" FontFamily="LilitaOne" FontSize="20" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Text="{Binding Weight}" />
-                                        <Span Text=" kg  ×  " TextColor="{StaticResource TranslucentBlack}" />
-                                        <Span Text="{Binding Reps}" />
-                                        <Span Text=" reps" TextColor="{StaticResource TranslucentBlack}" />
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
+            <!-- 4. INPUTY: Waga i Powtórzenia + przyciski -->
+            <Grid Grid.Row="3" Margin="0,0,0,20">
+                <!-- Normal Inputs (Hidden when complete) -->
+                <VerticalStackLayout Spacing="20" IsVisible="{Binding IsExerciseComplete, Converter={StaticResource InvertedBoolConverter}}">
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
+                        <VerticalStackLayout Grid.Column="0" Spacing="10">
+                            <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
+                            <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="10">
+                            <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
+                            <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Last Session Info -->
+                        <Label Grid.Row="0"
+                               Text="{Binding LastSessionResultsText}"
+                               FontSize="14"
+                               FontFamily="LilitaOne"
+                               TextColor="{StaticResource TranslucentBlack}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center"
+                               Margin="0,0,0,15" />
+
+                        <!-- Przycisk na pełną szerokość gdy nie ma zapisanych serii -->
+                        <Button Grid.Row="1"
+                                Text="Save Set"
+                                Command="{Binding SaveSetCommand}"
+                                IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="{StaticResource PrimaryRed}"
+                                TextColor="{StaticResource SolidWhite}"
+                                FontFamily="LilitaOne"
+                                FontSize="20"
+                                CornerRadius="30"
+                                HeightRequest="60"/>
+
+                        <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasSavedSets}" Grid.Row="1">
+                            <Button Grid.Column="0"
+                                    Text="Undo Last"
+                                    Command="{Binding UndoLastSetCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource TranslucentBlack}"
+                                    BorderColor="{StaticResource TranslucentBlack}"
+                                    BorderWidth="1.5"
+                                    FontFamily="LilitaOne"
+                                    FontSize="18"
+                                    CornerRadius="30"
+                                    HeightRequest="60"
+                                    Margin="0,0,10,0"/>
+                            
+                            <Button Grid.Column="1"
+                                    Text="Save Set"
+                                    Command="{Binding SaveSetCommand}"
+                                    BackgroundColor="{StaticResource PrimaryRed}"
+                                    TextColor="{StaticResource SolidWhite}"
+                                    FontFamily="LilitaOne"
+                                    FontSize="20"
+                                    CornerRadius="30"
+                                    HeightRequest="60"
+                                    Margin="10,0,0,0"/>
                         </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    </Grid>
+                </VerticalStackLayout>
+                
+                <!-- Completed State -->
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsExerciseComplete}">
+                    <Label Text="All Sets Completed! 🎉" 
+                           FontSize="20" FontFamily="LilitaOne" TextColor="{StaticResource PrimaryRed}" 
+                           HorizontalOptions="Center" />
+                    <Label Text="Ready for the next exercise." 
+                           FontSize="14" TextColor="{StaticResource TranslucentBlack}" 
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+                
+                <!-- Rest Timer Overlay (Covers the entire row) -->
+                <Border BackgroundColor="{StaticResource SolidWhite}"
+                        Stroke="{StaticResource PrimaryRed}" StrokeThickness="2"
+                        Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill"
+                        IsVisible="{Binding IsResting}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="REST" FontFamily="LilitaOne" FontSize="20" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center" />
+                        <Label Text="{Binding RestTimerText}" FontFamily="LilitaOne" FontSize="48" TextColor="{StaticResource PrimaryRed}" HorizontalOptions="Center" />
+                        <Button Text="Skip Rest" Command="{Binding SkipRestCommand}" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" FontSize="18" BorderColor="{StaticResource PrimaryRed}" BorderWidth="1.5" CornerRadius="25" HeightRequest="50" WidthRequest="150" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
 
-        <!-- 6. ZAKOŃCZENIE TRENINGU -->
-        <Button Grid.Row="5" 
-                Text="Finish Workout" 
-                Command="{Binding FinishWorkoutCommand}"
-                BackgroundColor="{StaticResource SolidWhite}" 
-                TextColor="{StaticResource PrimaryRed}" 
-                BorderColor="{StaticResource PrimaryRed}" BorderWidth="2"
-                FontFamily="LilitaOne" FontSize="18" CornerRadius="30" HeightRequest="60"
-                Margin="0,10,0,0"/>
+            <!-- 5. LISTA ZAPISANYCH SERII ze swipe-to-delete -->
+            <!-- Grid overlay pattern (zgodnie z regułami — NIE używamy CollectionView.EmptyView) -->
+            <Grid Grid.Row="4" Margin="0,20,0,0">
+
+                <!-- Lista serii (widoczna gdy HasSavedSets = true) -->
+                <CollectionView ItemsSource="{Binding CurrentSets}"
+                                IsVisible="{Binding HasSavedSets}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:WorkoutSet">
+                            <SwipeView>
+                                <!-- Swipe w prawo → usuń serię -->
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Execute">
+                                        <SwipeItem Text="Delete"
+                                                   BackgroundColor="#E74C3C"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=DeleteSetCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+
+                                <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="Auto, *, Auto">
+                                        <Label Grid.Column="0"
+                                               Text="{Binding SetNumber, StringFormat='Set {0}'}"
+                                               FontFamily="LilitaOne"
+                                               FontSize="18"
+                                               TextColor="{StaticResource TranslucentBlack}"
+                                               VerticalOptions="Center"/>
+                                        <Label Grid.Column="2" FontFamily="LilitaOne" FontSize="20" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding Weight}" />
+                                                    <Span Text=" kg  ×  " TextColor="{StaticResource TranslucentBlack}" />
+                                                    <Span Text="{Binding Reps}" />
+                                                    <Span Text=" reps" TextColor="{StaticResource TranslucentBlack}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Grid>
+                                </Border>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Empty state overlay (widoczna gdy HasSavedSets = false) -->
+                <VerticalStackLayout HorizontalOptions="Center"
+                                     VerticalOptions="Center"
+                                     Spacing="8"
+                                     IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}">
+                    <Label Text="No sets saved yet"
+                           FontFamily="LilitaOne"
+                           FontSize="16"
+                           TextColor="{StaticResource TranslucentBlack}"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="Enter weight and reps above, then tap Save Set."
+                           FontSize="13"
+                           TextColor="{StaticResource TranslucentBlack}"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- 6. ZAKOŃCZENIE TRENINGU -->
+            <Button Grid.Row="5"
+                    Text="Finish Workout"
+                    Command="{Binding FinishWorkoutCommand}"
+                    BackgroundColor="{StaticResource SolidWhite}"
+                    TextColor="{StaticResource PrimaryRed}"
+                    BorderColor="{StaticResource PrimaryRed}" BorderWidth="2"
+                    FontFamily="LilitaOne" FontSize="18" CornerRadius="30" HeightRequest="60"
+                    Margin="0,10,0,0"/>
+        </Grid>
+
+        <!-- WORKOUT COMPLETED OVERLAY -->
+        <Grid BackgroundColor="{StaticResource SolidWhite}" IsVisible="{Binding IsWorkoutCompleted}">
+            <ScrollView>
+                <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Workout Complete! 🎉" 
+                           FontSize="36" 
+                           FontFamily="LilitaOne" 
+                           TextColor="{StaticResource PrimaryRed}" 
+                           HorizontalOptions="Center" 
+                           HorizontalTextAlignment="Center" />
+                    
+                    <Label Text="{Binding WorkoutTitle, StringFormat='You finished {0}'}" 
+                           FontSize="20" 
+                           FontFamily="LilitaOne" 
+                           TextColor="{StaticResource SolidBlack}" 
+                           HorizontalOptions="Center" />
+
+                    <!-- Statystyki -->
+                    <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="20" BackgroundColor="#F9F9F9" Margin="0,10,0,0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" />
+                            <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label Text="Best Sets" FontSize="22" FontFamily="LilitaOne" TextColor="{StaticResource PrimaryRed}" Margin="0,10,0,0" />
+                    
+                    <CollectionView ItemsSource="{Binding BestSets}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
+                                <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Grid.Column="0" Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" Text="{Binding BestSetText}" FontFamily="LilitaOne" FontSize="16" TextColor="{StaticResource PrimaryRed}" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    
+                    <Button Text="Finish &amp; Save Workout" 
+                            Command="{Binding ExitWorkoutCommand}" 
+                            BackgroundColor="{StaticResource PrimaryRed}" 
+                            TextColor="{StaticResource SolidWhite}" 
+                            FontFamily="LilitaOne" 
+                            FontSize="20" 
+                            CornerRadius="30" 
+                            HeightRequest="60" 
+                            Margin="0,20,0,40" 
+                            WidthRequest="250" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
     </Grid>
+
 </ContentPage>
