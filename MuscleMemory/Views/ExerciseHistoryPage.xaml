@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             xmlns:models="clr-namespace:MuscleMemory.Models"
+             x:Class="MuscleMemory.Views.ExerciseHistoryPage"
+             x:DataType="viewmodels:ExerciseHistoryViewModel"
+             Title="{Binding ExerciseName}"
+             BackgroundColor="{StaticResource SolidWhite}">
+
+    <Grid>
+        <VerticalStackLayout HorizontalOptions="Center" 
+                             VerticalOptions="Center" 
+                             Spacing="20"
+                             IsVisible="{Binding IsEmpty}">
+            <Label Text="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!" 
+                   TextColor="{StaticResource TranslucentBlack}" 
+                   FontSize="18" 
+                   HorizontalTextAlignment="Center"/>
+        </VerticalStackLayout>
+        
+        <CollectionView ItemsSource="{Binding History}" Margin="20">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ExerciseHistoryEntry">
+                    <Border Margin="0,0,0,15" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="10">
+                            <!-- Header -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold" />
+                                <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
+                            </Grid>
+                            
+                            <!-- Sets Table -->
+                            <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="4" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="#EEEEEE">
+                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                    </Grid>
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="models:WorkoutSet">
+                                                <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="Transparent">
+                                                    <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{StaticResource SolidBlack}" HorizontalTextAlignment="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

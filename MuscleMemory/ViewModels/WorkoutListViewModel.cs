@@ -88,4 +88,12 @@ public partial class WorkoutListViewModel : ObservableObject
         };
         await Shell.Current.GoToAsync("AddEditWorkoutPage", navigationParameter);
     }
+
+    [RelayCommand]
+    public async Task ViewHistoryAsync(Workout workout)
+    {
+        if (workout == null) return;
+        
+        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?WorkoutId={workout.Id}&WorkoutName={workout.Name}");
+    }
 }

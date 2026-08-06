@@ -200,4 +200,91 @@ public class DatabaseContext
             await _connection.InsertAsync(exerciseDetails);
         }
     }
+
+    public async Task<List<ExerciseHistoryEntry>> GetExerciseHistoryAsync(int exerciseId)
+    {
+        await InitAsync();
+        
+        var workoutExercises = await _connection!.Table<WorkoutExercise>()
+                                                 .Where(we => we.ExerciseId == exerciseId)
+                                                 .ToListAsync();
+        
+        var history = new List<ExerciseHistoryEntry>();
+        var workouts = await _connection.Table<Workout>().ToListAsync(); 
+        
+        foreach (var we in workoutExercises)
+        {
+            var sets = await _connection.Table<WorkoutSet>()
+                                        .Where(s => s.WorkoutExerciseId == we.Id)
+                                        .ToListAsync();
+                                        
+            var groupedBySession = sets.GroupBy(s => s.WorkoutSessionId);
+            
+            foreach (var group in groupedBySession)
+            {
+                int sessionId = group.Key;
+                var session = await _connection.Table<WorkoutSession>().Where(s => s.Id == sessionId).FirstOrDefaultAsync();
+                if (session == null) continue;
+                
+                var workout = workouts.FirstOrDefault(w => w.Id == session.WorkoutId);
+                
+                history.Add(new ExerciseHistoryEntry
+                {
+                    Date = session.StartTime,
+                    WorkoutName = workout?.Name ?? "Unknown Workout",
+                    Sets = group.OrderBy(s => s.SetNumber).ToList()
+                });
+            }
+        }
+        
+        return history.OrderByDescending(h => h.Date).ToList();
+    }
+
+    public async Task<List<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId)
+    {
+        await InitAsync();
+        
+        var sessions = await _connection!.Table<WorkoutSession>()
+                                         .Where(s => s.WorkoutId == workoutId)
+                                         .OrderByDescending(s => s.StartTime)
+                                         .ToListAsync();
+                                         
+        var workoutExercises = await _connection.Table<WorkoutExercise>()
+                                                .Where(we => we.WorkoutId == workoutId)
+                                                .ToListAsync();
+                                                
+        var history = new List<WorkoutHistorySession>();
+        
+        foreach (var session in sessions)
+        {
+            int sessionId = session.Id;
+            var sets = await _connection.Table<WorkoutSet>()
+                                        .Where(s => s.WorkoutSessionId == sessionId)
+                                        .ToListAsync();
+                                        
+            if (!sets.Any()) continue;
+            
+            var historySession = new WorkoutHistorySession
+            {
+                StartTime = session.StartTime,
+                EndTime = session.EndTime,
+                TotalVolume = sets.Sum(s => s.Weight * s.Reps)
+            };
+            
+            var groupedSets = sets.GroupBy(s => s.WorkoutExerciseId);
+            foreach (var group in groupedSets)
+            {
+                var we = workoutExercises.FirstOrDefault(w => w.Id == group.Key);
+                historySession.Exercises.Add(new WorkoutHistoryExercise
+                {
+                    ExerciseName = we?.ExerciseName ?? "Unknown",
+                    Sets = group.OrderBy(s => s.SetNumber).ToList()
+                });
+            }
+            
+            history.Add(historySession);
+        }
+        
+        return history;
+    }
 }
