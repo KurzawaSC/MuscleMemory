@@ -16,16 +16,12 @@ public partial class WorkoutListViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsNotEmpty { get; set; } = false;
-
-    // Kolekcja naszych treningów wyświetlanych na ekranie
     public ObservableCollection<Workout> Workouts { get; set; } = new();
 
     public WorkoutListViewModel(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
     }
-
-    // Pobieranie treningów z bazy danych
     [RelayCommand]
     public async Task LoadWorkoutsAsync()
     {
@@ -40,27 +36,19 @@ public partial class WorkoutListViewModel : ObservableObject
         IsEmpty = !Workouts.Any();
         IsNotEmpty = Workouts.Any();
     }
-
-    // Przejście do utworzonego wcześniej kreatora
     [RelayCommand]
     private async Task NavigateToAddWorkout()
     {
         await Shell.Current.GoToAsync("AddEditWorkoutPage");
     }
-
-    // Przejście do właściwego treningu (przekazujemy ID wybranego treningu!)
     [RelayCommand]
     private async Task StartWorkoutAsync(Workout selectedWorkout)
     {
         if (selectedWorkout == null) return;
-
-        // Pakujemy nasz trening do słownika pod kluczem "Workout"
         var navigationParameter = new Dictionary<string, object>
         {
             { "Workout", selectedWorkout }
         };
-
-        // Przechodzimy na ActiveWorkoutPage, przekazując paczkę
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
     }
 
