@@ -1,4 +1,4 @@
-﻿using SQLite;
+using SQLite;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data;
@@ -21,6 +21,17 @@ public class DatabaseContext
         await _connection.CreateTableAsync<Workout>();
         await _connection.CreateTableAsync<WorkoutExercise>();
         await _connection!.CreateTableAsync<WorkoutSet>();
+        await _connection.CreateTableAsync<WorkoutSession>();
+
+        // Migracja: dodaj kolumnę WorkoutSessionId jeśli jeszcze nie istnieje (bezpieczne przy każdym uruchomieniu)
+        try
+        {
+            await _connection!.ExecuteAsync("ALTER TABLE WorkoutSet ADD COLUMN WorkoutSessionId INTEGER NOT NULL DEFAULT 0");
+        }
+        catch
+        {
+            // Kolumna już istnieje — ignoruj błąd
+        }
     }
 
     // Metoda do pobierania wszystkich ćwiczeń
@@ -83,6 +94,30 @@ public class DatabaseContext
         await _connection!.DeleteAllAsync<Workout>();
         await _connection!.DeleteAllAsync<Exercise>();
         await _connection!.DeleteAllAsync<WorkoutSet>();
+        await _connection!.DeleteAllAsync<WorkoutSession>();
+    }
+
+    public async Task<int> CreateWorkoutSessionAsync(int workoutId)
+    {
+        await InitAsync();
+        var session = new WorkoutSession
+        {
+            WorkoutId = workoutId,
+            StartTime = DateTime.UtcNow
+        };
+        await _connection!.InsertAsync(session);
+        return session.Id;
+    }
+
+    public async Task FinishWorkoutSessionAsync(int sessionId)
+    {
+        await InitAsync();
+        var session = await _connection!.Table<WorkoutSession>().Where(s => s.Id == sessionId).FirstOrDefaultAsync();
+        if (session != null)
+        {
+            session.EndTime = DateTime.UtcNow;
+            await _connection.UpdateAsync(session);
+        }
     }
 
     public async Task SaveSetAsync(WorkoutSet set)
@@ -91,12 +126,36 @@ public class DatabaseContext
         await _connection!.InsertAsync(set);
     }
 
-    public async Task<List<WorkoutSet>> GetSetsForWorkoutExerciseAsync(int workoutExerciseId)
+    public async Task<List<WorkoutSet>> GetSetsForWorkoutExerciseAsync(int workoutExerciseId, int sessionId)
     {
         await InitAsync();
         return await _connection!.Table<WorkoutSet>()
-                                 .Where(s => s.WorkoutExerciseId == workoutExerciseId)
+                                 .Where(s => s.WorkoutExerciseId == workoutExerciseId && s.WorkoutSessionId == sessionId)
                                  .ToListAsync();
+    }
+
+    public async Task<List<WorkoutSet>> GetLastSessionSetsForExerciseAsync(int workoutExerciseId, int currentSessionId)
+    {
+        await InitAsync();
+        
+        var lastSet = await _connection!.Table<WorkoutSet>()
+                                        .Where(s => s.WorkoutExerciseId == workoutExerciseId && s.WorkoutSessionId < currentSessionId)
+                                        .OrderByDescending(s => s.WorkoutSessionId)
+                                        .FirstOrDefaultAsync();
+
+        if (lastSet == null)
+            return new List<WorkoutSet>();
+
+        return await _connection!.Table<WorkoutSet>()
+                                 .Where(s => s.WorkoutExerciseId == workoutExerciseId && s.WorkoutSessionId == lastSet.WorkoutSessionId)
+                                 .OrderBy(s => s.SetNumber)
+                                 .ToListAsync();
+    }
+
+    public async Task DeleteSetAsync(int setId)
+    {
+        await InitAsync();
+        await _connection!.DeleteAsync<WorkoutSet>(setId);
     }
 
     public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
