@@ -33,12 +33,8 @@ public partial class ExerciseListViewModel : ObservableObject
         {
             Exercises.Add(exercise);
         }
-
-        // DODANE: Aktualizacja stanu
         IsEmpty = !Exercises.Any();
     }
-
-    // Ta funkcja zajmie się zapisem
     public async Task SaveNewExerciseAsync(string exerciseName)
     {
         var newDoc = new Exercise { Name = exerciseName };

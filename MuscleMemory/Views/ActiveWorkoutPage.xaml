@@ -8,13 +8,10 @@
              Title="Workout"
              BackgroundColor="{StaticResource SolidWhite}">
 
-    <!-- Root wrapper to host both the main workout view and the completion overlay -->
-    <Grid>
-        <!-- Outer Grid: rows = Header | Progress pill | Exercise name | Inputs | Sets list | Finish button -->
-        <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid>
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
 
-            <!-- 1. HEADER: Tytuł i stoper -->
-            <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
+                        <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
                 <Label Text="{Binding WorkoutTitle}"
                        FontSize="24"
                        FontFamily="LilitaOne"
@@ -27,8 +24,7 @@
                        HorizontalTextAlignment="Center"/>
             </VerticalStackLayout>
 
-            <!-- 2. PROGRESS PILL: "Exercise 2 of 4: Bench Press" ze strzałkami -->
-            <Grid Grid.Row="1" 
+                        <Grid Grid.Row="1" 
                   ColumnDefinitions="50, *, 50"
                   Margin="0,0,0,10"
                   IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
@@ -79,8 +75,7 @@
                 </Button>
             </Grid>
 
-            <!-- 3. PROGRESS SERII -->
-            <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
+                        <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
                 <Label Text="{Binding SetProgressText}"
                        FontSize="16"
                        FontFamily="LilitaOne"
@@ -88,10 +83,8 @@
                        HorizontalOptions="Center"/>
             </VerticalStackLayout>
 
-            <!-- 4. INPUTY: Waga i Powtórzenia + przyciski -->
-            <Grid Grid.Row="3" Margin="0,0,0,20">
-                <!-- Normal Inputs (Hidden when complete) -->
-                <VerticalStackLayout Spacing="20" IsVisible="{Binding IsExerciseComplete, Converter={StaticResource InvertedBoolConverter}}">
+                        <Grid Grid.Row="3" Margin="0,0,0,20">
+                                <VerticalStackLayout Spacing="20" IsVisible="{Binding IsExerciseComplete, Converter={StaticResource InvertedBoolConverter}}">
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
                         <VerticalStackLayout Grid.Column="0" Spacing="10">
                             <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
@@ -120,8 +113,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Last Session Info -->
-                        <Label Grid.Row="0"
+                                                <Label Grid.Row="0"
                                Text="{Binding LastSessionResultsText}"
                                FontSize="14"
                                FontFamily="LilitaOne"
@@ -130,8 +122,7 @@
                                HorizontalTextAlignment="Center"
                                Margin="0,0,0,15" />
 
-                        <!-- Przycisk na pełną szerokość gdy nie ma zapisanych serii -->
-                        <Button Grid.Row="1"
+                                                <Button Grid.Row="1"
                                 Text="Save Set"
                                 Command="{Binding SaveSetCommand}"
                                 IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}"
@@ -170,8 +161,7 @@
                     </Grid>
                 </VerticalStackLayout>
                 
-                <!-- Completed State -->
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsExerciseComplete}">
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsExerciseComplete}">
                     <Label Text="All Sets Completed! 🎉" 
                            FontSize="20" FontFamily="LilitaOne" TextColor="{StaticResource PrimaryRed}" 
                            HorizontalOptions="Center" />
@@ -180,8 +170,7 @@
                            HorizontalOptions="Center" />
                 </VerticalStackLayout>
                 
-                <!-- Rest Timer Overlay (Covers the entire row) -->
-                <Border BackgroundColor="{StaticResource SolidWhite}"
+                                <Border BackgroundColor="{StaticResource SolidWhite}"
                         Stroke="{StaticResource PrimaryRed}" StrokeThickness="2"
                         Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill"
                         IsVisible="{Binding IsResting}">
@@ -196,18 +185,14 @@
                 </Border>
             </Grid>
 
-            <!-- 5. LISTA ZAPISANYCH SERII ze swipe-to-delete -->
-            <!-- Grid overlay pattern (zgodnie z regułami — NIE używamy CollectionView.EmptyView) -->
-            <Grid Grid.Row="4" Margin="0,20,0,0">
+                                    <Grid Grid.Row="4" Margin="0,20,0,0">
 
-                <!-- Lista serii (widoczna gdy HasSavedSets = true) -->
-                <CollectionView ItemsSource="{Binding CurrentSets}"
+                                <CollectionView ItemsSource="{Binding CurrentSets}"
                                 IsVisible="{Binding HasSavedSets}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:WorkoutSet">
                             <SwipeView>
-                                <!-- Swipe w prawo → usuń serię -->
-                                <SwipeView.RightItems>
+                                                                <SwipeView.RightItems>
                                     <SwipeItems Mode="Execute">
                                         <SwipeItem Text="Delete"
                                                    BackgroundColor="#E74C3C"
@@ -244,8 +229,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Empty state overlay (widoczna gdy HasSavedSets = false) -->
-                <VerticalStackLayout HorizontalOptions="Center"
+                                <VerticalStackLayout HorizontalOptions="Center"
                                      VerticalOptions="Center"
                                      Spacing="8"
                                      IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}">
@@ -262,8 +246,7 @@
 
             </Grid>
 
-            <!-- 6. ZAKOŃCZENIE TRENINGU -->
-            <Button Grid.Row="5"
+                        <Button Grid.Row="5"
                     Text="Finish Workout"
                     Command="{Binding FinishWorkoutCommand}"
                     BackgroundColor="{StaticResource SolidWhite}"
@@ -273,8 +256,7 @@
                     Margin="0,10,0,0"/>
         </Grid>
 
-        <!-- WORKOUT COMPLETED OVERLAY -->
-        <Grid BackgroundColor="{StaticResource SolidWhite}" IsVisible="{Binding IsWorkoutCompleted}">
+                <Grid BackgroundColor="{StaticResource SolidWhite}" IsVisible="{Binding IsWorkoutCompleted}">
             <ScrollView>
                 <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
                     <Label Text="Workout Complete! 🎉" 
@@ -290,8 +272,7 @@
                            TextColor="{StaticResource SolidBlack}" 
                            HorizontalOptions="Center" />
 
-                    <!-- Statystyki -->
-                    <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="20" BackgroundColor="#F9F9F9" Margin="0,10,0,0">
+                                        <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="20" BackgroundColor="#F9F9F9" Margin="0,10,0,0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12" />
                         </Border.StrokeShape>

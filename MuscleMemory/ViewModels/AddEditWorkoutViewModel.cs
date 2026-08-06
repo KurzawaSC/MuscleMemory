@@ -13,8 +13,6 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
-
-    // Pole na nazwę tworzonego treningu (z powiązaniem do XAML)
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
     
@@ -25,8 +23,6 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool HasUnsavedChanges { get; set; } = false;
-
-    // Tymczasowa lista ćwiczeń dla tego treningu (będzie odświeżać UI na żywo)
     public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
 
     public AddEditWorkoutViewModel(DatabaseContext dbContext)
@@ -52,14 +48,12 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             HasUnsavedChanges = false;
         }
     }
-
-    // Funkcja wywoływana z Code-Behind po tym, jak użytkownik skonfiguruje ćwiczenie w Pop-upie
     public void AddExerciseToWorkout(Exercise selectedExercise, int sets, int reps, int breakTime)
     {
         var newWorkoutExercise = new WorkoutExercise
         {
             ExerciseId = selectedExercise.Id,
-            ExerciseName = selectedExercise.Name, // Nasze zignorowane przez SQL pole dla widoku
+            ExerciseName = selectedExercise.Name,
             Sets = sets,
             Reps = reps,
             BreakTimeInSeconds = breakTime
@@ -78,14 +72,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             exercise.Sets = sets;
             exercise.Reps = reps;
             exercise.BreakTimeInSeconds = breakTime;
-            
-            // Wymuś odświeżenie UI poprzez podmianę
             Exercises[index] = exercise;
             HasUnsavedChanges = true;
         }
     }
-
-    // Komenda do usuwania ćwiczenia z tymczasowej listy (ikona "X" lub Swipe)
     [RelayCommand]
     private void RemoveExercise(WorkoutExercise exerciseToRemove)
     {
@@ -96,12 +86,9 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         IsEmpty = !Exercises.Any();
         HasUnsavedChanges = true;
     }
-
-    // Zapis całości do bazy danych
     [RelayCommand]
     private async Task SaveWorkoutAsync()
     {
-        // 1. Podstawowa walidacja
         if (string.IsNullOrWhiteSpace(WorkoutName))
         {
             await Shell.Current.DisplayAlert("Hold on!", "Please enter a workout name.", "OK");
@@ -129,8 +116,6 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         }
 
         HasUnsavedChanges = false;
-        
-        // 4. Sukces! Zamykamy ekran kreatora i wracamy do Listy Treningów
         await Shell.Current.GoToAsync("..");
     }
     public async Task<List<Exercise>> GetAllExercisesAsync()

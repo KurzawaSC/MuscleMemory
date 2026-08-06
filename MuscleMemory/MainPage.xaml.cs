@@ -1,4 +1,4 @@
-﻿namespace MuscleMemory
+namespace MuscleMemory
 {
     public partial class MainPage : ContentPage
     {

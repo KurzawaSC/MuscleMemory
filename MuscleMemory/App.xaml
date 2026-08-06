@@ -11,8 +11,7 @@
             <Color x:Key="TranslucentBlack">#99000000</Color>
             <Color x:Key="SolidWhite">#FFFFFF</Color>
 
-            <!-- Convertery z CommunityToolkit.Maui -->
-            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+                        <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
