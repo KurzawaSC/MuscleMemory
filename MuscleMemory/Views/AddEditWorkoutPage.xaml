@@ -6,11 +6,11 @@
              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
              x:DataType="viewmodels:AddEditWorkoutViewModel"
              Title="Create Workout"
-             BackgroundColor="{StaticResource SolidWhite}">
+             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="20">
 
-        <Border Grid.Row="0" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20">
+        <Border Grid.Row="0" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20">
             <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Border.Shadow>
@@ -20,7 +20,7 @@
             <Entry Text="{Binding WorkoutName}"
                    Placeholder="Workout name"
                    PlaceholderColor="{StaticResource TranslucentBlack}"
-                   TextColor="{StaticResource SolidBlack}"
+                   TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
                    FontSize="20"
                    FontAttributes="Bold"
                    ClearButtonVisibility="WhileEditing"/>
@@ -32,7 +32,7 @@
                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
                     <Label Text="You have no exercises in&#10;that workout, let's add&#10;more!"
                            HorizontalTextAlignment="Center"
-                           TextColor="{StaticResource TranslucentBlack}"
+                           TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
                            FontFamily="LilitaOne"
                            FontSize="18" />
                     <Button Text="Add exercise +" 
@@ -57,7 +57,7 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:WorkoutExercise">
-                    <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                    <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
                         <Border.Shadow>
                             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                         </Border.Shadow>
@@ -69,10 +69,10 @@
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontFamily="LilitaOne"/>
-                                <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
-                                <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
-                                <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{StaticResource TranslucentBlack}" FontSize="14" />
+                                <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontSize="18" FontFamily="LilitaOne"/>
+                                <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
                             </VerticalStackLayout>
 
                             <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
@@ -80,8 +80,8 @@
                                         Clicked="OnEditButtonClicked"
                                         CommandParameter="{Binding .}"
                                         BackgroundColor="Transparent" 
-                                        TextColor="{StaticResource SolidBlack}" 
-                                        BorderColor="{StaticResource TranslucentBlack}"
+                                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
+                                        BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
                                         BorderWidth="1"
                                         FontAttributes="Bold" 
                                         FontFamily="LilitaOne"
