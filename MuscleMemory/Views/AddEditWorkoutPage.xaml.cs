@@ -15,6 +15,36 @@ public partial class AddEditWorkoutPage : ContentPage
         BindingContext = _viewModel;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Shell.Current.Navigating += Shell_Navigating;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Shell.Current.Navigating -= Shell_Navigating;
+    }
+
+    private async void Shell_Navigating(object sender, ShellNavigatingEventArgs e)
+    {
+        if (e.Source == ShellNavigationSource.Pop || e.Source == ShellNavigationSource.PopToRoot)
+        {
+            if (_viewModel.HasUnsavedChanges)
+            {
+                e.Cancel();
+
+                bool discard = await DisplayAlert("Unsaved Changes", "You have unsaved changes. Are you sure you want to discard them and exit?", "Discard", "Cancel");
+                if (discard)
+                {
+                    _viewModel.HasUnsavedChanges = false;
+                    await Shell.Current.GoToAsync("..");
+                }
+            }
+        }
+    }
+
     // Usunięto znak zapytania przy 'object sender' - to usatysfakcjonuje plik XAML
     private async void OnAddExerciseClicked(object sender, EventArgs e)
     {
@@ -46,6 +76,38 @@ public partial class AddEditWorkoutPage : ContentPage
         {
             _viewModel.AddExerciseToWorkout(
                 selectedExercise,
+                configResult.Sets,
+                configResult.Reps,
+                configResult.BreakTime);
+        }
+    }
+
+    private async void OnEditExerciseTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is Models.WorkoutExercise exerciseToEdit)
+        {
+            await OpenEditPopup(exerciseToEdit);
+        }
+    }
+
+    private async void OnEditButtonClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.CommandParameter is Models.WorkoutExercise exerciseToEdit)
+        {
+            await OpenEditPopup(exerciseToEdit);
+        }
+    }
+
+    private async Task OpenEditPopup(Models.WorkoutExercise exerciseToEdit)
+    {
+        var configPopup = new ConfigureExercisePopup(exerciseToEdit);
+        await this.ShowPopupAsync(configPopup);
+
+        var configResult = configPopup.ReturnedConfig;
+        if (configResult != null)
+        {
+            _viewModel.UpdateExerciseInWorkout(
+                exerciseToEdit,
                 configResult.Sets,
                 configResult.Reps,
                 configResult.BreakTime);

@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
@@ -62,5 +62,30 @@ public partial class WorkoutListViewModel : ObservableObject
 
         // Przechodzimy na ActiveWorkoutPage, przekazując paczkę
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
+    }
+
+    [RelayCommand]
+    public async Task DeleteWorkoutAsync(Workout workout)
+    {
+        if (workout == null) return;
+
+        bool answer = await Shell.Current.DisplayAlert("Delete Workout", $"Are you sure you want to delete '{workout.Name}'?", "Yes", "No");
+        if (answer)
+        {
+            await _dbContext.DeleteWorkoutAsync(workout.Id);
+            await LoadWorkoutsAsync();
+        }
+    }
+
+    [RelayCommand]
+    public async Task EditWorkoutAsync(Workout workout)
+    {
+        if (workout == null) return;
+        
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { "WorkoutToEdit", workout }
+        };
+        await Shell.Current.GoToAsync("AddEditWorkoutPage", navigationParameter);
     }
 }
