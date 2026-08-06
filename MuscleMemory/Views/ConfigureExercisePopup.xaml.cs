@@ -20,6 +20,16 @@ public partial class ConfigureExercisePopup : Popup
         ExerciseNameTitle.Text = selectedExercise.Name;
     }
 
+    public ConfigureExercisePopup(WorkoutExercise exerciseToEdit)
+    {
+        InitializeComponent();
+        ExerciseNameTitle.Text = exerciseToEdit.ExerciseName;
+        SetsEntry.Text = exerciseToEdit.Sets.ToString();
+        RepsEntry.Text = exerciseToEdit.Reps.ToString();
+        BreakEntry.Text = exerciseToEdit.BreakTimeInSeconds.ToString();
+        AddButton.Text = "Save";
+    }
+
     // Usunięto znak zapytania przy 'object sender'
     private async void OnCancelClicked(object sender, EventArgs e)
     {

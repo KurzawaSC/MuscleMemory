@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Data;
@@ -6,6 +6,7 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
+[QueryProperty(nameof(WorkoutToEdit), "WorkoutToEdit")]
 public partial class AddEditWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
@@ -16,6 +17,14 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     // Pole na nazwę tworzonego treningu (z powiązaniem do XAML)
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
+    
+    partial void OnWorkoutNameChanged(string value)
+    {
+        HasUnsavedChanges = true;
+    }
+
+    [ObservableProperty]
+    public partial bool HasUnsavedChanges { get; set; } = false;
 
     // Tymczasowa lista ćwiczeń dla tego treningu (będzie odświeżać UI na żywo)
     public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
@@ -23,6 +32,25 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     public AddEditWorkoutViewModel(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    [ObservableProperty]
+    public partial Workout WorkoutToEdit { get; set; } = null!;
+
+    async partial void OnWorkoutToEditChanged(Workout value)
+    {
+        if (value != null)
+        {
+            WorkoutName = value.Name;
+            var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(value.Id);
+            Exercises.Clear();
+            foreach (var ex in exercisesFromDb)
+            {
+                Exercises.Add(ex);
+            }
+            IsEmpty = !Exercises.Any();
+            HasUnsavedChanges = false;
+        }
     }
 
     // Funkcja wywoływana z Code-Behind po tym, jak użytkownik skonfiguruje ćwiczenie w Pop-upie
@@ -39,6 +67,22 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
         Exercises.Add(newWorkoutExercise);
         IsEmpty = !Exercises.Any();
+        HasUnsavedChanges = true;
+    }
+
+    public void UpdateExerciseInWorkout(WorkoutExercise exercise, int sets, int reps, int breakTime)
+    {
+        var index = Exercises.IndexOf(exercise);
+        if (index >= 0)
+        {
+            exercise.Sets = sets;
+            exercise.Reps = reps;
+            exercise.BreakTimeInSeconds = breakTime;
+            
+            // Wymuś odświeżenie UI poprzez podmianę
+            Exercises[index] = exercise;
+            HasUnsavedChanges = true;
+        }
     }
 
     // Komenda do usuwania ćwiczenia z tymczasowej listy (ikona "X" lub Swipe)
@@ -50,6 +94,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             Exercises.Remove(exerciseToRemove);
         }
         IsEmpty = !Exercises.Any();
+        HasUnsavedChanges = true;
     }
 
     // Zapis całości do bazy danych
@@ -69,15 +114,22 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             return;
         }
 
-        // 2. Przygotowanie głównego obiektu Treningu
-        var newWorkout = new Workout
+        if (WorkoutToEdit != null)
         {
-            Name = WorkoutName.Trim()
-        };
+            WorkoutToEdit.Name = WorkoutName.Trim();
+            await _dbContext.UpdateFullWorkoutAsync(WorkoutToEdit, Exercises.ToList());
+        }
+        else
+        {
+            var newWorkout = new Workout
+            {
+                Name = WorkoutName.Trim()
+            };
+            await _dbContext.SaveFullWorkoutAsync(newWorkout, Exercises.ToList());
+        }
 
-        // 3. Wysłanie całości do naszej transakcyjnej metody w bazie SQLite
-        await _dbContext.SaveFullWorkoutAsync(newWorkout, Exercises.ToList());
-
+        HasUnsavedChanges = false;
+        
         // 4. Sukces! Zamykamy ekran kreatora i wracamy do Listy Treningów
         await Shell.Current.GoToAsync("..");
     }
