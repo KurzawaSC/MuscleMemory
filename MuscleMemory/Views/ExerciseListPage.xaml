@@ -7,7 +7,7 @@
              x:Class="MuscleMemory.Views.ExerciseListPage"
              x:DataType="viewmodels:ExerciseListViewModel"
              Title="Exercise List"
-             BackgroundColor="{StaticResource SolidWhite}">
+             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
     <Grid>
         <VerticalStackLayout HorizontalOptions="Center" 
@@ -16,7 +16,7 @@
                              IsVisible="{Binding IsEmpty}">
             <Image Source="empty_exercise_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
             <Label Text="Your exercise list is empty.&#10;Tap + to add your first!" 
-                   TextColor="{StaticResource TranslucentBlack}" 
+                   TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" 
                    FontSize="18" 
                    FontFamily="LilitaOne"
                    HorizontalTextAlignment="Center"/>
@@ -44,13 +44,13 @@
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="12" />
                                         </Border.StrokeShape>
-                                        <Label Text="Edit" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
+                                        <Label Text="Edit" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
                                     </Border>
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.LeftItems>
 
-                        <Border Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" BackgroundColor="{StaticResource SolidWhite}">
+                        <Border Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
                             <Border.Shadow>
                                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                             </Border.Shadow>
@@ -60,7 +60,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" 
                                        Text="{Binding Name}" 
-                                       TextColor="{StaticResource SolidBlack}" 
+                                       TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
                                        FontSize="18" 
                                        FontFamily="LilitaOne"
                                        VerticalOptions="Center"/>
@@ -69,8 +69,8 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ViewHistoryCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent" 
-                                            TextColor="{StaticResource SolidBlack}" 
-                                            BorderColor="{StaticResource TranslucentBlack}"
+                                            TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
+                                            BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
                                             FontFamily="LilitaOne"

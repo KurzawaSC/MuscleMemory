@@ -5,7 +5,7 @@
                xmlns:models="clr-namespace:MuscleMemory.Models"
                x:Class="MuscleMemory.Views.SelectExercisePopup">
 
-    <Border BackgroundColor="{StaticResource SolidWhite}" Padding="15" WidthRequest="320" HeightRequest="450">
+    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}" Padding="15" WidthRequest="320" HeightRequest="450">
         <Border.Shadow>
             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
         </Border.Shadow>
@@ -14,19 +14,19 @@
         </Border.StrokeShape>
 
         <Grid RowDefinitions="Auto, *">
-            <Label Grid.Row="0" Text="Select Exercise" FontFamily="LilitaOne" FontSize="20" TextColor="{StaticResource SolidBlack}" HorizontalOptions="Center" Margin="0,0,0,15"/>
+            <Label Grid.Row="0" Text="Select Exercise" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" HorizontalOptions="Center" Margin="0,0,0,15"/>
 
             <CollectionView Grid.Row="1" x:Name="ExercisesListView" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
                             <Border.Shadow>
                                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                             </Border.Shadow>
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <Label Text="{Binding Name}" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" FontSize="18"/>
+                            <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="18"/>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

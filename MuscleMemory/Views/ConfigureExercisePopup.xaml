@@ -4,7 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                x:Class="MuscleMemory.Views.ConfigureExercisePopup">
 
-    <Border BackgroundColor="{StaticResource SolidWhite}" Padding="20" WidthRequest="300">
+    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}" Padding="20" WidthRequest="300">
         <Border.Shadow>
             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
         </Border.Shadow>
@@ -16,18 +16,18 @@
             <Label x:Name="ExerciseNameTitle" FontFamily="LilitaOne" FontSize="22" TextColor="{StaticResource PrimaryRed}" HorizontalOptions="Center"/>
 
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto" RowSpacing="15">
-                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
                 <Entry Grid.Row="0" Grid.Column="1" x:Name="SetsEntry" Keyboard="Numeric" Text="3" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
                 <Entry Grid.Row="1" Grid.Column="1" x:Name="RepsEntry" Keyboard="Numeric" Text="10" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
                 <Entry Grid.Row="2" Grid.Column="1" x:Name="BreakEntry" Keyboard="Numeric" Text="60" FontFamily="LilitaOne" FontSize="18"/>
             </Grid>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
-                <Button Grid.Column="0" Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="Transparent" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" FontSize="18"/>
+                <Button Grid.Column="0" Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="18"/>
                 <Button Grid.Column="1" x:Name="AddButton" Text="Add" Clicked="OnAddClicked" BackgroundColor="Transparent" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" FontSize="18"/>
             </Grid>
         </VerticalStackLayout>

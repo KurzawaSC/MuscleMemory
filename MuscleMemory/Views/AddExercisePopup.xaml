@@ -19,7 +19,7 @@
 
         <VerticalStackLayout Spacing="30">
 
-            <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="15,5">
+            <Border Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="15,5">
                 <Border.Shadow>
                     <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                 </Border.Shadow>
@@ -29,7 +29,7 @@
                 <Entry x:Name="ExerciseNameEntry"
                        Placeholder="Exercise name"
                        PlaceholderColor="{StaticResource TranslucentBlack}"
-                       TextColor="{StaticResource SolidBlack}"
+                       TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
                        FontSize="18" 
                        FontFamily="LilitaOne"
                        ClearButtonVisibility="WhileEditing"/>
@@ -40,7 +40,7 @@
                         Text="Cancel"
                         Clicked="OnCancelClicked"
                         BackgroundColor="Transparent"
-                        TextColor="{StaticResource SolidBlack}"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
                         FontFamily="LilitaOne"
                         FontSize="18"/>
 
