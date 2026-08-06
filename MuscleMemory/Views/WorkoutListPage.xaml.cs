@@ -12,8 +12,6 @@ public partial class WorkoutListPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
-
-    // Odświeża listę za każdym razem, gdy karta jest wyświetlana
     protected override async void OnAppearing()
     {
         base.OnAppearing();

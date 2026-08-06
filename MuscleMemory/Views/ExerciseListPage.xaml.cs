@@ -20,8 +20,6 @@ public partial class ExerciseListPage : ContentPage
         base.OnAppearing();
         await _viewModel.LoadExercisesAsync();
     }
-
-    // Zmieniono EventArgs na TappedEventArgs
     private async void OnAddButtonClicked(object sender, EventArgs e)
     {
         var popup = new AddExercisePopup();
