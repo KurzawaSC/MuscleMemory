@@ -17,12 +17,7 @@ public class ExerciseBestSet
 public partial class ActiveWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
-
-    // ID sesji — epoch timestamp ustawiany raz przy starcie treningu.
-    // Izoluje serie bieżącej sesji od historycznych wpisów dla tego samego ćwiczenia.
     private int _sessionId;
-
-    // Indeks aktualnie aktywnego ćwiczenia na liście Exercises
     private int _currentExerciseIndex;
 
     [ObservableProperty]
@@ -42,27 +37,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string CurrentExerciseName { get; set; } = "Loading exercises...";
-
-    // Progress labels
     [ObservableProperty]
     public partial string ExerciseProgressText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string SetProgressText { get; set; } = string.Empty;
-
-    // Następny numer serii do zapisania (np. "Set 2 of 3")
     [ObservableProperty]
     public partial int CurrentSetNumber { get; set; } = 1;
-
-    // Docelowa liczba serii dla bieżącego ćwiczenia
     [ObservableProperty]
     public partial int TotalSetsForExercise { get; set; } = 0;
-
-    // Widoczność listy zapisanych serii (zamiast CollectionView.EmptyView, które jest błędne na Androidzie)
     [ObservableProperty]
     public partial bool HasSavedSets { get; set; } = false;
-
-    // Widoczność komunikatu "Brak ćwiczeń"
     [ObservableProperty]
     public partial bool IsExercisesEmpty { get; set; } = false;
 
@@ -135,8 +120,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (value != null)
         {
             WorkoutTitle = value.Name;
-
-            // Tworzymy nową sesję treningową w bazie (zapisuje StartTime) i pobieramy jej ID
             _sessionId = await _dbContext.CreateWorkoutSessionAsync(value.Id);
 
             _stopwatch.Start();
@@ -170,10 +153,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             SetProgressText = string.Empty;
         }
     }
-
-    /// <summary>
-    /// Przechodzi do ćwiczenia o podanym indeksie i aktualizuje stan UI.
-    /// </summary>
     private async Task AdvanceToExerciseAsync(int index)
     {
         if (index < 0 || index >= Exercises.Count)
@@ -181,8 +160,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
         _currentExerciseIndex = index;
         var exercise = Exercises[index];
-
-        // Zaktualizuj stan bez wywoływania OnCurrentExerciseChanged (które czyści inputy)
         CurrentExercise = exercise;
         CurrentExerciseName = exercise.ExerciseName;
         TotalSetsForExercise = exercise.Sets;
@@ -269,11 +246,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         await _dbContext.SaveSetAsync(newSet);
         CurrentSets.Add(newSet);
         HasSavedSets = true;
-
-        // Wyczyść tylko powtórzenia — waga często zostaje ta sama
         RepsInput = string.Empty;
-
-        // Odtwórz rest timer jeśli jest zdefiniowany break time
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
             RestSecondsRemaining = CurrentExercise.BreakTimeInSeconds;
@@ -281,22 +254,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             RestTimerText = ts.ToString(@"mm\:ss");
             IsResting = true;
         }
-
-        // Auto-advance logic
         if (TotalSetsForExercise > 0 && CurrentSets.Count >= TotalSetsForExercise)
         {
             int nextIndex = _currentExerciseIndex + 1;
             if (nextIndex < Exercises.Count)
             {
-                // Krótkie opóźnienie dla lepszego UX — użytkownik widzi zapisaną serię
                 await Task.Delay(400);
                 await AdvanceToExerciseAsync(nextIndex);
                 return;
             }
             else
             {
-                // Ostatnia seria ostatniego ćwiczenia
-                IsResting = false; // Brak przerwy po ostatnim ćwiczeniu
+                IsResting = false;
                 UpdateSetProgress();
                 _stopwatch.Stop();
                 _timer.Stop();
@@ -346,8 +315,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         await _dbContext.DeleteSetAsync(set.Id);
         CurrentSets.Remove(set);
         HasSavedSets = CurrentSets.Any();
-
-        // Przenumeruj pozostałe serie w UI i DB
         for (int i = 0; i < CurrentSets.Count; i++)
         {
             CurrentSets[i].SetNumber = i + 1;
@@ -410,8 +377,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         }
         
         TotalVolume = volume;
-
-        // Zapisz czas zakończenia w bazie
         await _dbContext.FinishWorkoutSessionAsync(_sessionId);
         
         IsWorkoutCompleted = true;

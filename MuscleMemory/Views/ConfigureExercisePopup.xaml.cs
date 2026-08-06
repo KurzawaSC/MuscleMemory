@@ -29,15 +29,11 @@ public partial class ConfigureExercisePopup : Popup
         BreakEntry.Text = exerciseToEdit.BreakTimeInSeconds.ToString();
         AddButton.Text = "Save";
     }
-
-    // Usunięto znak zapytania przy 'object sender'
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         ReturnedConfig = null;
         await CloseAsync();
     }
-
-    // Usunięto znak zapytania przy 'object sender'
     private async void OnAddClicked(object sender, EventArgs e)
     {
         int sets = int.TryParse(SetsEntry.Text, out int s) ? s : 0;

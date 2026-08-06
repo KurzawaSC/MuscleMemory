@@ -6,8 +6,6 @@ namespace MuscleMemory.Data;
 public class DatabaseContext
 {
     private SQLiteAsyncConnection? _connection;
-
-    // 1. Zmodyfikuj istniejącą metodę InitAsync, aby tworzyła nowe tabele
     private async Task InitAsync()
     {
         if (_connection != null)
@@ -17,38 +15,28 @@ public class DatabaseContext
         _connection = new SQLiteAsyncConnection(dbPath);
 
         await _connection.CreateTableAsync<Exercise>();
-        // DODANE LINIE:
         await _connection.CreateTableAsync<Workout>();
         await _connection.CreateTableAsync<WorkoutExercise>();
         await _connection!.CreateTableAsync<WorkoutSet>();
         await _connection.CreateTableAsync<WorkoutSession>();
-
-        // Migracja: dodaj kolumnę WorkoutSessionId jeśli jeszcze nie istnieje (bezpieczne przy każdym uruchomieniu)
         try
         {
             await _connection!.ExecuteAsync("ALTER TABLE WorkoutSet ADD COLUMN WorkoutSessionId INTEGER NOT NULL DEFAULT 0");
         }
         catch
         {
-            // Kolumna już istnieje — ignoruj błąd
         }
     }
-
-    // Metoda do pobierania wszystkich ćwiczeń
     public async Task<List<Exercise>> GetExercisesAsync()
     {
         await InitAsync();
         return await _connection.Table<Exercise>().ToListAsync();
     }
-
-    // Metoda do zapisywania nowego ćwiczenia
     public async Task<int> AddExerciseAsync(Exercise exercise)
     {
         await InitAsync();
         return await _connection.InsertAsync(exercise);
     }
-
-    // Opcjonalnie: Metoda do usuwania bazy (przyda się do ustawień z ekranu Settings)
     public void EraseDatabase()
     {
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
@@ -59,37 +47,27 @@ public class DatabaseContext
             File.Delete(dbPath);
         }
     }
-
-    // 2. Dodaj metodę do pobierania listy wszystkich szablonów treningów
     public async Task<List<Workout>> GetWorkoutsAsync()
     {
         await InitAsync();
         return await _connection.Table<Workout>().ToListAsync();
     }
-
-    // 3. Dodaj funkcję tworzącą nowy Trening wraz z jego ćwiczeniami (Zapis transakcyjny)
     public async Task<int> SaveFullWorkoutAsync(Workout workout, List<WorkoutExercise> exercises)
     {
         await InitAsync();
-
-        // Zapisujemy sam Trening (SQLite automatycznie nada mu ID)
         await _connection.InsertAsync(workout);
-
-        // Przypisujemy ID nowego Treningu do wszystkich ćwiczeń i zapisujemy je
         foreach (var exerciseDetails in exercises)
         {
             exerciseDetails.WorkoutId = workout.Id;
             await _connection.InsertAsync(exerciseDetails);
         }
 
-        return workout.Id; // Zwracamy ID, gdybyśmy chcieli od razu przejść do tego treningu
+        return workout.Id;
     }
 
     public async Task ClearAllDataAsync()
     {
         await InitAsync();
-
-        // Kasujemy zawartość wszystkich tabel
         await _connection!.DeleteAllAsync<WorkoutExercise>();
         await _connection!.DeleteAllAsync<Workout>();
         await _connection!.DeleteAllAsync<Exercise>();
@@ -161,7 +139,6 @@ public class DatabaseContext
     public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
     {
         await InitAsync();
-        // Pobieramy z tabeli WorkoutExercise tylko te wpisy, które należą do tego treningu
         return await _connection!.Table<WorkoutExercise>()
                                  .Where(we => we.WorkoutId == workoutId)
                                  .ToListAsync();

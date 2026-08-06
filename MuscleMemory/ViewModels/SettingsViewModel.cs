@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Data;
 
@@ -12,8 +12,6 @@ public partial class SettingsViewModel : ObservableObject
     {
         _dbContext = dbContext;
     }
-
-    // 1. KOMENDA: CZYSZCZENIE BAZY
     [RelayCommand]
     private async Task EraseDataAsync()
     {
@@ -29,14 +27,11 @@ public partial class SettingsViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Success", "All your data has been erased.", "OK");
         }
     }
-
-    // 2. KOMENDA: EKSPORT DANYCH
     [RelayCommand]
     private async Task ExportDataAsync()
     {
         try
         {
-            // Ścieżka do Twojego pliku z bazą SQLite
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
 
             if (!File.Exists(dbPath))
@@ -44,8 +39,6 @@ public partial class SettingsViewModel : ObservableObject
                 await Shell.Current.DisplayAlert("Oops!", "There is no data to export yet.", "OK");
                 return;
             }
-
-            // Otwiera systemowe okienko udostępniania (Share)
             await Share.Default.RequestAsync(new ShareFileRequest
             {
                 Title = "Export Muscle Memory Data",
@@ -54,7 +47,6 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            // W razie braku uprawnień lub błędu
             await Shell.Current.DisplayAlert("Error", $"Failed to export data: {ex.Message}", "OK");
         }
     }

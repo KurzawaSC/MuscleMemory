@@ -27,21 +27,18 @@
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
-                            <!-- Header -->
-                            <Grid ColumnDefinitions="*, Auto">
+                                                        <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource PrimaryRed}" FontSize="18" FontAttributes="Bold" />
                                 <Label Grid.Column="1" Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
                             </Grid>
                             <Label Text="{Binding TotalVolume, StringFormat='Total Volume: {0} kg'}" TextColor="{StaticResource SolidBlack}" FontSize="16" />
                             
-                            <!-- Exercises -->
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}">
+                                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:WorkoutHistoryExercise">
                                         <VerticalStackLayout Spacing="5" Margin="0,10,0,0">
                                             <Label Text="{Binding ExerciseName}" TextColor="{StaticResource SolidBlack}" FontSize="16" FontAttributes="Bold" />
-                                            <!-- Sets Table -->
-                                            <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
+                                                                                        <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
                                                 <Border.StrokeShape>
                                                     <RoundRectangle CornerRadius="4" />
                                                 </Border.StrokeShape>

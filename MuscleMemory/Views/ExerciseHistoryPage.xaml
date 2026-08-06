@@ -27,14 +27,12 @@
                             <RoundRectangle CornerRadius="8" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
-                            <!-- Header -->
-                            <Grid ColumnDefinitions="*, Auto">
+                                                        <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold" />
                                 <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
                             </Grid>
                             
-                            <!-- Sets Table -->
-                            <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
+                                                        <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="4" />
                                 </Border.StrokeShape>

@@ -8,9 +8,6 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        // Rejestracja tras dla podstron, do których przechodzimy programowo.
-        // Dzięki temu będziesz mógł używać czytelnych stringów do nawigacji.
-
         Routing.RegisterRoute(nameof(AddEditWorkoutPage), typeof(AddEditWorkoutPage));
         Routing.RegisterRoute(nameof(ActiveWorkoutPage), typeof(ActiveWorkoutPage));
         Routing.RegisterRoute(nameof(RestTimerPage), typeof(RestTimerPage));
