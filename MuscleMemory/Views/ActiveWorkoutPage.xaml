@@ -89,20 +89,26 @@
                         <VerticalStackLayout Grid.Column="0" Spacing="10">
                             <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
                             <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
+                                <Border.Shadow>
+                                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                </Border.Shadow>
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
+                                    <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
-                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="10">
                             <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center"/>
                             <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" HeightRequest="60">
+                                <Border.Shadow>
+                                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                </Border.Shadow>
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
+                                    <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
-                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>
                     </Grid>
@@ -131,7 +137,11 @@
                                 FontFamily="LilitaOne"
                                 FontSize="20"
                                 CornerRadius="30"
-                                HeightRequest="60"/>
+                                HeightRequest="60">
+                            <Button.Shadow>
+                                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                            </Button.Shadow>
+                        </Button>
 
                         <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasSavedSets}" Grid.Row="1">
                             <Button Grid.Column="0"
@@ -156,7 +166,11 @@
                                     FontSize="20"
                                     CornerRadius="30"
                                     HeightRequest="60"
-                                    Margin="10,0,0,0"/>
+                                    Margin="10,0,0,0">
+                                <Button.Shadow>
+                                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                </Button.Shadow>
+                            </Button>
                         </Grid>
                     </Grid>
                 </VerticalStackLayout>
@@ -174,8 +188,11 @@
                         Stroke="{StaticResource PrimaryRed}" StrokeThickness="2"
                         Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill"
                         IsVisible="{Binding IsResting}">
+                    <Border.Shadow>
+                        <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                    </Border.Shadow>
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
+                        <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="REST" FontFamily="LilitaOne" FontSize="20" TextColor="{StaticResource TranslucentBlack}" HorizontalOptions="Center" />
@@ -194,16 +211,24 @@
                             <SwipeView>
                                                                 <SwipeView.RightItems>
                                     <SwipeItems Mode="Execute">
-                                        <SwipeItem Text="Delete"
-                                                   BackgroundColor="#E74C3C"
-                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=DeleteSetCommand}"
-                                                   CommandParameter="{Binding .}" />
+                                        <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=DeleteSetCommand}"
+                                                       CommandParameter="{Binding .}">
+                                            <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="12,8" Stroke="{StaticResource PrimaryRed}" StrokeThickness="1.5">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="12" />
+                                                </Border.StrokeShape>
+                                                <Label Text="Delete" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" VerticalOptions="Center" HorizontalOptions="Center" />
+                                            </Border>
+                                        </SwipeItemView>
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
                                 <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                                    <Border.Shadow>
+                                        <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                    </Border.Shadow>
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="8" />
+                                        <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
                                     <Grid ColumnDefinitions="Auto, *, Auto">
                                         <Label Grid.Column="0"
@@ -253,7 +278,11 @@
                     TextColor="{StaticResource PrimaryRed}"
                     BorderColor="{StaticResource PrimaryRed}" BorderWidth="2"
                     FontFamily="LilitaOne" FontSize="18" CornerRadius="30" HeightRequest="60"
-                    Margin="0,10,0,0"/>
+                    Margin="0,10,0,0">
+            <Button.Shadow>
+                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+            </Button.Shadow>
+        </Button>
         </Grid>
 
                 <Grid BackgroundColor="{StaticResource SolidWhite}" IsVisible="{Binding IsWorkoutCompleted}">
@@ -273,8 +302,11 @@
                            HorizontalOptions="Center" />
 
                                         <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="20" BackgroundColor="#F9F9F9" Margin="0,10,0,0">
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                        </Border.Shadow>
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="12" />
+                            <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
                             <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" FontFamily="LilitaOne" TextColor="{StaticResource SolidBlack}" />
@@ -288,8 +320,11 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
                                 <Border Margin="0,0,0,10" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                                    <Border.Shadow>
+                                        <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                    </Border.Shadow>
                                     <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="8" />
+                                        <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Label Grid.Column="0" Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{StaticResource SolidBlack}" VerticalOptions="Center"/>
@@ -309,7 +344,11 @@
                             CornerRadius="30" 
                             HeightRequest="60" 
                             Margin="0,20,0,40" 
-                            WidthRequest="250" />
+                            WidthRequest="250">
+                        <Button.Shadow>
+                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                        </Button.Shadow>
+                    </Button>
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>

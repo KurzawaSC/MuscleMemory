@@ -16,6 +16,7 @@
             <Label Text="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!" 
                    TextColor="{StaticResource TranslucentBlack}" 
                    FontSize="18" 
+                   FontFamily="LilitaOne"
                    HorizontalTextAlignment="Center"/>
         </VerticalStackLayout>
         
@@ -23,24 +24,27 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ExerciseHistoryEntry">
                     <Border Margin="0,0,0,15" Padding="15" Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1">
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                        </Border.Shadow>
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
+                            <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontAttributes="Bold" />
+                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{StaticResource SolidBlack}" FontSize="18" FontFamily="LilitaOne" />
                                 <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{StaticResource TranslucentBlack}" FontSize="16" />
                             </Grid>
                             
                                                         <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="4" />
+                                    <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout>
                                     <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="#EEEEEE">
-                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="0" Text="Set" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                        <Label Grid.Column="2" Text="Reps" TextColor="{StaticResource SolidBlack}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
                                     </Grid>
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                         <BindableLayout.ItemTemplate>

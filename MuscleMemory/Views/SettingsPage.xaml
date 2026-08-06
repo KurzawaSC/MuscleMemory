@@ -17,9 +17,15 @@
                 TextColor="{StaticResource SolidBlack}"
                 BorderColor="{StaticResource TranslucentBlack}"
                 BorderWidth="1"
+                FontFamily="LilitaOne"
                 FontSize="18"
+                CornerRadius="16"
                 HeightRequest="60"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill">
+            <Button.Shadow>
+                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+            </Button.Shadow>
+        </Button>
 
         <Button Text="Erease data"
                 Command="{Binding EraseDataCommand}"
@@ -29,9 +35,15 @@
                 TextColor="{StaticResource PrimaryRed}"
                 BorderColor="{StaticResource TranslucentBlack}"
                 BorderWidth="1"
+                FontFamily="LilitaOne"
                 FontSize="18"
+                CornerRadius="16"
                 HeightRequest="60"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill">
+            <Button.Shadow>
+                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+            </Button.Shadow>
+        </Button>
 
     </VerticalStackLayout>
 </ContentPage>

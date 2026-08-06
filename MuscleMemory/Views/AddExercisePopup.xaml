@@ -10,21 +10,28 @@
             Padding="20,30,20,20"
             WidthRequest="300">
 
+        <Border.Shadow>
+            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+        </Border.Shadow>
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="12" />
+            <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <VerticalStackLayout Spacing="30">
 
             <Border Stroke="{StaticResource TranslucentBlack}" StrokeThickness="1" Padding="15,5">
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                </Border.Shadow>
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="8" />
+                    <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <Entry x:Name="ExerciseNameEntry"
                        Placeholder="Exercise name"
                        PlaceholderColor="{StaticResource TranslucentBlack}"
                        TextColor="{StaticResource SolidBlack}"
                        FontSize="18" 
+                       FontFamily="LilitaOne"
                        ClearButtonVisibility="WhileEditing"/>
             </Border>
 
@@ -34,7 +41,7 @@
                         Clicked="OnCancelClicked"
                         BackgroundColor="Transparent"
                         TextColor="{StaticResource SolidBlack}"
-                        FontAttributes="Bold"
+                        FontFamily="LilitaOne"
                         FontSize="18"/>
 
                 <Button Grid.Column="1" 
@@ -42,7 +49,7 @@
                         Clicked="OnAddClicked"
                         BackgroundColor="Transparent"
                         TextColor="{StaticResource PrimaryRed}"
-                        FontAttributes="Bold"
+                        FontFamily="LilitaOne"
                         FontSize="18"/>
             </Grid>
         </VerticalStackLayout>
