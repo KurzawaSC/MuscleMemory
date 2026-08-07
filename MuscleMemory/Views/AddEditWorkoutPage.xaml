@@ -26,86 +26,85 @@
                    ClearButtonVisibility="WhileEditing"/>
         </Border>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}">
-
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
-                    <Label Text="You have no exercises in&#10;that workout, let's add&#10;more!"
-                           HorizontalTextAlignment="Center"
-                           TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
-                           FontFamily="LilitaOne"
-                           FontSize="18" />
+        <Grid Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Exercises}">
+                <CollectionView.Header>
                     <Button Text="Add exercise +" 
                             Clicked="OnAddExerciseClicked"
                             BackgroundColor="Transparent" 
                             TextColor="{StaticResource PrimaryRed}"
                             FontFamily="LilitaOne"
-                            FontSize="18"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
+                            FontSize="18"
+                            HorizontalOptions="End"
+                            Margin="0,0,0,15"/>
+                </CollectionView.Header>
 
-            <CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WorkoutExercise">
+                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                            <Border.Shadow>
+                                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                            </Border.Shadow>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnEditExerciseTapped" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontSize="18" FontFamily="LilitaOne"/>
+                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                </VerticalStackLayout>
+
+                                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                    <Button Text="Edit" 
+                                            Clicked="OnEditButtonClicked"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" 
+                                            TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
+                                            BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
+                                            BorderWidth="1"
+                                            FontAttributes="Bold" 
+                                            FontFamily="LilitaOne"
+                                            CornerRadius="20"
+                                            HeightRequest="36"
+                                            Padding="10,0"/>
+                                    <Button Text="Delete" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" 
+                                            TextColor="{StaticResource PrimaryRed}" 
+                                            BorderColor="{StaticResource PrimaryRed}"
+                                            BorderWidth="1"
+                                            FontAttributes="Bold" 
+                                            FontFamily="LilitaOne"
+                                            CornerRadius="20"
+                                            HeightRequest="36"
+                                            Padding="10,0"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="{Binding IsEmpty}">
+                <Label Text="You have no exercises in&#10;that workout, let's add&#10;more!"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
+                       FontFamily="LilitaOne"
+                       FontSize="18" />
                 <Button Text="Add exercise +" 
                         Clicked="OnAddExerciseClicked"
                         BackgroundColor="Transparent" 
                         TextColor="{StaticResource PrimaryRed}"
                         FontFamily="LilitaOne"
-                        FontSize="18"
-                        HorizontalOptions="End"
-                        Margin="0,0,0,15"/>
-            </CollectionView.Header>
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:WorkoutExercise">
-                    <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
-                        <Border.Shadow>
-                            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
-                        </Border.Shadow>
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnEditExerciseTapped" CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="*, Auto">
-                            <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontSize="18" FontFamily="LilitaOne"/>
-                                <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                                <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                                <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                            </VerticalStackLayout>
-
-                            <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                <Button Text="Edit" 
-                                        Clicked="OnEditButtonClicked"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="Transparent" 
-                                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
-                                        BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
-                                        BorderWidth="1"
-                                        FontAttributes="Bold" 
-                                        FontFamily="LilitaOne"
-                                        CornerRadius="20"
-                                        HeightRequest="36"
-                                        Padding="10,0"/>
-                                <Button Text="Delete" 
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="Transparent" 
-                                        TextColor="{StaticResource PrimaryRed}" 
-                                        BorderColor="{StaticResource PrimaryRed}"
-                                        BorderWidth="1"
-                                        FontAttributes="Bold" 
-                                        FontFamily="LilitaOne"
-                                        CornerRadius="20"
-                                        HeightRequest="36"
-                                        Padding="10,0"/>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                        FontSize="18"/>
+            </VerticalStackLayout>
+        </Grid>
 
         <Button Grid.Row="2"
                 Text="Save"
