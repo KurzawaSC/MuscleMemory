@@ -362,3 +362,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /.agents/rules
+
+# Keystore and signing
+*.keystore
+*.jks
+*.p12
