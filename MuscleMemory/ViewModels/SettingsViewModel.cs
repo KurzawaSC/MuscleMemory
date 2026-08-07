@@ -31,7 +31,6 @@ public partial class SettingsViewModel : ObservableObject
                 _ => AppTheme.Unspecified
             };
             
-            // Force TabBar update workaround
             Application.Current.UserAppTheme = AppTheme.Unspecified;
             Application.Current.UserAppTheme = themeToSet;
 
