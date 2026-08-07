@@ -29,12 +29,12 @@ public partial class ConfigureExercisePopup : Popup
         BreakEntry.Text = exerciseToEdit.BreakTimeInSeconds.ToString();
         AddButton.Text = "Save";
     }
-    private async void OnCancelClicked(object sender, EventArgs e)
+    private async void OnCancelClicked(object? sender, EventArgs e)
     {
         ReturnedConfig = null;
         await CloseAsync();
     }
-    private async void OnAddClicked(object sender, EventArgs e)
+    private async void OnAddClicked(object? sender, EventArgs e)
     {
         int sets = int.TryParse(SetsEntry.Text, out int s) ? s : 0;
         int reps = int.TryParse(RepsEntry.Text, out int r) ? r : 0;
