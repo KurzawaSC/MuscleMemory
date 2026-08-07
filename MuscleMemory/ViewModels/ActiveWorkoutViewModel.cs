@@ -222,7 +222,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     {
         if (CurrentExercise == null)
         {
-            await Shell.Current.DisplayAlert("Error", "No exercise selected.", "OK");
+            await Shell.Current.DisplayAlertAsync("Error", "No exercise selected.", "OK");
             return;
         }
 
@@ -230,7 +230,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 System.Globalization.CultureInfo.InvariantCulture, out double weight)
             || !int.TryParse(RepsInput, out int reps))
         {
-            await Shell.Current.DisplayAlert("Invalid Input", "Please enter valid numbers for weight and reps.", "OK");
+            await Shell.Current.DisplayAlertAsync("Invalid Input", "Please enter valid numbers for weight and reps.", "OK");
             return;
         }
 
