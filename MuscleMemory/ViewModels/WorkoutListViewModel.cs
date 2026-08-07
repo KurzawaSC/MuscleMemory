@@ -57,7 +57,7 @@ public partial class WorkoutListViewModel : ObservableObject
     {
         if (workout == null) return;
 
-        bool answer = await Shell.Current.DisplayAlert("Delete Workout", $"Are you sure you want to delete '{workout.Name}'?", "Yes", "No");
+        bool answer = await Shell.Current.DisplayAlertAsync("Delete Workout", $"Are you sure you want to delete '{workout.Name}'?", "Yes", "No");
         if (answer)
         {
             await _dbContext.DeleteWorkoutAsync(workout.Id);
