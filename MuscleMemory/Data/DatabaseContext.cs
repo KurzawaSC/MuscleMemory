@@ -16,11 +16,11 @@ public class DatabaseContext
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
         _connection = new SQLiteAsyncConnection(dbPath);
 
-        await _connection.CreateTableAsync<Exercise>();
-        await _connection.CreateTableAsync<Workout>();
-        await _connection.CreateTableAsync<WorkoutExercise>();
+        await _connection!.CreateTableAsync<Exercise>();
+        await _connection!.CreateTableAsync<Workout>();
+        await _connection!.CreateTableAsync<WorkoutExercise>();
         await _connection!.CreateTableAsync<WorkoutSet>();
-        await _connection.CreateTableAsync<WorkoutSession>();
+        await _connection!.CreateTableAsync<WorkoutSession>();
         try
         {
             await _connection!.ExecuteAsync("ALTER TABLE WorkoutSet ADD COLUMN WorkoutSessionId INTEGER NOT NULL DEFAULT 0");
@@ -32,12 +32,12 @@ public class DatabaseContext
     public async Task<List<Exercise>> GetExercisesAsync()
     {
         await InitAsync();
-        return await _connection.Table<Exercise>().ToListAsync();
+        return await _connection!.Table<Exercise>().ToListAsync();
     }
     public async Task<int> AddExerciseAsync(Exercise exercise)
     {
         await InitAsync();
-        return await _connection.InsertAsync(exercise);
+        return await _connection!.InsertAsync(exercise);
     }
     public void EraseDatabase()
     {
@@ -52,16 +52,16 @@ public class DatabaseContext
     public async Task<List<Workout>> GetWorkoutsAsync()
     {
         await InitAsync();
-        return await _connection.Table<Workout>().ToListAsync();
+        return await _connection!.Table<Workout>().ToListAsync();
     }
     public async Task<int> SaveFullWorkoutAsync(Workout workout, List<WorkoutExercise> exercises)
     {
         await InitAsync();
-        await _connection.InsertAsync(workout);
+        await _connection!.InsertAsync(workout);
         foreach (var exerciseDetails in exercises)
         {
             exerciseDetails.WorkoutId = workout.Id;
-            await _connection.InsertAsync(exerciseDetails);
+            await _connection!.InsertAsync(exerciseDetails);
         }
 
         return workout.Id;
@@ -96,7 +96,7 @@ public class DatabaseContext
         if (session != null)
         {
             session.EndTime = DateTime.UtcNow;
-            await _connection.UpdateAsync(session);
+            await _connection!.UpdateAsync(session);
         }
     }
 
@@ -176,7 +176,7 @@ public class DatabaseContext
         {
             exerciseDetails.WorkoutId = workout.Id;
             exerciseDetails.Id = 0; 
-            await _connection.InsertAsync(exerciseDetails);
+            await _connection!.InsertAsync(exerciseDetails);
         }
     }
 
@@ -189,11 +189,11 @@ public class DatabaseContext
                                                  .ToListAsync();
         
         var history = new List<ExerciseHistoryEntry>();
-        var workouts = await _connection.Table<Workout>().ToListAsync(); 
+        var workouts = await _connection!.Table<Workout>().ToListAsync(); 
         
         foreach (var we in workoutExercises)
         {
-            var sets = await _connection.Table<WorkoutSet>()
+            var sets = await _connection!.Table<WorkoutSet>()
                                         .Where(s => s.WorkoutExerciseId == we.Id)
                                         .ToListAsync();
                                         
@@ -202,7 +202,7 @@ public class DatabaseContext
             foreach (var group in groupedBySession)
             {
                 int sessionId = group.Key;
-                var session = await _connection.Table<WorkoutSession>().Where(s => s.Id == sessionId).FirstOrDefaultAsync();
+                var session = await _connection!.Table<WorkoutSession>().Where(s => s.Id == sessionId).FirstOrDefaultAsync();
                 if (session == null) continue;
                 
                 var workout = workouts.FirstOrDefault(w => w.Id == session.WorkoutId);
@@ -228,7 +228,7 @@ public class DatabaseContext
                                          .OrderByDescending(s => s.StartTime)
                                          .ToListAsync();
                                          
-        var workoutExercises = await _connection.Table<WorkoutExercise>()
+        var workoutExercises = await _connection!.Table<WorkoutExercise>()
                                                 .Where(we => we.WorkoutId == workoutId)
                                                 .ToListAsync();
                                                 
@@ -237,7 +237,7 @@ public class DatabaseContext
         foreach (var session in sessions)
         {
             int sessionId = session.Id;
-            var sets = await _connection.Table<WorkoutSet>()
+            var sets = await _connection!.Table<WorkoutSet>()
                                         .Where(s => s.WorkoutSessionId == sessionId)
                                         .ToListAsync();
                                         

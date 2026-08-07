@@ -20,7 +20,7 @@ public partial class ExerciseListPage : ContentPage
         base.OnAppearing();
         await _viewModel.LoadExercisesAsync();
     }
-    private async void OnAddButtonClicked(object sender, EventArgs e)
+    private async void OnAddButtonClicked(object? sender, EventArgs e)
     {
         var popup = new AddExercisePopup();
 

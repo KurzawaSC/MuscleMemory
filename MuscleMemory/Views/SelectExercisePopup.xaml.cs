@@ -11,7 +11,7 @@ public partial class SelectExercisePopup : Popup
         InitializeComponent();
         ExercisesListView.ItemsSource = availableExercises;
     }
-    private async void OnExerciseSelected(object sender, SelectionChangedEventArgs e)
+    private async void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection.FirstOrDefault() is Exercise chosen)
         {
