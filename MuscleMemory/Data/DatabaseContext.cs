@@ -11,6 +11,8 @@ public class DatabaseContext
         if (_connection != null)
             return;
 
+        SQLitePCL.Batteries_V2.Init();
+
         var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
         _connection = new SQLiteAsyncConnection(dbPath);
 
