@@ -70,7 +70,8 @@ public partial class AddEditWorkoutPage : ContentPage
                 selectedExercise,
                 configResult.Sets,
                 configResult.Reps,
-                configResult.BreakTime);
+                configResult.BreakTime,
+                configResult.TargetRPE);
         }
     }
 
@@ -102,7 +103,8 @@ public partial class AddEditWorkoutPage : ContentPage
                 exerciseToEdit,
                 configResult.Sets,
                 configResult.Reps,
-                configResult.BreakTime);
+                configResult.BreakTime,
+                configResult.TargetRPE);
         }
     }
 }
