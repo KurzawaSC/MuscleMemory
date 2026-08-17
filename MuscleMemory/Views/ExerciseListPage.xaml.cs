@@ -24,13 +24,13 @@ public partial class ExerciseListPage : ContentPage
     {
         var popup = new AddExercisePopup();
 
-        var result = await this.ShowPopupAsync(popup);
+        await this.ShowPopupAsync(popup);
 
-        string? newExerciseName = popup.ReturnedExerciseName;
+        var newExercise = popup.ReturnedExercise;
 
-        if (!string.IsNullOrWhiteSpace(newExerciseName))
+        if (newExercise != null)
         {
-            await _viewModel.SaveNewExerciseAsync(newExerciseName);
+            await _viewModel.SaveNewExerciseAsync(newExercise);
         }
     }
 }

@@ -3,9 +3,11 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:models="clr-namespace:MuscleMemory.Models"
-               x:Class="MuscleMemory.Views.SelectExercisePopup">
+               xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+               x:Class="MuscleMemory.Views.SelectExercisePopup"
+               x:DataType="viewmodels:SelectExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}" Padding="15" WidthRequest="320" HeightRequest="450">
+    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}" Padding="15" WidthRequest="320" HeightRequest="500">
         <Border.Shadow>
             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
         </Border.Shadow>
@@ -13,20 +15,51 @@
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
-        <Grid RowDefinitions="Auto, *">
+        <Grid RowDefinitions="Auto, Auto, *">
             <Label Grid.Row="0" Text="Select Exercise" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" HorizontalOptions="Center" Margin="0,0,0,15"/>
 
-            <CollectionView Grid.Row="1" x:Name="ExercisesListView" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
+            <Border Grid.Row="1" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent">
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                </Border.Shadow>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Picker Title="Filter by Muscle Group"
+                        ItemsSource="{Binding MuscleGroupFilters}"
+                        SelectedItem="{Binding SelectedMuscleGroupFilter}"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
+                        TitleColor="{StaticResource TranslucentBlack}"
+                        FontFamily="LilitaOne" />
+            </Border>
+
+            <CollectionView Grid.Row="2" x:Name="ExercisesListView" ItemsSource="{Binding FilteredExercises}" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
                             <Border.Shadow>
                                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                             </Border.Shadow>
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
-                            <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="18"/>
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="18"/>
+                                <HorizontalStackLayout Spacing="8">
+                                    <Border Padding="8,4" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" StrokeThickness="1">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding TargetMuscleGroup}" TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" FontSize="12" FontFamily="LilitaOne" />
+                                    </Border>
+                                    <Border Padding="8,4" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" StrokeThickness="1">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding Equipment}" TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" FontSize="12" FontFamily="LilitaOne" />
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
