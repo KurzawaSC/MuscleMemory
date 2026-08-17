@@ -143,6 +143,25 @@ public class DatabaseContext
         await InitAsync();
         await _connection!.DeleteAsync<WorkoutSet>(setId);
     }
+    
+    public async Task DeleteLoggedExerciseAsync(int workoutExerciseId, int workoutSessionId)
+    {
+        await InitAsync();
+        var setsToDelete = await _connection!.Table<WorkoutSet>()
+                                             .Where(s => s.WorkoutExerciseId == workoutExerciseId && s.WorkoutSessionId == workoutSessionId)
+                                             .ToListAsync();
+        foreach(var set in setsToDelete)
+        {
+            await _connection!.DeleteAsync<WorkoutSet>(set.Id);
+        }
+    }
+    
+    public async Task<int> AddLoggedExerciseAsync(WorkoutExercise exercise)
+    {
+        await InitAsync();
+        await _connection!.InsertAsync(exercise);
+        return exercise.Id;
+    }
 
     public async Task<List<WorkoutExercise>> GetExercisesForWorkoutAsync(int workoutId)
     {
@@ -251,6 +270,7 @@ public class DatabaseContext
             
             var historySession = new WorkoutHistorySession
             {
+                SessionId = sessionId,
                 StartTime = session.StartTime,
                 EndTime = session.EndTime,
                 TotalVolume = sets.Sum(s => s.Weight * s.Reps)
@@ -262,8 +282,10 @@ public class DatabaseContext
                 var we = workoutExercises.FirstOrDefault(w => w.Id == group.Key);
                 historySession.Exercises.Add(new WorkoutHistoryExercise
                 {
+                    WorkoutExerciseId = group.Key,
+                    WorkoutSessionId = sessionId,
                     ExerciseName = we?.ExerciseName ?? "Unknown",
-                    Sets = group.OrderBy(s => s.SetNumber).ToList()
+                    Sets = new System.Collections.ObjectModel.ObservableCollection<WorkoutSet>(group.OrderBy(s => s.SetNumber))
                 });
             }
             
