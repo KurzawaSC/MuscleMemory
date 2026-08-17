@@ -76,11 +76,21 @@
             </Grid>
 
                         <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
-                <Label Text="{Binding SetProgressText}"
-                       FontSize="16"
-                       FontFamily="LilitaOne"
-                       TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
-                       HorizontalOptions="Center"/>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" IsVisible="{Binding IsSetCounterVisible}">
+                    <Label Text="{Binding SetProgressText}"
+                           FontSize="16"
+                           FontFamily="LilitaOne"
+                           TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
+                           VerticalOptions="Center"/>
+                    <Border Padding="8,2" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" StrokeThickness="1" VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:WorkoutExercise">
+                            <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}', FallbackValue=0, TargetNullValue=0}" TextColor="{AppThemeBinding Light=#666666, Dark=#AAAAAA}" FontSize="12" FontFamily="LilitaOne" />
+                        </ContentView>
+                    </Border>
+                </HorizontalStackLayout>
             </VerticalStackLayout>
 
                         <Grid Grid.Row="3" Margin="0,0,0,20">
@@ -224,6 +234,9 @@
                                 </SwipeView.RightItems>
 
                                 <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=EditLoggedSetCommand}" CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
                                     <Border.Shadow>
                                         <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                                     </Border.Shadow>
