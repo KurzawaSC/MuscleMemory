@@ -4,6 +4,8 @@ using MuscleMemory.Data;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Plugin.Maui.Audio;
 
 namespace MuscleMemory.ViewModels;
 
@@ -92,9 +94,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private IDispatcherTimer _timer;
     private Stopwatch _stopwatch = new Stopwatch();
 
-    public ActiveWorkoutViewModel(DatabaseContext dbContext)
+    private readonly IAudioManager _audioManager;
+    private IAudioPlayer? _audioPlayer;
+
+    public ActiveWorkoutViewModel(DatabaseContext dbContext, IAudioManager audioManager)
     {
         _dbContext = dbContext;
+        _audioManager = audioManager;
 
         _timer = Application.Current!.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
@@ -113,9 +119,25 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 else
                 {
                     IsResting = false;
+                    _ = PlayBreakEndSoundAsync();
                 }
             }
         };
+    }
+
+    private async Task PlayBreakEndSoundAsync()
+    {
+        try
+        {
+            var audioStream = await FileSystem.OpenAppPackageFileAsync("BreakEnd.mp3");
+            _audioPlayer?.Dispose();
+            _audioPlayer = _audioManager.CreatePlayer(audioStream);
+            _audioPlayer.Play();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to play break sound: {ex.Message}");
+        }
     }
 
     async partial void OnCurrentWorkoutChanged(Workout value)
@@ -308,6 +330,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     {
         IsResting = false;
         RestSecondsRemaining = 0;
+        
+        _audioPlayer?.Dispose();
+        _audioPlayer = null;
     }
 
     [RelayCommand]
@@ -383,6 +408,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [RelayCommand]
     private async Task FinishWorkoutAsync()
     {
+        _audioPlayer?.Dispose();
+        _audioPlayer = null;
+        
         _stopwatch.Stop();
         _timer.Stop();
         
@@ -414,6 +442,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [RelayCommand]
     private async Task ExitWorkoutAsync()
     {
+        _audioPlayer?.Dispose();
+        _audioPlayer = null;
+        
         await Shell.Current.GoToAsync("..");
     }
 }

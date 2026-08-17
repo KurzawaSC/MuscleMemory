@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
+using Plugin.Maui.Audio;
 using MuscleMemory.Views;
 using MuscleMemory.ViewModels;
 
@@ -23,6 +24,7 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<Data.DatabaseContext>();
         builder.Services.AddSingleton<ExerciseListPage>();
         builder.Services.AddSingleton<WorkoutListPage>();
