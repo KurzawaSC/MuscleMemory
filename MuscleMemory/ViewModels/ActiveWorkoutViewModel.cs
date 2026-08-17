@@ -33,7 +33,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = new();
 
     [ObservableProperty]
-    public partial WorkoutExercise CurrentExercise { get; set; } = null!;
+    public partial WorkoutExercise CurrentExercise { get; set; } = new();
 
     [ObservableProperty]
     public partial string CurrentExerciseName { get; set; } = "Loading exercises...";
@@ -58,7 +58,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     public partial bool HasNextExercise { get; set; } = false;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsSetCounterVisible))]
     public partial bool IsExerciseComplete { get; set; } = false;
+
+    public bool IsSetCounterVisible => !IsExerciseComplete;
 
     [ObservableProperty]
     public partial bool IsResting { get; set; } = false;
@@ -321,6 +324,32 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         }
 
         UpdateSetProgress();
+    }
+
+    [RelayCommand]
+    private async Task EditLoggedSetAsync(WorkoutSet set)
+    {
+        if (set == null) return;
+        
+        string weightStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter weight (kg):", initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
+        if (weightStr == null) return;
+        
+        string repsStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter reps:", initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
+        if (repsStr == null) return;
+
+        if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
+        {
+            set.Weight = newWeight;
+            set.Reps = newReps;
+            
+            await _dbContext.UpdateSetAsync(set);
+            
+            int index = CurrentSets.IndexOf(set);
+            if (index >= 0)
+            {
+                CurrentSets[index] = set;
+            }
+        }
     }
 
     [RelayCommand]

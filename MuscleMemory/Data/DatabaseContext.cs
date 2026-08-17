@@ -106,6 +106,12 @@ public class DatabaseContext
         await _connection!.InsertAsync(set);
     }
 
+    public async Task UpdateSetAsync(WorkoutSet set)
+    {
+        await InitAsync();
+        await _connection!.UpdateAsync(set);
+    }
+
     public async Task<List<WorkoutSet>> GetSetsForWorkoutExerciseAsync(int workoutExerciseId, int sessionId)
     {
         await InitAsync();
