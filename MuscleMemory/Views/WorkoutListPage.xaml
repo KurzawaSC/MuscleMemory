@@ -28,11 +28,11 @@
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}">
-                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{StaticResource PrimaryRed}" StrokeThickness="1.5">
+                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" StrokeThickness="1.5">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="12" />
                                         </Border.StrokeShape>
-                                        <Label Text="Delete" TextColor="{StaticResource PrimaryRed}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
+                                        <Label Text="Delete" TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
                                     </Border>
                                 </SwipeItemView>
                             </SwipeItems>
@@ -50,7 +50,7 @@
                             </SwipeItems>
                         </SwipeView.LeftItems>
 
-                        <Border Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
+                        <Border Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
                             <Border.Shadow>
                                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                             </Border.Shadow>
@@ -82,7 +82,7 @@
                                     <Button Text="Start" 
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
                                             CommandParameter="{Binding .}"
-                                            BackgroundColor="{StaticResource PrimaryRed}" 
+                                            BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" 
                                             TextColor="{StaticResource SolidWhite}" 
                                             BorderWidth="0"
                                             FontAttributes="Bold" 
@@ -101,7 +101,7 @@
         <Border Margin="20" 
                 HeightRequest="60" 
                 WidthRequest="60"
-                BackgroundColor="{StaticResource PrimaryRed}"
+                BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
                 StrokeThickness="0"
                 HorizontalOptions="End" 
                 VerticalOptions="End">

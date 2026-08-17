@@ -23,7 +23,7 @@
         <CollectionView ItemsSource="{Binding History}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ExerciseHistoryEntry">
-                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
                         <Border.Shadow>
                             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
                         </Border.Shadow>
@@ -36,12 +36,12 @@
                                 <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="16" />
                             </Grid>
                             
-                                                        <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="#FAFAFA">
+                                                        <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#333333}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FAFAFA, Dark=#1E1E22}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout>
-                                    <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="#EEEEEE">
+                                    <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="{AppThemeBinding Light=#EEEEEE, Dark=#2A2A30}">
                                         <Label Grid.Column="0" Text="Set" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
                                         <Label Grid.Column="1" Text="Weight (kg)" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
                                         <Label Grid.Column="2" Text="Reps" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
