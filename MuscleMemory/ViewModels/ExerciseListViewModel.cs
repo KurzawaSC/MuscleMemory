@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
+using CommunityToolkit.Maui.Views;
+using CommunityToolkit.Maui.Extensions;
 
 namespace MuscleMemory.ViewModels;
 
@@ -35,9 +37,8 @@ public partial class ExerciseListViewModel : ObservableObject
         }
         IsEmpty = !Exercises.Any();
     }
-    public async Task SaveNewExerciseAsync(string exerciseName)
+    public async Task SaveNewExerciseAsync(Exercise newDoc)
     {
-        var newDoc = new Exercise { Name = exerciseName };
         await _dbContext.AddExerciseAsync(newDoc);
         await LoadExercisesAsync();
     }
@@ -60,12 +61,17 @@ public partial class ExerciseListViewModel : ObservableObject
     {
         if (exercise == null) return;
         
-        string newName = await Shell.Current.DisplayPromptAsync("Edit Exercise", "Enter new name for the exercise:", initialValue: exercise.Name);
-        if (!string.IsNullOrWhiteSpace(newName) && newName != exercise.Name)
+        var popup = new AddExercisePopup(exercise);
+        var page = Shell.Current.CurrentPage;
+        if (page != null)
         {
-            exercise.Name = newName.Trim();
-            await _dbContext.UpdateExerciseAsync(exercise);
-            await LoadExercisesAsync();
+            await page.ShowPopupAsync(popup);
+            var updatedExercise = popup.ReturnedExercise;
+            if (updatedExercise != null)
+            {
+                await _dbContext.UpdateExerciseAsync(updatedExercise);
+                await LoadExercisesAsync();
+            }
         }
     }
 

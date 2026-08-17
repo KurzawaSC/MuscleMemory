@@ -27,12 +27,43 @@
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <Entry x:Name="ExerciseNameEntry"
+                       Text="{Binding Name}"
                        Placeholder="Exercise name"
                        PlaceholderColor="{StaticResource TranslucentBlack}"
                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
                        FontSize="18" 
                        FontFamily="LilitaOne"
                        ClearButtonVisibility="WhileEditing"/>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="15,5">
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                </Border.Shadow>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Picker Title="Target Muscle Group"
+                        ItemsSource="{Binding MuscleGroups}"
+                        SelectedItem="{Binding SelectedMuscleGroup}"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
+                        TitleColor="{StaticResource TranslucentBlack}"
+                        FontFamily="LilitaOne" />
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="15,5">
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                </Border.Shadow>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Picker Title="Equipment"
+                        ItemsSource="{Binding EquipmentTypes}"
+                        SelectedItem="{Binding SelectedEquipment}"
+                        TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
+                        TitleColor="{StaticResource TranslucentBlack}"
+                        FontFamily="LilitaOne" />
             </Border>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
