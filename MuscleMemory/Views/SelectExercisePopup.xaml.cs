@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Views;
 using MuscleMemory.Models;
+using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
 
@@ -9,7 +10,7 @@ public partial class SelectExercisePopup : Popup
     public SelectExercisePopup(List<Exercise> availableExercises)
     {
         InitializeComponent();
-        ExercisesListView.ItemsSource = availableExercises;
+        BindingContext = new SelectExerciseViewModel(availableExercises);
     }
     private async void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
     {

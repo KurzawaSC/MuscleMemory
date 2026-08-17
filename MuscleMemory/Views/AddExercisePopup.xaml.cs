@@ -1,28 +1,35 @@
 using CommunityToolkit.Maui.Views;
+using MuscleMemory.Models;
+using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
 public partial class AddExercisePopup : Popup
 {
-    public string? ReturnedExerciseName { get; private set; }
+    public Exercise? ReturnedExercise { get; private set; }
+    private readonly AddEditExerciseViewModel _viewModel;
 
-    public AddExercisePopup()
+    public AddExercisePopup(Exercise? exerciseToEdit = null)
     {
         InitializeComponent();
+        _viewModel = new AddEditExerciseViewModel();
+        if (exerciseToEdit != null)
+        {
+            _viewModel.LoadExercise(exerciseToEdit);
+        }
+        BindingContext = _viewModel;
     }
 
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
-        ReturnedExerciseName = null;
+        ReturnedExercise = null;
         await CloseAsync();
     }
 
     private async void OnAddClicked(object? sender, EventArgs e)
     {
-        string? exerciseName = ExerciseNameEntry?.Text;
-
-        if (!string.IsNullOrWhiteSpace(exerciseName))
+        if (!string.IsNullOrWhiteSpace(_viewModel.Name))
         {
-            ReturnedExerciseName = exerciseName.Trim();
+            ReturnedExercise = _viewModel.GetExercise();
             await CloseAsync();
         }
     }
