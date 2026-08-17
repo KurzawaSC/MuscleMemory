@@ -22,41 +22,37 @@
             </Grid>
         </Border>
 
-        <Button Text="Export data"
-                Command="{Binding ExportDataCommand}"
-                ImageSource="export_data_icon.png"
-                ContentLayout="Left, 15"
-                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}"
-                TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
-                BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
-                BorderWidth="1"
-                FontFamily="LilitaOne"
-                FontSize="18"
-                CornerRadius="16"
-                HeightRequest="60"
-                HorizontalOptions="Fill">
-            <Button.Shadow>
+        <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
+            <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Button.Shadow>
-        </Button>
+            </Border.Shadow>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16" />
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ExportDataCommand}" />
+            </Border.GestureRecognizers>
+            <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+                <Image Grid.Column="0" Source="export_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
+                <Label Grid.Column="1" Text="Export data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center" />
+            </Grid>
+        </Border>
 
-        <Button Text="Erease data"
-                Command="{Binding EraseDataCommand}"
-                ImageSource="erease_data_icon.png"
-                ContentLayout="Left, 15"
-                BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}"
-                TextColor="{StaticResource PrimaryRed}"
-                BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
-                BorderWidth="1"
-                FontFamily="LilitaOne"
-                FontSize="18"
-                CornerRadius="16"
-                HeightRequest="60"
-                HorizontalOptions="Fill">
-            <Button.Shadow>
+        <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
+            <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Button.Shadow>
-        </Button>
+            </Border.Shadow>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16" />
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding EraseDataCommand}" />
+            </Border.GestureRecognizers>
+            <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+                <Image Grid.Column="0" Source="erease_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
+                <Label Grid.Column="1" Text="Erase data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" VerticalOptions="Center" />
+            </Grid>
+        </Border>
 
     </VerticalStackLayout>
 </ContentPage>

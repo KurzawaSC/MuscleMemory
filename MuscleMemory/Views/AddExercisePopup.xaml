@@ -4,7 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                x:Class="MuscleMemory.Views.AddExercisePopup">
 
-    <Border Stroke="{StaticResource PrimaryRed}" 
+    <Border Stroke="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" 
             StrokeThickness="2" 
             BackgroundColor="{StaticResource SolidWhite}"
             Padding="20,30,20,20"
@@ -48,7 +48,7 @@
                         Text="Add"
                         Clicked="OnAddClicked"
                         BackgroundColor="Transparent"
-                        TextColor="{StaticResource PrimaryRed}"
+                        TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
                         FontFamily="LilitaOne"
                         FontSize="18"/>
             </Grid>

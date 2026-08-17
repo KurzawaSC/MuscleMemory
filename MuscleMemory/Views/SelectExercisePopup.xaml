@@ -5,7 +5,7 @@
                xmlns:models="clr-namespace:MuscleMemory.Models"
                x:Class="MuscleMemory.Views.SelectExercisePopup">
 
-    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}" Padding="15" WidthRequest="320" HeightRequest="450">
+    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}" Padding="15" WidthRequest="320" HeightRequest="450">
         <Border.Shadow>
             <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
         </Border.Shadow>
