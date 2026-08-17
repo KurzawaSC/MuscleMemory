@@ -48,7 +48,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             HasUnsavedChanges = false;
         }
     }
-    public void AddExerciseToWorkout(Exercise selectedExercise, int sets, int reps, int breakTime)
+    public void AddExerciseToWorkout(Exercise selectedExercise, int sets, int reps, int breakTime, int targetRPE)
     {
         var newWorkoutExercise = new WorkoutExercise
         {
@@ -56,7 +56,8 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             ExerciseName = selectedExercise.Name,
             Sets = sets,
             Reps = reps,
-            BreakTimeInSeconds = breakTime
+            BreakTimeInSeconds = breakTime,
+            TargetRPE = targetRPE
         };
 
         Exercises.Add(newWorkoutExercise);
@@ -64,7 +65,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         HasUnsavedChanges = true;
     }
 
-    public void UpdateExerciseInWorkout(WorkoutExercise exercise, int sets, int reps, int breakTime)
+    public void UpdateExerciseInWorkout(WorkoutExercise exercise, int sets, int reps, int breakTime, int targetRPE)
     {
         var index = Exercises.IndexOf(exercise);
         if (index >= 0)
@@ -72,6 +73,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             exercise.Sets = sets;
             exercise.Reps = reps;
             exercise.BreakTimeInSeconds = breakTime;
+            exercise.TargetRPE = targetRPE;
             Exercises[index] = exercise;
             HasUnsavedChanges = true;
         }

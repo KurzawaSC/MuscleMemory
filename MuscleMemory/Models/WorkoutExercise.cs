@@ -18,4 +18,6 @@ public class WorkoutExercise
     public int BreakTimeInSeconds { get; set; }
 
     public string ExerciseName { get; set; } = string.Empty;
+
+    public int TargetRPE { get; set; } = 8;
 }

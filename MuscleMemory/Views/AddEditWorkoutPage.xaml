@@ -57,6 +57,7 @@
                                     <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
                                     <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
                                     <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
                                 </VerticalStackLayout>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
