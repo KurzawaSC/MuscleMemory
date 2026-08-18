@@ -1,4 +1,5 @@
 using SQLite;
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data;
@@ -13,7 +14,7 @@ public class DatabaseContext
 
         SQLitePCL.Batteries_V2.Init();
 
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
+        var dbPath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
         _connection = new SQLiteAsyncConnection(dbPath);
 
         await _connection!.CreateTableAsync<Exercise>();
