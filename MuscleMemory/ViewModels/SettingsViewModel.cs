@@ -46,15 +46,15 @@ public partial class SettingsViewModel : ObservableObject
     private async Task EraseDataAsync()
     {
         bool isConfirmed = await Shell.Current.DisplayAlertAsync(
-            "Warning!",
-            "Are you sure you want to delete ALL your exercises and workouts? This action cannot be undone.",
-            "Yes, erase it",
-            "Cancel");
+            UiText.TitleWarning,
+            UiText.BodyEraseAllDataConfirmation,
+            UiText.ButtonYesEraseIt,
+            UiText.ButtonCancel);
 
         if (isConfirmed)
         {
             await _dbContext.ClearAllDataAsync();
-            await Shell.Current.DisplayAlertAsync("Success", "All your data has been erased.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
         }
     }
     [RelayCommand]
@@ -66,7 +66,7 @@ public partial class SettingsViewModel : ObservableObject
 
             if (!File.Exists(dbPath))
             {
-                await Shell.Current.DisplayAlertAsync("Oops!", "There is no data to export yet.", "OK");
+                await Shell.Current.DisplayAlertAsync(UiText.TitleOops, UiText.BodyNoDataToExport, UiText.ButtonOk);
                 return;
             }
             await Share.Default.RequestAsync(new ShareFileRequest
@@ -77,7 +77,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Error", $"Failed to export data: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message), UiText.ButtonOk);
         }
     }
 }

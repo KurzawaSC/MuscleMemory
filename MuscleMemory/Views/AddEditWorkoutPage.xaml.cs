@@ -36,7 +36,7 @@ public partial class AddEditWorkoutPage : ContentPage
             {
                 e.Cancel();
 
-                bool discard = await DisplayAlertAsync("Unsaved Changes", "You have unsaved changes. Are you sure you want to discard them and exit?", "Discard", "Cancel");
+                bool discard = await DisplayAlertAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
                 if (discard)
                 {
                     _viewModel.HasUnsavedChanges = false;
@@ -51,7 +51,7 @@ public partial class AddEditWorkoutPage : ContentPage
 
         if (!allExercises.Any())
         {
-            await DisplayAlertAsync("Hold on!", "You don't have any exercises in the database. Go to the 'List' tab and add some first!", "OK");
+            await DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyNoExercisesForWorkout, UiText.ButtonOk);
             return;
         }
         var selectPopup = new SelectExercisePopup(allExercises);
