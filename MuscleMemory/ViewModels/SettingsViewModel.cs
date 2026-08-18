@@ -17,12 +17,12 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
-        SelectedTheme = Preferences.Default.Get("AppTheme", "System");
+        SelectedTheme = Preferences.Default.Get(PreferenceKeys.AppTheme, "System");
     }
 
     partial void OnSelectedThemeChanged(string value)
     {
-        Preferences.Default.Set("AppTheme", value);
+        Preferences.Default.Set(PreferenceKeys.AppTheme, value);
         if (Application.Current != null)
         {
             var themeToSet = value switch
