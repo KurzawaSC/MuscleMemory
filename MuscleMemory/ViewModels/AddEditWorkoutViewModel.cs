@@ -9,11 +9,11 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutToEdit), QueryKeys.WorkoutToEdit)]
-public partial class AddEditWorkoutViewModel : ObservableObject
+public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributable
 {
     private readonly DatabaseContext _dbContext;
     private readonly IPopupService _popupService;
+    private Workout? _workoutToEdit;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -35,23 +35,28 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         _popupService = popupService;
     }
 
-    [ObservableProperty]
-    public partial Workout WorkoutToEdit { get; set; } = null!;
-
-    async partial void OnWorkoutToEditChanged(Workout value)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (value != null)
+        if (query.TryGetValue(QueryKeys.WorkoutToEdit, out var editable) && editable is Workout workout)
         {
-            WorkoutName = value.Name;
-            var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(value.Id);
-            Exercises.Clear();
-            foreach (var ex in exercisesFromDb)
-            {
-                Exercises.Add(ex);
-            }
-            IsEmpty = !Exercises.Any();
-            HasUnsavedChanges = false;
+            _workoutToEdit = workout;
+            _ = LoadWorkoutAsync(workout);
         }
+    }
+
+    private async Task LoadWorkoutAsync(Workout workout)
+    {
+        WorkoutName = workout.Name;
+
+        var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(workout.Id);
+        Exercises.Clear();
+        foreach (var ex in exercisesFromDb)
+        {
+            Exercises.Add(ex);
+        }
+
+        IsEmpty = !Exercises.Any();
+        HasUnsavedChanges = false;
     }
 
     [RelayCommand]
@@ -187,10 +192,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             return;
         }
 
-        if (WorkoutToEdit != null)
+        if (_workoutToEdit != null)
         {
-            WorkoutToEdit.Name = WorkoutName.Trim();
-            await _dbContext.UpdateFullWorkoutAsync(WorkoutToEdit, Exercises.ToList());
+            _workoutToEdit.Name = WorkoutName.Trim();
+            await _dbContext.UpdateFullWorkoutAsync(_workoutToEdit, Exercises.ToList());
         }
         else
         {
