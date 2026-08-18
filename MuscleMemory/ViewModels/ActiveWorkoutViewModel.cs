@@ -22,6 +22,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private readonly DatabaseContext _dbContext;
     private int _sessionId;
     private int _currentExerciseIndex;
+    private int _totalSetsForExercise;
     private DateTime _workoutStartTime;
     private DateTime _breakEndTime;
 
@@ -53,16 +54,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     public partial WorkoutExercise CurrentExercise { get; set; } = new();
 
     [ObservableProperty]
-    public partial string CurrentExerciseName { get; set; } = "Loading exercises...";
-    [ObservableProperty]
     public partial string ExerciseProgressText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string SetProgressText { get; set; } = string.Empty;
-    [ObservableProperty]
-    public partial int CurrentSetNumber { get; set; } = 1;
-    [ObservableProperty]
-    public partial int TotalSetsForExercise { get; set; } = 0;
     [ObservableProperty]
     public partial bool HasSavedSets { get; set; } = false;
     [ObservableProperty]
@@ -93,9 +88,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial int RestSecondsRemaining { get; set; } = 0;
 
     [ObservableProperty]
     public partial string RestTimerText { get; set; } = "00:00";
@@ -131,7 +123,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 var remaining = _breakEndTime - DateTime.Now;
                 if (remaining.TotalSeconds > 0)
                 {
-                    RestSecondsRemaining = (int)remaining.TotalSeconds;
                     RestTimerText = remaining.ToString(@"mm\:ss");
                 }
                 else
@@ -237,7 +228,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         else
         {
             IsExercisesEmpty = true;
-            CurrentExerciseName = "No exercises added!";
             ExerciseProgressText = string.Empty;
             SetProgressText = string.Empty;
         }
@@ -250,8 +240,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         _currentExerciseIndex = index;
         var exercise = Exercises[index];
         CurrentExercise = exercise;
-        CurrentExerciseName = exercise.ExerciseName;
-        TotalSetsForExercise = exercise.Sets;
+        _totalSetsForExercise = exercise.Sets;
 
         HasPreviousExercise = index > 0;
         HasNextExercise = index < Exercises.Count - 1;
@@ -293,16 +282,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     private void UpdateSetProgress()
     {
-        CurrentSetNumber = CurrentSets.Count + 1;
+        int currentSetNumber = CurrentSets.Count + 1;
 
-        if (TotalSetsForExercise > 0)
+        if (_totalSetsForExercise > 0)
         {
-            SetProgressText = $"Set {CurrentSetNumber} of {TotalSetsForExercise}";
-            IsExerciseComplete = CurrentSets.Count >= TotalSetsForExercise;
+            SetProgressText = $"Set {currentSetNumber} of {_totalSetsForExercise}";
+            IsExerciseComplete = CurrentSets.Count >= _totalSetsForExercise;
         }
         else
         {
-            SetProgressText = $"Set {CurrentSetNumber}";
+            SetProgressText = $"Set {currentSetNumber}";
             IsExerciseComplete = false;
         }
     }
@@ -339,13 +328,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         RepsInput = string.Empty;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
-            RestSecondsRemaining = CurrentExercise.BreakTimeInSeconds;
             _breakEndTime = DateTime.Now.AddSeconds(CurrentExercise.BreakTimeInSeconds);
             IsResting = true;
         }
         await SaveStateAsync();
         
-        if (TotalSetsForExercise > 0 && CurrentSets.Count >= TotalSetsForExercise)
+        if (_totalSetsForExercise > 0 && CurrentSets.Count >= _totalSetsForExercise)
         {
             int nextIndex = _currentExerciseIndex + 1;
             if (nextIndex < Exercises.Count)
@@ -396,7 +384,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private async Task SkipRestAsync()
     {
         IsResting = false;
-        RestSecondsRemaining = 0;
         
         _audioPlayer?.Dispose();
         _audioPlayer = null;
