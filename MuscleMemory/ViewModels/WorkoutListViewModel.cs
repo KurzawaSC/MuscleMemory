@@ -15,9 +15,6 @@ public partial class WorkoutListViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    [ObservableProperty]
-    public partial bool IsNotEmpty { get; set; } = false;
-    
     public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
     
     public ObservableCollection<Workout> Workouts { get; set; } = new();
@@ -47,7 +44,6 @@ public partial class WorkoutListViewModel : ObservableObject
         }
 
         IsEmpty = !Workouts.Any();
-        IsNotEmpty = Workouts.Any();
     }
     [RelayCommand]
     private async Task NavigateToAddWorkout()
