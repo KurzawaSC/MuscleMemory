@@ -6,9 +6,9 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttributable
+public partial class ExerciseHistoryViewModel(DatabaseContext dbContext) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly DatabaseContext _dbContext = dbContext;
     private int _exerciseId;
 
     [ObservableProperty]
@@ -18,11 +18,6 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
     public partial bool IsEmpty { get; set; } = true;
 
     public ObservableCollection<ExerciseHistoryEntry> History { get; } = [];
-
-    public ExerciseHistoryViewModel(DatabaseContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

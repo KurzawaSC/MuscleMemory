@@ -6,9 +6,9 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditExerciseViewModel : ObservableObject, IQueryAttributable
+public partial class AddEditExerciseViewModel(IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly IPopupService _popupService;
+    private readonly IPopupService _popupService = popupService;
 
     [ObservableProperty]
     public partial string Name { get; set; } = string.Empty;
@@ -23,11 +23,6 @@ public partial class AddEditExerciseViewModel : ObservableObject, IQueryAttribut
     public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
 
     private Exercise? _existingExercise;
-
-    public AddEditExerciseViewModel(IPopupService popupService)
-    {
-        _popupService = popupService;
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
