@@ -1,5 +1,4 @@
 using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -96,13 +95,11 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             return;
         }
 
-        var page = Shell.Current.CurrentPage;
-        if (page == null) return;
+        var selection = await _popupService.ShowPopupAsync<SelectExercisePopup, Exercise?>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object> { [QueryKeys.AvailableExercises] = allExercises });
 
-        var selectPopup = new SelectExercisePopup(allExercises);
-        await page.ShowPopupAsync(selectPopup);
-
-        if (selectPopup.SelectedExercise is not Exercise selectedExercise) return;
+        if (selection.Result is not Exercise selectedExercise) return;
 
         await Task.Delay(UiTiming.SequentialPopupDelayMilliseconds);
 
