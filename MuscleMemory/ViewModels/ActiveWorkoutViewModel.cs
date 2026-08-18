@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Plugin.Maui.Audio;
+using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -21,9 +22,23 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private readonly DatabaseContext _dbContext;
     private int _sessionId;
     private int _currentExerciseIndex;
+    private DateTime _workoutStartTime;
+    private DateTime _breakEndTime;
+
+    public static ActiveWorkoutViewModel? Current { get; private set; }
 
     [ObservableProperty]
     public partial Workout CurrentWorkout { get; set; } = null!;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
+    public partial bool IsWorkoutActive { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
+    public partial bool IsOnActiveWorkoutPage { get; set; } = false;
+
+    public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
 
     [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = "Loading...";
@@ -92,13 +107,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     public partial string RepsInput { get; set; } = string.Empty;
 
     private IDispatcherTimer _timer;
-    private Stopwatch _stopwatch = new Stopwatch();
 
     private readonly IAudioManager _audioManager;
     private IAudioPlayer? _audioPlayer;
 
     public ActiveWorkoutViewModel(DatabaseContext dbContext, IAudioManager audioManager)
     {
+        Current = this;
         _dbContext = dbContext;
         _audioManager = audioManager;
 
@@ -106,20 +121,24 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += (s, e) =>
         {
-            TimerText = _stopwatch.Elapsed.ToString(@"mm\:ss");
+            if (IsWorkoutActive)
+            {
+                TimerText = (DateTime.Now - _workoutStartTime).ToString(@"mm\:ss");
+            }
 
             if (IsResting)
             {
-                if (RestSecondsRemaining > 0)
+                var remaining = _breakEndTime - DateTime.Now;
+                if (remaining.TotalSeconds > 0)
                 {
-                    RestSecondsRemaining--;
-                    TimeSpan ts = TimeSpan.FromSeconds(RestSecondsRemaining);
-                    RestTimerText = ts.ToString(@"mm\:ss");
+                    RestSecondsRemaining = (int)remaining.TotalSeconds;
+                    RestTimerText = remaining.ToString(@"mm\:ss");
                 }
                 else
                 {
                     IsResting = false;
                     _ = PlayBreakEndSoundAsync();
+                    _ = SaveStateAsync();
                 }
             }
         };
@@ -142,19 +161,64 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     async partial void OnCurrentWorkoutChanged(Workout value)
     {
-        if (value != null)
+        if (value != null && !IsWorkoutActive) // Only start if not already active (resuming)
         {
+            _workoutStartTime = DateTime.Now;
+            IsWorkoutCompleted = false;
+            
             WorkoutTitle = value.Name;
             _sessionId = await _dbContext.CreateWorkoutSessionAsync(value.Id);
 
-            _stopwatch.Start();
             _timer.Start();
 
-            await LoadExercisesAsync(value.Id);
+            await LoadExercisesAsync(value.Id, restoreIndex: false);
+            
+            await Task.Delay(300); // Wait for navigation animation to finish
+            IsWorkoutActive = true;
+            await SaveStateAsync();
         }
     }
 
-    private async Task LoadExercisesAsync(int workoutId)
+    private async Task SaveStateAsync()
+    {
+        if (!IsWorkoutActive) return;
+        var state = new ActiveWorkoutState
+        {
+            WorkoutId = CurrentWorkout?.Id ?? 0,
+            SessionId = _sessionId,
+            StartTime = _workoutStartTime,
+            CurrentExerciseIndex = _currentExerciseIndex,
+            IsResting = IsResting,
+            BreakEndTime = _breakEndTime
+        };
+        await _dbContext.SaveActiveWorkoutStateAsync(state);
+    }
+
+    public async Task LoadStateAsync()
+    {
+        var state = await _dbContext.GetActiveWorkoutStateAsync();
+        if (state != null)
+        {
+            _sessionId = state.SessionId;
+            _workoutStartTime = state.StartTime;
+            _currentExerciseIndex = state.CurrentExerciseIndex;
+            IsResting = state.IsResting;
+            _breakEndTime = state.BreakEndTime;
+            IsWorkoutActive = true;
+            IsWorkoutCompleted = false;
+            
+            var workout = (await _dbContext.GetWorkoutsAsync()).FirstOrDefault(w => w.Id == state.WorkoutId);
+            if (workout != null)
+            {
+                CurrentWorkout = workout;
+                WorkoutTitle = workout.Name;
+                await LoadExercisesAsync(workout.Id, restoreIndex: true);
+                _timer.Start();
+            }
+        }
+    }
+
+    private async Task LoadExercisesAsync(int workoutId, bool restoreIndex = false)
     {
         var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(workoutId);
 
@@ -167,8 +231,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (Exercises.Any())
         {
             IsExercisesEmpty = false;
-            _currentExerciseIndex = 0;
-            await AdvanceToExerciseAsync(0);
+            if (!restoreIndex) _currentExerciseIndex = 0;
+            await AdvanceToExerciseAsync(_currentExerciseIndex);
         }
         else
         {
@@ -210,6 +274,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
         await LoadSetsForCurrentExerciseAsync();
         UpdateSetProgress();
+        await SaveStateAsync();
     }
 
     private async Task LoadSetsForCurrentExerciseAsync()
@@ -275,10 +340,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
             RestSecondsRemaining = CurrentExercise.BreakTimeInSeconds;
-            TimeSpan ts = TimeSpan.FromSeconds(RestSecondsRemaining);
-            RestTimerText = ts.ToString(@"mm\:ss");
+            _breakEndTime = DateTime.Now.AddSeconds(CurrentExercise.BreakTimeInSeconds);
             IsResting = true;
         }
+        await SaveStateAsync();
+        
         if (TotalSetsForExercise > 0 && CurrentSets.Count >= TotalSetsForExercise)
         {
             int nextIndex = _currentExerciseIndex + 1;
@@ -292,7 +358,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             {
                 IsResting = false;
                 UpdateSetProgress();
-                _stopwatch.Stop();
                 _timer.Stop();
                 
                 double volume = 0;
@@ -318,6 +383,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 
                 await _dbContext.FinishWorkoutSessionAsync(_sessionId);
                 IsWorkoutCompleted = true;
+                IsWorkoutActive = false;
+                await _dbContext.ClearActiveWorkoutStateAsync();
                 return;
             }
         }
@@ -326,13 +393,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SkipRest()
+    private async Task SkipRestAsync()
     {
         IsResting = false;
         RestSecondsRemaining = 0;
         
         _audioPlayer?.Dispose();
         _audioPlayer = null;
+        await SaveStateAsync();
     }
 
     [RelayCommand]
@@ -408,10 +476,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [RelayCommand]
     private async Task FinishWorkoutAsync()
     {
+        bool isConfirmed = await Shell.Current.DisplayAlertAsync(
+            "Finish Workout", 
+            "Are you sure you want to finish and save this workout?", 
+            "Finish", 
+            "Cancel");
+            
+        if (!isConfirmed)
+            return;
+
         _audioPlayer?.Dispose();
         _audioPlayer = null;
         
-        _stopwatch.Stop();
         _timer.Stop();
         
         double volume = 0;
@@ -437,14 +513,21 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         await _dbContext.FinishWorkoutSessionAsync(_sessionId);
         
         IsWorkoutCompleted = true;
+        IsWorkoutActive = false;
+        await _dbContext.ClearActiveWorkoutStateAsync();
+        
+        await Shell.Current.GoToAsync("..");
+    }
+
+    [RelayCommand]
+    private async Task ResumeWorkoutAsync()
+    {
+        await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage));
     }
 
     [RelayCommand]
     private async Task ExitWorkoutAsync()
     {
-        _audioPlayer?.Dispose();
-        _audioPlayer = null;
-        
         await Shell.Current.GoToAsync("..");
     }
 }
