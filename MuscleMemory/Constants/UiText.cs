@@ -24,6 +24,7 @@ public static class UiText
     public const string ButtonCancel = "Cancel";
     public const string ButtonDiscard = "Discard";
     public const string ButtonFinish = "Finish";
+    public const string ButtonAdd = "Add";
     public const string ButtonSave = "Save";
     public const string ButtonYesEraseIt = "Yes, erase it";
 

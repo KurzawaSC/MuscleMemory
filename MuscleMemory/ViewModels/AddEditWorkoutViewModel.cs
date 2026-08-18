@@ -1,5 +1,5 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -14,6 +14,7 @@ namespace MuscleMemory.ViewModels;
 public partial class AddEditWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
+    private readonly IPopupService _popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -29,9 +30,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     public partial bool HasUnsavedChanges { get; set; } = false;
     public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
 
-    public AddEditWorkoutViewModel(DatabaseContext dbContext)
+    public AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService)
     {
         _dbContext = dbContext;
+        _popupService = popupService;
     }
 
     [ObservableProperty]
@@ -104,17 +106,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
         await Task.Delay(UiTiming.SequentialPopupDelayMilliseconds);
 
-        var configPopup = new ConfigureExercisePopup(selectedExercise);
-        await page.ShowPopupAsync(configPopup);
-
-        if (configPopup.ReturnedConfig is { } configResult)
+        var configuration = await ShowConfigurationPopupAsync(QueryKeys.SelectedExercise, selectedExercise);
+        if (configuration != null)
         {
-            AddExerciseToWorkout(
-                selectedExercise,
-                configResult.Sets,
-                configResult.Reps,
-                configResult.BreakTime,
-                configResult.TargetRPE);
+            AddExerciseToWorkout(selectedExercise, configuration);
         }
     }
 
@@ -123,33 +118,32 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     {
         if (exerciseToEdit == null) return;
 
-        var page = Shell.Current.CurrentPage;
-        if (page == null) return;
-
-        var configPopup = new ConfigureExercisePopup(exerciseToEdit);
-        await page.ShowPopupAsync(configPopup);
-
-        if (configPopup.ReturnedConfig is { } configResult)
+        var configuration = await ShowConfigurationPopupAsync(QueryKeys.ExerciseToEdit, exerciseToEdit);
+        if (configuration != null)
         {
-            UpdateExerciseInWorkout(
-                exerciseToEdit,
-                configResult.Sets,
-                configResult.Reps,
-                configResult.BreakTime,
-                configResult.TargetRPE);
+            UpdateExerciseInWorkout(exerciseToEdit, configuration);
         }
     }
 
-    private void AddExerciseToWorkout(Exercise selectedExercise, int sets, int reps, int breakTime, int targetRPE)
+    private async Task<ExerciseConfiguration?> ShowConfigurationPopupAsync(string queryKey, object parameter)
+    {
+        var result = await _popupService.ShowPopupAsync<ConfigureExercisePopup, ExerciseConfiguration?>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object> { [queryKey] = parameter });
+
+        return result.Result;
+    }
+
+    private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {
         var newWorkoutExercise = new WorkoutExercise
         {
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
-            Sets = sets,
-            Reps = reps,
-            BreakTimeInSeconds = breakTime,
-            TargetRPE = targetRPE
+            Sets = configuration.Sets,
+            Reps = configuration.Reps,
+            BreakTimeInSeconds = configuration.BreakTimeInSeconds,
+            TargetRPE = configuration.TargetRPE
         };
 
         Exercises.Add(newWorkoutExercise);
@@ -157,15 +151,15 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         HasUnsavedChanges = true;
     }
 
-    private void UpdateExerciseInWorkout(WorkoutExercise exercise, int sets, int reps, int breakTime, int targetRPE)
+    private void UpdateExerciseInWorkout(WorkoutExercise exercise, ExerciseConfiguration configuration)
     {
         var index = Exercises.IndexOf(exercise);
         if (index >= 0)
         {
-            exercise.Sets = sets;
-            exercise.Reps = reps;
-            exercise.BreakTimeInSeconds = breakTime;
-            exercise.TargetRPE = targetRPE;
+            exercise.Sets = configuration.Sets;
+            exercise.Reps = configuration.Reps;
+            exercise.BreakTimeInSeconds = configuration.BreakTimeInSeconds;
+            exercise.TargetRPE = configuration.TargetRPE;
             Exercises[index] = exercise;
             HasUnsavedChanges = true;
         }
