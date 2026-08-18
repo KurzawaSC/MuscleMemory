@@ -29,7 +29,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task LoadExercisesAsync()
+    private async Task LoadExercisesAsync()
     {
         var exercisesFromDb = await _dbContext.GetExercisesAsync();
         Exercises.Clear();
@@ -52,7 +52,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteExerciseAsync(Exercise exercise)
+    private async Task DeleteExerciseAsync(Exercise exercise)
     {
         if (exercise == null) return;
         
@@ -65,7 +65,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task EditExerciseAsync(Exercise exercise)
+    private async Task EditExerciseAsync(Exercise exercise)
     {
         if (exercise == null) return;
         
@@ -89,7 +89,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ViewHistoryAsync(Exercise exercise)
+    private async Task ViewHistoryAsync(Exercise exercise)
     {
         if (exercise == null) return;
         

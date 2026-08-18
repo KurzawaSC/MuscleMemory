@@ -25,7 +25,7 @@ public partial class WorkoutListViewModel : ObservableObject
         ActiveWorkout = activeWorkout;
     }
     [RelayCommand]
-    public async Task LoadWorkoutsAsync()
+    private async Task LoadWorkoutsAsync()
     {
         var workoutsFromDb = await _dbContext.GetWorkoutsAsync();
 
@@ -54,7 +54,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteWorkoutAsync(Workout workout)
+    private async Task DeleteWorkoutAsync(Workout workout)
     {
         if (workout == null) return;
 
@@ -67,7 +67,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task EditWorkoutAsync(Workout workout)
+    private async Task EditWorkoutAsync(Workout workout)
     {
         if (workout == null) return;
         
@@ -79,7 +79,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ViewHistoryAsync(Workout workout)
+    private async Task ViewHistoryAsync(Workout workout)
     {
         if (workout == null) return;
         
