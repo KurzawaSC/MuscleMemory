@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
+using MuscleMemory.Constants;
 using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
@@ -39,7 +40,7 @@ public partial class AddEditWorkoutPage : ContentPage
                 if (discard)
                 {
                     _viewModel.HasUnsavedChanges = false;
-                    await Shell.Current.GoToAsync("..");
+                    await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
                 }
             }
         }

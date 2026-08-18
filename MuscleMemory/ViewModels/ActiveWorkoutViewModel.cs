@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
@@ -501,8 +502,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         IsWorkoutCompleted = true;
         IsWorkoutActive = false;
         await _dbContext.ClearActiveWorkoutStateAsync();
-        
-        await Shell.Current.GoToAsync("..");
+
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 
     [RelayCommand]
@@ -514,6 +515,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [RelayCommand]
     private async Task ExitWorkoutAsync()
     {
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 }

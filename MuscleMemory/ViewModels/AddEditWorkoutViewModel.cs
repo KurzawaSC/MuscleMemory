@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 
@@ -118,7 +119,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         }
 
         HasUnsavedChanges = false;
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
     public async Task<List<Exercise>> GetAllExercisesAsync()
     {

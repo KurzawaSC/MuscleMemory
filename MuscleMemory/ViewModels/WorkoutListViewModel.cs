@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
@@ -48,7 +49,7 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private async Task NavigateToAddWorkout()
     {
-        await Shell.Current.GoToAsync("AddEditWorkoutPage");
+        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage));
     }
     [RelayCommand]
     private async Task StartWorkoutAsync(Workout selectedWorkout)
@@ -83,7 +84,7 @@ public partial class WorkoutListViewModel : ObservableObject
         {
             { "WorkoutToEdit", workout }
         };
-        await Shell.Current.GoToAsync("AddEditWorkoutPage", navigationParameter);
+        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
     }
 
     [RelayCommand]
