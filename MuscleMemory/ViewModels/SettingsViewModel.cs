@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 
 namespace MuscleMemory.ViewModels;
@@ -60,7 +61,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
 
             if (!File.Exists(dbPath))
             {
