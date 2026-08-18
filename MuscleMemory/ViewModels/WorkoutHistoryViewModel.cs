@@ -3,8 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace MuscleMemory.ViewModels;
 

@@ -4,7 +4,6 @@ using MuscleMemory.Data;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Plugin.Maui.Audio;
 using MuscleMemory.Views;
 
