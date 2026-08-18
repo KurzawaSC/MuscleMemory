@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -5,8 +6,6 @@ using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
-using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Maui.Extensions;
 
 namespace MuscleMemory.ViewModels;
 
@@ -14,6 +13,7 @@ public partial class ExerciseListViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
     private readonly ActiveWorkoutViewModel _activeWorkoutViewModel;
+    private readonly IPopupService _popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -22,10 +22,11 @@ public partial class ExerciseListViewModel : ObservableObject
 
     public ObservableCollection<Exercise> Exercises { get; set; } = new();
 
-    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel)
+    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel, IPopupService popupService)
     {
         _dbContext = dbContext;
         _activeWorkoutViewModel = activeWorkoutViewModel;
+        _popupService = popupService;
         
         _activeWorkoutViewModel.PropertyChanged += (s, e) =>
         {
@@ -47,10 +48,16 @@ public partial class ExerciseListViewModel : ObservableObject
         }
         IsEmpty = !Exercises.Any();
     }
-    public async Task SaveNewExerciseAsync(Exercise newDoc)
+
+    [RelayCommand]
+    private async Task AddExerciseAsync()
     {
-        await _dbContext.AddExerciseAsync(newDoc);
-        await LoadExercisesAsync();
+        var newExercise = await ShowExercisePopupAsync(null);
+        if (newExercise != null)
+        {
+            await _dbContext.AddExerciseAsync(newExercise);
+            await LoadExercisesAsync();
+        }
     }
 
     [RelayCommand]
@@ -71,18 +78,23 @@ public partial class ExerciseListViewModel : ObservableObject
     {
         if (exercise == null) return;
         
-        var popup = new AddExercisePopup(exercise);
-        var page = Shell.Current.CurrentPage;
-        if (page != null)
+        var updatedExercise = await ShowExercisePopupAsync(exercise);
+        if (updatedExercise != null)
         {
-            await page.ShowPopupAsync(popup);
-            var updatedExercise = popup.ReturnedExercise;
-            if (updatedExercise != null)
-            {
-                await _dbContext.UpdateExerciseAsync(updatedExercise);
-                await LoadExercisesAsync();
-            }
+            await _dbContext.UpdateExerciseAsync(updatedExercise);
+            await LoadExercisesAsync();
         }
+    }
+
+    private async Task<Exercise?> ShowExercisePopupAsync(Exercise? exerciseToEdit)
+    {
+        var shellParameters = exerciseToEdit == null
+            ? null
+            : new Dictionary<string, object> { [QueryKeys.ExerciseToEdit] = exerciseToEdit };
+
+        var result = await _popupService.ShowPopupAsync<AddExercisePopup, Exercise?>(Shell.Current, shellParameters: shellParameters);
+
+        return result.Result;
     }
 
     [RelayCommand]

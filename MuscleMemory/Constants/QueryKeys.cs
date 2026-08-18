@@ -8,6 +8,7 @@ public static class QueryKeys
     public const string ExerciseName = "ExerciseName";
     public const string SelectedExercise = "SelectedExercise";
     public const string ExerciseToEdit = "ExerciseToEdit";
+    public const string WorkoutExerciseToEdit = "WorkoutExerciseToEdit";
     public const string WorkoutId = "WorkoutId";
     public const string WorkoutName = "WorkoutName";
 }
