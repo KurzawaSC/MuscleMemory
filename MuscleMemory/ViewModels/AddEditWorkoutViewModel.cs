@@ -9,10 +9,10 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributable
+public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext;
-    private readonly IPopupService _popupService;
+    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IPopupService _popupService = popupService;
     private Workout? _workoutToEdit;
 
     [ObservableProperty]
@@ -28,12 +28,6 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     public partial bool HasUnsavedChanges { get; set; } = false;
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
-
-    public AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService)
-    {
-        _dbContext = dbContext;
-        _popupService = popupService;
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

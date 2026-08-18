@@ -9,24 +9,17 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseListViewModel : ObservableObject
+public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout, IPopupService popupService) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext;
-    private readonly IPopupService _popupService;
+    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IPopupService _popupService = popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
     public ObservableCollection<Exercise> Exercises { get; } = [];
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; }
-
-    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout, IPopupService popupService)
-    {
-        _dbContext = dbContext;
-        ActiveWorkout = activeWorkout;
-        _popupService = popupService;
-    }
+    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
 
     [RelayCommand]
     private async Task LoadExercisesAsync()

@@ -8,22 +8,16 @@ using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutListViewModel : ObservableObject
+public partial class WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly DatabaseContext _dbContext = dbContext;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
     public ObservableCollection<Workout> Workouts { get; } = [];
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; }
-
-    public WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout)
-    {
-        _dbContext = dbContext;
-        ActiveWorkout = activeWorkout;
-    }
+    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
     [RelayCommand]
     private async Task LoadWorkoutsAsync()
     {
