@@ -9,6 +9,10 @@
              Title="Start Workout"
              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding LoadWorkoutsCommand}" />
+    </ContentPage.Behaviors>
+
     <Grid>
         <VerticalStackLayout HorizontalOptions="Center" 
                              VerticalOptions="Center" 
