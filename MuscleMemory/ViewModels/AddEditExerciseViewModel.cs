@@ -1,10 +1,15 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditExerciseViewModel : ObservableObject
+public partial class AddEditExerciseViewModel : ObservableObject, IQueryAttributable
 {
+    private readonly IPopupService _popupService;
+
     [ObservableProperty]
     public partial string Name { get; set; } = string.Empty;
 
@@ -14,29 +19,59 @@ public partial class AddEditExerciseViewModel : ObservableObject
     [ObservableProperty]
     public partial EquipmentType SelectedEquipment { get; set; } = EquipmentType.Other;
 
-    public MuscleGroup[] MuscleGroups { get; } = (MuscleGroup[])Enum.GetValues(typeof(MuscleGroup));
-    public EquipmentType[] EquipmentTypes { get; } = (EquipmentType[])Enum.GetValues(typeof(EquipmentType));
+    public MuscleGroup[] MuscleGroups { get; } = Enum.GetValues<MuscleGroup>();
+    public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
 
-    public Exercise? ExistingExercise { get; set; }
+    private Exercise? _existingExercise;
 
-    public void LoadExercise(Exercise exercise)
+    public AddEditExerciseViewModel(IPopupService popupService)
     {
-        ExistingExercise = exercise;
+        _popupService = popupService;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue(QueryKeys.ExerciseToEdit, out var editable) && editable is Exercise exercise)
+        {
+            LoadExercise(exercise);
+        }
+    }
+
+    private void LoadExercise(Exercise exercise)
+    {
+        _existingExercise = exercise;
         Name = exercise.Name;
         SelectedMuscleGroup = exercise.TargetMuscleGroup;
         SelectedEquipment = exercise.Equipment;
     }
-    
-    public Exercise GetExercise()
+
+    [RelayCommand]
+    private async Task CancelAsync()
     {
-        if (ExistingExercise != null)
+        await _popupService.ClosePopupAsync<Exercise?>(Shell.Current.Navigation, null);
+    }
+
+    [RelayCommand]
+    private async Task ConfirmAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Name))
         {
-            ExistingExercise.Name = Name;
-            ExistingExercise.TargetMuscleGroup = SelectedMuscleGroup;
-            ExistingExercise.Equipment = SelectedEquipment;
-            return ExistingExercise;
+            return;
         }
-        
+
+        await _popupService.ClosePopupAsync<Exercise?>(Shell.Current.Navigation, BuildExercise());
+    }
+
+    private Exercise BuildExercise()
+    {
+        if (_existingExercise != null)
+        {
+            _existingExercise.Name = Name;
+            _existingExercise.TargetMuscleGroup = SelectedMuscleGroup;
+            _existingExercise.Equipment = SelectedEquipment;
+            return _existingExercise;
+        }
+
         return new Exercise
         {
             Name = Name,

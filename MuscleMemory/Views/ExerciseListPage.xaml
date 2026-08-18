@@ -9,6 +9,10 @@
              Title="Exercise List"
              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
 
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding LoadExercisesCommand}" />
+    </ContentPage.Behaviors>
+
     <Grid>
         <VerticalStackLayout HorizontalOptions="Center" 
                              VerticalOptions="Center" 
@@ -127,7 +131,7 @@
             </Image>
 
             <Button BackgroundColor="Transparent" 
-                    Clicked="OnAddButtonClicked" 
+                    Command="{Binding AddExerciseCommand}" 
                     CornerRadius="30" />
         </Grid>
         <Border Margin="15,0,15,20"
