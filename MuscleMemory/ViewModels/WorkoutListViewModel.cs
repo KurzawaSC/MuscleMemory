@@ -15,7 +15,7 @@ public partial class WorkoutListViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public ObservableCollection<Workout> Workouts { get; set; } = new();
+    public ObservableCollection<Workout> Workouts { get; } = new();
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
