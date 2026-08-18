@@ -33,7 +33,7 @@
                         FontFamily="LilitaOne" />
             </Border>
 
-            <CollectionView Grid.Row="2" x:Name="ExercisesListView" ItemsSource="{Binding FilteredExercises}" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
+            <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredExercises}" SelectionMode="Single" SelectedItem="{Binding SelectedExercise}" SelectionChangedCommand="{Binding ConfirmSelectionCommand}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
                         <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
