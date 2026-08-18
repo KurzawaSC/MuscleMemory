@@ -13,9 +13,9 @@ public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributa
 
     private List<Exercise> _allExercises = [];
 
-    public ObservableCollection<Exercise> FilteredExercises { get; } = new();
+    public ObservableCollection<Exercise> FilteredExercises { get; } = [];
 
-    public List<string> MuscleGroupFilters { get; } = new List<string> { "All" };
+    public List<string> MuscleGroupFilters { get; } = ["All"];
 
     [ObservableProperty]
     public partial string SelectedMuscleGroupFilter { get; set; } = "All";
@@ -27,9 +27,9 @@ public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributa
     {
         _popupService = popupService;
 
-        foreach (var mg in Enum.GetValues(typeof(MuscleGroup)))
+        foreach (var mg in Enum.GetValues<MuscleGroup>())
         {
-            MuscleGroupFilters.Add(mg.ToString()!);
+            MuscleGroupFilters.Add(mg.ToString());
         }
     }
 
