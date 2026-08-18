@@ -31,7 +31,7 @@ public partial class ConfigureExercisePopup : Popup
         RepsEntry.Text = exerciseToEdit.Reps.ToString();
         BreakEntry.Text = exerciseToEdit.BreakTimeInSeconds.ToString();
         RpePicker.SelectedItem = exerciseToEdit.TargetRPE;
-        AddButton.Text = "Save";
+        AddButton.Text = UiText.ButtonSave;
     }
     private async void OnCancelClicked(object? sender, EventArgs e)
     {

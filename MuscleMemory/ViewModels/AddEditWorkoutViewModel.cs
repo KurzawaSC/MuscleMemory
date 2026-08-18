@@ -94,13 +94,13 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(WorkoutName))
         {
-            await Shell.Current.DisplayAlertAsync("Hold on!", "Please enter a workout name.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyEnterWorkoutName, UiText.ButtonOk);
             return;
         }
 
         if (!Exercises.Any())
         {
-            await Shell.Current.DisplayAlertAsync("Hold on!", "Add at least one exercise to your workout.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyAddAtLeastOneExercise, UiText.ButtonOk);
             return;
         }
 

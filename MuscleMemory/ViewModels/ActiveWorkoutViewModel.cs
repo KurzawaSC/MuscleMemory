@@ -42,7 +42,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
 
     [ObservableProperty]
-    public partial string WorkoutTitle { get; set; } = "Loading...";
+    public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = "00:00";
@@ -245,7 +245,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         HasPreviousExercise = index > 0;
         HasNextExercise = index < Exercises.Count - 1;
 
-        ExerciseProgressText = $"Exercise {index + 1} of {Exercises.Count}: {exercise.ExerciseName}";
+        ExerciseProgressText = string.Format(UiText.ExerciseProgressFormat, index + 1, Exercises.Count, exercise.ExerciseName);
 
         WeightInput = string.Empty;
         RepsInput = string.Empty;
@@ -253,12 +253,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         var lastSessionSets = await _dbContext.GetLastSessionSetsForExerciseAsync(exercise.Id, _sessionId);
         if (lastSessionSets.Any())
         {
-            var setStrings = lastSessionSets.Select(s => $"{s.Weight} kg × {s.Reps}");
-            LastSessionResultsText = "Last Session: " + string.Join(", ", setStrings);
+            var setStrings = lastSessionSets.Select(s => $"{s.Weight}{UiText.KgTimesSeparator}{s.Reps}");
+            LastSessionResultsText = UiText.LastSessionPrefix + string.Join(", ", setStrings);
         }
         else
         {
-            LastSessionResultsText = "First time performing this exercise!";
+            LastSessionResultsText = UiText.FirstTimePerformingExercise;
         }
 
         await LoadSetsForCurrentExerciseAsync();
@@ -286,12 +286,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
         if (_totalSetsForExercise > 0)
         {
-            SetProgressText = $"Set {currentSetNumber} of {_totalSetsForExercise}";
+            SetProgressText = string.Format(UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise);
             IsExerciseComplete = CurrentSets.Count >= _totalSetsForExercise;
         }
         else
         {
-            SetProgressText = $"Set {currentSetNumber}";
+            SetProgressText = string.Format(UiText.SetProgressFormat, currentSetNumber);
             IsExerciseComplete = false;
         }
     }
@@ -301,7 +301,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     {
         if (CurrentExercise == null)
         {
-            await Shell.Current.DisplayAlertAsync("Error", "No exercise selected.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleError, UiText.BodyNoExerciseSelected, UiText.ButtonOk);
             return;
         }
 
@@ -309,7 +309,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                 System.Globalization.CultureInfo.InvariantCulture, out double weight)
             || !int.TryParse(RepsInput, out int reps))
         {
-            await Shell.Current.DisplayAlertAsync("Invalid Input", "Please enter valid numbers for weight and reps.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleInvalidInput, UiText.BodyInvalidWeightReps, UiText.ButtonOk);
             return;
         }
 
@@ -362,7 +362,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
                         BestSets.Add(new ExerciseBestSet
                         {
                             ExerciseName = ex.ExerciseName,
-                            BestSetText = $"{bestSet.Weight} kg × {bestSet.Reps} reps"
+                            BestSetText = $"{bestSet.Weight}{UiText.KgTimesSeparator}{bestSet.Reps}{UiText.RepsSuffix}"
                         });
                     }
                 }
@@ -411,10 +411,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     {
         if (set == null) return;
         
-        string weightStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter weight (kg):", initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
+        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
         if (weightStr == null) return;
-        
-        string repsStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter reps:", initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
+
+        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterReps, initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
         if (repsStr == null) return;
 
         if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
@@ -464,10 +464,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     private async Task FinishWorkoutAsync()
     {
         bool isConfirmed = await Shell.Current.DisplayAlertAsync(
-            "Finish Workout", 
-            "Are you sure you want to finish and save this workout?", 
-            "Finish", 
-            "Cancel");
+            UiText.TitleFinishWorkout,
+            UiText.BodyFinishWorkoutConfirmation,
+            UiText.ButtonFinish,
+            UiText.ButtonCancel);
             
         if (!isConfirmed)
             return;
