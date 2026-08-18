@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
              x:DataType="viewmodels:AddEditWorkoutViewModel"
              Title="Create Workout"
              BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding StartGuardingUnsavedChangesCommand}" />
+        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding StopGuardingUnsavedChangesCommand}" />
+    </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="20">
 
@@ -30,7 +36,7 @@
             <CollectionView ItemsSource="{Binding Exercises}">
                 <CollectionView.Header>
                     <Button Text="Add exercise +" 
-                            Clicked="OnAddExerciseClicked"
+                            Command="{Binding AddExerciseCommand}"
                             BackgroundColor="Transparent" 
                             TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
                             FontFamily="LilitaOne"
@@ -49,7 +55,7 @@
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnEditExerciseTapped" CommandParameter="{Binding .}" />
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}" />
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
@@ -62,7 +68,7 @@
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
                                     <Button Text="Edit" 
-                                            Clicked="OnEditButtonClicked"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent" 
                                             TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
@@ -99,7 +105,7 @@
                        FontFamily="LilitaOne"
                        FontSize="18" />
                 <Button Text="Add exercise +" 
-                        Clicked="OnAddExerciseClicked"
+                        Command="{Binding AddExerciseCommand}"
                         BackgroundColor="Transparent" 
                         TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
                         FontFamily="LilitaOne"
