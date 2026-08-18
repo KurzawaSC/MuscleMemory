@@ -1,10 +1,11 @@
 using MuscleMemory.Views;
+using MuscleMemory.ViewModels;
 
 namespace MuscleMemory;
 
 public partial class AppShell : Shell
 {
-    public AppShell()
+    public AppShell(ActiveWorkoutViewModel activeWorkoutViewModel)
     {
         InitializeComponent();
 
@@ -12,6 +13,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ActiveWorkoutPage), typeof(ActiveWorkoutPage));
         Routing.RegisterRoute(nameof(ExerciseHistoryPage), typeof(ExerciseHistoryPage));
         Routing.RegisterRoute(nameof(WorkoutHistoryPage), typeof(WorkoutHistoryPage));
+        
+        _ = activeWorkoutViewModel.LoadStateAsync();
     }
 
     public void UpdateTabBarTheme(AppTheme theme)

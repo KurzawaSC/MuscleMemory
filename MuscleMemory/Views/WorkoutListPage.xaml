@@ -104,7 +104,8 @@
                 BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
                 StrokeThickness="0"
                 HorizontalOptions="End" 
-                VerticalOptions="End">
+                VerticalOptions="End"
+                IsVisible="{Binding CanAddItems}">
 
             <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
@@ -128,6 +129,24 @@
                     <toolkit:IconTintColorBehavior TintColor="{StaticResource SolidWhite}" />
                 </Image.Behaviors>
             </Image>
+        </Border>
+        <Border Margin="15,0,15,20"
+                HorizontalOptions="Fill" 
+                VerticalOptions="End"
+                Padding="16"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
+                IsVisible="{Binding Source={x:Static viewmodels:ActiveWorkoutViewModel.Current}, Path=IsBannerVisible}">
+            <Border.Shadow>
+                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+            </Border.Shadow>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12" />
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding Source={x:Static viewmodels:ActiveWorkoutViewModel.Current}, Path=ResumeWorkoutCommand}" />
+            </Border.GestureRecognizers>
+            <Label Text="Workout in Progress - Tap to Resume" HorizontalTextAlignment="Center" TextColor="White" FontFamily="LilitaOne" VerticalOptions="Center" FontSize="16" />
         </Border>
     </Grid>
 

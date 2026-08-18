@@ -367,3 +367,6 @@ FodyWeavers.xsd
 *.keystore
 *.jks
 *.p12
+
+# Agents files
+CLAUDE.md

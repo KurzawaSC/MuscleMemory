@@ -26,6 +26,7 @@ public static class MauiProgram
 #endif
         builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<Data.DatabaseContext>();
+        builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<ExerciseListPage>();
         builder.Services.AddSingleton<WorkoutListPage>();
         builder.Services.AddSingleton<SettingsPage>();
@@ -34,8 +35,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddTransient<AddEditWorkoutPage>();
         builder.Services.AddTransient<AddEditWorkoutViewModel>();
-        builder.Services.AddTransient<ActiveWorkoutViewModel>();
-        builder.Services.AddTransient<ActiveWorkoutPage>();
+        builder.Services.AddSingleton<ActiveWorkoutViewModel>();
+        builder.Services.AddSingleton<ActiveWorkoutPage>();
         builder.Services.AddTransient<ExerciseHistoryViewModel>();
         builder.Services.AddTransient<ExerciseHistoryPage>();
         builder.Services.AddTransient<WorkoutHistoryViewModel>();

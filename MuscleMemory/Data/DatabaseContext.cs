@@ -21,6 +21,7 @@ public class DatabaseContext
         await _connection!.CreateTableAsync<WorkoutExercise>();
         await _connection!.CreateTableAsync<WorkoutSet>();
         await _connection!.CreateTableAsync<WorkoutSession>();
+        await _connection!.CreateTableAsync<ActiveWorkoutState>();
         try
         {
             await _connection!.ExecuteAsync("ALTER TABLE WorkoutSet ADD COLUMN WorkoutSessionId INTEGER NOT NULL DEFAULT 0");
@@ -75,6 +76,26 @@ public class DatabaseContext
         await _connection!.DeleteAllAsync<Exercise>();
         await _connection!.DeleteAllAsync<WorkoutSet>();
         await _connection!.DeleteAllAsync<WorkoutSession>();
+        await _connection!.DeleteAllAsync<ActiveWorkoutState>();
+    }
+
+    public async Task SaveActiveWorkoutStateAsync(ActiveWorkoutState state)
+    {
+        await InitAsync();
+        state.Id = 1;
+        await _connection!.InsertOrReplaceAsync(state);
+    }
+
+    public async Task<ActiveWorkoutState?> GetActiveWorkoutStateAsync()
+    {
+        await InitAsync();
+        return await _connection!.Table<ActiveWorkoutState>().FirstOrDefaultAsync();
+    }
+
+    public async Task ClearActiveWorkoutStateAsync()
+    {
+        await InitAsync();
+        await _connection!.DeleteAllAsync<ActiveWorkoutState>();
     }
 
     public async Task<int> CreateWorkoutSessionAsync(int workoutId)

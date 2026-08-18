@@ -9,4 +9,24 @@ public partial class ActiveWorkoutPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override bool OnBackButtonPressed()
+    {
+        Shell.Current.GoToAsync("..");
+        return true;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is ActiveWorkoutViewModel vm)
+            vm.IsOnActiveWorkoutPage = true;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (BindingContext is ActiveWorkoutViewModel vm)
+            vm.IsOnActiveWorkoutPage = false;
+    }
 }

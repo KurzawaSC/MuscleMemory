@@ -18,7 +18,8 @@ namespace MuscleMemory
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            var shell = activationState?.Context.Services.GetService<AppShell>();
+            return new Window(shell ?? throw new InvalidOperationException("AppShell not found"));
         }
     }
 }
