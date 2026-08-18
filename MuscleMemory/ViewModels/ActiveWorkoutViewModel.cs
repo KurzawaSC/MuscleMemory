@@ -45,8 +45,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string TimerText { get; set; } = "00:00";
 
-    public ObservableCollection<WorkoutExercise> Exercises { get; } = new();
-    public ObservableCollection<WorkoutSet> CurrentSets { get; } = new();
+    public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
+    public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
 
     [ObservableProperty]
     public partial WorkoutExercise CurrentExercise { get; set; } = new();
@@ -82,7 +82,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial double TotalVolume { get; set; } = 0;
 
-    public ObservableCollection<ExerciseBestSet> BestSets { get; } = new();
+    public ObservableCollection<ExerciseBestSet> BestSets { get; } = [];
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;

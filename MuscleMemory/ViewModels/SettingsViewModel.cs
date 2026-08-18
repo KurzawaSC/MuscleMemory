@@ -13,7 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
 
-    public List<ThemePreference> ThemeOptions { get; } = Enum.GetValues<ThemePreference>().ToList();
+    public List<ThemePreference> ThemeOptions { get; } = [.. Enum.GetValues<ThemePreference>()];
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 

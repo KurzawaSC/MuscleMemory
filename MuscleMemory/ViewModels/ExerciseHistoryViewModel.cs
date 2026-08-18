@@ -17,7 +17,7 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public ObservableCollection<ExerciseHistoryEntry> History { get; } = new();
+    public ObservableCollection<ExerciseHistoryEntry> History { get; } = [];
 
     public ExerciseHistoryViewModel(DatabaseContext dbContext)
     {
