@@ -36,13 +36,15 @@ Projekt został stworzony zgodnie z zasadami **Clean Architecture** i **Clean Co
 
 ```text
 MuscleMemory/
-├── Models/             # Encje bazy danych (Workout, Exercise, WorkoutLog, etc.)
+├── Models/             # Encje bazy danych (Workout, Exercise, WorkoutExercise, WorkoutSet, WorkoutSession, ActiveWorkoutState)
 ├── Data/               # Obsługa SQLite (DatabaseContext)
 ├── ViewModels/         # Logika aplikacji z użyciem CommunityToolkit.Mvvm
 ├── Views/              # Widoki XAML (Listy, Widok Treningu, Ustawienia, Popupy)
 ├── Resources/          # Czcionki (LilitaOne), Kolory, Style, Splash Screen, Ikony
 ├── AppShell.xaml       # Główna nawigacja Shell z obsługą TabBar
 └── MauiProgram.cs      # Rejestracja usług i inicjalizacja natywnych bibliotek
+```
+
 ⚙️ Wymagania i Uruchomienie
 Wymagania:
 SDK .NET 10 z zainstalowanym workloadem maui-android
