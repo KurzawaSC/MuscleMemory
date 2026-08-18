@@ -6,7 +6,6 @@
              x:Class="MuscleMemory.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="PrimaryRed">#FF4040</Color>
             <Color x:Key="SolidBlack">#000000</Color>
             <Color x:Key="TranslucentBlack">#99000000</Color>
             <Color x:Key="SolidWhite">#FFFFFF</Color>
