@@ -1,4 +1,5 @@
 using SQLite;
+using MuscleMemory.Constants;
 
 namespace MuscleMemory.Models;
 
@@ -19,5 +20,5 @@ public class WorkoutExercise
 
     public string ExerciseName { get; set; } = string.Empty;
 
-    public int TargetRPE { get; set; } = 8;
+    public int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
 }

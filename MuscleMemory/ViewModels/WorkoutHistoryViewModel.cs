@@ -147,10 +147,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject
             WorkoutId = this.WorkoutId,
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
-            Sets = 3,
-            Reps = 10,
-            BreakTimeInSeconds = 60,
-            TargetRPE = 8
+            Sets = DomainDefaults.Sets,
+            Reps = DomainDefaults.Reps,
+            BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
+            TargetRPE = DomainDefaults.TargetRPE
         };
         
         int workoutExerciseId = await _dbContext.AddLoggedExerciseAsync(newWorkoutExercise);

@@ -73,7 +73,7 @@ public class DatabaseContext
     public async Task SaveActiveWorkoutStateAsync(ActiveWorkoutState state)
     {
         await InitAsync();
-        state.Id = 1;
+        state.Id = DomainDefaults.ActiveWorkoutStateId;
         await _connection!.InsertOrReplaceAsync(state);
     }
 
