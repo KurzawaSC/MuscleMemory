@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
@@ -89,6 +90,6 @@ public partial class ExerciseListViewModel : ObservableObject
     {
         if (exercise == null) return;
         
-        await Shell.Current.GoToAsync($"{nameof(ExerciseHistoryPage)}?ExerciseId={exercise.Id}&ExerciseName={exercise.Name}");
+        await Shell.Current.GoToAsync($"{nameof(ExerciseHistoryPage)}?{QueryKeys.ExerciseId}={exercise.Id}&{QueryKeys.ExerciseName}={exercise.Name}");
     }
 }

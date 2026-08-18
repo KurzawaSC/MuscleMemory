@@ -57,7 +57,7 @@ public partial class WorkoutListViewModel : ObservableObject
         if (selectedWorkout == null) return;
         var navigationParameter = new Dictionary<string, object>
         {
-            { "Workout", selectedWorkout }
+            { QueryKeys.Workout, selectedWorkout }
         };
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
     }
@@ -82,7 +82,7 @@ public partial class WorkoutListViewModel : ObservableObject
         
         var navigationParameter = new Dictionary<string, object>
         {
-            { "WorkoutToEdit", workout }
+            { QueryKeys.WorkoutToEdit, workout }
         };
         await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
     }
@@ -92,6 +92,6 @@ public partial class WorkoutListViewModel : ObservableObject
     {
         if (workout == null) return;
         
-        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?WorkoutId={workout.Id}&WorkoutName={workout.Name}");
+        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?{QueryKeys.WorkoutId}={workout.Id}&{QueryKeys.WorkoutName}={workout.Name}");
     }
 }

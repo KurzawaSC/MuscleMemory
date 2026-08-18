@@ -1,13 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutId), "WorkoutId")]
-[QueryProperty(nameof(WorkoutName), "WorkoutName")]
+[QueryProperty(nameof(WorkoutId), QueryKeys.WorkoutId)]
+[QueryProperty(nameof(WorkoutName), QueryKeys.WorkoutName)]
 public partial class WorkoutHistoryViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;

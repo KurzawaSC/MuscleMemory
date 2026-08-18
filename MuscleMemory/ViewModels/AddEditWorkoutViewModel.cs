@@ -7,7 +7,7 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutToEdit), "WorkoutToEdit")]
+[QueryProperty(nameof(WorkoutToEdit), QueryKeys.WorkoutToEdit)]
 public partial class AddEditWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
