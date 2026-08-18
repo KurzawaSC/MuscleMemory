@@ -17,9 +17,6 @@ public partial class ExerciseListViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    [ObservableProperty]
-    public partial bool IsNotEmpty { get; set; } = false;
-
     public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
 
     public ObservableCollection<Exercise> Exercises { get; set; } = new();
