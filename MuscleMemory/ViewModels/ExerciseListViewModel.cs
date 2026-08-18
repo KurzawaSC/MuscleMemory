@@ -12,29 +12,20 @@ namespace MuscleMemory.ViewModels;
 public partial class ExerciseListViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
-    private readonly ActiveWorkoutViewModel _activeWorkoutViewModel;
     private readonly IPopupService _popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
-
     public ObservableCollection<Exercise> Exercises { get; set; } = new();
 
-    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel, IPopupService popupService)
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout, IPopupService popupService)
     {
         _dbContext = dbContext;
-        _activeWorkoutViewModel = activeWorkoutViewModel;
+        ActiveWorkout = activeWorkout;
         _popupService = popupService;
-        
-        _activeWorkoutViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(ActiveWorkoutViewModel.IsWorkoutActive))
-            {
-                OnPropertyChanged(nameof(CanAddItems));
-            }
-        };
     }
 
     [RelayCommand]

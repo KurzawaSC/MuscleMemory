@@ -26,10 +26,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private DateTime _workoutStartTime;
     private DateTime _breakEndTime;
 
-    public static ActiveWorkoutViewModel? Current { get; private set; }
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
+    [NotifyPropertyChangedFor(nameof(CanAddItems))]
     public partial bool IsWorkoutActive { get; set; } = false;
 
     [ObservableProperty]
@@ -37,6 +36,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool IsOnActiveWorkoutPage { get; set; } = false;
 
     public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
+
+    public bool CanAddItems => !IsWorkoutActive;
 
     [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
@@ -102,7 +103,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public ActiveWorkoutViewModel(DatabaseContext dbContext, IAudioManager audioManager)
     {
-        Current = this;
         _dbContext = dbContext;
         _audioManager = audioManager;
 
