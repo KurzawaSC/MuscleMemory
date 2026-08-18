@@ -7,14 +7,10 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutId), QueryKeys.WorkoutId)]
-[QueryProperty(nameof(WorkoutName), QueryKeys.WorkoutName)]
-public partial class WorkoutHistoryViewModel : ObservableObject
+public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributable
 {
     private readonly DatabaseContext _dbContext;
-
-    [ObservableProperty]
-    public partial int WorkoutId { get; set; }
+    private int _workoutId;
 
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
@@ -29,17 +25,25 @@ public partial class WorkoutHistoryViewModel : ObservableObject
         _dbContext = dbContext;
     }
 
-    async partial void OnWorkoutIdChanged(int value)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (value > 0)
+        if (query.TryGetValue(QueryKeys.WorkoutName, out var name))
         {
-            await LoadHistoryAsync();
+            WorkoutName = name?.ToString() ?? string.Empty;
+        }
+
+        if (query.TryGetValue(QueryKeys.WorkoutId, out var id)
+            && int.TryParse(id?.ToString(), out int workoutId)
+            && workoutId > 0)
+        {
+            _workoutId = workoutId;
+            _ = LoadHistoryAsync();
         }
     }
 
     private async Task LoadHistoryAsync()
     {
-        var history = await _dbContext.GetWorkoutHistoryAsync(WorkoutId);
+        var history = await _dbContext.GetWorkoutHistoryAsync(_workoutId);
         Sessions.Clear();
         foreach (var session in history)
         {
@@ -144,7 +148,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
 
         var newWorkoutExercise = new WorkoutExercise
         {
-            WorkoutId = this.WorkoutId,
+            WorkoutId = _workoutId,
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
             Sets = DomainDefaults.Sets,
