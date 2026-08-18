@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using MuscleMemory.Constants;
+using MuscleMemory.Models;
 
 namespace MuscleMemory
 {
@@ -7,11 +9,11 @@ namespace MuscleMemory
         public App()
         {
             InitializeComponent();
-            string savedTheme = Preferences.Default.Get("AppTheme", "System");
-            UserAppTheme = savedTheme switch
+            string savedTheme = Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System));
+            UserAppTheme = Enum.Parse<ThemePreference>(savedTheme) switch
             {
-                "Light" => AppTheme.Light,
-                "Dark" => AppTheme.Dark,
+                ThemePreference.Light => AppTheme.Light,
+                ThemePreference.Dark => AppTheme.Dark,
                 _ => AppTheme.Unspecified
             };
         }

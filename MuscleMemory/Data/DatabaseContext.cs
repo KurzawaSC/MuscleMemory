@@ -1,4 +1,5 @@
 using SQLite;
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data;
@@ -13,7 +14,7 @@ public class DatabaseContext
 
         SQLitePCL.Batteries_V2.Init();
 
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
+        var dbPath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
         _connection = new SQLiteAsyncConnection(dbPath);
 
         await _connection!.CreateTableAsync<Exercise>();
@@ -72,7 +73,7 @@ public class DatabaseContext
     public async Task SaveActiveWorkoutStateAsync(ActiveWorkoutState state)
     {
         await InitAsync();
-        state.Id = 1;
+        state.Id = DomainDefaults.ActiveWorkoutStateId;
         await _connection!.InsertOrReplaceAsync(state);
     }
 
@@ -246,7 +247,7 @@ public class DatabaseContext
                 history.Add(new ExerciseHistoryEntry
                 {
                     Date = session.StartTime,
-                    WorkoutName = workout?.Name ?? "Unknown Workout",
+                    WorkoutName = workout?.Name ?? UiText.UnknownWorkoutName,
                     Sets = group.OrderBy(s => s.SetNumber).ToList()
                 });
             }
@@ -295,7 +296,7 @@ public class DatabaseContext
                 {
                     WorkoutExerciseId = group.Key,
                     WorkoutSessionId = sessionId,
-                    ExerciseName = we?.ExerciseName ?? "Unknown",
+                    ExerciseName = we?.ExerciseName ?? UiText.UnknownExerciseName,
                     Sets = new System.Collections.ObjectModel.ObservableCollection<WorkoutSet>(group.OrderBy(s => s.SetNumber))
                 });
             }

@@ -1,13 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutId), "WorkoutId")]
-[QueryProperty(nameof(WorkoutName), "WorkoutName")]
+[QueryProperty(nameof(WorkoutId), QueryKeys.WorkoutId)]
+[QueryProperty(nameof(WorkoutName), QueryKeys.WorkoutName)]
 public partial class WorkoutHistoryViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
@@ -52,10 +53,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     {
         if (set == null) return;
         
-        string weightStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter weight (kg):", initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
+        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
         if (weightStr == null) return;
-        
-        string repsStr = await Shell.Current.DisplayPromptAsync("Edit Set", "Enter reps:", initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
+
+        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterReps, initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
         if (repsStr == null) return;
 
         if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
@@ -72,7 +73,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
-        bool confirm = await Shell.Current.DisplayAlert("Delete Set", "Are you sure you want to delete this set?", "Yes", "No");
+        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteSetAsync(set.Id);
@@ -88,10 +89,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject
         double weight = lastSet?.Weight ?? 0;
         int reps = lastSet?.Reps ?? 0;
 
-        string weightStr = await Shell.Current.DisplayPromptAsync("Add Set", "Enter weight (kg):", initialValue: weight.ToString(), keyboard: Keyboard.Numeric);
+        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleAddSet, UiText.PromptEnterWeightKg, initialValue: weight.ToString(), keyboard: Keyboard.Numeric);
         if (weightStr == null) return;
-        
-        string repsStr = await Shell.Current.DisplayPromptAsync("Add Set", "Enter reps:", initialValue: reps.ToString(), keyboard: Keyboard.Numeric);
+
+        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleAddSet, UiText.PromptEnterReps, initialValue: reps.ToString(), keyboard: Keyboard.Numeric);
         if (repsStr == null) return;
 
         if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
@@ -114,7 +115,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     private async Task DeleteExerciseAsync(WorkoutHistoryExercise exercise)
     {
         if (exercise == null) return;
-        bool confirm = await Shell.Current.DisplayAlert("Delete Exercise", $"Are you sure you want to remove '{exercise.ExerciseName}'?", "Yes", "No");
+        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
@@ -129,14 +130,14 @@ public partial class WorkoutHistoryViewModel : ObservableObject
         var allExercises = await _dbContext.GetExercisesAsync();
         if (!allExercises.Any())
         {
-            await Shell.Current.DisplayAlert("No Exercises", "You must create an exercise in the library first.", "OK");
+            await Shell.Current.DisplayAlert(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
             return;
         }
 
         var exerciseNames = allExercises.Select(e => e.Name).ToArray();
-        string selectedName = await Shell.Current.DisplayActionSheet("Select Exercise", "Cancel", null, exerciseNames);
+        string selectedName = await Shell.Current.DisplayActionSheet(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
 
-        if (string.IsNullOrEmpty(selectedName) || selectedName == "Cancel")
+        if (string.IsNullOrEmpty(selectedName) || selectedName == UiText.ButtonCancel)
             return;
 
         var selectedExercise = allExercises.First(e => e.Name == selectedName);
@@ -146,10 +147,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject
             WorkoutId = this.WorkoutId,
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
-            Sets = 3,
-            Reps = 10,
-            BreakTimeInSeconds = 60,
-            TargetRPE = 8
+            Sets = DomainDefaults.Sets,
+            Reps = DomainDefaults.Reps,
+            BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
+            TargetRPE = DomainDefaults.TargetRPE
         };
         
         int workoutExerciseId = await _dbContext.AddLoggedExerciseAsync(newWorkoutExercise);

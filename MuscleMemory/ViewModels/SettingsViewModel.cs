@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
+using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
@@ -9,25 +11,25 @@ public partial class SettingsViewModel : ObservableObject
     private readonly DatabaseContext _dbContext;
 
     [ObservableProperty]
-    public partial string SelectedTheme { get; set; } = "System";
+    public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
 
-    public List<string> ThemeOptions { get; } = new() { "System", "Light", "Dark" };
+    public List<ThemePreference> ThemeOptions { get; } = Enum.GetValues<ThemePreference>().ToList();
 
     public SettingsViewModel(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
-        SelectedTheme = Preferences.Default.Get("AppTheme", "System");
+        SelectedTheme = Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
     }
 
-    partial void OnSelectedThemeChanged(string value)
+    partial void OnSelectedThemeChanged(ThemePreference value)
     {
-        Preferences.Default.Set("AppTheme", value);
+        Preferences.Default.Set(PreferenceKeys.AppTheme, value.ToString());
         if (Application.Current != null)
         {
             var themeToSet = value switch
             {
-                "Light" => AppTheme.Light,
-                "Dark" => AppTheme.Dark,
+                ThemePreference.Light => AppTheme.Light,
+                ThemePreference.Dark => AppTheme.Dark,
                 _ => AppTheme.Unspecified
             };
             
@@ -44,15 +46,15 @@ public partial class SettingsViewModel : ObservableObject
     private async Task EraseDataAsync()
     {
         bool isConfirmed = await Shell.Current.DisplayAlertAsync(
-            "Warning!",
-            "Are you sure you want to delete ALL your exercises and workouts? This action cannot be undone.",
-            "Yes, erase it",
-            "Cancel");
+            UiText.TitleWarning,
+            UiText.BodyEraseAllDataConfirmation,
+            UiText.ButtonYesEraseIt,
+            UiText.ButtonCancel);
 
         if (isConfirmed)
         {
             await _dbContext.ClearAllDataAsync();
-            await Shell.Current.DisplayAlertAsync("Success", "All your data has been erased.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
         }
     }
     [RelayCommand]
@@ -60,11 +62,11 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
 
             if (!File.Exists(dbPath))
             {
-                await Shell.Current.DisplayAlertAsync("Oops!", "There is no data to export yet.", "OK");
+                await Shell.Current.DisplayAlertAsync(UiText.TitleOops, UiText.BodyNoDataToExport, UiText.ButtonOk);
                 return;
             }
             await Share.Default.RequestAsync(new ShareFileRequest
@@ -75,7 +77,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Error", $"Failed to export data: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message), UiText.ButtonOk);
         }
     }
 }
