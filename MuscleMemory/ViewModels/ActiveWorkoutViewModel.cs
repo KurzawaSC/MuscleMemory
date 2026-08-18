@@ -16,7 +16,7 @@ public class ExerciseBestSet
     public string BestSetText { get; set; } = string.Empty;
 }
 
-[QueryProperty(nameof(CurrentWorkout), "Workout")]
+[QueryProperty(nameof(CurrentWorkout), QueryKeys.Workout)]
 public partial class ActiveWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
