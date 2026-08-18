@@ -18,7 +18,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public ObservableCollection<WorkoutHistorySession> Sessions { get; set; } = new();
+    public ObservableCollection<WorkoutHistorySession> Sessions { get; } = new();
 
     public WorkoutHistoryViewModel(DatabaseContext dbContext)
     {

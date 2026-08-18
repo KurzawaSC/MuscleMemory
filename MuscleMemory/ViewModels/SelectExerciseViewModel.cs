@@ -13,8 +13,7 @@ public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributa
 
     private List<Exercise> _allExercises = [];
 
-    [ObservableProperty]
-    public partial ObservableCollection<Exercise> FilteredExercises { get; set; } = new();
+    public ObservableCollection<Exercise> FilteredExercises { get; } = new();
 
     public List<string> MuscleGroupFilters { get; } = new List<string> { "All" };
 

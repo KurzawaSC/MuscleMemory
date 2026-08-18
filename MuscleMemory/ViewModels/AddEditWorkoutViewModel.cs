@@ -27,7 +27,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
 
     [ObservableProperty]
     public partial bool HasUnsavedChanges { get; set; } = false;
-    public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
+    public ObservableCollection<WorkoutExercise> Exercises { get; } = new();
 
     public AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService)
     {
