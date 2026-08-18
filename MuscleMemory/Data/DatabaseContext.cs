@@ -40,16 +40,6 @@ public class DatabaseContext
         await InitAsync();
         return await _connection!.InsertAsync(exercise);
     }
-    public void EraseDatabase()
-    {
-        var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MuscleMemory.db3");
-        if (File.Exists(dbPath))
-        {
-            _connection?.CloseAsync().Wait();
-            _connection = null;
-            File.Delete(dbPath);
-        }
-    }
     public async Task<List<Workout>> GetWorkoutsAsync()
     {
         await InitAsync();
