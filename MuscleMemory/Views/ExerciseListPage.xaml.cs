@@ -15,11 +15,6 @@ public partial class ExerciseListPage : ContentPage
         BindingContext = _viewModel;
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await _viewModel.LoadExercisesAsync();
-    }
     private async void OnAddButtonClicked(object? sender, EventArgs e)
     {
         var popup = new AddExercisePopup();
