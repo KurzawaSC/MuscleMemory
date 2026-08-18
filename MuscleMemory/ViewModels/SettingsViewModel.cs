@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data;
+using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
@@ -10,25 +11,25 @@ public partial class SettingsViewModel : ObservableObject
     private readonly DatabaseContext _dbContext;
 
     [ObservableProperty]
-    public partial string SelectedTheme { get; set; } = "System";
+    public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
 
-    public List<string> ThemeOptions { get; } = new() { "System", "Light", "Dark" };
+    public List<ThemePreference> ThemeOptions { get; } = Enum.GetValues<ThemePreference>().ToList();
 
     public SettingsViewModel(DatabaseContext dbContext)
     {
         _dbContext = dbContext;
-        SelectedTheme = Preferences.Default.Get(PreferenceKeys.AppTheme, "System");
+        SelectedTheme = Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
     }
 
-    partial void OnSelectedThemeChanged(string value)
+    partial void OnSelectedThemeChanged(ThemePreference value)
     {
-        Preferences.Default.Set(PreferenceKeys.AppTheme, value);
+        Preferences.Default.Set(PreferenceKeys.AppTheme, value.ToString());
         if (Application.Current != null)
         {
             var themeToSet = value switch
             {
-                "Light" => AppTheme.Light,
-                "Dark" => AppTheme.Dark,
+                ThemePreference.Light => AppTheme.Light,
+                ThemePreference.Dark => AppTheme.Dark,
                 _ => AppTheme.Unspecified
             };
             
