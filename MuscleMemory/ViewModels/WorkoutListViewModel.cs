@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
@@ -48,7 +49,7 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private async Task NavigateToAddWorkout()
     {
-        await Shell.Current.GoToAsync("AddEditWorkoutPage");
+        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage));
     }
     [RelayCommand]
     private async Task StartWorkoutAsync(Workout selectedWorkout)
@@ -56,7 +57,7 @@ public partial class WorkoutListViewModel : ObservableObject
         if (selectedWorkout == null) return;
         var navigationParameter = new Dictionary<string, object>
         {
-            { "Workout", selectedWorkout }
+            { QueryKeys.Workout, selectedWorkout }
         };
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
     }
@@ -66,7 +67,7 @@ public partial class WorkoutListViewModel : ObservableObject
     {
         if (workout == null) return;
 
-        bool answer = await Shell.Current.DisplayAlertAsync("Delete Workout", $"Are you sure you want to delete '{workout.Name}'?", "Yes", "No");
+        bool answer = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteWorkout, string.Format(UiText.DeleteConfirmationFormat, workout.Name), UiText.ButtonYes, UiText.ButtonNo);
         if (answer)
         {
             await _dbContext.DeleteWorkoutAsync(workout.Id);
@@ -81,9 +82,9 @@ public partial class WorkoutListViewModel : ObservableObject
         
         var navigationParameter = new Dictionary<string, object>
         {
-            { "WorkoutToEdit", workout }
+            { QueryKeys.WorkoutToEdit, workout }
         };
-        await Shell.Current.GoToAsync("AddEditWorkoutPage", navigationParameter);
+        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
     }
 
     [RelayCommand]
@@ -91,6 +92,6 @@ public partial class WorkoutListViewModel : ObservableObject
     {
         if (workout == null) return;
         
-        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?WorkoutId={workout.Id}&WorkoutName={workout.Name}");
+        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?{QueryKeys.WorkoutId}={workout.Id}&{QueryKeys.WorkoutName}={workout.Name}");
     }
 }

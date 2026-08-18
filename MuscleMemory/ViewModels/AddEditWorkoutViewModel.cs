@@ -1,12 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutToEdit), "WorkoutToEdit")]
+[QueryProperty(nameof(WorkoutToEdit), QueryKeys.WorkoutToEdit)]
 public partial class AddEditWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
@@ -93,13 +94,13 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(WorkoutName))
         {
-            await Shell.Current.DisplayAlertAsync("Hold on!", "Please enter a workout name.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyEnterWorkoutName, UiText.ButtonOk);
             return;
         }
 
         if (!Exercises.Any())
         {
-            await Shell.Current.DisplayAlertAsync("Hold on!", "Add at least one exercise to your workout.", "OK");
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyAddAtLeastOneExercise, UiText.ButtonOk);
             return;
         }
 
@@ -118,7 +119,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         }
 
         HasUnsavedChanges = false;
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
     public async Task<List<Exercise>> GetAllExercisesAsync()
     {

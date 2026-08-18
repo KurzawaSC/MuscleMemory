@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
@@ -12,7 +13,7 @@ public partial class ActiveWorkoutPage : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
-        Shell.Current.GoToAsync("..");
+        Shell.Current.GoToAsync(NavigationRoutes.GoBack);
         return true;
     }
 
