@@ -37,7 +37,7 @@ Projekt został stworzony zgodnie z zasadami **Clean Architecture** i **Clean Co
 ```text
 MuscleMemory/
 ├── Models/             # Encje bazy danych (Workout, Exercise, WorkoutLog, etc.)
-├── Services/           # Obsługa SQLite (DatabaseContext) oraz logistyka danych
+├── Data/               # Obsługa SQLite (DatabaseContext)
 ├── ViewModels/         # Logika aplikacji z użyciem CommunityToolkit.Mvvm
 ├── Views/              # Widoki XAML (Listy, Widok Treningu, Ustawienia, Popupy)
 ├── Resources/          # Czcionki (LilitaOne), Kolory, Style, Splash Screen, Ikony

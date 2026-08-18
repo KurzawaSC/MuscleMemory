@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Models;
-using System;
 
 namespace MuscleMemory.ViewModels;
 
