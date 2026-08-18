@@ -15,9 +15,12 @@ public partial class SettingsViewModel : ObservableObject
 
     public List<ThemePreference> ThemeOptions { get; } = Enum.GetValues<ThemePreference>().ToList();
 
-    public SettingsViewModel(DatabaseContext dbContext)
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    public SettingsViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout)
     {
         _dbContext = dbContext;
+        ActiveWorkout = activeWorkout;
         SelectedTheme = Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
     }
 

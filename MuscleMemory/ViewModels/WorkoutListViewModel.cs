@@ -11,27 +11,18 @@ namespace MuscleMemory.ViewModels;
 public partial class WorkoutListViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
-    private readonly ActiveWorkoutViewModel _activeWorkoutViewModel;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
-    
     public ObservableCollection<Workout> Workouts { get; set; } = new();
 
-    public WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel)
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    public WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout)
     {
         _dbContext = dbContext;
-        _activeWorkoutViewModel = activeWorkoutViewModel;
-        
-        _activeWorkoutViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(ActiveWorkoutViewModel.IsWorkoutActive))
-            {
-                OnPropertyChanged(nameof(CanAddItems));
-            }
-        };
+        ActiveWorkout = activeWorkout;
     }
     [RelayCommand]
     public async Task LoadWorkoutsAsync()
