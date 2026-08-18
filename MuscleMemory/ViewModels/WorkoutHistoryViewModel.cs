@@ -77,7 +77,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
-        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
+        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteSetAsync(set.Id);
@@ -119,7 +119,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private async Task DeleteExerciseAsync(WorkoutHistoryExercise exercise)
     {
         if (exercise == null) return;
-        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
+        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
@@ -134,12 +134,12 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         var allExercises = await _dbContext.GetExercisesAsync();
         if (!allExercises.Any())
         {
-            await Shell.Current.DisplayAlert(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
+            await Shell.Current.DisplayAlertAsync(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
             return;
         }
 
         var exerciseNames = allExercises.Select(e => e.Name).ToArray();
-        string selectedName = await Shell.Current.DisplayActionSheet(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
+        string selectedName = await Shell.Current.DisplayActionSheetAsync(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
 
         if (string.IsNullOrEmpty(selectedName) || selectedName == UiText.ButtonCancel)
             return;
