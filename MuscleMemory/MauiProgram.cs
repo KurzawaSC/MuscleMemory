@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddTransient<WorkoutHistoryViewModel>();
         builder.Services.AddTransient<WorkoutHistoryPage>();
         builder.Services.AddTransientPopup<ConfigureExercisePopup, ConfigureExerciseViewModel>();
+        builder.Services.AddTransientPopup<AddExercisePopup, AddEditExerciseViewModel>();
 
         return builder.Build();
     }

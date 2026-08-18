@@ -131,7 +131,7 @@
             </Image>
 
             <Button BackgroundColor="Transparent" 
-                    Clicked="OnAddButtonClicked" 
+                    Command="{Binding AddExerciseCommand}" 
                     CornerRadius="30" />
         </Grid>
         <Border Margin="15,0,15,20"

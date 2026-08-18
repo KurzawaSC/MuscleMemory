@@ -118,7 +118,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     {
         if (exerciseToEdit == null) return;
 
-        var configuration = await ShowConfigurationPopupAsync(QueryKeys.ExerciseToEdit, exerciseToEdit);
+        var configuration = await ShowConfigurationPopupAsync(QueryKeys.WorkoutExerciseToEdit, exerciseToEdit);
         if (configuration != null)
         {
             UpdateExerciseInWorkout(exerciseToEdit, configuration);

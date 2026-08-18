@@ -42,7 +42,7 @@ public partial class ConfigureExerciseViewModel : ObservableObject, IQueryAttrib
         {
             ExerciseName = exercise.Name;
         }
-        else if (query.TryGetValue(QueryKeys.ExerciseToEdit, out var editable) && editable is WorkoutExercise workoutExercise)
+        else if (query.TryGetValue(QueryKeys.WorkoutExerciseToEdit, out var editable) && editable is WorkoutExercise workoutExercise)
         {
             LoadExerciseToEdit(workoutExercise);
         }
