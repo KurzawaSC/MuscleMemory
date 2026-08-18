@@ -6,5 +6,7 @@ public static class DomainDefaults
     public const int Reps = 10;
     public const int BreakTimeInSeconds = 60;
     public const int TargetRPE = 8;
+    public const int MinTargetRPE = 1;
+    public const int MaxTargetRPE = 10;
     public const int ActiveWorkoutStateId = 1;
 }

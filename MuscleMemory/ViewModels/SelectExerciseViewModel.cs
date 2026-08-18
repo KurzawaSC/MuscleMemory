@@ -1,12 +1,17 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class SelectExerciseViewModel : ObservableObject
+public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly List<Exercise> _allExercises;
+    private readonly IPopupService _popupService;
+
+    private List<Exercise> _allExercises = [];
 
     [ObservableProperty]
     public partial ObservableCollection<Exercise> FilteredExercises { get; set; } = new();
@@ -16,16 +21,26 @@ public partial class SelectExerciseViewModel : ObservableObject
     [ObservableProperty]
     public partial string SelectedMuscleGroupFilter { get; set; } = "All";
 
-    public SelectExerciseViewModel(List<Exercise> availableExercises)
+    [ObservableProperty]
+    public partial Exercise? SelectedExercise { get; set; }
+
+    public SelectExerciseViewModel(IPopupService popupService)
     {
-        _allExercises = availableExercises;
-        
+        _popupService = popupService;
+
         foreach (var mg in Enum.GetValues(typeof(MuscleGroup)))
         {
             MuscleGroupFilters.Add(mg.ToString()!);
         }
+    }
 
-        FilterExercises();
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue(QueryKeys.AvailableExercises, out var available) && available is List<Exercise> exercises)
+        {
+            _allExercises = exercises;
+            FilterExercises();
+        }
     }
 
     partial void OnSelectedMuscleGroupFilterChanged(string value)
@@ -47,5 +62,18 @@ public partial class SelectExerciseViewModel : ObservableObject
         {
             FilteredExercises.Add(exercise);
         }
+    }
+
+    [RelayCommand]
+    private async Task ConfirmSelectionAsync()
+    {
+        if (SelectedExercise is not Exercise chosen)
+        {
+            return;
+        }
+
+        SelectedExercise = null;
+        await Task.Delay(UiTiming.PopupSelectionCloseDelayMilliseconds);
+        await _popupService.ClosePopupAsync<Exercise?>(Shell.Current.Navigation, chosen);
     }
 }

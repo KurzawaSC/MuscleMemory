@@ -1,9 +1,11 @@
+using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Models;
+using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -11,6 +13,7 @@ namespace MuscleMemory.ViewModels;
 public partial class AddEditWorkoutViewModel : ObservableObject
 {
     private readonly DatabaseContext _dbContext;
+    private readonly IPopupService _popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -26,9 +29,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
     public partial bool HasUnsavedChanges { get; set; } = false;
     public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
 
-    public AddEditWorkoutViewModel(DatabaseContext dbContext)
+    public AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService)
     {
         _dbContext = dbContext;
+        _popupService = popupService;
     }
 
     [ObservableProperty]
@@ -49,16 +53,94 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             HasUnsavedChanges = false;
         }
     }
-    public void AddExerciseToWorkout(Exercise selectedExercise, int sets, int reps, int breakTime, int targetRPE)
+
+    [RelayCommand]
+    private void StartGuardingUnsavedChanges()
+    {
+        Shell.Current.Navigating += OnShellNavigating;
+    }
+
+    [RelayCommand]
+    private void StopGuardingUnsavedChanges()
+    {
+        Shell.Current.Navigating -= OnShellNavigating;
+    }
+
+    private async void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
+    {
+        bool isLeavingPage = e.Source is ShellNavigationSource.Pop or ShellNavigationSource.PopToRoot;
+        if (!isLeavingPage || !HasUnsavedChanges)
+        {
+            return;
+        }
+
+        e.Cancel();
+
+        bool discard = await Shell.Current.DisplayAlertAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        if (discard)
+        {
+            HasUnsavedChanges = false;
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        }
+    }
+
+    [RelayCommand]
+    private async Task AddExerciseAsync()
+    {
+        var allExercises = await _dbContext.GetExercisesAsync();
+
+        if (!allExercises.Any())
+        {
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyNoExercisesForWorkout, UiText.ButtonOk);
+            return;
+        }
+
+        var selection = await _popupService.ShowPopupAsync<SelectExercisePopup, Exercise?>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object> { [QueryKeys.AvailableExercises] = allExercises });
+
+        if (selection.Result is not Exercise selectedExercise) return;
+
+        await Task.Delay(UiTiming.SequentialPopupDelayMilliseconds);
+
+        var configuration = await ShowConfigurationPopupAsync(QueryKeys.SelectedExercise, selectedExercise);
+        if (configuration != null)
+        {
+            AddExerciseToWorkout(selectedExercise, configuration);
+        }
+    }
+
+    [RelayCommand]
+    private async Task EditExerciseAsync(WorkoutExercise exerciseToEdit)
+    {
+        if (exerciseToEdit == null) return;
+
+        var configuration = await ShowConfigurationPopupAsync(QueryKeys.WorkoutExerciseToEdit, exerciseToEdit);
+        if (configuration != null)
+        {
+            UpdateExerciseInWorkout(exerciseToEdit, configuration);
+        }
+    }
+
+    private async Task<ExerciseConfiguration?> ShowConfigurationPopupAsync(string queryKey, object parameter)
+    {
+        var result = await _popupService.ShowPopupAsync<ConfigureExercisePopup, ExerciseConfiguration?>(
+            Shell.Current,
+            shellParameters: new Dictionary<string, object> { [queryKey] = parameter });
+
+        return result.Result;
+    }
+
+    private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {
         var newWorkoutExercise = new WorkoutExercise
         {
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
-            Sets = sets,
-            Reps = reps,
-            BreakTimeInSeconds = breakTime,
-            TargetRPE = targetRPE
+            Sets = configuration.Sets,
+            Reps = configuration.Reps,
+            BreakTimeInSeconds = configuration.BreakTimeInSeconds,
+            TargetRPE = configuration.TargetRPE
         };
 
         Exercises.Add(newWorkoutExercise);
@@ -66,19 +148,20 @@ public partial class AddEditWorkoutViewModel : ObservableObject
         HasUnsavedChanges = true;
     }
 
-    public void UpdateExerciseInWorkout(WorkoutExercise exercise, int sets, int reps, int breakTime, int targetRPE)
+    private void UpdateExerciseInWorkout(WorkoutExercise exercise, ExerciseConfiguration configuration)
     {
         var index = Exercises.IndexOf(exercise);
         if (index >= 0)
         {
-            exercise.Sets = sets;
-            exercise.Reps = reps;
-            exercise.BreakTimeInSeconds = breakTime;
-            exercise.TargetRPE = targetRPE;
+            exercise.Sets = configuration.Sets;
+            exercise.Reps = configuration.Reps;
+            exercise.BreakTimeInSeconds = configuration.BreakTimeInSeconds;
+            exercise.TargetRPE = configuration.TargetRPE;
             Exercises[index] = exercise;
             HasUnsavedChanges = true;
         }
     }
+
     [RelayCommand]
     private void RemoveExercise(WorkoutExercise exerciseToRemove)
     {
@@ -120,9 +203,5 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
         HasUnsavedChanges = false;
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
-    }
-    public async Task<List<Exercise>> GetAllExercisesAsync()
-    {
-        return await _dbContext.GetExercisesAsync();
     }
 }
