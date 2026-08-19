@@ -521,9 +521,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 
-    [RelayCommand]
-    private void EnterPage() => IsOnActiveWorkoutPage = true;
-
-    [RelayCommand]
-    private void LeavePage() => IsOnActiveWorkoutPage = false;
+    public void TrackCurrentPage(Shell shell)
+    {
+        shell.Navigated += (_, _) => IsOnActiveWorkoutPage = shell.CurrentPage is ActiveWorkoutPage;
+    }
 }
