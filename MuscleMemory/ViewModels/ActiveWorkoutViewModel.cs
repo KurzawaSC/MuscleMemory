@@ -494,7 +494,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 BestSets.Add(new ExerciseBestSet
                 {
                     ExerciseName = ex.ExerciseName,
-                    BestSetText = $"{bestSet.Weight} kg × {bestSet.Reps} reps"
+                    BestSetText = $"{bestSet.Weight}{UiText.KgTimesSeparator}{bestSet.Reps}{UiText.RepsSuffix}"
                 });
             }
         }

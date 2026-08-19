@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
              Title="Workout"
@@ -219,9 +220,9 @@
                                             <Label.FormattedText>
                                                 <FormattedString>
                                                     <Span Text="{Binding Weight}" />
-                                                    <Span Text=" kg  ×  " TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                                    <Span Text="{x:Static constants:UiText.KgTimesSeparator}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                                                     <Span Text="{Binding Reps}" />
-                                                    <Span Text=" reps" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                                                    <Span Text="{x:Static constants:UiText.RepsSuffix}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                                                 </FormattedString>
                                             </Label.FormattedText>
                                         </Label>
