@@ -19,6 +19,40 @@
         </Setter>
     </Style>
 
+    <Style x:Key="PrimaryButton" TargetType="controls:TappableButton">
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+        <Setter Property="TextColor" Value="{StaticResource OnAccentText}" />
+        <Setter Property="CornerRadius" Value="30" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="HeightRequest" Value="60" />
+        <Setter Property="SurfaceShadow" Value="{StaticResource CardShadow}" />
+    </Style>
+
+    <Style x:Key="OutlineButton" TargetType="controls:TappableButton">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="30" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HeightRequest" Value="40" />
+        <Setter Property="ContentPadding" Value="15,0" />
+    </Style>
+
+    <Style x:Key="DangerOutlineButton" TargetType="controls:TappableButton" BasedOn="{StaticResource OutlineButton}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+    </Style>
+
+    <Style x:Key="TextButton" TargetType="controls:TappableButton">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+
+    <Style x:Key="NeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+    </Style>
+
     <Style x:Key="SettingsRow" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
         <Setter Property="Padding" Value="15,0" />
         <Setter Property="HeightRequest" Value="60" />

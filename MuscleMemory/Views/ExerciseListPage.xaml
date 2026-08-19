@@ -51,17 +51,10 @@
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <Button Text="History" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ViewHistoryCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                                            BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
-                                            BorderWidth="1"
-                                            FontAttributes="Bold" 
-                                            CornerRadius="20"
-                                            HeightRequest="40"
-                                            Padding="15,0"/>
+                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
+                                                             Text="History"
+                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ViewHistoryCommand}"
+                                                             CommandParameter="{Binding .}" />
                                 </HorizontalStackLayout>
                             </Grid>
                         </Border>

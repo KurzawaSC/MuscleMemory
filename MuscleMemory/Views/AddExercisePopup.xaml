@@ -3,6 +3,7 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+               xmlns:controls="clr-namespace:MuscleMemory.Controls"
                x:Class="MuscleMemory.Views.AddExercisePopup"
                x:DataType="viewmodels:AddEditExerciseViewModel">
 
@@ -45,21 +46,7 @@
  />
             </Border>
 
-            <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
-                <Button Grid.Column="0" 
-                        Text="Cancel"
-                        Command="{Binding CancelCommand}"
-                        BackgroundColor="Transparent"
-                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                        FontSize="18"/>
-
-                <Button Grid.Column="1" 
-                        Text="Add"
-                        Command="{Binding ConfirmCommand}"
-                        BackgroundColor="Transparent"
-                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontSize="18"/>
-            </Grid>
+            <controls:PopupActionBar ConfirmText="Add" CancelCommand="{Binding CancelCommand}" ConfirmCommand="{Binding ConfirmCommand}" />
         </VerticalStackLayout>
     </Border>
 </toolkit:Popup>

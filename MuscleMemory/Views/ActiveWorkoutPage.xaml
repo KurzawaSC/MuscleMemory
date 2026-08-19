@@ -29,27 +29,21 @@
                   ColumnDefinitions="50, *, 50"
                   Margin="0,0,0,10"
                   IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
-                <Button Grid.Column="0" 
-                        Text="&lt;" 
-                        Command="{Binding PreviousExerciseCommand}"
-                        IsEnabled="{Binding HasPreviousExercise}"
-                        BackgroundColor="Transparent"
-                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontSize="24"
-                        VerticalOptions="Center">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding HasPreviousExercise}" Value="False">
-                            <Setter Property="Opacity" Value="0" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
+                <controls:TappableButton Grid.Column="0"
+                                         Text="&lt;"
+                                         Command="{Binding PreviousExerciseCommand}"
+                                         IsEnabled="{Binding HasPreviousExercise}"
+                                         DisabledOpacity="0"
+                                         TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                         FontSize="24"
+                                         VerticalOptions="Center" />
                 <Border Grid.Column="1"
                         HorizontalOptions="Center"
                         Padding="20,8"
                         Stroke="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                         StrokeThickness="1.5">
                     <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="20" />
+                        <RoundRectangle CornerRadius="30" />
                     </Border.StrokeShape>
                     <Label Text="{Binding ExerciseProgressText}"
                            FontSize="14"
@@ -57,20 +51,14 @@
                            HorizontalTextAlignment="Center"
                            VerticalOptions="Center"/>
                 </Border>
-                <Button Grid.Column="2" 
-                        Text="&gt;" 
-                        Command="{Binding NextExerciseCommand}"
-                        IsEnabled="{Binding HasNextExercise}"
-                        BackgroundColor="Transparent"
-                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontSize="24"
-                        VerticalOptions="Center">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding HasNextExercise}" Value="False">
-                            <Setter Property="Opacity" Value="0" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
+                <controls:TappableButton Grid.Column="2"
+                                         Text="&gt;"
+                                         Command="{Binding NextExerciseCommand}"
+                                         IsEnabled="{Binding HasNextExercise}"
+                                         DisabledOpacity="0"
+                                         TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                         FontSize="24"
+                                         VerticalOptions="Center" />
             </Grid>
 
                         <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
@@ -117,40 +105,27 @@
                                HorizontalTextAlignment="Center"
                                Margin="0,0,0,15" />
 
-                                                <Button Grid.Row="1"
-                                Text="Save Set"
-                                Command="{Binding SaveSetCommand}"
-                                IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                                TextColor="{StaticResource OnAccentText}"
-                                FontSize="20"
-                                CornerRadius="30"
-                                HeightRequest="60" Shadow="{StaticResource CardShadow}">
-                        </Button>
+                        <controls:TappableButton Grid.Row="1"
+                                                 Style="{StaticResource PrimaryButton}"
+                                                 Text="Save Set"
+                                                 Command="{Binding SaveSetCommand}"
+                                                 IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}" />
 
                         <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasSavedSets}" Grid.Row="1">
-                            <Button Grid.Column="0"
-                                    Text="Undo Last"
-                                    Command="{Binding UndoLastSetCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                                    BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
-                                    BorderWidth="1.5"
-                                    FontSize="18"
-                                    CornerRadius="30"
-                                    HeightRequest="60"
-                                    Margin="0,0,10,0"/>
+                            <controls:TappableButton Grid.Column="0"
+                                                     Text="Undo Last"
+                                                     Command="{Binding UndoLastSetCommand}"
+                                                     TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                                     StrokeColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
+                                                     StrokeThickness="1.5"
+                                                     HeightRequest="60"
+                                                     Margin="0,0,10,0" />
                             
-                            <Button Grid.Column="1"
-                                    Text="Save Set"
-                                    Command="{Binding SaveSetCommand}"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                                    TextColor="{StaticResource OnAccentText}"
-                                    FontSize="20"
-                                    CornerRadius="30"
-                                    HeightRequest="60"
-                                    Margin="10,0,0,0" Shadow="{StaticResource CardShadow}">
-                            </Button>
+                            <controls:TappableButton Grid.Column="1"
+                                                     Style="{StaticResource PrimaryButton}"
+                                                     Text="Save Set"
+                                                     Command="{Binding SaveSetCommand}"
+                                                     Margin="10,0,0,0" />
                         </Grid>
                     </Grid>
                 </VerticalStackLayout>
@@ -174,7 +149,13 @@
                     <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="REST" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center" />
                         <Label Text="{Binding RestTimerText}" FontSize="48" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" HorizontalOptions="Center" />
-                        <Button Text="Skip Rest" Command="{Binding SkipRestCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="1.5" CornerRadius="25" HeightRequest="50" WidthRequest="150" />
+                        <controls:TappableButton Text="Skip Rest"
+                                                 Command="{Binding SkipRestCommand}"
+                                                 TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                                 StrokeColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                                 StrokeThickness="1.5"
+                                                 HeightRequest="50"
+                                                 WidthRequest="150" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
@@ -228,15 +209,16 @@
 
             </Grid>
 
-                        <Button Grid.Row="5"
-                    Text="Finish Workout"
-                    Command="{Binding FinishWorkoutCommand}"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                    BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="2"
- FontSize="18" CornerRadius="30" HeightRequest="60"
-                    Margin="0,10,0,0" Shadow="{StaticResource CardShadow}">
-        </Button>
+        <controls:TappableButton Grid.Row="5"
+                                 Text="Finish Workout"
+                                 Command="{Binding FinishWorkoutCommand}"
+                                 FillColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}"
+                                 TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                 StrokeColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                 StrokeThickness="2"
+                                 HeightRequest="60"
+                                 Margin="0,10,0,0"
+                                 SurfaceShadow="{StaticResource CardShadow}" />
         </Grid>
 
                 <Grid BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" IsVisible="{Binding IsWorkoutCompleted}">
@@ -278,16 +260,11 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                     
-                    <Button Text="Finish &amp; Save Workout" 
-                            Command="{Binding ExitWorkoutCommand}" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
-                            TextColor="{StaticResource OnAccentText}" 
-                            FontSize="20" 
-                            CornerRadius="30" 
-                            HeightRequest="60" 
-                            Margin="0,20,0,40" 
-                            WidthRequest="250" Shadow="{StaticResource CardShadow}">
-                    </Button>
+                    <controls:TappableButton Style="{StaticResource PrimaryButton}"
+                                             Text="Finish &amp; Save Workout"
+                                             Command="{Binding ExitWorkoutCommand}"
+                                             WidthRequest="250"
+                                             Margin="0,20,0,40" />
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>

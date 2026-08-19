@@ -70,16 +70,15 @@
                                                             </BindableLayout.ItemTemplate>
                                                         </VerticalStackLayout>
                                                         
-                                                        <Button Text="+ Add Set"
-                                                                Command="{Binding BindingContext.AddSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                CommandParameter="{Binding .}"
-                                                                BackgroundColor="Transparent"
-                                                                TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                                                                FontSize="12"
-                                                                Margin="0,5,0,5"
-                                                                HorizontalOptions="Center"
-                                                                HeightRequest="30"
-                                                                Padding="10,0"/>
+                                                        <controls:TappableButton Text="+ Add Set"
+                                                                                 TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                                                                 FontSize="12"
+                                                                                 HeightRequest="30"
+                                                                                 ContentPadding="10,0"
+                                                                                 Margin="0,5,0,5"
+                                                                                 HorizontalOptions="Center"
+                                                                                 Command="{Binding BindingContext.AddSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                                 CommandParameter="{Binding .}" />
                                                     </VerticalStackLayout>
                                                 </Border>
                                             </VerticalStackLayout>
@@ -88,16 +87,13 @@
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
                             
-                            <Button Text="Add Exercise"
-                                    Command="{Binding BindingContext.AddExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                    CommandParameter="{Binding .}"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                                    TextColor="{StaticResource OnAccentText}"
-                                    FontSize="16"
-                                    CornerRadius="16"
-                                    HeightRequest="50"
-                                    Margin="0,15,0,0" Shadow="{StaticResource CardShadow}">
-                            </Button>
+                            <controls:TappableButton Style="{StaticResource PrimaryButton}"
+                                                     Text="Add Exercise"
+                                                     FontSize="16"
+                                                     HeightRequest="50"
+                                                     Margin="0,15,0,0"
+                                                     Command="{Binding BindingContext.AddExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                     CommandParameter="{Binding .}" />
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
