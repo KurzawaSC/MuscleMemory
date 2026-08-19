@@ -5,26 +5,26 @@
              x:Class="MuscleMemory.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              Title="Settings"
-             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
 
     <Grid>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
+            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
                 <Border.Shadow>
-                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
                 </Border.Shadow>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>
                 <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="App Theme" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center" HorizontalOptions="Start" />
-                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
+                    <Label Grid.Column="0" Text="App Theme" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
+                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
                 </Grid>
             </Border>
 
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
+            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
                 <Border.Shadow>
-                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
                 </Border.Shadow>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
@@ -34,13 +34,13 @@
                 </Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
                     <Image Grid.Column="0" Source="export_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
-                    <Label Grid.Column="1" Text="Export data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Export data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" />
                 </Grid>
             </Border>
 
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}">
+            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
                 <Border.Shadow>
-                    <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
                 </Border.Shadow>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16" />
@@ -50,7 +50,7 @@
                 </Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
                     <Image Grid.Column="0" Source="erease_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
-                    <Label Grid.Column="1" Text="Erase data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Erase data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center" />
                 </Grid>
             </Border>
 
@@ -61,10 +61,10 @@
                 VerticalOptions="End"
                 Padding="16"
                 StrokeThickness="0"
-                BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                 IsVisible="{Binding ActiveWorkout.IsBannerVisible}">
             <Border.Shadow>
-                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Border.Shadow>
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="12" />
@@ -72,7 +72,7 @@
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand}" />
             </Border.GestureRecognizers>
-            <Label Text="Workout in Progress - Tap to Resume" HorizontalTextAlignment="Center" TextColor="White" FontFamily="LilitaOne" VerticalOptions="Center" FontSize="16" />
+            <Label Text="Workout in Progress - Tap to Resume" HorizontalTextAlignment="Center" TextColor="{StaticResource OnAccentText}" FontFamily="LilitaOne" VerticalOptions="Center" FontSize="16" />
         </Border>
     </Grid>
 </ContentPage>
