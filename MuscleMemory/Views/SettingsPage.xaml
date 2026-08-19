@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MuscleMemory.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              Title="Settings"
@@ -33,7 +34,11 @@
                     <TapGestureRecognizer Command="{Binding ExportDataCommand}" />
                 </Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
-                    <Image Grid.Column="0" Source="export_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
+                    <Image Grid.Column="0" Source="export_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0">
+                        <Image.Behaviors>
+                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </Image.Behaviors>
+                    </Image>
                     <Label Grid.Column="1" Text="Export data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" />
                 </Grid>
             </Border>
@@ -49,7 +54,11 @@
                     <TapGestureRecognizer Command="{Binding EraseDataCommand}" />
                 </Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
-                    <Image Grid.Column="0" Source="erease_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0" />
+                    <Image Grid.Column="0" Source="erease_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0">
+                        <Image.Behaviors>
+                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+                        </Image.Behaviors>
+                    </Image>
                     <Label Grid.Column="1" Text="Erase data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center" />
                 </Grid>
             </Border>
