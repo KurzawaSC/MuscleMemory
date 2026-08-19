@@ -19,6 +19,18 @@
         </Setter>
     </Style>
 
+    <Style x:Key="FormField" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Padding" Value="15,5" />
+        <Setter Property="Shadow" Value="{StaticResource CardShadow}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="12" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="DeleteSwipeAction" TargetType="controls:SwipeAction">
         <Setter Property="Text" Value="Delete" />
         <Setter Property="Tint" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
