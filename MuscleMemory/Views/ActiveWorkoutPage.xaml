@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:MuscleMemory.Models"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Name="PageRoot"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
              Title="Workout"
@@ -12,8 +13,8 @@
              BackCommand="{Binding ExitWorkoutCommand}">
 
     <controls:BackNavigationPage.Behaviors>
-        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding EnterPageCommand}" />
-        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding LeavePageCommand}" />
+        <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.EnterPageCommand, Source={x:Reference PageRoot}}" />
+        <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding BindingContext.LeavePageCommand, Source={x:Reference PageRoot}}" />
     </controls:BackNavigationPage.Behaviors>
 
         <Grid>
