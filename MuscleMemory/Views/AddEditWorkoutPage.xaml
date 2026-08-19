@@ -31,13 +31,11 @@
         <Grid Grid.Row="1">
             <CollectionView ItemsSource="{Binding Exercises}">
                 <CollectionView.Header>
-                    <Button Text="Add exercise +" 
-                            Command="{Binding AddExerciseCommand}"
-                            BackgroundColor="Transparent" 
-                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                            FontSize="18"
-                            HorizontalOptions="End"
-                            Margin="0,0,0,15"/>
+                    <controls:TappableButton Style="{StaticResource TextButton}"
+                                             Text="Add exercise +"
+                                             Command="{Binding AddExerciseCommand}"
+                                             HorizontalOptions="End"
+                                             Margin="0,0,0,15" />
                 </CollectionView.Header>
 
                 <CollectionView.ItemTemplate>
@@ -56,28 +54,18 @@
                                 </VerticalStackLayout>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <Button Text="Edit" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                                            BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
-                                            BorderWidth="1"
-                                            FontAttributes="Bold" 
-                                            CornerRadius="20"
-                                            HeightRequest="36"
-                                            Padding="10,0"/>
-                                    <Button Text="Delete" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
-                                            BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                                            BorderWidth="1"
-                                            FontAttributes="Bold" 
-                                            CornerRadius="20"
-                                            HeightRequest="36"
-                                            Padding="10,0"/>
+                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
+                                                             Text="Edit"
+                                                             HeightRequest="36"
+                                                             ContentPadding="10,0"
+                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
+                                                             CommandParameter="{Binding .}" />
+                                    <controls:TappableButton Style="{StaticResource DangerOutlineButton}"
+                                                             Text="Delete"
+                                                             HeightRequest="36"
+                                                             ContentPadding="10,0"
+                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                                             CommandParameter="{Binding .}" />
                                 </HorizontalStackLayout>
                             </Grid>
                         </Border>
@@ -87,24 +75,19 @@
 
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="{Binding IsEmpty}">
                 <controls:EmptyState Message="You have no exercises in&#10;that workout, let's add&#10;more!" />
-                <Button Text="Add exercise +" 
-                        Command="{Binding AddExerciseCommand}"
-                        BackgroundColor="Transparent" 
-                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontSize="18"/>
+                <controls:TappableButton Style="{StaticResource TextButton}"
+                                         Text="Add exercise +"
+                                         Command="{Binding AddExerciseCommand}" />
             </VerticalStackLayout>
         </Grid>
 
-        <Button Grid.Row="2"
-                Text="Save"
-                Command="{Binding SaveWorkoutCommand}"
-                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                TextColor="{StaticResource OnAccentText}"
-                FontSize="18"
-                CornerRadius="25"
-                HeightRequest="50"
-                Margin="0,20,0,0" Shadow="{StaticResource CardShadow}">
-        </Button>
+        <controls:TappableButton Grid.Row="2"
+                                 Style="{StaticResource PrimaryButton}"
+                                 Text="Save"
+                                 FontSize="18"
+                                 HeightRequest="50"
+                                 Margin="0,20,0,0"
+                                 Command="{Binding SaveWorkoutCommand}" />
     </Grid>
 
 </ContentPage>
