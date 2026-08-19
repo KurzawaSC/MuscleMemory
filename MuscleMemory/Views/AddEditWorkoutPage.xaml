@@ -17,10 +17,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="20">
 
-        <Border Grid.Row="0" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20" Shadow="{StaticResource CardShadow}">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="16" />
-            </Border.StrokeShape>
+        <Border Style="{StaticResource FormField}" Grid.Row="0" Margin="0,0,0,20">
             <Entry Text="{Binding WorkoutName}"
                    Placeholder="Workout name"
                    PlaceholderColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"

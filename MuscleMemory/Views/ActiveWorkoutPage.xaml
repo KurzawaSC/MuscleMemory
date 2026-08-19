@@ -95,20 +95,14 @@
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
                         <VerticalStackLayout Grid.Column="0" Spacing="10">
                             <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
-                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60" Shadow="{StaticResource CardShadow}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
+                            <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
                                 <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="10">
                             <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
-                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60" Shadow="{StaticResource CardShadow}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
+                            <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
                                 <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>

@@ -16,10 +16,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <Label Grid.Row="0" Text="Select Exercise" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalOptions="Center" Margin="0,0,0,15"/>
 
-            <Border Grid.Row="1" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent" Shadow="{StaticResource CardShadow}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
+            <Border Style="{StaticResource FormField}" Grid.Row="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent">
                 <Picker Title="Filter by Muscle Group"
                         ItemsSource="{Binding MuscleGroupFilters}"
                         SelectedItem="{Binding SelectedMuscleGroupFilter}"
