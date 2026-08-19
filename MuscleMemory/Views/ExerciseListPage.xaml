@@ -44,7 +44,7 @@
                                     <Label Text="{Binding Name}" 
                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
                                            FontSize="18" 
-                                           FontFamily="LilitaOne" />
+ />
                                     <HorizontalStackLayout Spacing="8">
                                         <controls:Chip Text="{Binding TargetMuscleGroup}" />
                                         <controls:Chip Text="{Binding Equipment}" />
@@ -59,7 +59,6 @@
                                             BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
-                                            FontFamily="LilitaOne"
                                             CornerRadius="20"
                                             HeightRequest="40"
                                             Padding="15,0"/>

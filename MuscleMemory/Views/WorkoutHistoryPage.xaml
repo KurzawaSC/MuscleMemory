@@ -19,7 +19,7 @@
                     <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" FontFamily="LilitaOne" />
+                                <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" />
                                 <Label Grid.Column="1" Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="16" />
                             </Grid>
                             <Label Text="{Binding TotalVolume, StringFormat='Total Volume: {0} kg'}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" />
@@ -37,7 +37,7 @@
                                             </SwipeView.RightItems>
                                             
                                             <VerticalStackLayout Spacing="5">
-                                                <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" FontFamily="LilitaOne" />
+                                                <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" />
                                                 <Border Stroke="{AppThemeBinding Light={StaticResource SubtleStrokeLight}, Dark={StaticResource SubtleStrokeDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}">
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="12" />
@@ -75,7 +75,6 @@
                                                                 CommandParameter="{Binding .}"
                                                                 BackgroundColor="Transparent"
                                                                 TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                                                                FontFamily="LilitaOne"
                                                                 FontSize="12"
                                                                 Margin="0,5,0,5"
                                                                 HorizontalOptions="Center"
@@ -94,7 +93,6 @@
                                     CommandParameter="{Binding .}"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                                     TextColor="{StaticResource OnAccentText}"
-                                    FontFamily="LilitaOne"
                                     FontSize="16"
                                     CornerRadius="16"
                                     HeightRequest="50"

@@ -45,7 +45,6 @@
                                        Text="{Binding Name}" 
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
                                        FontSize="20" 
-                                       FontFamily="LilitaOne"
                                        VerticalOptions="Center"/>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
@@ -57,7 +56,6 @@
                                             BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
-                                            FontFamily="LilitaOne"
                                             CornerRadius="20"
                                             HeightRequest="40"
                                             Padding="15,0"/>
@@ -68,7 +66,6 @@
                                             TextColor="{StaticResource OnAccentText}" 
                                             BorderWidth="0"
                                             FontAttributes="Bold" 
-                                            FontFamily="LilitaOne"
                                             CornerRadius="20"
                                             HeightRequest="40"
                                             Padding="15,0"/>
