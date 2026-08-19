@@ -45,10 +45,7 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:WorkoutExercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Shadow="{StaticResource CardShadow}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16" />
-                            </Border.StrokeShape>
+                        <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}" />
                             </Border.GestureRecognizers>

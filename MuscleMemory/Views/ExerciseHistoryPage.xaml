@@ -23,10 +23,7 @@
         <CollectionView ItemsSource="{Binding History}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ExerciseHistoryEntry">
-                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
+                    <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18" FontFamily="LilitaOne" />

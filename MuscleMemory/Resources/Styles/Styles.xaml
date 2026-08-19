@@ -6,6 +6,19 @@
 
     <Shadow x:Key="CardShadow" Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10" />
 
+    <Style x:Key="SurfaceCard" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" />
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="Shadow" Value="{StaticResource CardShadow}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="16" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="DeleteSwipeAction" TargetType="controls:SwipeAction">
         <Setter Property="Text" Value="Delete" />
         <Setter Property="Tint" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />

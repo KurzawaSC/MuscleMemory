@@ -210,13 +210,10 @@
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
-                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Shadow="{StaticResource CardShadow}">
+                                <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=EditLoggedSetCommand}" CommandParameter="{Binding .}"/>
                                     </Border.GestureRecognizers>
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="16" />
-                                    </Border.StrokeShape>
                                     <Grid ColumnDefinitions="Auto, *, Auto">
                                         <Label Grid.Column="0"
                                                Text="{Binding SetNumber, StringFormat='Set {0}'}"
@@ -300,10 +297,7 @@
                     <CollectionView ItemsSource="{Binding BestSets}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
-                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Shadow="{StaticResource CardShadow}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="16" />
-                                    </Border.StrokeShape>
+                                <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Label Grid.Column="0" Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
                                         <Label Grid.Column="1" Text="{Binding BestSetText}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center"/>

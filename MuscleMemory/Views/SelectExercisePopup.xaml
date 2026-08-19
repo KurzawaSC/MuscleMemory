@@ -31,10 +31,7 @@
             <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredExercises}" SelectionMode="Single" SelectedItem="{Binding SelectedExercise}" SelectionChangedCommand="{Binding ConfirmSelectionCommand}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16" />
-                            </Border.StrokeShape>
+                        <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="18"/>
                                 <HorizontalStackLayout Spacing="8">
