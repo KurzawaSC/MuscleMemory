@@ -17,15 +17,4 @@ public partial class AppShell : Shell
         activeWorkoutViewModel.TrackCurrentPage(this);
         _ = activeWorkoutViewModel.LoadStateAsync();
     }
-
-    public void UpdateTabBarTheme(AppTheme theme)
-    {
-        bool isDark = theme == AppTheme.Dark || 
-            (theme == AppTheme.Unspecified && Application.Current?.RequestedTheme == AppTheme.Dark);
-
-        Shell.SetTabBarBackgroundColor(this, isDark ? Color.FromArgb("#1C1C1E") : Color.FromArgb("#FFFFFF"));
-        Shell.SetTabBarUnselectedColor(this, isDark ? Color.FromArgb("#FFFFFF") : Color.FromArgb("#666666"));
-        Shell.SetTabBarForegroundColor(this, isDark ? Color.FromArgb("#FFFFFF") : Color.FromArgb("#000000"));
-        Shell.SetTabBarTitleColor(this, isDark ? Color.FromArgb("#D32F2F") : Color.FromArgb("#FF4040"));
-    }
 }

@@ -8,7 +8,7 @@
              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
              x:DataType="viewmodels:AddEditWorkoutViewModel"
              Title="Create Workout"
-             BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#121212}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.StartGuardingUnsavedChangesCommand, Source={x:Reference PageRoot}}" />
@@ -17,17 +17,17 @@
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="20">
 
-        <Border Grid.Row="0" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20">
+        <Border Grid.Row="0" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5" Margin="0,0,0,20">
             <Border.Shadow>
-                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Border.Shadow>
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="16" />
             </Border.StrokeShape>
             <Entry Text="{Binding WorkoutName}"
                    Placeholder="Workout name"
-                   PlaceholderColor="{StaticResource TranslucentBlack}"
-                   TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                    FontSize="20"
                    FontAttributes="Bold"
                    ClearButtonVisibility="WhileEditing"/>
@@ -39,7 +39,7 @@
                     <Button Text="Add exercise +" 
                             Command="{Binding AddExerciseCommand}"
                             BackgroundColor="Transparent" 
-                            TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
+                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                             FontFamily="LilitaOne"
                             FontSize="18"
                             HorizontalOptions="End"
@@ -48,9 +48,9 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:WorkoutExercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}" StrokeThickness="1">
+                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1">
                             <Border.Shadow>
-                                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
                             </Border.Shadow>
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
@@ -60,11 +60,11 @@
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontSize="18" FontFamily="LilitaOne"/>
-                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
-                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}" FontSize="14" />
+                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18" FontFamily="LilitaOne"/>
+                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
+                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
+                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
+                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
                                 </VerticalStackLayout>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
@@ -72,8 +72,8 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" 
-                                            BorderColor="{AppThemeBinding Light=#99000000, Dark=#66FFFFFF}"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
+                                            BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
                                             FontFamily="LilitaOne"
@@ -84,8 +84,8 @@
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
                                             CommandParameter="{Binding .}"
                                             BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" 
-                                            BorderColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
+                                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
+                                            BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                                             BorderWidth="1"
                                             FontAttributes="Bold" 
                                             FontFamily="LilitaOne"
@@ -102,13 +102,13 @@
             <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="{Binding IsEmpty}">
                 <Label Text="You have no exercises in&#10;that workout, let's add&#10;more!"
                        HorizontalTextAlignment="Center"
-                       TextColor="{AppThemeBinding Light=#99000000, Dark=#B3FFFFFF}"
+                       TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                        FontFamily="LilitaOne"
                        FontSize="18" />
                 <Button Text="Add exercise +" 
                         Command="{Binding AddExerciseCommand}"
                         BackgroundColor="Transparent" 
-                        TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
+                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                         FontFamily="LilitaOne"
                         FontSize="18"/>
             </VerticalStackLayout>
@@ -117,15 +117,15 @@
         <Button Grid.Row="2"
                 Text="Save"
                 Command="{Binding SaveWorkoutCommand}"
-                BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
-                TextColor="{StaticResource SolidWhite}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                TextColor="{StaticResource OnAccentText}"
                 FontFamily="LilitaOne"
                 FontSize="18"
                 CornerRadius="25"
                 HeightRequest="50"
                 Margin="0,20,0,0">
             <Button.Shadow>
-                <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Button.Shadow>
         </Button>
     </Grid>

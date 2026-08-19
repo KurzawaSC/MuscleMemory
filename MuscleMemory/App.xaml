@@ -6,11 +6,7 @@
              x:Class="MuscleMemory.App">
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="SolidBlack">#000000</Color>
-            <Color x:Key="TranslucentBlack">#99000000</Color>
-            <Color x:Key="SolidWhite">#FFFFFF</Color>
-
-                        <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
