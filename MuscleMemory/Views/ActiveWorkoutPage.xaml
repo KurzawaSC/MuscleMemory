@@ -17,12 +17,10 @@
                         <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
                 <Label Text="{Binding WorkoutTitle}"
                        FontSize="24"
-                       FontFamily="LilitaOne"
                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                        HorizontalTextAlignment="Center"/>
                 <Label Text="{Binding TimerText}"
                        FontSize="48"
-                       FontFamily="LilitaOne"
                        TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                        HorizontalTextAlignment="Center"/>
             </VerticalStackLayout>
@@ -37,7 +35,6 @@
                         IsEnabled="{Binding HasPreviousExercise}"
                         BackgroundColor="Transparent"
                         TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontFamily="LilitaOne"
                         FontSize="24"
                         VerticalOptions="Center">
                     <Button.Triggers>
@@ -55,7 +52,6 @@
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <Label Text="{Binding ExerciseProgressText}"
-                           FontFamily="LilitaOne"
                            FontSize="14"
                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                            HorizontalTextAlignment="Center"
@@ -67,7 +63,6 @@
                         IsEnabled="{Binding HasNextExercise}"
                         BackgroundColor="Transparent"
                         TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                        FontFamily="LilitaOne"
                         FontSize="24"
                         VerticalOptions="Center">
                     <Button.Triggers>
@@ -82,7 +77,6 @@
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" IsVisible="{Binding IsSetCounterVisible}">
                     <Label Text="{Binding SetProgressText}"
                            FontSize="16"
-                           FontFamily="LilitaOne"
                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                            VerticalOptions="Center"/>
                     <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:WorkoutExercise" VerticalOptions="Center">
@@ -95,16 +89,16 @@
                                 <VerticalStackLayout Spacing="20" IsVisible="{Binding IsExerciseComplete, Converter={StaticResource InvertedBoolConverter}}">
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
                         <VerticalStackLayout Grid.Column="0" Spacing="10">
-                            <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
+                            <Label Text="Weight (kg)" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
                             <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
-                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" Spacing="10">
-                            <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
+                            <Label Text="Reps" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
                             <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
-                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" FontFamily="LilitaOne" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                             </Border>
                         </VerticalStackLayout>
                     </Grid>
@@ -118,7 +112,6 @@
                                                 <Label Grid.Row="0"
                                Text="{Binding LastSessionResultsText}"
                                FontSize="14"
-                               FontFamily="LilitaOne"
                                TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                                HorizontalOptions="Center"
                                HorizontalTextAlignment="Center"
@@ -130,7 +123,6 @@
                                 IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                                 TextColor="{StaticResource OnAccentText}"
-                                FontFamily="LilitaOne"
                                 FontSize="20"
                                 CornerRadius="30"
                                 HeightRequest="60" Shadow="{StaticResource CardShadow}">
@@ -144,7 +136,6 @@
                                     TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                                     BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
                                     BorderWidth="1.5"
-                                    FontFamily="LilitaOne"
                                     FontSize="18"
                                     CornerRadius="30"
                                     HeightRequest="60"
@@ -155,7 +146,6 @@
                                     Command="{Binding SaveSetCommand}"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                                     TextColor="{StaticResource OnAccentText}"
-                                    FontFamily="LilitaOne"
                                     FontSize="20"
                                     CornerRadius="30"
                                     HeightRequest="60"
@@ -167,7 +157,7 @@
                 
                                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsExerciseComplete}">
                     <Label Text="All Sets Completed! 🎉" 
-                           FontSize="20" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
+                           FontSize="20" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
                            HorizontalOptions="Center" />
                     <Label Text="Ready for the next exercise." 
                            FontSize="14" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
@@ -182,9 +172,9 @@
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
                     <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="REST" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center" />
-                        <Label Text="{Binding RestTimerText}" FontFamily="LilitaOne" FontSize="48" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" HorizontalOptions="Center" />
-                        <Button Text="Skip Rest" Command="{Binding SkipRestCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontFamily="LilitaOne" FontSize="18" BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="1.5" CornerRadius="25" HeightRequest="50" WidthRequest="150" />
+                        <Label Text="REST" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center" />
+                        <Label Text="{Binding RestTimerText}" FontSize="48" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" HorizontalOptions="Center" />
+                        <Button Text="Skip Rest" Command="{Binding SkipRestCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="1.5" CornerRadius="25" HeightRequest="50" WidthRequest="150" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
@@ -212,11 +202,10 @@
                                     <Grid ColumnDefinitions="Auto, *, Auto">
                                         <Label Grid.Column="0"
                                                Text="{Binding SetNumber, StringFormat='Set {0}'}"
-                                               FontFamily="LilitaOne"
                                                FontSize="18"
                                                TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                                                VerticalOptions="Center"/>
-                                        <Label Grid.Column="2" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center">
+                                        <Label Grid.Column="2" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center">
                                             <Label.FormattedText>
                                                 <FormattedString>
                                                     <Span Text="{Binding Weight}" />
@@ -245,7 +234,7 @@
                     BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                     BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="2"
-                    FontFamily="LilitaOne" FontSize="18" CornerRadius="30" HeightRequest="60"
+ FontSize="18" CornerRadius="30" HeightRequest="60"
                     Margin="0,10,0,0" Shadow="{StaticResource CardShadow}">
         </Button>
         </Grid>
@@ -255,14 +244,12 @@
                 <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
                     <Label Text="Workout Complete! 🎉" 
                            FontSize="36" 
-                           FontFamily="LilitaOne" 
                            TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
                            HorizontalOptions="Center" 
                            HorizontalTextAlignment="Center" />
                     
                     <Label Text="{Binding WorkoutTitle, StringFormat='You finished {0}'}" 
                            FontSize="20" 
-                           FontFamily="LilitaOne" 
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
                            HorizontalOptions="Center" />
 
@@ -271,20 +258,20 @@
                             <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
-                            <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                            <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                         </VerticalStackLayout>
                     </Border>
 
-                    <Label Text="Best Sets" FontSize="22" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
+                    <Label Text="Best Sets" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
                     
                     <CollectionView ItemsSource="{Binding BestSets}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
                                 <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                                     <Grid ColumnDefinitions="*, Auto">
-                                        <Label Grid.Column="0" Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
-                                        <Label Grid.Column="1" Text="{Binding BestSetText}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center"/>
+                                        <Label Grid.Column="0" Text="{Binding ExerciseName}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                                        <Label Grid.Column="1" Text="{Binding BestSetText}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center"/>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -295,7 +282,6 @@
                             Command="{Binding ExitWorkoutCommand}" 
                             BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
                             TextColor="{StaticResource OnAccentText}" 
-                            FontFamily="LilitaOne" 
                             FontSize="20" 
                             CornerRadius="30" 
                             HeightRequest="60" 

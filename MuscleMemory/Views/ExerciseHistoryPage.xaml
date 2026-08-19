@@ -19,7 +19,7 @@
                     <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18" FontFamily="LilitaOne" />
+                                <Label Grid.Column="0" Text="{Binding WorkoutName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18" />
                                 <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="16" />
                             </Grid>
                             
