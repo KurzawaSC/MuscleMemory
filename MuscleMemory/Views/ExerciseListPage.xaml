@@ -57,18 +57,8 @@
                                            FontSize="18" 
                                            FontFamily="LilitaOne" />
                                     <HorizontalStackLayout Spacing="8">
-                                        <Border Padding="8,4" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" StrokeThickness="1">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="8" />
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding TargetMuscleGroup}" TextColor="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" FontSize="12" FontFamily="LilitaOne" />
-                                        </Border>
-                                        <Border Padding="8,4" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" StrokeThickness="1">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="8" />
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding Equipment}" TextColor="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" FontSize="12" FontFamily="LilitaOne" />
-                                        </Border>
+                                        <controls:Chip Text="{Binding TargetMuscleGroup}" />
+                                        <controls:Chip Text="{Binding Equipment}" />
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
