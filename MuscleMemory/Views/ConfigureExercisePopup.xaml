@@ -6,10 +6,7 @@
                x:Class="MuscleMemory.Views.ConfigureExercisePopup"
                x:DataType="viewmodels:ConfigureExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="20" WidthRequest="300">
-        <Border.Shadow>
-            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-        </Border.Shadow>
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="20" WidthRequest="300" Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>

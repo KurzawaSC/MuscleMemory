@@ -10,21 +10,15 @@
             StrokeThickness="2" 
             BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}"
             Padding="20,30,20,20"
-            WidthRequest="300">
+            WidthRequest="300" Shadow="{StaticResource CardShadow}">
 
-        <Border.Shadow>
-            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-        </Border.Shadow>
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <VerticalStackLayout Spacing="30">
 
-            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5">
-                <Border.Shadow>
-                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                </Border.Shadow>
+            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5" Shadow="{StaticResource CardShadow}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -37,10 +31,7 @@
                        ClearButtonVisibility="WhileEditing"/>
             </Border>
 
-            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5">
-                <Border.Shadow>
-                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                </Border.Shadow>
+            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5" Shadow="{StaticResource CardShadow}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -52,10 +43,7 @@
                         FontFamily="LilitaOne" />
             </Border>
 
-            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5">
-                <Border.Shadow>
-                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                </Border.Shadow>
+            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="15,5" Shadow="{StaticResource CardShadow}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
