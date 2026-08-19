@@ -43,11 +43,7 @@
                                                         <RoundRectangle CornerRadius="12" />
                                                     </Border.StrokeShape>
                                                     <VerticalStackLayout>
-                                                        <Grid ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource TableHeaderBackgroundLight}, Dark={StaticResource TableHeaderBackgroundDark}}">
-                                                            <Label Grid.Column="0" Text="Set" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                                            <Label Grid.Column="1" Text="Weight" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                                            <Label Grid.Column="2" Text="Reps" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                                        </Grid>
+                                                        <controls:SetTableHeader />
                                                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                                             <BindableLayout.ItemTemplate>
                                                                 <DataTemplate x:DataType="models:WorkoutSet">
@@ -63,7 +59,7 @@
                                                                             <Border.GestureRecognizers>
                                                                                 <TapGestureRecognizer Command="{Binding BindingContext.EditSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}" />
                                                                             </Border.GestureRecognizers>
-                                                                            <Grid ColumnDefinitions="*,*,*" Padding="5">
+                                                                            <Grid ColumnDefinitions="*,*,*" Padding="8">
                                                                                 <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
                                                                                 <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
                                                                                 <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
