@@ -3,22 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
              x:DataType="viewmodels:ExerciseHistoryViewModel"
              Title="{Binding ExerciseName}"
              BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
 
     <Grid>
-        <VerticalStackLayout HorizontalOptions="Center" 
-                             VerticalOptions="Center" 
-                             Spacing="20"
-                             IsVisible="{Binding IsEmpty}">
-            <Label Text="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!" 
-                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
-                   FontSize="18" 
-                   FontFamily="LilitaOne"
-                   HorizontalTextAlignment="Center"/>
-        </VerticalStackLayout>
+        <controls:EmptyState Message="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!"
+                             IsVisible="{Binding IsEmpty}" />
         
         <CollectionView ItemsSource="{Binding History}" Margin="20">
             <CollectionView.ItemTemplate>

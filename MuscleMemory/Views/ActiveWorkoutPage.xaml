@@ -232,20 +232,9 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                                <VerticalStackLayout HorizontalOptions="Center"
-                                     VerticalOptions="Center"
-                                     Spacing="8"
-                                     IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}">
-                    <Label Text="No sets saved yet"
-                           FontFamily="LilitaOne"
-                           FontSize="16"
-                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                           HorizontalTextAlignment="Center"/>
-                    <Label Text="Enter weight and reps above, then tap Save Set."
-                           FontSize="13"
-                           TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                           HorizontalTextAlignment="Center"/>
-                </VerticalStackLayout>
+                                <controls:EmptyState Message="No sets saved yet"
+                                     Detail="Enter weight and reps above, then tap Save Set."
+                                     IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}" />
 
             </Grid>
 

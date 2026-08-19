@@ -16,17 +16,9 @@
     </ContentPage.Behaviors>
 
     <Grid>
-        <VerticalStackLayout HorizontalOptions="Center" 
-                             VerticalOptions="Center" 
-                             Spacing="20"
-                             IsVisible="{Binding IsEmpty}">
-            <Image Source="empty_exercise_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
-            <Label Text="Your exercise list is empty.&#10;Tap + to add your first!" 
-                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
-                   FontSize="18" 
-                   FontFamily="LilitaOne"
-                   HorizontalTextAlignment="Center"/>
-        </VerticalStackLayout>
+        <controls:EmptyState IconSource="empty_exercise_list_icon.png"
+                             Message="Your exercise list is empty.&#10;Tap + to add your first!"
+                             IsVisible="{Binding IsEmpty}" />
         <CollectionView ItemsSource="{Binding Exercises}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
