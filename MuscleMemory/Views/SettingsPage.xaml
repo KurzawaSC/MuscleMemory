@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
@@ -11,49 +10,22 @@
 
     <Grid>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
+            <Border Style="{StaticResource SettingsRow}">
                 <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="App Theme" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
-                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
+                    <Label Grid.Column="0" Text="App Theme" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
+                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
                 </Grid>
             </Border>
 
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding ExportDataCommand}" />
-                </Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
-                    <Image Grid.Column="0" Source="export_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0">
-                        <Image.Behaviors>
-                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                        </Image.Behaviors>
-                    </Image>
-                    <Label Grid.Column="1" Text="Export data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" />
-                </Grid>
-            </Border>
+            <controls:SettingsActionRow Text="Export data"
+                                        IconSource="export_data_icon.png"
+                                        Tint="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                        Command="{Binding ExportDataCommand}" />
 
-            <Border Padding="15,0" HeightRequest="60" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16" />
-                </Border.StrokeShape>
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding EraseDataCommand}" />
-                </Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
-                    <Image Grid.Column="0" Source="erease_data_icon.png" InputTransparent="True" HeightRequest="24" WidthRequest="24" Margin="0,0,15,0">
-                        <Image.Behaviors>
-                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-                        </Image.Behaviors>
-                    </Image>
-                    <Label Grid.Column="1" Text="Erase data" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center" />
-                </Grid>
-            </Border>
+            <controls:SettingsActionRow Text="Erase data"
+                                        IconSource="erease_data_icon.png"
+                                        Tint="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                        Command="{Binding EraseDataCommand}" />
 
         </VerticalStackLayout>
         
