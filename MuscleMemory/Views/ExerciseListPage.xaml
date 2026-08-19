@@ -70,34 +70,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Grid Margin="20"
-              HeightRequest="60" 
-              WidthRequest="60"
-              HorizontalOptions="End" 
-              VerticalOptions="End"
-              IsVisible="{Binding ActiveWorkout.CanAddItems}">
-
-            <Border BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" StrokeThickness="0" Shadow="{StaticResource CardShadow}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="30"/>
-                </Border.StrokeShape>
-            </Border>
-
-            <Image Source="plus_icon.png"
-                   WidthRequest="24"
-                   HeightRequest="24"
-                   HorizontalOptions="Center" 
-                   VerticalOptions="Center"
-                   InputTransparent="True">
-                <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{StaticResource OnAccentText}" />
-                </Image.Behaviors>
-            </Image>
-
-            <Button BackgroundColor="Transparent" 
-                    Command="{Binding AddExerciseCommand}" 
-                    CornerRadius="30" />
-        </Grid>
+        <controls:FloatingActionButton Command="{Binding AddExerciseCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
         <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
     </Grid>
 
