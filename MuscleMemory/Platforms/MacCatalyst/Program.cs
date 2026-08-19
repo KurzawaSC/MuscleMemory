@@ -1,13 +1,12 @@
 using ObjCRuntime;
 using UIKit;
 
-namespace MuscleMemory
+namespace MuscleMemory;
+
+public class Program
 {
-    public class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            UIApplication.Main(args, null, typeof(AppDelegate));
-        }
+        UIApplication.Main(args, null, typeof(AppDelegate));
     }
 }

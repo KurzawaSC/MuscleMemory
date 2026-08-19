@@ -292,13 +292,19 @@ public class DatabaseContext
             foreach (var group in groupedSets)
             {
                 var we = workoutExercises.FirstOrDefault(w => w.Id == group.Key);
-                historySession.Exercises.Add(new WorkoutHistoryExercise
+                var historyExercise = new WorkoutHistoryExercise
                 {
                     WorkoutExerciseId = group.Key,
                     WorkoutSessionId = sessionId,
-                    ExerciseName = we?.ExerciseName ?? UiText.UnknownExerciseName,
-                    Sets = new System.Collections.ObjectModel.ObservableCollection<WorkoutSet>(group.OrderBy(s => s.SetNumber))
-                });
+                    ExerciseName = we?.ExerciseName ?? UiText.UnknownExerciseName
+                };
+
+                foreach (var set in group.OrderBy(s => s.SetNumber))
+                {
+                    historyExercise.Sets.Add(set);
+                }
+
+                historySession.Exercises.Add(historyExercise);
             }
             
             history.Add(historySession);

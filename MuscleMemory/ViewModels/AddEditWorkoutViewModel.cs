@@ -9,11 +9,11 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutToEdit), QueryKeys.WorkoutToEdit)]
-public partial class AddEditWorkoutViewModel : ObservableObject
+public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext;
-    private readonly IPopupService _popupService;
+    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IPopupService _popupService = popupService;
+    private Workout? _workoutToEdit;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -27,31 +27,30 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool HasUnsavedChanges { get; set; } = false;
-    public ObservableCollection<WorkoutExercise> Exercises { get; set; } = new();
+    public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
 
-    public AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        _dbContext = dbContext;
-        _popupService = popupService;
+        if (query.TryGetValue(QueryKeys.WorkoutToEdit, out var editable) && editable is Workout workout)
+        {
+            _workoutToEdit = workout;
+            _ = LoadWorkoutAsync(workout);
+        }
     }
 
-    [ObservableProperty]
-    public partial Workout WorkoutToEdit { get; set; } = null!;
-
-    async partial void OnWorkoutToEditChanged(Workout value)
+    private async Task LoadWorkoutAsync(Workout workout)
     {
-        if (value != null)
+        WorkoutName = workout.Name;
+
+        var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(workout.Id);
+        Exercises.Clear();
+        foreach (var ex in exercisesFromDb)
         {
-            WorkoutName = value.Name;
-            var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(value.Id);
-            Exercises.Clear();
-            foreach (var ex in exercisesFromDb)
-            {
-                Exercises.Add(ex);
-            }
-            IsEmpty = !Exercises.Any();
-            HasUnsavedChanges = false;
+            Exercises.Add(ex);
         }
+
+        IsEmpty = !Exercises.Any();
+        HasUnsavedChanges = false;
     }
 
     [RelayCommand]
@@ -200,10 +199,10 @@ public partial class AddEditWorkoutViewModel : ObservableObject
             return;
         }
 
-        if (WorkoutToEdit != null)
+        if (_workoutToEdit != null)
         {
-            WorkoutToEdit.Name = WorkoutName.Trim();
-            await _dbContext.UpdateFullWorkoutAsync(WorkoutToEdit, Exercises.ToList());
+            _workoutToEdit.Name = WorkoutName.Trim();
+            await _dbContext.UpdateFullWorkoutAsync(_workoutToEdit, Exercises.ToList());
         }
         else
         {

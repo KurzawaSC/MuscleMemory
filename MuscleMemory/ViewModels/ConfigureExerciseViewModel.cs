@@ -6,9 +6,9 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ConfigureExerciseViewModel : ObservableObject, IQueryAttributable
+public partial class ConfigureExerciseViewModel(IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly IPopupService _popupService;
+    private readonly IPopupService _popupService = popupService;
 
     [ObservableProperty]
     public partial string ExerciseName { get; set; } = string.Empty;
@@ -30,11 +30,6 @@ public partial class ConfigureExerciseViewModel : ObservableObject, IQueryAttrib
 
     public IReadOnlyList<int> TargetRpeOptions { get; } =
         [.. Enumerable.Range(DomainDefaults.MinTargetRPE, DomainDefaults.MaxTargetRPE - DomainDefaults.MinTargetRPE + 1)];
-
-    public ConfigureExerciseViewModel(IPopupService popupService)
-    {
-        _popupService = popupService;
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

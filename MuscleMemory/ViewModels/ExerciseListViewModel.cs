@@ -9,36 +9,20 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseListViewModel : ObservableObject
+public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout, IPopupService popupService) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext;
-    private readonly ActiveWorkoutViewModel _activeWorkoutViewModel;
-    private readonly IPopupService _popupService;
+    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IPopupService _popupService = popupService;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
+    public ObservableCollection<Exercise> Exercises { get; } = [];
 
-    public ObservableCollection<Exercise> Exercises { get; set; } = new();
-
-    public ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel, IPopupService popupService)
-    {
-        _dbContext = dbContext;
-        _activeWorkoutViewModel = activeWorkoutViewModel;
-        _popupService = popupService;
-        
-        _activeWorkoutViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(ActiveWorkoutViewModel.IsWorkoutActive))
-            {
-                OnPropertyChanged(nameof(CanAddItems));
-            }
-        };
-    }
+    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
 
     [RelayCommand]
-    public async Task LoadExercisesAsync()
+    private async Task LoadExercisesAsync()
     {
         var exercisesFromDb = await _dbContext.GetExercisesAsync();
         Exercises.Clear();
@@ -61,7 +45,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteExerciseAsync(Exercise exercise)
+    private async Task DeleteExerciseAsync(Exercise exercise)
     {
         if (exercise == null) return;
         
@@ -74,7 +58,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task EditExerciseAsync(Exercise exercise)
+    private async Task EditExerciseAsync(Exercise exercise)
     {
         if (exercise == null) return;
         
@@ -98,7 +82,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ViewHistoryAsync(Exercise exercise)
+    private async Task ViewHistoryAsync(Exercise exercise)
     {
         if (exercise == null) return;
         
