@@ -77,35 +77,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Border Margin="20" 
-                HeightRequest="60" 
-                WidthRequest="60"
-                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                StrokeThickness="0"
-                HorizontalOptions="End" 
-                VerticalOptions="End"
-                IsVisible="{Binding ActiveWorkout.CanAddItems}" Shadow="{StaticResource CardShadow}">
-
-
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="30"/>
-            </Border.StrokeShape>
-
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding NavigateToAddWorkoutCommand}" />
-            </Border.GestureRecognizers>
-
-            <Image Source="plus_icon.png"
-                   WidthRequest="24"
-                   HeightRequest="24"
-                   HorizontalOptions="Center" 
-                   VerticalOptions="Center"
-                   InputTransparent="True">
-                <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{StaticResource OnAccentText}" />
-                </Image.Behaviors>
-            </Image>
-        </Border>
+        <controls:FloatingActionButton Command="{Binding NavigateToAddWorkoutCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
         <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
     </Grid>
 
