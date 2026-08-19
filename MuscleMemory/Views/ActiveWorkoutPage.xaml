@@ -207,15 +207,10 @@
                         <DataTemplate x:DataType="models:WorkoutSet">
                             <SwipeView>
                                                                 <SwipeView.RightItems>
-                                    <SwipeItems Mode="Execute">
+                                    <SwipeItems Mode="Reveal">
                                         <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=DeleteSetCommand}"
                                                        CommandParameter="{Binding .}">
-                                            <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="12,8" Stroke="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" StrokeThickness="1.5">
-                                                <Border.StrokeShape>
-                                                    <RoundRectangle CornerRadius="12" />
-                                                </Border.StrokeShape>
-                                                <Label Text="Delete" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontFamily="LilitaOne" VerticalOptions="Center" HorizontalOptions="Center" />
-                                            </Border>
+                                            <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
                                         </SwipeItemView>
                                     </SwipeItems>
                                 </SwipeView.RightItems>

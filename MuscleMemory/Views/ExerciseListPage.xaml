@@ -34,24 +34,14 @@
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=DeleteExerciseCommand}" CommandParameter="{Binding .}">
-                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" StrokeThickness="1.5">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Delete" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
-                                    </Border>
+                                    <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.RightItems>
                         <SwipeView.LeftItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}">
-                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" StrokeThickness="1.5">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Edit" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
-                                    </Border>
+                                    <controls:SwipeAction Style="{StaticResource EditSwipeAction}" />
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.LeftItems>
