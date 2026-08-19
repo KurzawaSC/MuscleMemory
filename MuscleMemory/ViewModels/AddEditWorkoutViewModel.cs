@@ -68,21 +68,34 @@ public partial class AddEditWorkoutViewModel : ObservableObject
 
     private async void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
     {
-        bool isLeavingPage = e.Source is ShellNavigationSource.Pop or ShellNavigationSource.PopToRoot;
-        if (!isLeavingPage || !HasUnsavedChanges)
+        if (!HasUnsavedChanges || !e.CanCancel || !IsLeavingEditor(e))
         {
             return;
         }
 
+        var destination = e.Target;
         e.Cancel();
 
         bool discard = await Shell.Current.DisplayAlertAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
-        if (discard)
+        if (!discard)
         {
-            HasUnsavedChanges = false;
-            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            return;
+        }
+
+        HasUnsavedChanges = false;
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+
+        if (destination != null && Shell.Current.CurrentState.Location != destination.Location)
+        {
+            await Shell.Current.GoToAsync(destination);
         }
     }
+
+    private static bool IsLeavingEditor(ShellNavigatingEventArgs e) =>
+        IsEditorLocation(e.Current) && !IsEditorLocation(e.Target);
+
+    private static bool IsEditorLocation(ShellNavigationState? state) =>
+        state?.Location.OriginalString.Contains(nameof(AddEditWorkoutPage), StringComparison.Ordinal) == true;
 
     [RelayCommand]
     private async Task AddExerciseAsync()
