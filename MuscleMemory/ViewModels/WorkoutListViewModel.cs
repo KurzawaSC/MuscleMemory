@@ -8,33 +8,18 @@ using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutListViewModel : ObservableObject
+public partial class WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext;
-    private readonly ActiveWorkoutViewModel _activeWorkoutViewModel;
+    private readonly DatabaseContext _dbContext = dbContext;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public bool CanAddItems => !(_activeWorkoutViewModel?.IsWorkoutActive ?? false);
-    
-    public ObservableCollection<Workout> Workouts { get; set; } = new();
+    public ObservableCollection<Workout> Workouts { get; } = [];
 
-    public WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkoutViewModel)
-    {
-        _dbContext = dbContext;
-        _activeWorkoutViewModel = activeWorkoutViewModel;
-        
-        _activeWorkoutViewModel.PropertyChanged += (s, e) =>
-        {
-            if (e.PropertyName == nameof(ActiveWorkoutViewModel.IsWorkoutActive))
-            {
-                OnPropertyChanged(nameof(CanAddItems));
-            }
-        };
-    }
+    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
     [RelayCommand]
-    public async Task LoadWorkoutsAsync()
+    private async Task LoadWorkoutsAsync()
     {
         var workoutsFromDb = await _dbContext.GetWorkoutsAsync();
 
@@ -63,7 +48,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteWorkoutAsync(Workout workout)
+    private async Task DeleteWorkoutAsync(Workout workout)
     {
         if (workout == null) return;
 
@@ -76,7 +61,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task EditWorkoutAsync(Workout workout)
+    private async Task EditWorkoutAsync(Workout workout)
     {
         if (workout == null) return;
         
@@ -88,7 +73,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ViewHistoryAsync(Workout workout)
+    private async Task ViewHistoryAsync(Workout workout)
     {
         if (workout == null) return;
         

@@ -110,7 +110,7 @@
                 StrokeThickness="0"
                 HorizontalOptions="End" 
                 VerticalOptions="End"
-                IsVisible="{Binding CanAddItems}">
+                IsVisible="{Binding ActiveWorkout.CanAddItems}">
 
             <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
@@ -141,7 +141,7 @@
                 Padding="16"
                 StrokeThickness="0"
                 BackgroundColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}"
-                IsVisible="{Binding Source={x:Static viewmodels:ActiveWorkoutViewModel.Current}, Path=IsBannerVisible}">
+                IsVisible="{Binding ActiveWorkout.IsBannerVisible}">
             <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
             </Border.Shadow>
@@ -149,7 +149,7 @@
                 <RoundRectangle CornerRadius="12" />
             </Border.StrokeShape>
             <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding Source={x:Static viewmodels:ActiveWorkoutViewModel.Current}, Path=ResumeWorkoutCommand}" />
+                <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand}" />
             </Border.GestureRecognizers>
             <Label Text="Workout in Progress - Tap to Resume" HorizontalTextAlignment="Center" TextColor="White" FontFamily="LilitaOne" VerticalOptions="Center" FontSize="16" />
         </Border>

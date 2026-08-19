@@ -7,32 +7,23 @@ using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributable
+public partial class SelectExerciseViewModel(IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly IPopupService _popupService;
+    private const string MuscleGroupFilterAll = "All";
+
+    private readonly IPopupService _popupService = popupService;
 
     private List<Exercise> _allExercises = [];
 
-    [ObservableProperty]
-    public partial ObservableCollection<Exercise> FilteredExercises { get; set; } = new();
+    public ObservableCollection<Exercise> FilteredExercises { get; } = [];
 
-    public List<string> MuscleGroupFilters { get; } = new List<string> { "All" };
+    public List<string> MuscleGroupFilters { get; } = [MuscleGroupFilterAll, .. Enum.GetValues<MuscleGroup>().Select(muscleGroup => muscleGroup.ToString())];
 
     [ObservableProperty]
-    public partial string SelectedMuscleGroupFilter { get; set; } = "All";
+    public partial string SelectedMuscleGroupFilter { get; set; } = MuscleGroupFilterAll;
 
     [ObservableProperty]
     public partial Exercise? SelectedExercise { get; set; }
-
-    public SelectExerciseViewModel(IPopupService popupService)
-    {
-        _popupService = popupService;
-
-        foreach (var mg in Enum.GetValues(typeof(MuscleGroup)))
-        {
-            MuscleGroupFilters.Add(mg.ToString()!);
-        }
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -53,7 +44,7 @@ public partial class SelectExerciseViewModel : ObservableObject, IQueryAttributa
         FilteredExercises.Clear();
         var filtered = _allExercises.AsEnumerable();
 
-        if (SelectedMuscleGroupFilter != "All" && Enum.TryParse<MuscleGroup>(SelectedMuscleGroupFilter, out var selectedMg))
+        if (SelectedMuscleGroupFilter != MuscleGroupFilterAll && Enum.TryParse<MuscleGroup>(SelectedMuscleGroupFilter, out var selectedMg))
         {
             filtered = filtered.Where(e => e.TargetMuscleGroup == selectedMg);
         }

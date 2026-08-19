@@ -7,14 +7,10 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-[QueryProperty(nameof(WorkoutId), QueryKeys.WorkoutId)]
-[QueryProperty(nameof(WorkoutName), QueryKeys.WorkoutName)]
-public partial class WorkoutHistoryViewModel : ObservableObject
+public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext;
-
-    [ObservableProperty]
-    public partial int WorkoutId { get; set; }
+    private readonly DatabaseContext _dbContext = dbContext;
+    private int _workoutId;
 
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
@@ -22,24 +18,27 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public ObservableCollection<WorkoutHistorySession> Sessions { get; set; } = new();
+    public ObservableCollection<WorkoutHistorySession> Sessions { get; } = [];
 
-    public WorkoutHistoryViewModel(DatabaseContext dbContext)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        _dbContext = dbContext;
-    }
-
-    async partial void OnWorkoutIdChanged(int value)
-    {
-        if (value > 0)
+        if (query.TryGetValue(QueryKeys.WorkoutName, out var name))
         {
-            await LoadHistoryAsync();
+            WorkoutName = name?.ToString() ?? string.Empty;
+        }
+
+        if (query.TryGetValue(QueryKeys.WorkoutId, out var id)
+            && int.TryParse(id?.ToString(), out int workoutId)
+            && workoutId > 0)
+        {
+            _workoutId = workoutId;
+            _ = LoadHistoryAsync();
         }
     }
 
     private async Task LoadHistoryAsync()
     {
-        var history = await _dbContext.GetWorkoutHistoryAsync(WorkoutId);
+        var history = await _dbContext.GetWorkoutHistoryAsync(_workoutId);
         Sessions.Clear();
         foreach (var session in history)
         {
@@ -73,7 +72,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
-        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
+        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteSetAsync(set.Id);
@@ -115,7 +114,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
     private async Task DeleteExerciseAsync(WorkoutHistoryExercise exercise)
     {
         if (exercise == null) return;
-        bool confirm = await Shell.Current.DisplayAlert(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
+        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
         await _dbContext.DeleteLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
@@ -130,12 +129,12 @@ public partial class WorkoutHistoryViewModel : ObservableObject
         var allExercises = await _dbContext.GetExercisesAsync();
         if (!allExercises.Any())
         {
-            await Shell.Current.DisplayAlert(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
+            await Shell.Current.DisplayAlertAsync(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
             return;
         }
 
         var exerciseNames = allExercises.Select(e => e.Name).ToArray();
-        string selectedName = await Shell.Current.DisplayActionSheet(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
+        string selectedName = await Shell.Current.DisplayActionSheetAsync(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
 
         if (string.IsNullOrEmpty(selectedName) || selectedName == UiText.ButtonCancel)
             return;
@@ -144,7 +143,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject
 
         var newWorkoutExercise = new WorkoutExercise
         {
-            WorkoutId = this.WorkoutId,
+            WorkoutId = _workoutId,
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
             Sets = DomainDefaults.Sets,

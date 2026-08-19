@@ -16,23 +16,19 @@ public class ExerciseBestSet
     public string BestSetText { get; set; } = string.Empty;
 }
 
-[QueryProperty(nameof(CurrentWorkout), QueryKeys.Workout)]
-public partial class ActiveWorkoutViewModel : ObservableObject
+public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
     private readonly DatabaseContext _dbContext;
+    private Workout? _currentWorkout;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
     private DateTime _workoutStartTime;
     private DateTime _breakEndTime;
 
-    public static ActiveWorkoutViewModel? Current { get; private set; }
-
-    [ObservableProperty]
-    public partial Workout CurrentWorkout { get; set; } = null!;
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
+    [NotifyPropertyChangedFor(nameof(CanAddItems))]
     public partial bool IsWorkoutActive { get; set; } = false;
 
     [ObservableProperty]
@@ -41,14 +37,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
 
+    public bool CanAddItems => !IsWorkoutActive;
+
     [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = "00:00";
 
-    public ObservableCollection<WorkoutExercise> Exercises { get; } = new();
-    public ObservableCollection<WorkoutSet> CurrentSets { get; } = new();
+    public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
+    public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
 
     [ObservableProperty]
     public partial WorkoutExercise CurrentExercise { get; set; } = new();
@@ -84,7 +82,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
     [ObservableProperty]
     public partial double TotalVolume { get; set; } = 0;
 
-    public ObservableCollection<ExerciseBestSet> BestSets { get; } = new();
+    public ObservableCollection<ExerciseBestSet> BestSets { get; } = [];
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
@@ -105,7 +103,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject
 
     public ActiveWorkoutViewModel(DatabaseContext dbContext, IAudioManager audioManager)
     {
-        Current = this;
         _dbContext = dbContext;
         _audioManager = audioManager;
 
@@ -150,24 +147,30 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         }
     }
 
-    async partial void OnCurrentWorkoutChanged(Workout value)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (value != null && !IsWorkoutActive) // Only start if not already active (resuming)
+        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive)
         {
-            _workoutStartTime = DateTime.Now;
-            IsWorkoutCompleted = false;
-            
-            WorkoutTitle = value.Name;
-            _sessionId = await _dbContext.CreateWorkoutSessionAsync(value.Id);
-
-            _timer.Start();
-
-            await LoadExercisesAsync(value.Id, restoreIndex: false);
-            
-            await Task.Delay(300); // Wait for navigation animation to finish
-            IsWorkoutActive = true;
-            await SaveStateAsync();
+            _ = StartWorkoutAsync(workout);
         }
+    }
+
+    private async Task StartWorkoutAsync(Workout workout)
+    {
+        _currentWorkout = workout;
+        _workoutStartTime = DateTime.Now;
+        IsWorkoutCompleted = false;
+
+        WorkoutTitle = workout.Name;
+        _sessionId = await _dbContext.CreateWorkoutSessionAsync(workout.Id);
+
+        _timer.Start();
+
+        await LoadExercisesAsync(workout.Id, restoreIndex: false);
+
+        await Task.Delay(UiTiming.NavigationAnimationMilliseconds);
+        IsWorkoutActive = true;
+        await SaveStateAsync();
     }
 
     private async Task SaveStateAsync()
@@ -175,7 +178,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
         if (!IsWorkoutActive) return;
         var state = new ActiveWorkoutState
         {
-            WorkoutId = CurrentWorkout?.Id ?? 0,
+            WorkoutId = _currentWorkout?.Id ?? 0,
             SessionId = _sessionId,
             StartTime = _workoutStartTime,
             CurrentExerciseIndex = _currentExerciseIndex,
@@ -201,7 +204,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject
             var workout = (await _dbContext.GetWorkoutsAsync()).FirstOrDefault(w => w.Id == state.WorkoutId);
             if (workout != null)
             {
-                CurrentWorkout = workout;
+                _currentWorkout = workout;
                 WorkoutTitle = workout.Name;
                 await LoadExercisesAsync(workout.Id, restoreIndex: true);
                 _timer.Start();
