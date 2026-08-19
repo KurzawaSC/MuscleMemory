@@ -84,14 +84,9 @@
                            FontFamily="LilitaOne"
                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                            VerticalOptions="Center"/>
-                    <Border Padding="8,2" BackgroundColor="Transparent" Stroke="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" StrokeThickness="1" VerticalOptions="Center">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8" />
-                        </Border.StrokeShape>
-                        <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:WorkoutExercise">
-                            <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}', FallbackValue=0, TargetNullValue=0}" TextColor="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}" FontSize="12" FontFamily="LilitaOne" />
-                        </ContentView>
-                    </Border>
+                    <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:WorkoutExercise" VerticalOptions="Center">
+                        <controls:Chip Text="{Binding TargetRPE, StringFormat='Target RPE: {0}', FallbackValue=0, TargetNullValue=0}" />
+                    </ContentView>
                 </HorizontalStackLayout>
             </VerticalStackLayout>
 
