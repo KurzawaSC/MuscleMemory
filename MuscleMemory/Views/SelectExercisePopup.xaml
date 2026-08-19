@@ -7,10 +7,7 @@
                x:Class="MuscleMemory.Views.SelectExercisePopup"
                x:DataType="viewmodels:SelectExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="15" WidthRequest="320" HeightRequest="500">
-        <Border.Shadow>
-            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-        </Border.Shadow>
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="15" WidthRequest="320" HeightRequest="500" Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
@@ -18,10 +15,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <Label Grid.Row="0" Text="Select Exercise" FontFamily="LilitaOne" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalOptions="Center" Margin="0,0,0,15"/>
 
-            <Border Grid.Row="1" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent">
-                <Border.Shadow>
-                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                </Border.Shadow>
+            <Border Grid.Row="1" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent" Shadow="{StaticResource CardShadow}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
@@ -36,10 +30,7 @@
             <CollectionView Grid.Row="2" ItemsSource="{Binding FilteredExercises}" SelectionMode="Single" SelectedItem="{Binding SelectedExercise}" SelectionChangedCommand="{Binding ConfirmSelectionCommand}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
-                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
-                            <Border.Shadow>
-                                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                            </Border.Shadow>
+                        <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>

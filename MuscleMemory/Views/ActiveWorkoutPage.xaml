@@ -100,10 +100,7 @@
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
                         <VerticalStackLayout Grid.Column="0" Spacing="10">
                             <Label Text="Weight (kg)" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
-                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60">
-                                <Border.Shadow>
-                                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                </Border.Shadow>
+                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60" Shadow="{StaticResource CardShadow}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
@@ -113,10 +110,7 @@
 
                         <VerticalStackLayout Grid.Column="1" Spacing="10">
                             <Label Text="Reps" FontSize="16" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalOptions="Center"/>
-                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60">
-                                <Border.Shadow>
-                                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                </Border.Shadow>
+                            <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" HeightRequest="60" Shadow="{StaticResource CardShadow}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
@@ -149,10 +143,7 @@
                                 FontFamily="LilitaOne"
                                 FontSize="20"
                                 CornerRadius="30"
-                                HeightRequest="60">
-                            <Button.Shadow>
-                                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                            </Button.Shadow>
+                                HeightRequest="60" Shadow="{StaticResource CardShadow}">
                         </Button>
 
                         <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasSavedSets}" Grid.Row="1">
@@ -178,10 +169,7 @@
                                     FontSize="20"
                                     CornerRadius="30"
                                     HeightRequest="60"
-                                    Margin="10,0,0,0">
-                                <Button.Shadow>
-                                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                </Button.Shadow>
+                                    Margin="10,0,0,0" Shadow="{StaticResource CardShadow}">
                             </Button>
                         </Grid>
                     </Grid>
@@ -199,10 +187,7 @@
                                 <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}"
                         Stroke="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" StrokeThickness="2"
                         Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill"
-                        IsVisible="{Binding IsResting}">
-                    <Border.Shadow>
-                        <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                    </Border.Shadow>
+                        IsVisible="{Binding IsResting}" Shadow="{StaticResource CardShadow}">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16" />
                     </Border.StrokeShape>
@@ -235,13 +220,10 @@
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
-                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1">
+                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Shadow="{StaticResource CardShadow}">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=EditLoggedSetCommand}" CommandParameter="{Binding .}"/>
                                     </Border.GestureRecognizers>
-                                    <Border.Shadow>
-                                        <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                    </Border.Shadow>
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
@@ -293,10 +275,7 @@
                     TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
                     BorderColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" BorderWidth="2"
                     FontFamily="LilitaOne" FontSize="18" CornerRadius="30" HeightRequest="60"
-                    Margin="0,10,0,0">
-            <Button.Shadow>
-                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Button.Shadow>
+                    Margin="0,10,0,0" Shadow="{StaticResource CardShadow}">
         </Button>
         </Grid>
 
@@ -316,10 +295,7 @@
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
                            HorizontalOptions="Center" />
 
-                                        <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="20" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}" Margin="0,10,0,0">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                        </Border.Shadow>
+                                        <Border Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Padding="20" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}" Margin="0,10,0,0" Shadow="{StaticResource CardShadow}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
@@ -334,10 +310,7 @@
                     <CollectionView ItemsSource="{Binding BestSets}">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
-                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1">
-                                    <Border.Shadow>
-                                        <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                    </Border.Shadow>
+                                <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" Shadow="{StaticResource CardShadow}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
@@ -359,10 +332,7 @@
                             CornerRadius="30" 
                             HeightRequest="60" 
                             Margin="0,20,0,40" 
-                            WidthRequest="250">
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                        </Button.Shadow>
+                            WidthRequest="250" Shadow="{StaticResource CardShadow}">
                     </Button>
                 </VerticalStackLayout>
             </ScrollView>

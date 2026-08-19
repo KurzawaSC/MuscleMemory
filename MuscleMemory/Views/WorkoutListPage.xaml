@@ -55,10 +55,7 @@
                             </SwipeItems>
                         </SwipeView.LeftItems>
 
-                        <Border Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
-                            <Border.Shadow>
-                                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                            </Border.Shadow>
+                        <Border Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="16" />
                             </Border.StrokeShape>
@@ -110,11 +107,8 @@
                 StrokeThickness="0"
                 HorizontalOptions="End" 
                 VerticalOptions="End"
-                IsVisible="{Binding ActiveWorkout.CanAddItems}">
+                IsVisible="{Binding ActiveWorkout.CanAddItems}" Shadow="{StaticResource CardShadow}">
 
-            <Border.Shadow>
-                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Border.Shadow>
 
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30"/>
@@ -141,10 +135,7 @@
                 Padding="16"
                 StrokeThickness="0"
                 BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                IsVisible="{Binding ActiveWorkout.IsBannerVisible}">
-            <Border.Shadow>
-                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Border.Shadow>
+                IsVisible="{Binding ActiveWorkout.IsBannerVisible}" Shadow="{StaticResource CardShadow}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="12" />
             </Border.StrokeShape>

@@ -23,10 +23,7 @@
         <CollectionView ItemsSource="{Binding Sessions}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:WorkoutHistorySession">
-                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                        </Border.Shadow>
+                    <Border Margin="0,0,0,15" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Shadow="{StaticResource CardShadow}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
@@ -125,10 +122,7 @@
                                     FontSize="16"
                                     CornerRadius="16"
                                     HeightRequest="50"
-                                    Margin="0,15,0,0">
-                                <Button.Shadow>
-                                    <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                                </Button.Shadow>
+                                    Margin="0,15,0,0" Shadow="{StaticResource CardShadow}">
                             </Button>
                         </VerticalStackLayout>
                     </Border>
