@@ -6,34 +6,34 @@
                x:Class="MuscleMemory.Views.ConfigureExercisePopup"
                x:DataType="viewmodels:ConfigureExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E22}" Padding="20" WidthRequest="300">
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="20" WidthRequest="300">
         <Border.Shadow>
-            <Shadow Brush="#000000" Offset="0,4" Opacity="0.15" Radius="10"/>
+            <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
         </Border.Shadow>
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <VerticalStackLayout Spacing="20">
-            <Label Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="22" TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" HorizontalOptions="Center"/>
+            <Label Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" HorizontalOptions="Center"/>
 
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="15">
-                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="0" Grid.Column="1" Text="{Binding SetsInput}" Keyboard="Numeric" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="1" Grid.Column="1" Text="{Binding RepsInput}" Keyboard="Numeric" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="2" Grid.Column="1" Text="{Binding BreakTimeInput}" Keyboard="Numeric" FontFamily="LilitaOne" FontSize="18"/>
 
-                <Label Grid.Row="3" Grid.Column="0" Text="Target RPE:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" VerticalOptions="Center"/>
-                <Picker Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TargetRpeOptions}" SelectedItem="{Binding TargetRPE}" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Target RPE:" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                <Picker Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TargetRpeOptions}" SelectedItem="{Binding TargetRPE}" FontFamily="LilitaOne" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"/>
             </Grid>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
-                <Button Grid.Column="0" Text="Cancel" Command="{Binding CancelCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light=#000000, Dark=#F5F5F7}" FontFamily="LilitaOne" FontSize="18"/>
-                <Button Grid.Column="1" Text="{Binding ConfirmText}" Command="{Binding ConfirmCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light=#FF4040, Dark=#D32F2F}" FontFamily="LilitaOne" FontSize="18"/>
+                <Button Grid.Column="0" Text="Cancel" Command="{Binding CancelCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="18"/>
+                <Button Grid.Column="1" Text="{Binding ConfirmText}" Command="{Binding ConfirmCommand}" BackgroundColor="Transparent" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontFamily="LilitaOne" FontSize="18"/>
             </Grid>
         </VerticalStackLayout>
     </Border>

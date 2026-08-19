@@ -13,7 +13,11 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit()
+            .UseMauiCommunityToolkit(toolkit =>
+            {
+                toolkit.SetPopupDefaults(new DefaultPopupSettings { BackgroundColor = Colors.Transparent });
+                toolkit.SetPopupOptionsDefaults(new DefaultPopupOptionsSettings { Shape = null });
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("LilitaOne-Regular.ttf", "LilitaOne");

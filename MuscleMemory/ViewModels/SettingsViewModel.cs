@@ -27,23 +27,19 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
         Preferences.Default.Set(PreferenceKeys.AppTheme, value.ToString());
-        if (Application.Current != null)
-        {
-            var themeToSet = value switch
-            {
-                ThemePreference.Light => AppTheme.Light,
-                ThemePreference.Dark => AppTheme.Dark,
-                _ => AppTheme.Unspecified
-            };
-            
-            Application.Current.UserAppTheme = AppTheme.Unspecified;
-            Application.Current.UserAppTheme = themeToSet;
 
-            if (Shell.Current is AppShell shell)
-            {
-                shell.UpdateTabBarTheme(themeToSet);
-            }
+        if (Application.Current is null)
+        {
+            return;
         }
+
+        Application.Current.UserAppTheme = AppTheme.Unspecified;
+        Application.Current.UserAppTheme = value switch
+        {
+            ThemePreference.Light => AppTheme.Light,
+            ThemePreference.Dark => AppTheme.Dark,
+            _ => AppTheme.Unspecified
+        };
     }
     [RelayCommand]
     private async Task EraseDataAsync()

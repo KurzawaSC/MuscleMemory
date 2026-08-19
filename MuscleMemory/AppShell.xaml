@@ -5,16 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:MuscleMemory.Views"
     Shell.FlyoutBehavior="Disabled"
-    Title="MuscleMemory"
-    
-    Shell.BackgroundColor="#FF4040"
-    Shell.ForegroundColor="#FFFFFF"
-    Shell.TitleColor="#FFFFFF"
-    
-    Shell.TabBarBackgroundColor="#FFFFFF"
-    Shell.TabBarForegroundColor="#FF4040"
-    Shell.TabBarUnselectedColor="#000000"
-    Shell.TabBarTitleColor="#FF4040">
+    Title="MuscleMemory">
 
     <TabBar>
 
