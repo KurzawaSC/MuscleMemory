@@ -28,15 +28,11 @@
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
                                 <VerticalStackLayout>
-                                    <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="{AppThemeBinding Light={StaticResource TableHeaderBackgroundLight}, Dark={StaticResource TableHeaderBackgroundDark}}">
-                                        <Label Grid.Column="0" Text="Set" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="1" Text="Weight (kg)" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                        <Label Grid.Column="2" Text="Reps" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
-                                    </Grid>
+                                    <controls:SetTableHeader />
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="models:WorkoutSet">
-                                                <Grid ColumnDefinitions="*,*,*" Padding="10" BackgroundColor="Transparent">
+                                                <Grid ColumnDefinitions="*,*,*" Padding="8" BackgroundColor="Transparent">
                                                     <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
                                                     <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
                                                     <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
