@@ -1,5 +1,3 @@
-using MuscleMemory.Models;
-
 namespace MuscleMemory.Services;
 
 public interface IWorkoutHistoryQueryService

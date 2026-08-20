@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Services;
-using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
@@ -21,14 +20,12 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue(QueryKeys.ExerciseName, out var name))
+        if (query.TryGetValue(QueryKeys.ExerciseName, out var name) && name is string exerciseName)
         {
-            ExerciseName = name?.ToString() ?? string.Empty;
+            ExerciseName = exerciseName;
         }
 
-        if (query.TryGetValue(QueryKeys.ExerciseId, out var id)
-            && int.TryParse(id?.ToString(), out int exerciseId)
-            && exerciseId > 0)
+        if (query.TryGetValue(QueryKeys.ExerciseId, out var id) && id is int exerciseId && exerciseId > 0)
         {
             _exerciseId = exerciseId;
             _ = LoadHistoryAsync();

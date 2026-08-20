@@ -10,12 +10,12 @@ namespace MuscleMemory.ViewModels;
 
 public partial class WorkoutHistoryViewModel(
     IWorkoutHistoryQueryService historyQueryService,
-    IWorkoutRepository workoutRepository,
+    ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
     IExerciseRepository exerciseRepository) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
-    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
+    private readonly ISessionExerciseRepository _sessionExerciseRepository = sessionExerciseRepository;
     private readonly IWorkoutSetRepository _setRepository = setRepository;
     private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
     private int _workoutId;
@@ -30,14 +30,12 @@ public partial class WorkoutHistoryViewModel(
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue(QueryKeys.WorkoutName, out var name))
+        if (query.TryGetValue(QueryKeys.WorkoutName, out var name) && name is string workoutName)
         {
-            WorkoutName = name?.ToString() ?? string.Empty;
+            WorkoutName = workoutName;
         }
 
-        if (query.TryGetValue(QueryKeys.WorkoutId, out var id)
-            && int.TryParse(id?.ToString(), out int workoutId)
-            && workoutId > 0)
+        if (query.TryGetValue(QueryKeys.WorkoutId, out var id) && id is int workoutId && workoutId > 0)
         {
             _workoutId = workoutId;
             _ = LoadHistoryAsync();
@@ -59,7 +57,7 @@ public partial class WorkoutHistoryViewModel(
     private async Task EditSetAsync(WorkoutSet set)
     {
         if (set == null) return;
-        
+
         string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
         if (weightStr == null) return;
 
@@ -70,7 +68,7 @@ public partial class WorkoutHistoryViewModel(
         {
             set.Weight = newWeight;
             set.Reps = newReps;
-            
+
             await _setRepository.UpdateAsync(set);
             await LoadHistoryAsync();
         }
@@ -88,11 +86,11 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task AddSetAsync(WorkoutHistoryExercise parentExercise)
+    private async Task AddSetAsync(WorkoutHistoryExercise loggedExercise)
     {
-        if (parentExercise == null) return;
+        if (loggedExercise == null) return;
 
-        var lastSet = parentExercise.Sets.LastOrDefault();
+        var lastSet = loggedExercise.Sets.LastOrDefault();
         double weight = lastSet?.Weight ?? 0;
         int reps = lastSet?.Reps ?? 0;
 
@@ -104,28 +102,27 @@ public partial class WorkoutHistoryViewModel(
 
         if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
         {
-            var newSet = new WorkoutSet
+            await _setRepository.AddAsync(new WorkoutSet
             {
-                WorkoutExerciseId = parentExercise.WorkoutExerciseId,
-                WorkoutSessionId = parentExercise.WorkoutSessionId,
-                SetNumber = parentExercise.Sets.Count + 1,
+                SessionExerciseId = loggedExercise.SessionExerciseId,
+                SetNumber = loggedExercise.Sets.Count + 1,
                 Weight = newWeight,
                 Reps = newReps
-            };
+            });
 
-            await _setRepository.AddAsync(newSet);
             await LoadHistoryAsync();
         }
     }
 
     [RelayCommand]
-    private async Task DeleteExerciseAsync(WorkoutHistoryExercise exercise)
+    private async Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise)
     {
-        if (exercise == null) return;
-        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
+        if (loggedExercise == null) return;
+        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
-        await _setRepository.DeleteForLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
+        await _setRepository.DeleteForSessionExerciseAsync(loggedExercise.SessionExerciseId);
+        await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
         await LoadHistoryAsync();
     }
 
@@ -133,7 +130,7 @@ public partial class WorkoutHistoryViewModel(
     private async Task AddExerciseAsync(WorkoutHistorySession session)
     {
         if (session == null) return;
-        
+
         var allExercises = await _exerciseRepository.GetAllAsync();
         if (!allExercises.Any())
         {
@@ -141,36 +138,32 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        var exerciseNames = allExercises.Select(e => e.Name).ToArray();
+        var exerciseNames = allExercises.Select(exercise => exercise.Name).ToArray();
         string selectedName = await Shell.Current.DisplayActionSheetAsync(UiText.TitleSelectExercise, UiText.ButtonCancel, null, exerciseNames);
 
         if (string.IsNullOrEmpty(selectedName) || selectedName == UiText.ButtonCancel)
             return;
 
-        var selectedExercise = allExercises.First(e => e.Name == selectedName);
+        var selectedExercise = allExercises.First(exercise => exercise.Name == selectedName);
 
-        var newWorkoutExercise = new WorkoutExercise
+        var addedExercise = await _sessionExerciseRepository.AppendToSessionAsync(new SessionExercise
         {
-            WorkoutId = _workoutId,
+            WorkoutSessionId = session.SessionId,
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
-            Sets = DomainDefaults.Sets,
-            Reps = DomainDefaults.Reps,
+            PlannedSets = DomainDefaults.Sets,
+            PlannedReps = DomainDefaults.Reps,
             BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
             TargetRPE = DomainDefaults.TargetRPE
-        };
-        
-        int workoutExerciseId = await _workoutRepository.AddExerciseAsync(newWorkoutExercise);
-        
-        var newSet = new WorkoutSet
+        });
+
+        await _setRepository.AddAsync(new WorkoutSet
         {
-            WorkoutExerciseId = workoutExerciseId,
-            WorkoutSessionId = session.SessionId,
+            SessionExerciseId = addedExercise.Id,
             SetNumber = 1,
             Weight = 0,
             Reps = 0
-        };
-        await _setRepository.AddAsync(newSet);
+        });
 
         await LoadHistoryAsync();
     }
