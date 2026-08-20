@@ -15,13 +15,16 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
     public async Task<int> SaveWithExercisesAsync(Workout workout, List<WorkoutExercise> exercises)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.InsertAsync(workout);
-
-        foreach (var exercise in exercises)
+        await connection.RunInTransactionAsync(transaction =>
         {
-            exercise.WorkoutId = workout.Id;
-            await connection.InsertAsync(exercise);
-        }
+            transaction.Insert(workout);
+
+            foreach (var exercise in exercises)
+            {
+                exercise.WorkoutId = workout.Id;
+                transaction.Insert(exercise);
+            }
+        });
 
         return workout.Id;
     }
@@ -29,15 +32,18 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
     public async Task UpdateWithExercisesAsync(Workout workout, List<WorkoutExercise> exercises)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.UpdateAsync(workout);
-        await connection.ExecuteAsync(DeleteExercisesByWorkout, workout.Id);
-
-        foreach (var exercise in exercises)
+        await connection.RunInTransactionAsync(transaction =>
         {
-            exercise.WorkoutId = workout.Id;
-            exercise.Id = 0;
-            await connection.InsertAsync(exercise);
-        }
+            transaction.Update(workout);
+            transaction.Execute(DeleteExercisesByWorkout, workout.Id);
+
+            foreach (var exercise in exercises)
+            {
+                exercise.WorkoutId = workout.Id;
+                exercise.Id = 0;
+                transaction.Insert(exercise);
+            }
+        });
     }
 
     public async Task DeleteAsync(int workoutId)
