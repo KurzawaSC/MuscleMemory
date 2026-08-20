@@ -6,25 +6,24 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
 {
     private const string SelectSessionsByIdsFormat = "SELECT * FROM WorkoutSession WHERE Id IN ({0})";
 
-    public async Task<int> CreateAsync(int workoutId)
+    public async Task<WorkoutSession> CreateAsync(Workout workout)
     {
         var connection = await context.GetConnectionAsync();
         var session = new WorkoutSession
         {
-            WorkoutId = workoutId,
+            WorkoutId = workout.Id,
+            WorkoutName = workout.Name,
             StartTime = DateTime.UtcNow
         };
 
         await connection.InsertAsync(session);
-        return session.Id;
+        return session;
     }
 
     public async Task FinishAsync(int sessionId)
     {
         var connection = await context.GetConnectionAsync();
-        var session = await connection.Table<WorkoutSession>()
-                                      .Where(candidate => candidate.Id == sessionId)
-                                      .FirstOrDefaultAsync();
+        var session = await GetAsync(sessionId);
 
         if (session is null)
         {
@@ -33,6 +32,14 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
 
         session.EndTime = DateTime.UtcNow;
         await connection.UpdateAsync(session);
+    }
+
+    public async Task<WorkoutSession?> GetAsync(int sessionId)
+    {
+        var connection = await context.GetConnectionAsync();
+        return await connection.Table<WorkoutSession>()
+                               .Where(session => session.Id == sessionId)
+                               .FirstOrDefaultAsync();
     }
 
     public async Task<List<WorkoutSession>> GetByIdsAsync(IReadOnlyCollection<int> sessionIds)

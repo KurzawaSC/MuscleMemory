@@ -67,7 +67,7 @@
                            FontSize="16"
                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
                            VerticalOptions="Center"/>
-                    <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:WorkoutExercise" VerticalOptions="Center">
+                    <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:SessionExercise" VerticalOptions="Center">
                         <controls:Chip Text="{Binding TargetRPE, StringFormat='Target RPE: {0}', FallbackValue=0, TargetNullValue=0}" />
                     </ContentView>
                 </HorizontalStackLayout>

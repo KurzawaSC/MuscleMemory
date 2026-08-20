@@ -6,7 +6,6 @@ namespace MuscleMemory.Data.Repositories;
 public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutRepository
 {
     private const string DeleteExercisesByWorkout = "DELETE FROM WorkoutExercise WHERE WorkoutId = ?";
-    private const string SelectNextExerciseOrder = "SELECT IFNULL(MAX([Order]), -1) + 1 FROM WorkoutExercise WHERE WorkoutId = ?";
 
     public async Task<List<Workout>> GetAllAsync()
     {
@@ -51,22 +50,6 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
                                .Where(exercise => exercise.WorkoutId == workoutId)
                                .OrderBy(exercise => exercise.Order)
                                .ToListAsync();
-    }
-
-    public async Task<List<WorkoutExercise>> GetExercisesForExerciseAsync(int exerciseId)
-    {
-        var connection = await context.GetConnectionAsync();
-        return await connection.Table<WorkoutExercise>()
-                               .Where(exercise => exercise.ExerciseId == exerciseId)
-                               .ToListAsync();
-    }
-
-    public async Task<int> AddExerciseAsync(WorkoutExercise exercise)
-    {
-        var connection = await context.GetConnectionAsync();
-        exercise.Order = await connection.ExecuteScalarAsync<int>(SelectNextExerciseOrder, exercise.WorkoutId);
-        await connection.InsertAsync(exercise);
-        return exercise.Id;
     }
 
     public async Task ClearAsync()

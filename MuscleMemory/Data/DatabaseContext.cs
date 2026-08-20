@@ -27,8 +27,9 @@ public sealed class DatabaseContext
         await connection.CreateTableAsync<Exercise>();
         await connection.CreateTableAsync<Workout>();
         await connection.CreateTableAsync<WorkoutExercise>();
-        await connection.CreateTableAsync<WorkoutSet>();
         await connection.CreateTableAsync<WorkoutSession>();
+        await connection.CreateTableAsync<SessionExercise>();
+        await connection.CreateTableAsync<WorkoutSet>();
         await connection.CreateTableAsync<ActiveWorkoutState>();
 
         return connection;

@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Services;
-using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
