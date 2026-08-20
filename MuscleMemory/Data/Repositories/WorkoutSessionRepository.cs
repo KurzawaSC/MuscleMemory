@@ -4,6 +4,8 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkoutSessionRepository
 {
+    private const string SelectSessionsByIdsFormat = "SELECT * FROM WorkoutSession WHERE Id IN ({0})";
+
     public async Task<int> CreateAsync(int workoutId)
     {
         var connection = await context.GetConnectionAsync();
@@ -33,12 +35,17 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         await connection.UpdateAsync(session);
     }
 
-    public async Task<WorkoutSession?> GetAsync(int sessionId)
+    public async Task<List<WorkoutSession>> GetByIdsAsync(IReadOnlyCollection<int> sessionIds)
     {
+        if (sessionIds.Count == 0)
+        {
+            return [];
+        }
+
         var connection = await context.GetConnectionAsync();
-        return await connection.Table<WorkoutSession>()
-                               .Where(session => session.Id == sessionId)
-                               .FirstOrDefaultAsync();
+        var query = string.Format(SelectSessionsByIdsFormat, SqlPlaceholders.For(sessionIds.Count));
+
+        return await connection.QueryAsync<WorkoutSession>(query, [.. sessionIds.Select(id => (object)id)]);
     }
 
     public async Task<List<WorkoutSession>> GetForWorkoutAsync(int workoutId)
