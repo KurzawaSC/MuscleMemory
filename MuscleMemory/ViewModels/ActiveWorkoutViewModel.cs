@@ -39,6 +39,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string TimerText { get; set; } = "00:00";
 
+    [ObservableProperty]
+    public partial string TotalTimeText { get; set; } = "00:00";
+
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
 
@@ -106,7 +109,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             if (IsWorkoutActive)
             {
-                TimerText = (DateTime.Now - _workoutStartTime).ToString(@"mm\:ss");
+                TimerText = FormatElapsed(DateTime.Now - _workoutStartTime);
             }
 
             if (IsResting)
@@ -125,6 +128,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             }
         };
     }
+
+    private static string FormatElapsed(TimeSpan elapsed) =>
+        elapsed.ToString(elapsed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
 
     private async Task PlayBreakEndSoundAsync()
     {
@@ -344,6 +350,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 IsResting = false;
                 UpdateSetProgress();
                 _timer.Stop();
+                TotalTimeText = FormatElapsed(DateTime.Now - _workoutStartTime);
                 
                 double volume = 0;
                 CompletedExercises.Clear();
@@ -470,6 +477,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioPlayer = null;
         
         _timer.Stop();
+        TotalTimeText = FormatElapsed(DateTime.Now - _workoutStartTime);
         
         double volume = 0;
         CompletedExercises.Clear();
@@ -516,6 +524,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
+        TotalTimeText = FormatElapsed(TimeSpan.Zero);
     }
 
     public void TrackCurrentPage(Shell shell)
