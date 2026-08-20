@@ -10,12 +10,6 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public class ExerciseBestSet
-{
-    public string ExerciseName { get; set; } = string.Empty;
-    public string BestSetText { get; set; } = string.Empty;
-}
-
 public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
     private readonly DatabaseContext _dbContext;
@@ -44,6 +38,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = "00:00";
+
+    [ObservableProperty]
+    public partial string TotalTimeText { get; set; } = "00:00";
 
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
@@ -82,7 +79,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial double TotalVolume { get; set; } = 0;
 
-    public ObservableCollection<ExerciseBestSet> BestSets { get; } = [];
+    public ObservableCollection<CompletedExerciseSummary> CompletedExercises { get; } = [];
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
@@ -112,7 +109,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             if (IsWorkoutActive)
             {
-                TimerText = (DateTime.Now - _workoutStartTime).ToString(@"mm\:ss");
+                TimerText = FormatElapsed(DateTime.Now - _workoutStartTime);
             }
 
             if (IsResting)
@@ -131,6 +128,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             }
         };
     }
+
+    private static string FormatElapsed(TimeSpan elapsed) =>
+        elapsed.ToString(elapsed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
 
     private async Task PlayBreakEndSoundAsync()
     {
@@ -350,9 +350,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 IsResting = false;
                 UpdateSetProgress();
                 _timer.Stop();
+                TotalTimeText = FormatElapsed(DateTime.Now - _workoutStartTime);
                 
                 double volume = 0;
-                BestSets.Clear();
+                CompletedExercises.Clear();
 
                 foreach (var ex in Exercises)
                 {
@@ -361,12 +362,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                     {
                         foreach (var s in sets) volume += (s.Weight * s.Reps);
 
-                        var bestSet = sets.OrderByDescending(s => s.Weight).ThenByDescending(s => s.Reps).First();
-                        BestSets.Add(new ExerciseBestSet
-                        {
-                            ExerciseName = ex.ExerciseName,
-                            BestSetText = $"{bestSet.Weight}{UiText.KgTimesSeparator}{bestSet.Reps}{UiText.RepsSuffix}"
-                        });
+                        CompletedExercises.Add(new CompletedExerciseSummary(
+                            ex.ExerciseName,
+                            [.. sets.OrderBy(s => s.SetNumber)]));
                     }
                 }
                 
@@ -479,9 +477,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioPlayer = null;
         
         _timer.Stop();
+        TotalTimeText = FormatElapsed(DateTime.Now - _workoutStartTime);
         
         double volume = 0;
-        BestSets.Clear();
+        CompletedExercises.Clear();
 
         foreach (var ex in Exercises)
         {
@@ -490,12 +489,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             {
                 foreach (var s in sets) volume += (s.Weight * s.Reps);
 
-                var bestSet = sets.OrderByDescending(s => s.Weight).ThenByDescending(s => s.Reps).First();
-                BestSets.Add(new ExerciseBestSet
-                {
-                    ExerciseName = ex.ExerciseName,
-                    BestSetText = $"{bestSet.Weight}{UiText.KgTimesSeparator}{bestSet.Reps}{UiText.RepsSuffix}"
-                });
+                CompletedExercises.Add(new CompletedExerciseSummary(
+                    ex.ExerciseName,
+                    [.. sets.OrderBy(s => s.SetNumber)]));
             }
         }
         
@@ -505,8 +501,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = true;
         IsWorkoutActive = false;
         await _dbContext.ClearActiveWorkoutStateAsync();
-
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 
     [RelayCommand]
@@ -519,6 +513,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task ExitWorkoutAsync()
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        ClearCompletedSummary();
+    }
+
+    private void ClearCompletedSummary()
+    {
+        if (!IsWorkoutCompleted)
+            return;
+
+        IsWorkoutCompleted = false;
+        CompletedExercises.Clear();
+        TotalVolume = 0;
+        TotalTimeText = FormatElapsed(TimeSpan.Zero);
     }
 
     public void TrackCurrentPage(Shell shell)
