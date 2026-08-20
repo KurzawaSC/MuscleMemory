@@ -10,12 +10,6 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public class ExerciseBestSet
-{
-    public string ExerciseName { get; set; } = string.Empty;
-    public string BestSetText { get; set; } = string.Empty;
-}
-
 public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
     private readonly DatabaseContext _dbContext;
@@ -82,7 +76,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial double TotalVolume { get; set; } = 0;
 
-    public ObservableCollection<ExerciseBestSet> BestSets { get; } = [];
+    public ObservableCollection<CompletedExerciseSummary> CompletedExercises { get; } = [];
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
@@ -352,7 +346,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 _timer.Stop();
                 
                 double volume = 0;
-                BestSets.Clear();
+                CompletedExercises.Clear();
 
                 foreach (var ex in Exercises)
                 {
@@ -361,12 +355,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                     {
                         foreach (var s in sets) volume += (s.Weight * s.Reps);
 
-                        var bestSet = sets.OrderByDescending(s => s.Weight).ThenByDescending(s => s.Reps).First();
-                        BestSets.Add(new ExerciseBestSet
-                        {
-                            ExerciseName = ex.ExerciseName,
-                            BestSetText = $"{bestSet.Weight}{UiText.KgTimesSeparator}{bestSet.Reps}{UiText.RepsSuffix}"
-                        });
+                        CompletedExercises.Add(new CompletedExerciseSummary(
+                            ex.ExerciseName,
+                            [.. sets.OrderBy(s => s.SetNumber)]));
                     }
                 }
                 
@@ -481,7 +472,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer.Stop();
         
         double volume = 0;
-        BestSets.Clear();
+        CompletedExercises.Clear();
 
         foreach (var ex in Exercises)
         {
@@ -490,12 +481,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             {
                 foreach (var s in sets) volume += (s.Weight * s.Reps);
 
-                var bestSet = sets.OrderByDescending(s => s.Weight).ThenByDescending(s => s.Reps).First();
-                BestSets.Add(new ExerciseBestSet
-                {
-                    ExerciseName = ex.ExerciseName,
-                    BestSetText = $"{bestSet.Weight} kg × {bestSet.Reps} reps"
-                });
+                CompletedExercises.Add(new CompletedExerciseSummary(
+                    ex.ExerciseName,
+                    [.. sets.OrderBy(s => s.SetNumber)]));
             }
         }
         
@@ -526,7 +514,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
 
         IsWorkoutCompleted = false;
-        BestSets.Clear();
+        CompletedExercises.Clear();
         TotalVolume = 0;
     }
 
