@@ -91,7 +91,10 @@ public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupSe
     }
 
     private static bool IsLeavingEditor(ShellNavigatingEventArgs e) =>
-        IsEditorLocation(e.Current) && !IsEditorLocation(e.Target);
+        IsEditorLocation(e.Current) && !IsEditorLocation(e.Target) && !KeepsEditorOnStack(e);
+
+    private static bool KeepsEditorOnStack(ShellNavigatingEventArgs e) =>
+        e.Source is ShellNavigationSource.Push;
 
     private static bool IsEditorLocation(ShellNavigationState? state) =>
         state?.Location.OriginalString.Contains(nameof(AddEditWorkoutPage), StringComparison.Ordinal) == true;
