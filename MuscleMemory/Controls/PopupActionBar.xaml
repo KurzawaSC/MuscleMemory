@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.PopupActionBar"
+             x:Name="Root"
+             x:DataType="controls:PopupActionBar">
+
+    <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+        <controls:TappableButton Grid.Column="0"
+                                 Style="{StaticResource NeutralTextButton}"
+                                 Text="Cancel"
+                                 Command="{Binding CancelCommand, Source={x:Reference Root}}" />
+        <controls:TappableButton Grid.Column="1"
+                                 Style="{StaticResource TextButton}"
+                                 Text="{Binding ConfirmText, Source={x:Reference Root}}"
+                                 Command="{Binding ConfirmCommand, Source={x:Reference Root}}" />
+    </Grid>
+</ContentView>

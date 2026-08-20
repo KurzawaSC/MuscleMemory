@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.TappableButton"
+             x:Name="Root"
+             x:DataType="controls:TappableButton"
+             MinimumHeightRequest="44"
+             MinimumWidthRequest="44">
+
+    <Border x:Name="Surface"
+            BackgroundColor="{Binding FillColor, Source={x:Reference Root}}"
+            StrokeThickness="{Binding StrokeThickness, Source={x:Reference Root}}"
+            Padding="{Binding ContentPadding, Source={x:Reference Root}}"
+            Opacity="{Binding SurfaceOpacity, Source={x:Reference Root}}"
+            Shadow="{Binding SurfaceShadow, Source={x:Reference Root}}">
+        <Border.Stroke>
+            <SolidColorBrush Color="{Binding StrokeColor, Source={x:Reference Root}}" />
+        </Border.Stroke>
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="{Binding CornerRadius, Source={x:Reference Root}}" />
+        </Border.StrokeShape>
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnTapped" />
+        </Border.GestureRecognizers>
+        <Grid>
+            <Label Text="{Binding Text, Source={x:Reference Root}}"
+                   TextColor="{Binding TextColor, Source={x:Reference Root}}"
+                   FontSize="{Binding FontSize, Source={x:Reference Root}}"
+                   FontAttributes="{Binding FontAttributes, Source={x:Reference Root}}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+        </Grid>
+    </Border>
+</ContentView>
