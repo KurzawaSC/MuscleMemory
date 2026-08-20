@@ -7,10 +7,9 @@ public interface IWorkoutSetRepository
     Task AddAsync(WorkoutSet set);
     Task UpdateAsync(WorkoutSet set);
     Task DeleteAsync(int setId);
-    Task DeleteForLoggedExerciseAsync(int workoutExerciseId, int workoutSessionId);
-    Task<List<WorkoutSet>> GetForWorkoutExerciseAsync(int workoutExerciseId, int workoutSessionId);
-    Task<List<WorkoutSet>> GetForWorkoutExercisesAsync(IReadOnlyCollection<int> workoutExerciseIds);
-    Task<List<WorkoutSet>> GetForSessionsAsync(IReadOnlyCollection<int> workoutSessionIds);
-    Task<List<WorkoutSet>> GetLastSessionSetsAsync(int workoutExerciseId, int currentSessionId);
+    Task DeleteForSessionExerciseAsync(int sessionExerciseId);
+    Task<List<WorkoutSet>> GetForSessionExerciseAsync(int sessionExerciseId);
+    Task<List<WorkoutSet>> GetForSessionExercisesAsync(IReadOnlyCollection<int> sessionExerciseIds);
+    Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId);
     Task ClearAsync();
 }

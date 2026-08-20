@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:services="clr-namespace:MuscleMemory.Services"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
              x:DataType="viewmodels:WorkoutHistoryViewModel"
@@ -15,7 +16,7 @@
         
         <CollectionView ItemsSource="{Binding Sessions}" Margin="20">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:WorkoutHistorySession">
+                <DataTemplate x:DataType="services:WorkoutHistorySession">
                     <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
@@ -26,7 +27,7 @@
                             
                                                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:WorkoutHistoryExercise">
+                                    <DataTemplate x:DataType="services:WorkoutHistoryExercise">
                                         <SwipeView Margin="0,10,0,0">
                                             <SwipeView.RightItems>
                                                 <SwipeItems Mode="Reveal">

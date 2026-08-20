@@ -1,12 +1,13 @@
 using SQLite;
+using MuscleMemory.Constants;
 
 namespace MuscleMemory.Models;
 
 public class ActiveWorkoutState
 {
     [PrimaryKey]
-    public int Id { get; set; } = 1; // Always 1 for singleton
-    public int WorkoutId { get; set; }
+    public int Id { get; set; } = DomainDefaults.ActiveWorkoutStateId;
+
     public int SessionId { get; set; }
     public DateTime StartTime { get; set; }
     public int CurrentExerciseIndex { get; set; }

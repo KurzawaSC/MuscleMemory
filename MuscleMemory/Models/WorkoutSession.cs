@@ -10,6 +10,8 @@ public class WorkoutSession
     [Indexed]
     public int WorkoutId { get; set; }
 
+    public string WorkoutName { get; set; } = string.Empty;
+
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
 }
