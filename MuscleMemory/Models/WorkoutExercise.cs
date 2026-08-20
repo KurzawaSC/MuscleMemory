@@ -14,6 +14,8 @@ public class WorkoutExercise
     [Indexed]
     public int ExerciseId { get; set; }
 
+    public int Order { get; set; }
+
     public int Sets { get; set; }
     public int Reps { get; set; }
     public int BreakTimeInSeconds { get; set; }
