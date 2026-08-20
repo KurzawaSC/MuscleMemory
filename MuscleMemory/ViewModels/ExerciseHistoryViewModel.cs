@@ -1,14 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Services;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseHistoryViewModel(DatabaseContext dbContext) : ObservableObject, IQueryAttributable
+public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService historyQueryService) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
     private int _exerciseId;
 
     [ObservableProperty]
@@ -37,7 +37,7 @@ public partial class ExerciseHistoryViewModel(DatabaseContext dbContext) : Obser
 
     private async Task LoadHistoryAsync()
     {
-        var entries = await _dbContext.GetExerciseHistoryAsync(_exerciseId);
+        var entries = await _historyQueryService.GetExerciseHistoryAsync(_exerciseId);
         History.Clear();
         foreach (var entry in entries)
         {
