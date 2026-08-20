@@ -20,7 +20,7 @@
                     <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
                         <VerticalStackLayout Spacing="10">
                                                         <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding StartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" />
+                                <Label Grid.Column="0" Text="{Binding LocalStartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontSize="18" />
                                 <Label Grid.Column="1" Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="16" />
                             </Grid>
                             <Label Text="{Binding TotalVolume, StringFormat='Total Volume: {0} kg'}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" />

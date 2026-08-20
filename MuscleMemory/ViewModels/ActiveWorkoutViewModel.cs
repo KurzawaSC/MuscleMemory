@@ -20,8 +20,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
-    private DateTime _workoutStartTime;
-    private DateTime _breakEndTime;
+    private DateTime _workoutStartTimeUtc;
+    private DateTime _breakEndTimeUtc;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
@@ -122,12 +122,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             if (IsWorkoutActive)
             {
-                TimerText = FormatElapsed(DateTime.Now - _workoutStartTime);
+                TimerText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
             }
 
             if (IsResting)
             {
-                var remaining = _breakEndTime - DateTime.Now;
+                var remaining = _breakEndTimeUtc - DateTime.UtcNow;
                 if (remaining.TotalSeconds > 0)
                 {
                     RestTimerText = remaining.ToString(UiText.ElapsedFormat);
@@ -170,7 +170,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task StartWorkoutAsync(Workout workout)
     {
-        _workoutStartTime = DateTime.Now;
+        _workoutStartTimeUtc = DateTime.UtcNow;
         IsWorkoutCompleted = false;
 
         WorkoutTitle = workout.Name;
@@ -196,10 +196,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var state = new ActiveWorkoutState
         {
             SessionId = _sessionId,
-            StartTime = _workoutStartTime,
+            StartTimeUtc = _workoutStartTimeUtc,
             CurrentExerciseIndex = _currentExerciseIndex,
             IsResting = IsResting,
-            BreakEndTime = _breakEndTime
+            BreakEndTimeUtc = _breakEndTimeUtc
         };
         await _activeStateRepository.SaveAsync(state);
     }
@@ -219,10 +219,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         _sessionId = state.SessionId;
-        _workoutStartTime = state.StartTime;
+        _workoutStartTimeUtc = state.StartTimeUtc;
         _currentExerciseIndex = state.CurrentExerciseIndex;
         IsResting = state.IsResting;
-        _breakEndTime = state.BreakEndTime;
+        _breakEndTimeUtc = state.BreakEndTimeUtc;
         IsWorkoutActive = true;
         IsWorkoutCompleted = false;
         WorkoutTitle = session.WorkoutName;
@@ -342,7 +342,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         RepsInput = string.Empty;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
-            _breakEndTime = DateTime.Now.AddSeconds(CurrentExercise.BreakTimeInSeconds);
+            _breakEndTimeUtc = DateTime.UtcNow.AddSeconds(CurrentExercise.BreakTimeInSeconds);
             IsResting = true;
         }
         await SaveStateAsync();
@@ -369,7 +369,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task CompleteWorkoutAsync()
     {
         _timer.Stop();
-        TotalTimeText = FormatElapsed(DateTime.Now - _workoutStartTime);
+        TotalTimeText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
 
         double volume = 0;
         CompletedExercises.Clear();

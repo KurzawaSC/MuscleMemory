@@ -2,10 +2,12 @@ namespace MuscleMemory.Services;
 
 public sealed record WorkoutHistorySession(
     int SessionId,
-    DateTime StartTime,
-    DateTime? EndTime,
+    DateTime StartTimeUtc,
+    DateTime? EndTimeUtc,
     double TotalVolume,
     IReadOnlyList<WorkoutHistoryExercise> Exercises)
 {
-    public TimeSpan Duration => EndTime.HasValue ? EndTime.Value - StartTime : TimeSpan.Zero;
+    public DateTime LocalStartTime => StartTimeUtc.ToLocalTime();
+
+    public TimeSpan Duration => EndTimeUtc.HasValue ? EndTimeUtc.Value - StartTimeUtc : TimeSpan.Zero;
 }

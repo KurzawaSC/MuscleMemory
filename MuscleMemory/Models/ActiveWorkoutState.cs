@@ -9,8 +9,8 @@ public class ActiveWorkoutState
     public int Id { get; set; } = DomainDefaults.ActiveWorkoutStateId;
 
     public int SessionId { get; set; }
-    public DateTime StartTime { get; set; }
+    public DateTime StartTimeUtc { get; set; }
     public int CurrentExerciseIndex { get; set; }
     public bool IsResting { get; set; }
-    public DateTime BreakEndTime { get; set; }
+    public DateTime BreakEndTimeUtc { get; set; }
 }
