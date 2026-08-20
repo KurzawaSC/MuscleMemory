@@ -329,11 +329,11 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <Label Text="Best Sets" FontSize="22" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
-                    
-                    <CollectionView ItemsSource="{Binding BestSets}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
+                    <Label Text="Exercises" FontSize="22" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding CompletedExercises}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:CompletedExerciseSummary">
                                 <Border Margin="0,0,0,10" Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1">
                                     <Border.Shadow>
                                         <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
@@ -341,14 +341,36 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="16" />
                                     </Border.StrokeShape>
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Grid.Column="0" Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
-                                        <Label Grid.Column="1" Text="{Binding BestSetText}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center"/>
-                                    </Grid>
+                                    <VerticalStackLayout Spacing="10">
+                                        <Label Text="{Binding ExerciseName}" FontFamily="LilitaOne" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Border Stroke="{AppThemeBinding Light={StaticResource SubtleStrokeLight}, Dark={StaticResource SubtleStrokeDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12" />
+                                            </Border.StrokeShape>
+                                            <VerticalStackLayout>
+                                                <Grid ColumnDefinitions="*,*,*" Padding="5" BackgroundColor="{AppThemeBinding Light={StaticResource TableHeaderBackgroundLight}, Dark={StaticResource TableHeaderBackgroundDark}}">
+                                                    <Label Grid.Column="0" Text="Set" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="1" Text="Weight" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                                    <Label Grid.Column="2" Text="Reps" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="12" FontFamily="LilitaOne" HorizontalTextAlignment="Center" />
+                                                </Grid>
+                                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:WorkoutSet">
+                                                            <Grid ColumnDefinitions="*,*,*" Padding="8">
+                                                                <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                                <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                                <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+                                                </VerticalStackLayout>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                     
                     <Button Text="Finish &amp; Save Workout" 
                             Command="{Binding ExitWorkoutCommand}" 
