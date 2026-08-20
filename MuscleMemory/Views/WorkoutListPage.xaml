@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Name="PageRoot"
              x:Class="MuscleMemory.Views.WorkoutListPage"
              x:DataType="viewmodels:WorkoutListViewModel"
@@ -15,17 +16,9 @@
     </ContentPage.Behaviors>
 
     <Grid>
-        <VerticalStackLayout HorizontalOptions="Center" 
-                             VerticalOptions="Center" 
-                             Spacing="20"
-                             IsVisible="{Binding IsEmpty}">
-            <Image Source="empty_workout_list_icon.png" WidthRequest="80" HeightRequest="80" Opacity="0.3" />
-            <Label Text="No workouts added yet.&#10;Tap + to create one!" 
-                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" 
-                   FontSize="18" 
-                   FontFamily="LilitaOne"
-                   HorizontalTextAlignment="Center"/>
-        </VerticalStackLayout>
+        <controls:EmptyState IconSource="empty_workout_list_icon.png"
+                             Message="No workouts added yet.&#10;Tap + to create one!"
+                             IsVisible="{Binding IsEmpty}" />
         <CollectionView ItemsSource="{Binding Workouts}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Workout">
@@ -33,68 +26,41 @@
                         <SwipeView.RightItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}">
-                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" StrokeThickness="1.5">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Delete" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
-                                    </Border>
+                                    <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.RightItems>
                         <SwipeView.LeftItems>
                             <SwipeItems Mode="Reveal">
                                 <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}" CommandParameter="{Binding .}">
-                                    <Border BackgroundColor="Transparent" Margin="4,6,4,6" Padding="20,8" Stroke="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" StrokeThickness="1.5">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="12" />
-                                        </Border.StrokeShape>
-                                        <Label Text="Edit" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontFamily="LilitaOne" FontSize="16" VerticalOptions="Center" HorizontalOptions="Center" />
-                                    </Border>
+                                    <controls:SwipeAction Style="{StaticResource EditSwipeAction}" />
                                 </SwipeItemView>
                             </SwipeItems>
                         </SwipeView.LeftItems>
 
-                        <Border Padding="15" Stroke="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}">
-                            <Border.Shadow>
-                                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-                            </Border.Shadow>
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16" />
-                            </Border.StrokeShape>
+                        <Border Style="{StaticResource SurfaceCard}">
 
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" 
                                        Text="{Binding Name}" 
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
                                        FontSize="20" 
-                                       FontFamily="LilitaOne"
                                        VerticalOptions="Center"/>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <Button Text="History" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ViewHistoryCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="Transparent" 
-                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                                            BorderColor="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}"
-                                            BorderWidth="1"
-                                            FontAttributes="Bold" 
-                                            FontFamily="LilitaOne"
-                                            CornerRadius="20"
-                                            HeightRequest="40"
-                                            Padding="15,0"/>
-                                    <Button Text="Start" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
-                                            CommandParameter="{Binding .}"
-                                            BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" 
-                                            TextColor="{StaticResource OnAccentText}" 
-                                            BorderWidth="0"
-                                            FontAttributes="Bold" 
-                                            FontFamily="LilitaOne"
-                                            CornerRadius="20"
-                                            HeightRequest="40"
-                                            Padding="15,0"/>
+                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
+                                                             Text="History"
+                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ViewHistoryCommand}"
+                                                             CommandParameter="{Binding .}" />
+                                    <controls:TappableButton Style="{StaticResource PrimaryButton}"
+                                                             Text="Start"
+                                                             FontSize="14"
+                                                             FontAttributes="Bold"
+                                                             HeightRequest="40"
+                                                             ContentPadding="15,0"
+                                                             SurfaceShadow="{x:Null}"
+                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
+                                                             CommandParameter="{Binding .}" />
                                 </HorizontalStackLayout>
                             </Grid>
                         </Border>
@@ -103,56 +69,8 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Border Margin="20" 
-                HeightRequest="60" 
-                WidthRequest="60"
-                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                StrokeThickness="0"
-                HorizontalOptions="End" 
-                VerticalOptions="End"
-                IsVisible="{Binding ActiveWorkout.CanAddItems}">
-
-            <Border.Shadow>
-                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Border.Shadow>
-
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="30"/>
-            </Border.StrokeShape>
-
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding NavigateToAddWorkoutCommand}" />
-            </Border.GestureRecognizers>
-
-            <Image Source="plus_icon.png"
-                   WidthRequest="24"
-                   HeightRequest="24"
-                   HorizontalOptions="Center" 
-                   VerticalOptions="Center"
-                   InputTransparent="True">
-                <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{StaticResource OnAccentText}" />
-                </Image.Behaviors>
-            </Image>
-        </Border>
-        <Border Margin="15,0,15,20"
-                HorizontalOptions="Fill" 
-                VerticalOptions="End"
-                Padding="16"
-                StrokeThickness="0"
-                BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                IsVisible="{Binding ActiveWorkout.IsBannerVisible}">
-            <Border.Shadow>
-                <Shadow Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10"/>
-            </Border.Shadow>
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="12" />
-            </Border.StrokeShape>
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand}" />
-            </Border.GestureRecognizers>
-            <Label Text="Workout in Progress - Tap to Resume" HorizontalTextAlignment="Center" TextColor="{StaticResource OnAccentText}" FontFamily="LilitaOne" VerticalOptions="Center" FontSize="16" />
-        </Border>
+        <controls:FloatingActionButton Command="{Binding NavigateToAddWorkoutCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
+        <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
     </Grid>
 
 </ContentPage>
