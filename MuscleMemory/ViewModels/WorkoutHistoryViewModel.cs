@@ -35,9 +35,7 @@ public partial class WorkoutHistoryViewModel(
             WorkoutName = workoutName;
         }
 
-        if (query.TryGetValue(QueryKeys.WorkoutId, out var id)
-            && int.TryParse(id?.ToString(), out int workoutId)
-            && workoutId > 0)
+        if (query.TryGetValue(QueryKeys.WorkoutId, out var id) && id is int workoutId && workoutId > 0)
         {
             _workoutId = workoutId;
             _ = LoadHistoryAsync();
