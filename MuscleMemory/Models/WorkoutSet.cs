@@ -6,8 +6,9 @@ public class WorkoutSet
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
-    public int WorkoutExerciseId { get; set; }
-    public int WorkoutSessionId { get; set; }
+
+    [Indexed]
+    public int SessionExerciseId { get; set; }
 
     public double Weight { get; set; }
     public int Reps { get; set; }

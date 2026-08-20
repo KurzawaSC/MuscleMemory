@@ -8,6 +8,7 @@ public sealed class DatabaseMaintenanceService(
     IExerciseRepository exerciseRepository,
     IWorkoutRepository workoutRepository,
     IWorkoutSessionRepository sessionRepository,
+    ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
     IActiveWorkoutStateRepository activeWorkoutStateRepository) : IDatabaseMaintenanceService
 {
@@ -18,6 +19,7 @@ public sealed class DatabaseMaintenanceService(
         await workoutRepository.ClearAsync();
         await exerciseRepository.ClearAsync();
         await setRepository.ClearAsync();
+        await sessionExerciseRepository.ClearAsync();
         await sessionRepository.ClearAsync();
         await activeWorkoutStateRepository.ClearAsync();
     }

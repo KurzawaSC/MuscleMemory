@@ -34,6 +34,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IExerciseRepository, ExerciseRepository>();
         builder.Services.AddSingleton<IWorkoutRepository, WorkoutRepository>();
         builder.Services.AddSingleton<IWorkoutSessionRepository, WorkoutSessionRepository>();
+        builder.Services.AddSingleton<ISessionExerciseRepository, SessionExerciseRepository>();
         builder.Services.AddSingleton<IWorkoutSetRepository, WorkoutSetRepository>();
         builder.Services.AddSingleton<IActiveWorkoutStateRepository, ActiveWorkoutStateRepository>();
         builder.Services.AddSingleton<IWorkoutHistoryQueryService, WorkoutHistoryQueryService>();

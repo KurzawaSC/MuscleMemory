@@ -77,6 +77,11 @@ public partial class WorkoutListViewModel(IWorkoutRepository workoutRepository, 
     {
         if (workout == null) return;
         
-        await Shell.Current.GoToAsync($"{nameof(WorkoutHistoryPage)}?{QueryKeys.WorkoutId}={workout.Id}&{QueryKeys.WorkoutName}={workout.Name}");
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { QueryKeys.WorkoutId, workout.Id },
+            { QueryKeys.WorkoutName, workout.Name }
+        };
+        await Shell.Current.GoToAsync(nameof(WorkoutHistoryPage), navigationParameter);
     }
 }

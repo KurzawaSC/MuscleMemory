@@ -1,104 +1,95 @@
-using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
 
 public sealed class WorkoutHistoryQueryService(
-    IWorkoutRepository workoutRepository,
     IWorkoutSessionRepository sessionRepository,
+    ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository) : IWorkoutHistoryQueryService
 {
     public async Task<IReadOnlyList<ExerciseHistoryEntry>> GetExerciseHistoryAsync(int exerciseId)
     {
-        var workoutExercises = await workoutRepository.GetExercisesForExerciseAsync(exerciseId);
-        var sets = await setRepository.GetForWorkoutExercisesAsync([.. workoutExercises.Select(exercise => exercise.Id)]);
+        var performances = await sessionExerciseRepository.GetForExerciseAsync(exerciseId);
+        var setsByPerformance = await GetSetsByPerformanceAsync(performances);
 
-        if (sets.Count == 0)
+        if (setsByPerformance.Count == 0)
         {
             return [];
         }
 
-        var sessions = await sessionRepository.GetByIdsAsync([.. sets.Select(set => set.WorkoutSessionId).Distinct()]);
-        var sessionsById = sessions.ToDictionary(session => session.Id);
-        var workoutsById = (await workoutRepository.GetAllAsync()).ToDictionary(workout => workout.Id);
+        var sessionsById = (await sessionRepository.GetByIdsAsync([.. performances.Select(performance => performance.WorkoutSessionId).Distinct()]))
+            .ToDictionary(session => session.Id);
 
         var history = new List<ExerciseHistoryEntry>();
 
-        foreach (var loggedSets in sets.GroupBy(set => (set.WorkoutExerciseId, set.WorkoutSessionId)))
+        foreach (var performance in performances)
         {
-            if (!sessionsById.TryGetValue(loggedSets.Key.WorkoutSessionId, out var session))
+            if (!setsByPerformance.TryGetValue(performance.Id, out var sets)
+                || !sessionsById.TryGetValue(performance.WorkoutSessionId, out var session))
             {
                 continue;
             }
 
-            workoutsById.TryGetValue(session.WorkoutId, out var workout);
-
-            history.Add(new ExerciseHistoryEntry
-            {
-                Date = session.StartTime,
-                WorkoutName = workout?.Name ?? UiText.UnknownWorkoutName,
-                Sets = [.. loggedSets.OrderBy(set => set.SetNumber)]
-            });
+            history.Add(new ExerciseHistoryEntry(session.StartTimeUtc, session.WorkoutName, sets));
         }
 
-        return [.. history.OrderByDescending(entry => entry.Date)];
+        return [.. history.OrderByDescending(entry => entry.DateUtc)];
     }
 
     public async Task<IReadOnlyList<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId)
     {
         var sessions = await sessionRepository.GetForWorkoutAsync(workoutId);
-        var workoutExercises = await workoutRepository.GetExercisesAsync(workoutId);
+        var performances = await sessionExerciseRepository.GetForSessionsAsync([.. sessions.Select(session => session.Id)]);
+        var setsByPerformance = await GetSetsByPerformanceAsync(performances);
 
-        var setsBySession = (await setRepository.GetForSessionsAsync([.. sessions.Select(session => session.Id)]))
-            .GroupBy(set => set.WorkoutSessionId)
-            .ToDictionary(loggedSets => loggedSets.Key, loggedSets => loggedSets.ToList());
+        var performancesBySession = performances.GroupBy(performance => performance.WorkoutSessionId)
+                                                .ToDictionary(group => group.Key, group => group.ToList());
 
         var history = new List<WorkoutHistorySession>();
 
         foreach (var session in sessions)
         {
-            if (setsBySession.TryGetValue(session.Id, out var sets))
+            if (!performancesBySession.TryGetValue(session.Id, out var sessionPerformances))
             {
-                history.Add(BuildSession(session, sets, workoutExercises));
+                continue;
             }
+
+            var loggedExercises = BuildLoggedExercises(sessionPerformances, setsByPerformance);
+
+            if (loggedExercises.Count == 0)
+            {
+                continue;
+            }
+
+            history.Add(new WorkoutHistorySession(
+                session.Id,
+                session.StartTimeUtc,
+                session.EndTimeUtc,
+                loggedExercises.Sum(exercise => exercise.Sets.Sum(set => set.Weight * set.Reps)),
+                loggedExercises));
         }
 
         return history;
     }
 
-    private static WorkoutHistorySession BuildSession(
-        WorkoutSession session,
-        List<WorkoutSet> sets,
-        List<WorkoutExercise> workoutExercises)
+    private static List<WorkoutHistoryExercise> BuildLoggedExercises(
+        List<SessionExercise> performances,
+        Dictionary<int, List<WorkoutSet>> setsByPerformance) =>
+    [
+        .. performances.OrderBy(performance => performance.Order)
+                       .Where(performance => setsByPerformance.ContainsKey(performance.Id))
+                       .Select(performance => new WorkoutHistoryExercise(
+                           performance.Id,
+                           performance.ExerciseName,
+                           setsByPerformance[performance.Id]))
+    ];
+
+    private async Task<Dictionary<int, List<WorkoutSet>>> GetSetsByPerformanceAsync(List<SessionExercise> performances)
     {
-        var historySession = new WorkoutHistorySession
-        {
-            SessionId = session.Id,
-            StartTime = session.StartTime,
-            EndTime = session.EndTime,
-            TotalVolume = sets.Sum(set => set.Weight * set.Reps)
-        };
+        var sets = await setRepository.GetForSessionExercisesAsync([.. performances.Select(performance => performance.Id)]);
 
-        foreach (var exerciseSets in sets.GroupBy(set => set.WorkoutExerciseId))
-        {
-            var workoutExercise = workoutExercises.FirstOrDefault(candidate => candidate.Id == exerciseSets.Key);
-
-            var historyExercise = new WorkoutHistoryExercise
-            {
-                WorkoutExerciseId = exerciseSets.Key,
-                WorkoutSessionId = session.Id,
-                ExerciseName = workoutExercise?.ExerciseName ?? UiText.UnknownExerciseName
-            };
-
-            foreach (var set in exerciseSets.OrderBy(set => set.SetNumber))
-            {
-                historyExercise.Sets.Add(set);
-            }
-
-            historySession.Exercises.Add(historyExercise);
-        }
-
-        return historySession;
+        return sets.GroupBy(set => set.SessionExerciseId)
+                   .ToDictionary(group => group.Key, group => group.OrderBy(set => set.SetNumber).ToList());
     }
 }

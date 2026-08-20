@@ -30,7 +30,6 @@ public static class UiText
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyNoExercisesInLibrary = "You must create an exercise in the library first.";
-    public const string BodyNoExerciseSelected = "No exercise selected.";
     public const string BodyInvalidWeightReps = "Please enter valid numbers for weight and reps.";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
@@ -48,8 +47,6 @@ public static class UiText
     public const string ExportFailedFormat = "Failed to export data: {0}";
 
     public const string LoadingWorkoutTitle = "Loading...";
-    public const string UnknownWorkoutName = "Unknown Workout";
-    public const string UnknownExerciseName = "Unknown";
     public const string FirstTimePerformingExercise = "First time performing this exercise!";
     public const string LastSessionPrefix = "Last Session: ";
     public const string ExerciseProgressFormat = "Exercise {0} of {1}: {2}";
