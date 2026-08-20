@@ -505,8 +505,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = true;
         IsWorkoutActive = false;
         await _dbContext.ClearActiveWorkoutStateAsync();
-
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 
     [RelayCommand]
@@ -519,6 +517,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task ExitWorkoutAsync()
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        ClearCompletedSummary();
+    }
+
+    private void ClearCompletedSummary()
+    {
+        if (!IsWorkoutCompleted)
+            return;
+
+        IsWorkoutCompleted = false;
+        BestSets.Clear();
+        TotalVolume = 0;
     }
 
     public void TrackCurrentPage(Shell shell)
