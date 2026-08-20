@@ -12,6 +12,6 @@ public class WorkoutSession
 
     public string WorkoutName { get; set; } = string.Empty;
 
-    public DateTime StartTime { get; set; }
-    public DateTime? EndTime { get; set; }
+    public DateTime StartTimeUtc { get; set; }
+    public DateTime? EndTimeUtc { get; set; }
 }

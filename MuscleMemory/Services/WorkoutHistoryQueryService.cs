@@ -31,10 +31,10 @@ public sealed class WorkoutHistoryQueryService(
                 continue;
             }
 
-            history.Add(new ExerciseHistoryEntry(session.StartTime, session.WorkoutName, sets));
+            history.Add(new ExerciseHistoryEntry(session.StartTimeUtc, session.WorkoutName, sets));
         }
 
-        return [.. history.OrderByDescending(entry => entry.Date)];
+        return [.. history.OrderByDescending(entry => entry.DateUtc)];
     }
 
     public async Task<IReadOnlyList<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId)
@@ -64,8 +64,8 @@ public sealed class WorkoutHistoryQueryService(
 
             history.Add(new WorkoutHistorySession(
                 session.Id,
-                session.StartTime,
-                session.EndTime,
+                session.StartTimeUtc,
+                session.EndTimeUtc,
                 loggedExercises.Sum(exercise => exercise.Sets.Sum(set => set.Weight * set.Reps)),
                 loggedExercises));
         }
