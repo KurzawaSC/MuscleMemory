@@ -324,7 +324,7 @@
                             <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
-                            <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="{Binding TotalTimeText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" FontFamily="LilitaOne" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                         </VerticalStackLayout>
                     </Border>

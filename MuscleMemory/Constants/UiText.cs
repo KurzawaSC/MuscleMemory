@@ -56,6 +56,9 @@ public static class UiText
     public const string SetProgressWithTotalFormat = "Set {0} of {1}";
     public const string SetProgressFormat = "Set {0}";
 
+    public const string ElapsedFormat = @"mm\:ss";
+    public const string ElapsedWithHoursFormat = @"h\:mm\:ss";
+
     public const string KgTimesSeparator = " kg × ";
     public const string RepsSuffix = " reps";
 }
