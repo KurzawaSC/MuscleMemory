@@ -3,15 +3,19 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupService popupService) : ObservableObject, IQueryAttributable
+public partial class AddEditWorkoutViewModel(
+    IWorkoutRepository workoutRepository,
+    IExerciseRepository exerciseRepository,
+    IPopupService popupService) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
+    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
     private readonly IPopupService _popupService = popupService;
     private Workout? _workoutToEdit;
 
@@ -42,7 +46,7 @@ public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupSe
     {
         WorkoutName = workout.Name;
 
-        var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(workout.Id);
+        var exercisesFromDb = await _workoutRepository.GetExercisesAsync(workout.Id);
         Exercises.Clear();
         foreach (var ex in exercisesFromDb)
         {
@@ -102,7 +106,7 @@ public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupSe
     [RelayCommand]
     private async Task AddExerciseAsync()
     {
-        var allExercises = await _dbContext.GetExercisesAsync();
+        var allExercises = await _exerciseRepository.GetAllAsync();
 
         if (!allExercises.Any())
         {
@@ -205,7 +209,7 @@ public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupSe
         if (_workoutToEdit != null)
         {
             _workoutToEdit.Name = WorkoutName.Trim();
-            await _dbContext.UpdateFullWorkoutAsync(_workoutToEdit, Exercises.ToList());
+            await _workoutRepository.UpdateWithExercisesAsync(_workoutToEdit, [.. Exercises]);
         }
         else
         {
@@ -213,7 +217,7 @@ public partial class AddEditWorkoutViewModel(DatabaseContext dbContext, IPopupSe
             {
                 Name = WorkoutName.Trim()
             };
-            await _dbContext.SaveFullWorkoutAsync(newWorkout, Exercises.ToList());
+            await _workoutRepository.SaveWithExercisesAsync(newWorkout, [.. Exercises]);
         }
 
         HasUnsavedChanges = false;

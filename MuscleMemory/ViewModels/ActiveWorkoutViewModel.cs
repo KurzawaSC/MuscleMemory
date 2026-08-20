@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,7 +12,10 @@ namespace MuscleMemory.ViewModels;
 
 public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IWorkoutSessionRepository _sessionRepository;
+    private readonly IWorkoutSetRepository _setRepository;
+    private readonly IActiveWorkoutStateRepository _activeStateRepository;
     private Workout? _currentWorkout;
     private int _sessionId;
     private int _currentExerciseIndex;
@@ -98,9 +101,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IAudioManager _audioManager;
     private IAudioPlayer? _audioPlayer;
 
-    public ActiveWorkoutViewModel(DatabaseContext dbContext, IAudioManager audioManager)
+    public ActiveWorkoutViewModel(
+        IWorkoutRepository workoutRepository,
+        IWorkoutSessionRepository sessionRepository,
+        IWorkoutSetRepository setRepository,
+        IActiveWorkoutStateRepository activeStateRepository,
+        IAudioManager audioManager)
     {
-        _dbContext = dbContext;
+        _workoutRepository = workoutRepository;
+        _sessionRepository = sessionRepository;
+        _setRepository = setRepository;
+        _activeStateRepository = activeStateRepository;
         _audioManager = audioManager;
 
         _timer = Application.Current!.Dispatcher.CreateTimer();
@@ -162,7 +173,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
 
         WorkoutTitle = workout.Name;
-        _sessionId = await _dbContext.CreateWorkoutSessionAsync(workout.Id);
+        _sessionId = await _sessionRepository.CreateAsync(workout.Id);
 
         _timer.Start();
 
@@ -185,12 +196,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             IsResting = IsResting,
             BreakEndTime = _breakEndTime
         };
-        await _dbContext.SaveActiveWorkoutStateAsync(state);
+        await _activeStateRepository.SaveAsync(state);
     }
 
     public async Task LoadStateAsync()
     {
-        var state = await _dbContext.GetActiveWorkoutStateAsync();
+        var state = await _activeStateRepository.GetAsync();
         if (state != null)
         {
             _sessionId = state.SessionId;
@@ -201,7 +212,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             IsWorkoutActive = true;
             IsWorkoutCompleted = false;
             
-            var workout = (await _dbContext.GetWorkoutsAsync()).FirstOrDefault(w => w.Id == state.WorkoutId);
+            var workout = (await _workoutRepository.GetAllAsync()).FirstOrDefault(w => w.Id == state.WorkoutId);
             if (workout != null)
             {
                 _currentWorkout = workout;
@@ -214,7 +225,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task LoadExercisesAsync(int workoutId, bool restoreIndex = false)
     {
-        var exercisesFromDb = await _dbContext.GetExercisesForWorkoutAsync(workoutId);
+        var exercisesFromDb = await _workoutRepository.GetExercisesAsync(workoutId);
 
         Exercises.Clear();
         foreach (var ex in exercisesFromDb)
@@ -253,7 +264,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         WeightInput = string.Empty;
         RepsInput = string.Empty;
 
-        var lastSessionSets = await _dbContext.GetLastSessionSetsForExerciseAsync(exercise.Id, _sessionId);
+        var lastSessionSets = await _setRepository.GetLastSessionSetsAsync(exercise.Id, _sessionId);
         if (lastSessionSets.Any())
         {
             var setStrings = lastSessionSets.Select(s => $"{s.Weight}{UiText.KgTimesSeparator}{s.Reps}");
@@ -273,7 +284,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         if (CurrentExercise == null) return;
 
-        var setsFromDb = await _dbContext.GetSetsForWorkoutExerciseAsync(CurrentExercise.Id, _sessionId);
+        var setsFromDb = await _setRepository.GetForWorkoutExerciseAsync(CurrentExercise.Id, _sessionId);
         CurrentSets.Clear();
         foreach (var set in setsFromDb)
         {
@@ -325,7 +336,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             SetNumber = CurrentSets.Count + 1
         };
 
-        await _dbContext.SaveSetAsync(newSet);
+        await _setRepository.AddAsync(newSet);
         CurrentSets.Add(newSet);
         HasSavedSets = true;
         RepsInput = string.Empty;
@@ -357,7 +368,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
                 foreach (var ex in Exercises)
                 {
-                    var sets = await _dbContext.GetSetsForWorkoutExerciseAsync(ex.Id, _sessionId);
+                    var sets = await _setRepository.GetForWorkoutExerciseAsync(ex.Id, _sessionId);
                     if (sets.Any())
                     {
                         foreach (var s in sets) volume += (s.Weight * s.Reps);
@@ -370,10 +381,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 
                 TotalVolume = volume;
                 
-                await _dbContext.FinishWorkoutSessionAsync(_sessionId);
+                await _sessionRepository.FinishAsync(_sessionId);
                 IsWorkoutCompleted = true;
                 IsWorkoutActive = false;
-                await _dbContext.ClearActiveWorkoutStateAsync();
+                await _activeStateRepository.ClearAsync();
                 return;
             }
         }
@@ -396,7 +407,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         if (set == null) return;
 
-        await _dbContext.DeleteSetAsync(set.Id);
+        await _setRepository.DeleteAsync(set.Id);
         CurrentSets.Remove(set);
         HasSavedSets = CurrentSets.Any();
         for (int i = 0; i < CurrentSets.Count; i++)
@@ -423,7 +434,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             set.Weight = newWeight;
             set.Reps = newReps;
             
-            await _dbContext.UpdateSetAsync(set);
+            await _setRepository.UpdateAsync(set);
             
             int index = CurrentSets.IndexOf(set);
             if (index >= 0)
@@ -484,7 +495,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         foreach (var ex in Exercises)
         {
-            var sets = await _dbContext.GetSetsForWorkoutExerciseAsync(ex.Id, _sessionId);
+            var sets = await _setRepository.GetForWorkoutExerciseAsync(ex.Id, _sessionId);
             if (sets.Any())
             {
                 foreach (var s in sets) volume += (s.Weight * s.Reps);
@@ -496,11 +507,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
         
         TotalVolume = volume;
-        await _dbContext.FinishWorkoutSessionAsync(_sessionId);
+        await _sessionRepository.FinishAsync(_sessionId);
         
         IsWorkoutCompleted = true;
         IsWorkoutActive = false;
-        await _dbContext.ClearActiveWorkoutStateAsync();
+        await _activeStateRepository.ClearAsync();
     }
 
     [RelayCommand]

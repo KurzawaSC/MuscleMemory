@@ -1,14 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Services;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-    private readonly DatabaseContext _dbContext;
+    private readonly IDatabaseMaintenanceService _maintenanceService;
 
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
@@ -17,9 +17,9 @@ public partial class SettingsViewModel : ObservableObject
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
-    public SettingsViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout)
+    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, ActiveWorkoutViewModel activeWorkout)
     {
-        _dbContext = dbContext;
+        _maintenanceService = maintenanceService;
         ActiveWorkout = activeWorkout;
         SelectedTheme = Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
     }
@@ -52,7 +52,7 @@ public partial class SettingsViewModel : ObservableObject
 
         if (isConfirmed)
         {
-            await _dbContext.ClearAllDataAsync();
+            await _maintenanceService.ClearAllDataAsync();
             await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
         }
     }
@@ -61,7 +61,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         try
         {
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
+            var dbPath = _maintenanceService.DatabaseFilePath;
 
             if (!File.Exists(dbPath))
             {

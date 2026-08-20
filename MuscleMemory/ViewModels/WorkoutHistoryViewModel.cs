@@ -2,14 +2,22 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Data.Repositories;
+using MuscleMemory.Services;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : ObservableObject, IQueryAttributable
+public partial class WorkoutHistoryViewModel(
+    IWorkoutHistoryQueryService historyQueryService,
+    IWorkoutRepository workoutRepository,
+    IWorkoutSetRepository setRepository,
+    IExerciseRepository exerciseRepository) : ObservableObject, IQueryAttributable
 {
-    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
+    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
+    private readonly IWorkoutSetRepository _setRepository = setRepository;
+    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
     private int _workoutId;
 
     [ObservableProperty]
@@ -38,7 +46,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
 
     private async Task LoadHistoryAsync()
     {
-        var history = await _dbContext.GetWorkoutHistoryAsync(_workoutId);
+        var history = await _historyQueryService.GetWorkoutHistoryAsync(_workoutId);
         Sessions.Clear();
         foreach (var session in history)
         {
@@ -63,7 +71,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
             set.Weight = newWeight;
             set.Reps = newReps;
             
-            await _dbContext.UpdateSetAsync(set);
+            await _setRepository.UpdateAsync(set);
             await LoadHistoryAsync();
         }
     }
@@ -75,7 +83,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
         bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
-        await _dbContext.DeleteSetAsync(set.Id);
+        await _setRepository.DeleteAsync(set.Id);
         await LoadHistoryAsync();
     }
 
@@ -105,7 +113,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
                 Reps = newReps
             };
 
-            await _dbContext.SaveSetAsync(newSet);
+            await _setRepository.AddAsync(newSet);
             await LoadHistoryAsync();
         }
     }
@@ -117,7 +125,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
         bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, exercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
         if (!confirm) return;
 
-        await _dbContext.DeleteLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
+        await _setRepository.DeleteForLoggedExerciseAsync(exercise.WorkoutExerciseId, exercise.WorkoutSessionId);
         await LoadHistoryAsync();
     }
 
@@ -126,7 +134,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
     {
         if (session == null) return;
         
-        var allExercises = await _dbContext.GetExercisesAsync();
+        var allExercises = await _exerciseRepository.GetAllAsync();
         if (!allExercises.Any())
         {
             await Shell.Current.DisplayAlertAsync(UiText.TitleNoExercises, UiText.BodyNoExercisesInLibrary, UiText.ButtonOk);
@@ -152,7 +160,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
             TargetRPE = DomainDefaults.TargetRPE
         };
         
-        int workoutExerciseId = await _dbContext.AddLoggedExerciseAsync(newWorkoutExercise);
+        int workoutExerciseId = await _workoutRepository.AddExerciseAsync(newWorkoutExercise);
         
         var newSet = new WorkoutSet
         {
@@ -162,7 +170,7 @@ public partial class WorkoutHistoryViewModel(DatabaseContext dbContext) : Observ
             Weight = 0,
             Reps = 0
         };
-        await _dbContext.SaveSetAsync(newSet);
+        await _setRepository.AddAsync(newSet);
 
         await LoadHistoryAsync();
     }
