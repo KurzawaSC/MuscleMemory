@@ -1,16 +1,16 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
 using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout) : ObservableObject
+public partial class WorkoutListViewModel(IWorkoutRepository workoutRepository, ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -21,7 +21,7 @@ public partial class WorkoutListViewModel(DatabaseContext dbContext, ActiveWorko
     [RelayCommand]
     private async Task LoadWorkoutsAsync()
     {
-        var workoutsFromDb = await _dbContext.GetWorkoutsAsync();
+        var workoutsFromDb = await _workoutRepository.GetAllAsync();
 
         Workouts.Clear();
         foreach (var workout in workoutsFromDb)
@@ -55,7 +55,7 @@ public partial class WorkoutListViewModel(DatabaseContext dbContext, ActiveWorko
         bool answer = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteWorkout, string.Format(UiText.DeleteConfirmationFormat, workout.Name), UiText.ButtonYes, UiText.ButtonNo);
         if (answer)
         {
-            await _dbContext.DeleteWorkoutAsync(workout.Id);
+            await _workoutRepository.DeleteAsync(workout.Id);
             await LoadWorkoutsAsync();
         }
     }

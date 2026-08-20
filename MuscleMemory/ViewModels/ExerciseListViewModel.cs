@@ -3,15 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
-using MuscleMemory.Data;
+using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWorkoutViewModel activeWorkout, IPopupService popupService) : ObservableObject
+public partial class ExerciseListViewModel(IExerciseRepository exerciseRepository, ActiveWorkoutViewModel activeWorkout, IPopupService popupService) : ObservableObject
 {
-    private readonly DatabaseContext _dbContext = dbContext;
+    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
     private readonly IPopupService _popupService = popupService;
 
     [ObservableProperty]
@@ -24,7 +24,7 @@ public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWork
     [RelayCommand]
     private async Task LoadExercisesAsync()
     {
-        var exercisesFromDb = await _dbContext.GetExercisesAsync();
+        var exercisesFromDb = await _exerciseRepository.GetAllAsync();
         Exercises.Clear();
         foreach (var exercise in exercisesFromDb)
         {
@@ -39,7 +39,7 @@ public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWork
         var newExercise = await ShowExercisePopupAsync(null);
         if (newExercise != null)
         {
-            await _dbContext.AddExerciseAsync(newExercise);
+            await _exerciseRepository.AddAsync(newExercise);
             await LoadExercisesAsync();
         }
     }
@@ -52,7 +52,7 @@ public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWork
         bool answer = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.DeleteConfirmationFormat, exercise.Name), UiText.ButtonYes, UiText.ButtonNo);
         if (answer)
         {
-            await _dbContext.DeleteExerciseAsync(exercise.Id);
+            await _exerciseRepository.DeleteAsync(exercise.Id);
             await LoadExercisesAsync();
         }
     }
@@ -65,7 +65,7 @@ public partial class ExerciseListViewModel(DatabaseContext dbContext, ActiveWork
         var updatedExercise = await ShowExercisePopupAsync(exercise);
         if (updatedExercise != null)
         {
-            await _dbContext.UpdateExerciseAsync(updatedExercise);
+            await _exerciseRepository.UpdateAsync(updatedExercise);
             await LoadExercisesAsync();
         }
     }
