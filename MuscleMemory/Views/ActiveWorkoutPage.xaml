@@ -240,25 +240,43 @@
                             <RoundRectangle CornerRadius="16" />
                         </Border.StrokeShape>
                         <VerticalStackLayout Spacing="10">
-                            <Label Text="{Binding TimerText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                            <Label Text="{Binding TotalTimeText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                         </VerticalStackLayout>
                     </Border>
 
-                    <Label Text="Best Sets" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
-                    
-                    <CollectionView ItemsSource="{Binding BestSets}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:ExerciseBestSet">
+                    <Label Text="Exercises" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" Margin="0,10,0,0" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding CompletedExercises}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:CompletedExerciseSummary">
                                 <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <Label Grid.Column="0" Text="{Binding ExerciseName}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
-                                        <Label Grid.Column="1" Text="{Binding BestSetText}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" VerticalOptions="Center"/>
-                                    </Grid>
+                                    <VerticalStackLayout Spacing="10">
+                                        <Label Text="{Binding ExerciseName}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Border Stroke="{AppThemeBinding Light={StaticResource SubtleStrokeLight}, Dark={StaticResource SubtleStrokeDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12" />
+                                            </Border.StrokeShape>
+                                            <VerticalStackLayout>
+                                                <controls:SetTableHeader />
+                                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                                    <BindableLayout.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:WorkoutSet">
+                                                            <Grid ColumnDefinitions="*,*,*" Padding="8" BackgroundColor="Transparent">
+                                                                <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
+                                                                <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
+                                                                <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalTextAlignment="Center" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </BindableLayout.ItemTemplate>
+                                                </VerticalStackLayout>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                     
                     <controls:TappableButton Style="{StaticResource PrimaryButton}"
                                              Text="Finish &amp; Save Workout"
