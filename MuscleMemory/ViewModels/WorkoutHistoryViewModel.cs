@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Services;
 using MuscleMemory.Models;
 
@@ -44,12 +45,7 @@ public partial class WorkoutHistoryViewModel(
 
     private async Task LoadHistoryAsync()
     {
-        var history = await _historyQueryService.GetWorkoutHistoryAsync(_workoutId);
-        Sessions.Clear();
-        foreach (var session in history)
-        {
-            Sessions.Add(session);
-        }
+        Sessions.ReplaceAll(await _historyQueryService.GetWorkoutHistoryAsync(_workoutId));
         IsEmpty = !Sessions.Any();
     }
 

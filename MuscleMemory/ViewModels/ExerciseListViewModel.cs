@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
 
@@ -24,12 +25,7 @@ public partial class ExerciseListViewModel(IExerciseRepository exerciseRepositor
     [RelayCommand]
     private async Task LoadExercisesAsync()
     {
-        var exercisesFromDb = await _exerciseRepository.GetAllAsync();
-        Exercises.Clear();
-        foreach (var exercise in exercisesFromDb)
-        {
-            Exercises.Add(exercise);
-        }
+        Exercises.ReplaceAll(await _exerciseRepository.GetAllAsync());
         IsEmpty = !Exercises.Any();
     }
 

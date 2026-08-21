@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -235,11 +236,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task ShowExercisesAsync(List<SessionExercise> performedExercises, bool restoreIndex)
     {
-        Exercises.Clear();
-        foreach (var performedExercise in performedExercises)
-        {
-            Exercises.Add(performedExercise);
-        }
+        Exercises.ReplaceAll(performedExercises);
 
         if (Exercises.Any())
         {
@@ -291,12 +288,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task LoadSetsForCurrentExerciseAsync()
     {
-        var setsFromDb = await _setRepository.GetForSessionExerciseAsync(CurrentExercise.Id);
-        CurrentSets.Clear();
-        foreach (var set in setsFromDb)
-        {
-            CurrentSets.Add(set);
-        }
+        CurrentSets.ReplaceAll(await _setRepository.GetForSessionExerciseAsync(CurrentExercise.Id));
 
         HasSavedSets = CurrentSets.Any();
     }
