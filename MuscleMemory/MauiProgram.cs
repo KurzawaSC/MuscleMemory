@@ -43,6 +43,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
         builder.Services.AddSingleton<IWorkoutTimerService, WorkoutTimerService>();
         builder.Services.AddSingleton<ISetEditService, SetEditService>();
+        builder.Services.AddSingleton<IWorkoutSummaryService, WorkoutSummaryService>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<ExerciseListPage>();
         builder.Services.AddSingleton<WorkoutListPage>();

@@ -20,6 +20,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IWorkoutTimerService _timer;
     private readonly IAudioCueService _audioCues;
     private readonly ISetEditService _setEditService;
+    private readonly IWorkoutSummaryService _summaryService;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
@@ -107,7 +108,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IActiveWorkoutStateRepository activeStateRepository,
         IWorkoutTimerService timer,
         IAudioCueService audioCues,
-        ISetEditService setEditService)
+        ISetEditService setEditService,
+        IWorkoutSummaryService summaryService)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
@@ -117,6 +119,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer = timer;
         _audioCues = audioCues;
         _setEditService = setEditService;
+        _summaryService = summaryService;
 
         _timer.Ticked += OnTimerTicked;
     }
@@ -348,21 +351,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioCues.Stop();
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
 
-        double volume = 0;
-        CompletedExercises.Clear();
-
-        foreach (var performedExercise in Exercises)
-        {
-            var sets = await _setRepository.GetForSessionExerciseAsync(performedExercise.Id);
-            if (sets.Any())
-            {
-                foreach (var set in sets) volume += (set.Weight * set.Reps);
-
-                CompletedExercises.Add(new CompletedExerciseSummary(performedExercise.ExerciseName, sets));
-            }
-        }
-
-        TotalVolume = volume;
+        var summary = await _summaryService.BuildAsync([.. Exercises]);
+        CompletedExercises.ReplaceAll(summary.Exercises);
+        TotalVolume = summary.TotalVolume;
 
         await _sessionRepository.FinishAsync(_sessionId);
         IsWorkoutCompleted = true;
