@@ -1,3 +1,4 @@
+using MuscleMemory.Services;
 using MuscleMemory.Views;
 using MuscleMemory.ViewModels;
 
@@ -5,7 +6,7 @@ namespace MuscleMemory;
 
 public partial class AppShell : Shell
 {
-    public AppShell(ActiveWorkoutViewModel activeWorkoutViewModel)
+    public AppShell(ActiveWorkoutViewModel activeWorkoutViewModel, IStatusBarService statusBarService)
     {
         InitializeComponent();
 
@@ -15,6 +16,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(WorkoutHistoryPage), typeof(WorkoutHistoryPage));
 
         activeWorkoutViewModel.TrackCurrentPage(this);
+        statusBarService.TrackNavigation(this);
         _ = activeWorkoutViewModel.LoadStateAsync();
     }
 }
