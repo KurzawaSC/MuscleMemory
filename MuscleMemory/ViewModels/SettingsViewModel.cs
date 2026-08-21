@@ -9,6 +9,7 @@ namespace MuscleMemory.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly IDatabaseMaintenanceService _maintenanceService;
+    private readonly IThemeService _themeService;
 
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
@@ -17,30 +18,19 @@ public partial class SettingsViewModel : ObservableObject
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
-    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, ActiveWorkoutViewModel activeWorkout)
+    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
+        _themeService = themeService;
         ActiveWorkout = activeWorkout;
-        SelectedTheme = Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
+        SelectedTheme = themeService.SavedPreference;
     }
 
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
-        Preferences.Default.Set(PreferenceKeys.AppTheme, value.ToString());
-
-        if (Application.Current is null)
-        {
-            return;
-        }
-
-        Application.Current.UserAppTheme = AppTheme.Unspecified;
-        Application.Current.UserAppTheme = value switch
-        {
-            ThemePreference.Light => AppTheme.Light,
-            ThemePreference.Dark => AppTheme.Dark,
-            _ => AppTheme.Unspecified
-        };
+        _themeService.ChangeTheme(value);
     }
+
     [RelayCommand]
     private async Task EraseDataAsync()
     {
@@ -56,6 +46,7 @@ public partial class SettingsViewModel : ObservableObject
             await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
         }
     }
+
     [RelayCommand]
     private async Task ExportDataAsync()
     {
