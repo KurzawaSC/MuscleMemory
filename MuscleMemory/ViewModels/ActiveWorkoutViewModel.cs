@@ -19,6 +19,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IActiveWorkoutStateRepository _activeStateRepository;
     private readonly IWorkoutTimerService _timer;
     private readonly IAudioCueService _audioCues;
+    private readonly ISetEditService _setEditService;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
@@ -105,7 +106,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IWorkoutSetRepository setRepository,
         IActiveWorkoutStateRepository activeStateRepository,
         IWorkoutTimerService timer,
-        IAudioCueService audioCues)
+        IAudioCueService audioCues,
+        ISetEditService setEditService)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
@@ -114,6 +116,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _activeStateRepository = activeStateRepository;
         _timer = timer;
         _audioCues = audioCues;
+        _setEditService = setEditService;
 
         _timer.Ticked += OnTimerTicked;
     }
@@ -380,7 +383,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
+        if (!await _setEditService.ConfirmDeleteAsync()) return;
 
+        await RemoveSetAsync(set);
+    }
+
+    private async Task RemoveSetAsync(WorkoutSet set)
+    {
         await _setRepository.DeleteAsync(set.Id);
         CurrentSets.Remove(set);
         HasSavedSets = CurrentSets.Any();
@@ -397,24 +406,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         if (set == null) return;
 
-        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
-        if (weightStr == null) return;
+        var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
+        if (values is null) return;
 
-        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterReps, initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
-        if (repsStr == null) return;
+        set.Weight = values.Weight;
+        set.Reps = values.Reps;
 
-        if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
+        await _setRepository.UpdateAsync(set);
+
+        int index = CurrentSets.IndexOf(set);
+        if (index >= 0)
         {
-            set.Weight = newWeight;
-            set.Reps = newReps;
-
-            await _setRepository.UpdateAsync(set);
-
-            int index = CurrentSets.IndexOf(set);
-            if (index >= 0)
-            {
-                CurrentSets[index] = set;
-            }
+            CurrentSets[index] = set;
         }
     }
 
@@ -425,7 +428,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
 
         var lastSet = CurrentSets.OrderByDescending(s => s.SetNumber).First();
-        await DeleteSetAsync(lastSet);
+        await RemoveSetAsync(lastSet);
     }
 
     [RelayCommand]
