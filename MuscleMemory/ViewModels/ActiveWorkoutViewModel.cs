@@ -134,7 +134,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 }
                 else
                 {
-                    IsResting = false;
+                    ClearRestState();
                     _ = PlayBreakEndSoundAsync();
                     _ = SaveStateAsync();
                 }
@@ -357,7 +357,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 return;
             }
 
-            IsResting = false;
             UpdateSetProgress();
             await CompleteWorkoutAsync();
             return;
@@ -369,6 +368,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task CompleteWorkoutAsync()
     {
         _timer.Stop();
+        ClearRestState();
         TotalTimeText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
 
         double volume = 0;
@@ -393,10 +393,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _activeStateRepository.ClearAsync();
     }
 
+    private void ClearRestState()
+    {
+        IsResting = false;
+        _breakEndTimeUtc = default;
+        RestTimerText = FormatElapsed(TimeSpan.Zero);
+    }
+
     [RelayCommand]
     private async Task SkipRestAsync()
     {
-        IsResting = false;
+        ClearRestState();
 
         _audioPlayer?.Dispose();
         _audioPlayer = null;
