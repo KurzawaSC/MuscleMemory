@@ -143,7 +143,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        IsResting = false;
+        ClearRestState();
         _ = _audioCues.PlayBreakEndAsync();
         _ = SaveStateAsync();
     }
@@ -336,7 +336,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
                 return;
             }
 
-            IsResting = false;
             UpdateSetProgress();
             await CompleteWorkoutAsync();
             return;
@@ -348,6 +347,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task CompleteWorkoutAsync()
     {
         _timer.Stop();
+        ClearRestState();
         _audioCues.Stop();
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
 
@@ -361,10 +361,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _activeStateRepository.ClearAsync();
     }
 
+    private void ClearRestState()
+    {
+        IsResting = false;
+        _breakEndTimeUtc = default;
+        RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
+    }
+
     [RelayCommand]
     private async Task SkipRestAsync()
     {
-        IsResting = false;
+        ClearRestState();
 
         _audioCues.Stop();
         await SaveStateAsync();
@@ -483,16 +490,15 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         _timer.Stop();
         _audioCues.Stop();
+        ClearRestState();
 
         _sessionId = 0;
         _currentExerciseIndex = 0;
         _totalSetsForExercise = 0;
         _workoutStartTimeUtc = default;
-        _breakEndTimeUtc = default;
 
         IsWorkoutActive = false;
         IsWorkoutCompleted = false;
-        IsResting = false;
         IsExerciseComplete = false;
         IsExercisesEmpty = false;
         HasSavedSets = false;
@@ -507,7 +513,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         WorkoutTitle = UiText.LoadingWorkoutTitle;
         TimerText = _timer.FormatElapsed(TimeSpan.Zero);
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
-        RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
         ExerciseProgressText = string.Empty;
         SetProgressText = string.Empty;
         LastSessionResultsText = string.Empty;
