@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Views;
 
@@ -46,12 +47,7 @@ public partial class AddEditWorkoutViewModel(
     {
         WorkoutName = workout.Name;
 
-        var exercisesFromDb = await _workoutRepository.GetExercisesAsync(workout.Id);
-        Exercises.Clear();
-        foreach (var ex in exercisesFromDb)
-        {
-            Exercises.Add(ex);
-        }
+        Exercises.ReplaceAll(await _workoutRepository.GetExercisesAsync(workout.Id));
 
         IsEmpty = !Exercises.Any();
         HasUnsavedChanges = false;

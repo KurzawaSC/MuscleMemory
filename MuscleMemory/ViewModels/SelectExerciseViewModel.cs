@@ -2,6 +2,7 @@ using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using System.Collections.ObjectModel;
 
@@ -41,7 +42,6 @@ public partial class SelectExerciseViewModel(IPopupService popupService) : Obser
 
     private void FilterExercises()
     {
-        FilteredExercises.Clear();
         var filtered = _allExercises.AsEnumerable();
 
         if (SelectedMuscleGroupFilter != MuscleGroupFilterAll && Enum.TryParse<MuscleGroup>(SelectedMuscleGroupFilter, out var selectedMg))
@@ -49,10 +49,7 @@ public partial class SelectExerciseViewModel(IPopupService popupService) : Obser
             filtered = filtered.Where(e => e.TargetMuscleGroup == selectedMg);
         }
 
-        foreach (var exercise in filtered)
-        {
-            FilteredExercises.Add(exercise);
-        }
+        FilteredExercises.ReplaceAll(filtered);
     }
 
     [RelayCommand]
