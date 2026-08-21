@@ -24,6 +24,12 @@ public static class MauiProgram
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("LilitaOne-Regular.ttf", "LilitaOne");
+            })
+            .ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID
+                handlers.AddHandler<Shell, InstantTabBarShellRenderer>();
+#endif
             });
 
 #if DEBUG
