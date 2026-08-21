@@ -2,10 +2,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Plugin.Maui.Audio;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
@@ -17,6 +17,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly ISessionExerciseRepository _sessionExerciseRepository;
     private readonly IWorkoutSetRepository _setRepository;
     private readonly IActiveWorkoutStateRepository _activeStateRepository;
+    private readonly IWorkoutTimerService _timer;
+    private readonly IAudioCueService _audioCues;
+    private readonly ISetEditService _setEditService;
+    private readonly IWorkoutSummaryService _summaryService;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
@@ -96,68 +100,52 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string RepsInput { get; set; } = string.Empty;
 
-    private IDispatcherTimer _timer;
-
-    private readonly IAudioManager _audioManager;
-    private IAudioPlayer? _audioPlayer;
-
     public ActiveWorkoutViewModel(
         IWorkoutRepository workoutRepository,
         IWorkoutSessionRepository sessionRepository,
         ISessionExerciseRepository sessionExerciseRepository,
         IWorkoutSetRepository setRepository,
         IActiveWorkoutStateRepository activeStateRepository,
-        IAudioManager audioManager)
+        IWorkoutTimerService timer,
+        IAudioCueService audioCues,
+        ISetEditService setEditService,
+        IWorkoutSummaryService summaryService)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
         _sessionExerciseRepository = sessionExerciseRepository;
         _setRepository = setRepository;
         _activeStateRepository = activeStateRepository;
-        _audioManager = audioManager;
+        _timer = timer;
+        _audioCues = audioCues;
+        _setEditService = setEditService;
+        _summaryService = summaryService;
 
-        _timer = Application.Current!.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromSeconds(1);
-        _timer.Tick += (s, e) =>
-        {
-            if (IsWorkoutActive)
-            {
-                TimerText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
-            }
-
-            if (IsResting)
-            {
-                var remaining = _breakEndTimeUtc - DateTime.UtcNow;
-                if (remaining.TotalSeconds > 0)
-                {
-                    RestTimerText = remaining.ToString(UiText.ElapsedFormat);
-                }
-                else
-                {
-                    ClearRestState();
-                    _ = PlayBreakEndSoundAsync();
-                    _ = SaveStateAsync();
-                }
-            }
-        };
+        _timer.Ticked += OnTimerTicked;
     }
 
-    private static string FormatElapsed(TimeSpan elapsed) =>
-        elapsed.ToString(elapsed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
-
-    private async Task PlayBreakEndSoundAsync()
+    private void OnTimerTicked(object? sender, EventArgs e)
     {
-        try
+        if (IsWorkoutActive)
         {
-            var audioStream = await FileSystem.OpenAppPackageFileAsync("BreakEnd.mp3");
-            _audioPlayer?.Dispose();
-            _audioPlayer = _audioManager.CreatePlayer(audioStream);
-            _audioPlayer.Play();
+            TimerText = _timer.ElapsedSince(_workoutStartTimeUtc);
         }
-        catch (Exception ex)
+
+        if (!IsResting)
         {
-            Debug.WriteLine($"Failed to play break sound: {ex.Message}");
+            return;
         }
+
+        var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
+        if (remaining.TotalSeconds > 0)
+        {
+            RestTimerText = _timer.FormatCountdown(remaining);
+            return;
+        }
+
+        ClearRestState();
+        _ = _audioCues.PlayBreakEndAsync();
+        _ = SaveStateAsync();
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -235,11 +223,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task ShowExercisesAsync(List<SessionExercise> performedExercises, bool restoreIndex)
     {
-        Exercises.Clear();
-        foreach (var performedExercise in performedExercises)
-        {
-            Exercises.Add(performedExercise);
-        }
+        Exercises.ReplaceAll(performedExercises);
 
         if (Exercises.Any())
         {
@@ -291,12 +275,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task LoadSetsForCurrentExerciseAsync()
     {
-        var setsFromDb = await _setRepository.GetForSessionExerciseAsync(CurrentExercise.Id);
-        CurrentSets.Clear();
-        foreach (var set in setsFromDb)
-        {
-            CurrentSets.Add(set);
-        }
+        CurrentSets.ReplaceAll(await _setRepository.GetForSessionExerciseAsync(CurrentExercise.Id));
 
         HasSavedSets = CurrentSets.Any();
     }
@@ -369,23 +348,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         _timer.Stop();
         ClearRestState();
-        TotalTimeText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
+        _audioCues.Stop();
+        TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
 
-        double volume = 0;
-        CompletedExercises.Clear();
-
-        foreach (var performedExercise in Exercises)
-        {
-            var sets = await _setRepository.GetForSessionExerciseAsync(performedExercise.Id);
-            if (sets.Any())
-            {
-                foreach (var set in sets) volume += (set.Weight * set.Reps);
-
-                CompletedExercises.Add(new CompletedExerciseSummary(performedExercise.ExerciseName, sets));
-            }
-        }
-
-        TotalVolume = volume;
+        var summary = await _summaryService.BuildAsync([.. Exercises]);
+        CompletedExercises.ReplaceAll(summary.Exercises);
+        TotalVolume = summary.TotalVolume;
 
         await _sessionRepository.FinishAsync(_sessionId);
         IsWorkoutCompleted = true;
@@ -397,7 +365,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         IsResting = false;
         _breakEndTimeUtc = default;
-        RestTimerText = FormatElapsed(TimeSpan.Zero);
+        RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
     [RelayCommand]
@@ -405,8 +373,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         ClearRestState();
 
-        _audioPlayer?.Dispose();
-        _audioPlayer = null;
+        _audioCues.Stop();
         await SaveStateAsync();
     }
 
@@ -414,7 +381,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
+        if (!await _setEditService.ConfirmDeleteAsync()) return;
 
+        await RemoveSetAsync(set);
+    }
+
+    private async Task RemoveSetAsync(WorkoutSet set)
+    {
         await _setRepository.DeleteAsync(set.Id);
         CurrentSets.Remove(set);
         HasSavedSets = CurrentSets.Any();
@@ -431,24 +404,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         if (set == null) return;
 
-        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
-        if (weightStr == null) return;
+        var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
+        if (values is null) return;
 
-        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterReps, initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
-        if (repsStr == null) return;
+        set.Weight = values.Weight;
+        set.Reps = values.Reps;
 
-        if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
+        await _setRepository.UpdateAsync(set);
+
+        int index = CurrentSets.IndexOf(set);
+        if (index >= 0)
         {
-            set.Weight = newWeight;
-            set.Reps = newReps;
-
-            await _setRepository.UpdateAsync(set);
-
-            int index = CurrentSets.IndexOf(set);
-            if (index >= 0)
-            {
-                CurrentSets[index] = set;
-            }
+            CurrentSets[index] = set;
         }
     }
 
@@ -459,7 +426,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
 
         var lastSet = CurrentSets.OrderByDescending(s => s.SetNumber).First();
-        await DeleteSetAsync(lastSet);
+        await RemoveSetAsync(lastSet);
     }
 
     [RelayCommand]
@@ -492,9 +459,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (!isConfirmed)
             return;
 
-        _audioPlayer?.Dispose();
-        _audioPlayer = null;
-
         await CompleteWorkoutAsync();
     }
 
@@ -519,7 +483,42 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
-        TotalTimeText = FormatElapsed(TimeSpan.Zero);
+        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
+    }
+
+    public void Reset()
+    {
+        _timer.Stop();
+        _audioCues.Stop();
+        ClearRestState();
+
+        _sessionId = 0;
+        _currentExerciseIndex = 0;
+        _totalSetsForExercise = 0;
+        _workoutStartTimeUtc = default;
+
+        IsWorkoutActive = false;
+        IsWorkoutCompleted = false;
+        IsExerciseComplete = false;
+        IsExercisesEmpty = false;
+        HasSavedSets = false;
+        HasPreviousExercise = false;
+        HasNextExercise = false;
+
+        Exercises.Clear();
+        CurrentSets.Clear();
+        CompletedExercises.Clear();
+        CurrentExercise = new();
+
+        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
+        ExerciseProgressText = string.Empty;
+        SetProgressText = string.Empty;
+        LastSessionResultsText = string.Empty;
+        WeightInput = string.Empty;
+        RepsInput = string.Empty;
+        TotalVolume = 0;
     }
 
     public void TrackCurrentPage(Shell shell)

@@ -1,21 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using MuscleMemory.Constants;
-using MuscleMemory.Models;
+using MuscleMemory.Services;
 
 namespace MuscleMemory;
 
 public partial class App : Application
 {
-    public App()
+    public App(IThemeService themeService)
     {
         InitializeComponent();
-        string savedTheme = Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System));
-        UserAppTheme = Enum.Parse<ThemePreference>(savedTheme) switch
-        {
-            ThemePreference.Light => AppTheme.Light,
-            ThemePreference.Dark => AppTheme.Dark,
-            _ => AppTheme.Unspecified
-        };
+        themeService.RestoreSavedTheme();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
