@@ -3,7 +3,7 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
 
-public sealed class ThemeService : IThemeService
+public sealed class ThemeService(IStatusBarService statusBarService) : IThemeService
 {
     public ThemePreference SavedPreference =>
         Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
@@ -15,7 +15,9 @@ public sealed class ThemeService : IThemeService
             return;
         }
 
+        Application.Current.RequestedThemeChanged += OnRequestedThemeChanged;
         Application.Current.UserAppTheme = ToAppTheme(SavedPreference);
+        statusBarService.ApplyTheme();
     }
 
     public void ChangeTheme(ThemePreference preference)
@@ -30,6 +32,9 @@ public sealed class ThemeService : IThemeService
         Application.Current.UserAppTheme = AppTheme.Unspecified;
         Application.Current.UserAppTheme = ToAppTheme(preference);
     }
+
+    private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs args) =>
+        statusBarService.ApplyTheme();
 
     private static AppTheme ToAppTheme(ThemePreference preference) => preference switch
     {
