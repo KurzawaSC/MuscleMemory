@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -34,12 +35,7 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
 
     private async Task LoadHistoryAsync()
     {
-        var entries = await _historyQueryService.GetExerciseHistoryAsync(_exerciseId);
-        History.Clear();
-        foreach (var entry in entries)
-        {
-            History.Add(entry);
-        }
+        History.ReplaceAll(await _historyQueryService.GetExerciseHistoryAsync(_exerciseId));
         IsEmpty = !History.Any();
     }
 }
