@@ -479,6 +479,43 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
+    public void Reset()
+    {
+        _timer.Stop();
+        _audioCues.Stop();
+
+        _sessionId = 0;
+        _currentExerciseIndex = 0;
+        _totalSetsForExercise = 0;
+        _workoutStartTimeUtc = default;
+        _breakEndTimeUtc = default;
+
+        IsWorkoutActive = false;
+        IsWorkoutCompleted = false;
+        IsResting = false;
+        IsExerciseComplete = false;
+        IsExercisesEmpty = false;
+        HasSavedSets = false;
+        HasPreviousExercise = false;
+        HasNextExercise = false;
+
+        Exercises.Clear();
+        CurrentSets.Clear();
+        CompletedExercises.Clear();
+        CurrentExercise = new();
+
+        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
+        RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        ExerciseProgressText = string.Empty;
+        SetProgressText = string.Empty;
+        LastSessionResultsText = string.Empty;
+        WeightInput = string.Empty;
+        RepsInput = string.Empty;
+        TotalVolume = 0;
+    }
+
     public void TrackCurrentPage(Shell shell)
     {
         shell.Navigated += (_, _) => IsOnActiveWorkoutPage = shell.CurrentPage is ActiveWorkoutPage;
