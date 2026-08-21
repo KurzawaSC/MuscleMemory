@@ -4,9 +4,8 @@ using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Plugin.Maui.Audio;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
@@ -18,6 +17,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly ISessionExerciseRepository _sessionExerciseRepository;
     private readonly IWorkoutSetRepository _setRepository;
     private readonly IActiveWorkoutStateRepository _activeStateRepository;
+    private readonly IWorkoutTimerService _timer;
+    private readonly IAudioCueService _audioCues;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
@@ -97,68 +98,48 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string RepsInput { get; set; } = string.Empty;
 
-    private IDispatcherTimer _timer;
-
-    private readonly IAudioManager _audioManager;
-    private IAudioPlayer? _audioPlayer;
-
     public ActiveWorkoutViewModel(
         IWorkoutRepository workoutRepository,
         IWorkoutSessionRepository sessionRepository,
         ISessionExerciseRepository sessionExerciseRepository,
         IWorkoutSetRepository setRepository,
         IActiveWorkoutStateRepository activeStateRepository,
-        IAudioManager audioManager)
+        IWorkoutTimerService timer,
+        IAudioCueService audioCues)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
         _sessionExerciseRepository = sessionExerciseRepository;
         _setRepository = setRepository;
         _activeStateRepository = activeStateRepository;
-        _audioManager = audioManager;
+        _timer = timer;
+        _audioCues = audioCues;
 
-        _timer = Application.Current!.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromSeconds(1);
-        _timer.Tick += (s, e) =>
-        {
-            if (IsWorkoutActive)
-            {
-                TimerText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
-            }
-
-            if (IsResting)
-            {
-                var remaining = _breakEndTimeUtc - DateTime.UtcNow;
-                if (remaining.TotalSeconds > 0)
-                {
-                    RestTimerText = remaining.ToString(UiText.ElapsedFormat);
-                }
-                else
-                {
-                    IsResting = false;
-                    _ = PlayBreakEndSoundAsync();
-                    _ = SaveStateAsync();
-                }
-            }
-        };
+        _timer.Ticked += OnTimerTicked;
     }
 
-    private static string FormatElapsed(TimeSpan elapsed) =>
-        elapsed.ToString(elapsed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
-
-    private async Task PlayBreakEndSoundAsync()
+    private void OnTimerTicked(object? sender, EventArgs e)
     {
-        try
+        if (IsWorkoutActive)
         {
-            var audioStream = await FileSystem.OpenAppPackageFileAsync("BreakEnd.mp3");
-            _audioPlayer?.Dispose();
-            _audioPlayer = _audioManager.CreatePlayer(audioStream);
-            _audioPlayer.Play();
+            TimerText = _timer.ElapsedSince(_workoutStartTimeUtc);
         }
-        catch (Exception ex)
+
+        if (!IsResting)
         {
-            Debug.WriteLine($"Failed to play break sound: {ex.Message}");
+            return;
         }
+
+        var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
+        if (remaining.TotalSeconds > 0)
+        {
+            RestTimerText = _timer.FormatCountdown(remaining);
+            return;
+        }
+
+        IsResting = false;
+        _ = _audioCues.PlayBreakEndAsync();
+        _ = SaveStateAsync();
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -361,7 +342,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task CompleteWorkoutAsync()
     {
         _timer.Stop();
-        TotalTimeText = FormatElapsed(DateTime.UtcNow - _workoutStartTimeUtc);
+        _audioCues.Stop();
+        TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
 
         double volume = 0;
         CompletedExercises.Clear();
@@ -390,8 +372,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         IsResting = false;
 
-        _audioPlayer?.Dispose();
-        _audioPlayer = null;
+        _audioCues.Stop();
         await SaveStateAsync();
     }
 
@@ -477,9 +458,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (!isConfirmed)
             return;
 
-        _audioPlayer?.Dispose();
-        _audioPlayer = null;
-
         await CompleteWorkoutAsync();
     }
 
@@ -504,7 +482,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
-        TotalTimeText = FormatElapsed(TimeSpan.Zero);
+        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
     public void TrackCurrentPage(Shell shell)

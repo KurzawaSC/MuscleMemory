@@ -40,6 +40,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<IWorkoutHistoryQueryService, WorkoutHistoryQueryService>();
         builder.Services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
+        builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
+        builder.Services.AddSingleton<IWorkoutTimerService, WorkoutTimerService>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<ExerciseListPage>();
         builder.Services.AddSingleton<WorkoutListPage>();
