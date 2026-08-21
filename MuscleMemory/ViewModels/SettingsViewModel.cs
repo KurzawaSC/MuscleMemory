@@ -43,6 +43,7 @@ public partial class SettingsViewModel : ObservableObject
         if (isConfirmed)
         {
             await _maintenanceService.ClearAllDataAsync();
+            ActiveWorkout.Reset();
             await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
         }
     }
