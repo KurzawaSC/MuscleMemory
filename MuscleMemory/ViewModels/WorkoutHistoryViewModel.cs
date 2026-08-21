@@ -13,12 +13,14 @@ public partial class WorkoutHistoryViewModel(
     IWorkoutHistoryQueryService historyQueryService,
     ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
-    IExerciseRepository exerciseRepository) : ObservableObject, IQueryAttributable
+    IExerciseRepository exerciseRepository,
+    ISetEditService setEditService) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
     private readonly ISessionExerciseRepository _sessionExerciseRepository = sessionExerciseRepository;
     private readonly IWorkoutSetRepository _setRepository = setRepository;
     private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
+    private readonly ISetEditService _setEditService = setEditService;
     private int _workoutId;
 
     [ObservableProperty]
@@ -54,28 +56,21 @@ public partial class WorkoutHistoryViewModel(
     {
         if (set == null) return;
 
-        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterWeightKg, initialValue: set.Weight.ToString(), keyboard: Keyboard.Numeric);
-        if (weightStr == null) return;
+        var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
+        if (values is null) return;
 
-        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleEditSet, UiText.PromptEnterReps, initialValue: set.Reps.ToString(), keyboard: Keyboard.Numeric);
-        if (repsStr == null) return;
+        set.Weight = values.Weight;
+        set.Reps = values.Reps;
 
-        if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
-        {
-            set.Weight = newWeight;
-            set.Reps = newReps;
-
-            await _setRepository.UpdateAsync(set);
-            await LoadHistoryAsync();
-        }
+        await _setRepository.UpdateAsync(set);
+        await LoadHistoryAsync();
     }
 
     [RelayCommand]
     private async Task DeleteSetAsync(WorkoutSet set)
     {
         if (set == null) return;
-        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonYes, UiText.ButtonNo);
-        if (!confirm) return;
+        if (!await _setEditService.ConfirmDeleteAsync()) return;
 
         await _setRepository.DeleteAsync(set.Id);
         await LoadHistoryAsync();
@@ -87,27 +82,19 @@ public partial class WorkoutHistoryViewModel(
         if (loggedExercise == null) return;
 
         var lastSet = loggedExercise.Sets.LastOrDefault();
-        double weight = lastSet?.Weight ?? 0;
-        int reps = lastSet?.Reps ?? 0;
 
-        string weightStr = await Shell.Current.DisplayPromptAsync(UiText.TitleAddSet, UiText.PromptEnterWeightKg, initialValue: weight.ToString(), keyboard: Keyboard.Numeric);
-        if (weightStr == null) return;
+        var values = await _setEditService.PromptForSetAsync(UiText.TitleAddSet, lastSet?.Weight ?? 0, lastSet?.Reps ?? 0);
+        if (values is null) return;
 
-        string repsStr = await Shell.Current.DisplayPromptAsync(UiText.TitleAddSet, UiText.PromptEnterReps, initialValue: reps.ToString(), keyboard: Keyboard.Numeric);
-        if (repsStr == null) return;
-
-        if (double.TryParse(weightStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double newWeight) && int.TryParse(repsStr, out int newReps))
+        await _setRepository.AddAsync(new WorkoutSet
         {
-            await _setRepository.AddAsync(new WorkoutSet
-            {
-                SessionExerciseId = loggedExercise.SessionExerciseId,
-                SetNumber = loggedExercise.Sets.Count + 1,
-                Weight = newWeight,
-                Reps = newReps
-            });
+            SessionExerciseId = loggedExercise.SessionExerciseId,
+            SetNumber = loggedExercise.Sets.Count + 1,
+            Weight = values.Weight,
+            Reps = values.Reps
+        });
 
-            await LoadHistoryAsync();
-        }
+        await LoadHistoryAsync();
     }
 
     [RelayCommand]
