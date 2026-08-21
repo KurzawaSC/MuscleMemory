@@ -21,6 +21,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IAudioCueService _audioCues;
     private readonly ISetEditService _setEditService;
     private readonly IWorkoutSummaryService _summaryService;
+    private readonly INavigationStackService _navigationStack;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
@@ -109,7 +110,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IWorkoutTimerService timer,
         IAudioCueService audioCues,
         ISetEditService setEditService,
-        IWorkoutSummaryService summaryService)
+        IWorkoutSummaryService summaryService,
+        INavigationStackService navigationStack)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
@@ -120,6 +122,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioCues = audioCues;
         _setEditService = setEditService;
         _summaryService = summaryService;
+        _navigationStack = navigationStack;
 
         _timer.Ticked += OnTimerTicked;
     }
@@ -465,7 +468,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private async Task ResumeWorkoutAsync()
     {
-        await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage));
+        await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
     }
 
     [RelayCommand]
@@ -491,6 +494,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer.Stop();
         _audioCues.Stop();
         ClearRestState();
+        _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
         _sessionId = 0;
         _currentExerciseIndex = 0;
