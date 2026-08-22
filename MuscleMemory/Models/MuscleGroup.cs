@@ -11,6 +11,5 @@ public enum MuscleGroup
     Calves,
     Abs,
     FullBody,
-    Cardio,
     Other
 }
