@@ -89,7 +89,6 @@ public partial class WorkoutHistoryViewModel(
         await _setRepository.AddAsync(new WorkoutSet
         {
             SessionExerciseId = loggedExercise.SessionExerciseId,
-            SetNumber = loggedExercise.Sets.Count + 1,
             Weight = values.Weight,
             Reps = values.Reps
         });
@@ -143,7 +142,6 @@ public partial class WorkoutHistoryViewModel(
         await _setRepository.AddAsync(new WorkoutSet
         {
             SessionExerciseId = addedExercise.Id,
-            SetNumber = 1,
             Weight = 0,
             Reps = 0
         });

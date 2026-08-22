@@ -314,8 +314,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             SessionExerciseId = CurrentExercise.Id,
             Weight = weight,
-            Reps = reps,
-            SetNumber = CurrentSets.Count + 1
+            Reps = reps
         };
 
         await _setRepository.AddAsync(newSet);
@@ -392,12 +391,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task RemoveSetAsync(WorkoutSet set)
     {
         await _setRepository.DeleteAsync(set.Id);
-        CurrentSets.Remove(set);
-        HasSavedSets = CurrentSets.Any();
-        for (int i = 0; i < CurrentSets.Count; i++)
-        {
-            CurrentSets[i].SetNumber = i + 1;
-        }
+        await LoadSetsForCurrentExerciseAsync();
 
         UpdateSetProgress();
     }
@@ -428,8 +422,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (!CurrentSets.Any())
             return;
 
-        var lastSet = CurrentSets.OrderByDescending(s => s.SetNumber).First();
-        await RemoveSetAsync(lastSet);
+        await RemoveSetAsync(CurrentSets[^1]);
     }
 
     [RelayCommand]
