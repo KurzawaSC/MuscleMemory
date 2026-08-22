@@ -2,7 +2,6 @@ namespace MuscleMemory.Models;
 
 public enum EquipmentType
 {
-    BodyWeight,
     Barbell,
     Dumbbell,
     Machine,
