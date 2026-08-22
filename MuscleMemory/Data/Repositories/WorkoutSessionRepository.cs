@@ -4,7 +4,8 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkoutSessionRepository
 {
-    private const string SelectSessionsByIdsFormat = "SELECT * FROM WorkoutSession WHERE Id IN ({0})";
+    private const string SelectCompletedSessionsByIdsFormat =
+        "SELECT * FROM WorkoutSession WHERE EndTimeUtc IS NOT NULL AND Id IN ({0})";
 
     public async Task<WorkoutSession> CreateAsync(Workout workout)
     {
@@ -44,7 +45,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         return session is null ? null : AsUtc(session);
     }
 
-    public async Task<List<WorkoutSession>> GetByIdsAsync(IReadOnlyCollection<int> sessionIds)
+    public async Task<List<WorkoutSession>> GetCompletedByIdsAsync(IReadOnlyCollection<int> sessionIds)
     {
         if (sessionIds.Count == 0)
         {
@@ -52,17 +53,17 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         }
 
         var connection = await context.GetConnectionAsync();
-        var query = string.Format(SelectSessionsByIdsFormat, SqlPlaceholders.For(sessionIds.Count));
+        var query = string.Format(SelectCompletedSessionsByIdsFormat, SqlPlaceholders.For(sessionIds.Count));
         var sessions = await connection.QueryAsync<WorkoutSession>(query, [.. sessionIds.Select(id => (object)id)]);
 
         return [.. sessions.Select(AsUtc)];
     }
 
-    public async Task<List<WorkoutSession>> GetForWorkoutAsync(int workoutId)
+    public async Task<List<WorkoutSession>> GetCompletedForWorkoutAsync(int workoutId)
     {
         var connection = await context.GetConnectionAsync();
         var sessions = await connection.Table<WorkoutSession>()
-                                       .Where(session => session.WorkoutId == workoutId)
+                                       .Where(session => session.WorkoutId == workoutId && session.EndTimeUtc != null)
                                        .OrderByDescending(session => session.StartTimeUtc)
                                        .ToListAsync();
 

@@ -18,7 +18,7 @@ public sealed class WorkoutHistoryQueryService(
             return [];
         }
 
-        var sessionsById = (await sessionRepository.GetByIdsAsync([.. performances.Select(performance => performance.WorkoutSessionId).Distinct()]))
+        var sessionsById = (await sessionRepository.GetCompletedByIdsAsync([.. performances.Select(performance => performance.WorkoutSessionId).Distinct()]))
             .ToDictionary(session => session.Id);
 
         var history = new List<ExerciseHistoryEntry>();
@@ -39,7 +39,7 @@ public sealed class WorkoutHistoryQueryService(
 
     public async Task<IReadOnlyList<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId)
     {
-        var sessions = await sessionRepository.GetForWorkoutAsync(workoutId);
+        var sessions = await sessionRepository.GetCompletedForWorkoutAsync(workoutId);
         var performances = await sessionExerciseRepository.GetForSessionsAsync([.. sessions.Select(session => session.Id)]);
         var setsByPerformance = await GetSetsByPerformanceAsync(performances);
 
@@ -50,7 +50,8 @@ public sealed class WorkoutHistoryQueryService(
 
         foreach (var session in sessions)
         {
-            if (!performancesBySession.TryGetValue(session.Id, out var sessionPerformances))
+            if (session.EndTimeUtc is not { } endTimeUtc
+                || !performancesBySession.TryGetValue(session.Id, out var sessionPerformances))
             {
                 continue;
             }
@@ -65,7 +66,7 @@ public sealed class WorkoutHistoryQueryService(
             history.Add(new WorkoutHistorySession(
                 session.Id,
                 session.StartTimeUtc,
-                session.EndTimeUtc,
+                endTimeUtc,
                 loggedExercises.Sum(exercise => exercise.Sets.Sum(set => set.Weight * set.Reps)),
                 loggedExercises));
         }
