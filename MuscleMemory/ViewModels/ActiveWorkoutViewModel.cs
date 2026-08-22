@@ -231,7 +231,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (Exercises.Any())
         {
             IsExercisesEmpty = false;
-            if (!restoreIndex) _currentExerciseIndex = 0;
+            _currentExerciseIndex = restoreIndex ? Math.Clamp(_currentExerciseIndex, 0, Exercises.Count - 1) : 0;
             await AdvanceToExerciseAsync(_currentExerciseIndex);
         }
         else
