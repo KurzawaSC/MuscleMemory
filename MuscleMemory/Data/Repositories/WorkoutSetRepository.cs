@@ -5,6 +5,14 @@ namespace MuscleMemory.Data.Repositories;
 public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetRepository
 {
     private const string DeleteForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
+    private const string RenumberForSessionExercise = """
+        UPDATE WorkoutSet
+        SET SetNumber = (
+            SELECT COUNT(*) FROM WorkoutSet earlier
+            WHERE earlier.SessionExerciseId = WorkoutSet.SessionExerciseId
+              AND earlier.Id <= WorkoutSet.Id)
+        WHERE SessionExerciseId = ?
+        """;
     private const string SelectForSessionExercisesFormat = "SELECT * FROM WorkoutSet WHERE SessionExerciseId IN ({0})";
     private const string SelectLastSessionSets = """
         SELECT loggedSet.* FROM WorkoutSet loggedSet
@@ -22,7 +30,12 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     public async Task AddAsync(WorkoutSet set)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.InsertAsync(set);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            transaction.Insert(set);
+            transaction.Execute(RenumberForSessionExercise, set.SessionExerciseId);
+            set.SetNumber = transaction.Get<WorkoutSet>(set.Id).SetNumber;
+        });
     }
 
     public async Task UpdateAsync(WorkoutSet set)
@@ -34,7 +47,17 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     public async Task DeleteAsync(int setId)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.DeleteAsync<WorkoutSet>(setId);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            var set = transaction.Find<WorkoutSet>(setId);
+            if (set is null)
+            {
+                return;
+            }
+
+            transaction.Delete<WorkoutSet>(setId);
+            transaction.Execute(RenumberForSessionExercise, set.SessionExerciseId);
+        });
     }
 
     public async Task DeleteForSessionExerciseAsync(int sessionExerciseId)
