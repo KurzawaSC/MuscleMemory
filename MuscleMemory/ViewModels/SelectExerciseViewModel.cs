@@ -18,7 +18,7 @@ public partial class SelectExerciseViewModel(IPopupService popupService) : Obser
 
     public ObservableCollection<Exercise> FilteredExercises { get; } = [];
 
-    public List<string> MuscleGroupFilters { get; } = [MuscleGroupFilterAll, .. Enum.GetValues<MuscleGroup>().Select(muscleGroup => muscleGroup.ToString())];
+    public List<string> MuscleGroupFilters { get; } = [MuscleGroupFilterAll, .. Enum.GetValues<MuscleGroup>().Select(muscleGroup => muscleGroup.ToDisplayName())];
 
     [ObservableProperty]
     public partial string SelectedMuscleGroupFilter { get; set; } = MuscleGroupFilterAll;
@@ -44,9 +44,10 @@ public partial class SelectExerciseViewModel(IPopupService popupService) : Obser
     {
         var filtered = _allExercises.AsEnumerable();
 
-        if (SelectedMuscleGroupFilter != MuscleGroupFilterAll && Enum.TryParse<MuscleGroup>(SelectedMuscleGroupFilter, out var selectedMg))
+        if (SelectedMuscleGroupFilter != MuscleGroupFilterAll)
         {
-            filtered = filtered.Where(e => e.TargetMuscleGroup == selectedMg);
+            var selectedMuscleGroup = EnumDisplay.Parse<MuscleGroup>(SelectedMuscleGroupFilter);
+            filtered = filtered.Where(exercise => exercise.TargetMuscleGroup == selectedMuscleGroup);
         }
 
         FilteredExercises.ReplaceAll(filtered);

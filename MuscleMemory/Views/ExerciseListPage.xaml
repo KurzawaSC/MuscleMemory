@@ -46,8 +46,8 @@
                                            FontSize="18" 
  />
                                     <HorizontalStackLayout Spacing="8">
-                                        <controls:Chip Text="{Binding TargetMuscleGroup}" />
-                                        <controls:Chip Text="{Binding Equipment}" />
+                                        <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
+                                        <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
