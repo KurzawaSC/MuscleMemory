@@ -3,6 +3,7 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+               xmlns:models="clr-namespace:MuscleMemory.Models"
                xmlns:controls="clr-namespace:MuscleMemory.Controls"
                x:Class="MuscleMemory.Views.AddExercisePopup"
                x:DataType="viewmodels:AddEditExerciseViewModel">
@@ -31,6 +32,7 @@
             <Border Style="{StaticResource FormField}">
                 <Picker Title="Target Muscle Group"
                         ItemsSource="{Binding MuscleGroups}"
+                        ItemDisplayBinding="{Binding ., x:DataType=models:MuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}"
                         SelectedItem="{Binding SelectedMuscleGroup}"
                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                         TitleColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
@@ -40,6 +42,7 @@
             <Border Style="{StaticResource FormField}">
                 <Picker Title="Equipment"
                         ItemsSource="{Binding EquipmentTypes}"
+                        ItemDisplayBinding="{Binding ., x:DataType=models:EquipmentType, Converter={StaticResource EnumDisplayNameConverter}}"
                         SelectedItem="{Binding SelectedEquipment}"
                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                         TitleColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
