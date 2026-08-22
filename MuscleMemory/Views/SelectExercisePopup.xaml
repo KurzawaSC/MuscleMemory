@@ -32,8 +32,8 @@
                             <VerticalStackLayout Spacing="5">
                                 <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18"/>
                                 <HorizontalStackLayout Spacing="8">
-                                    <controls:Chip Text="{Binding TargetMuscleGroup}" />
-                                    <controls:Chip Text="{Binding Equipment}" />
+                                    <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
+                                    <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Border>
