@@ -370,3 +370,22 @@ FodyWeavers.xsd
 
 # Agents files
 CLAUDE.md
+
+# macOS Finder metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor swap and backup files
+*.swp
+*.swo
+*.swn
+*.bak
+
+# JetBrains IDEs (Rider, IntelliJ)
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
