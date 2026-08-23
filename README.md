@@ -17,14 +17,15 @@ export or erase yourself.
 ### Exercise library
 
 Create exercises with a name, a target muscle group (chest, back, shoulders, biceps, triceps, legs,
-calves, abs, full body, cardio, other) and an equipment type (body weight, barbell, dumbbell,
-machine, cable, kettlebell, band, none, other). Edit and delete with a swipe.
+calves, abs, full body, other) and an equipment type (barbell, dumbbell, machine, cable, kettlebell,
+band, none, other). Edit and delete with a swipe; each row also carries a **History** button.
 
 ### Workout templates
 
 A workout is a named, ordered list of exercises. Each entry carries its own plan: number of sets,
 target reps, rest time in seconds, and a target RPE from 1 to 10. Exercises are picked from the
-library and configured in a popup; the editor warns before discarding unsaved changes.
+library through a popup that filters by muscle group, then configured in a second popup; the editor
+warns before discarding unsaved changes.
 
 ### Live workout session
 
@@ -126,8 +127,11 @@ Views (XAML)  →  ViewModels  →  Services  →  Repositories  →  DatabaseCo
 
 ViewModels never touch the database; they depend on interfaces resolved through constructor
 injection. Every page, view model, service and repository is registered in `MauiProgram.cs`.
-Code-behind files contain nothing but `InitializeComponent()` and dependency assignment, and
-navigation is always triggered from a command, never from a view.
+Page code-behind contains nothing but `InitializeComponent()` and dependency assignment, and
+navigation is always triggered from a command, never from a view. Two places hold more, both
+structural rather than behavioural: `AppShell` registers the routes and attaches the navigation
+trackers, and the controls under `Controls/` declare their `BindableProperty` definitions and their
+own press feedback.
 
 ### Repositories behind interfaces
 
@@ -228,10 +232,12 @@ MuscleMemory/
 ├── Constants/            # ColorRoles, DatabaseNames, DomainDefaults, NavigationRoutes,
 │                         # PreferenceKeys, QueryKeys, UiText, UiTiming
 ├── Controls/             # Reusable bindable ContentViews, plus BackNavigationPage
+├── Converters/           # EnumDisplayNameConverter, for enum values shown in the UI
 ├── Data/
 │   ├── DatabaseContext.cs        # Lazy SQLiteAsyncConnection and table creation
 │   └── Repositories/             # One repository and interface per aggregate
-├── Extensions/           # ColorExtensions (relative luminance), ObservableCollectionExtensions
+├── Extensions/           # ColorExtensions (relative luminance), EnumDisplay (PascalCase to
+│                         # display names and back), ObservableCollectionExtensions
 ├── Models/               # Exercise, Workout, WorkoutExercise, WorkoutSession, SessionExercise,
 │                         # WorkoutSet, ActiveWorkoutState, ExerciseConfiguration,
 │                         # CompletedExerciseSummary, MuscleGroup, EquipmentType, ThemePreference
@@ -257,5 +263,15 @@ MuscleMemory/
 ## Data and privacy
 
 Everything is stored in `MuscleMemory.db3` inside the app's private data directory. There is no
-account, no network call and no telemetry. **Export data** shares that file as-is; **Erase data**
-empties every table, including any session in progress.
+account, no network call and no telemetry. Two things in the build make that structural rather than
+a promise:
+
+- **The Release manifest declares no Android permissions at all** — not even `INTERNET`. (Debug
+  builds gain `INTERNET` because the .NET Android debugger needs it; it is absent from the shipping
+  manifest.) Without it the process cannot open a socket.
+- `android:allowBackup="false"`, so the database is not swept into Android's Auto Backup and copied
+  to the user's Google Drive.
+
+**Export data** shares the file as-is through the system share sheet — the one moment data leaves
+the app, and only to wherever the user sends it. **Erase data** empties every table, including any
+session in progress.
