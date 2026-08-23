@@ -54,7 +54,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasTargetReps))]
+    [NotifyPropertyChangedFor(nameof(TargetRepsText))]
     public partial SessionExercise CurrentExercise { get; set; } = new();
+
+    public bool HasTargetReps => CurrentExercise.PlannedReps > 0;
+
+    public string TargetRepsText => string.Format(UiText.TargetRepsFormat, CurrentExercise.PlannedReps);
 
     [ObservableProperty]
     public partial string ExerciseProgressText { get; set; } = string.Empty;
