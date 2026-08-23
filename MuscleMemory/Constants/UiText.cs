@@ -52,6 +52,7 @@ public static class UiText
     public const string ExerciseProgressFormat = "Exercise {0} of {1}: {2}";
     public const string SetProgressWithTotalFormat = "Set {0} of {1}";
     public const string SetProgressFormat = "Set {0}";
+    public const string TargetRepsFormat = "Target: {0} reps";
 
     public const string ElapsedFormat = @"mm\:ss";
     public const string ElapsedWithHoursFormat = @"h\:mm\:ss";
