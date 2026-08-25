@@ -42,6 +42,11 @@ public static class UiText
     public const string PromptEnterWeightKg = "Enter weight (kg):";
     public const string PromptEnterReps = "Enter reps:";
 
+    public const string FieldSets = "Sets";
+    public const string FieldReps = "Reps";
+    public const string FieldBreakTime = "Break time";
+
+    public const string NumericRangeFormat = "{0} must be a whole number between {1} and {2}.";
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
     public const string ExportFailedFormat = "Failed to export data: {0}";
