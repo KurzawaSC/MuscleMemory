@@ -1,3 +1,4 @@
+using SQLite;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data.Repositories;
@@ -61,8 +62,11 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
     public async Task<SessionExercise> AppendToSessionAsync(SessionExercise sessionExercise)
     {
         var connection = await context.GetConnectionAsync();
-        sessionExercise.Order = await connection.ExecuteScalarAsync<int>(SelectNextOrder, sessionExercise.WorkoutSessionId);
-        await connection.InsertAsync(sessionExercise);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            sessionExercise.Order = transaction.ExecuteScalar<int>(SelectNextOrder, sessionExercise.WorkoutSessionId);
+            transaction.Insert(sessionExercise);
+        });
 
         return sessionExercise;
     }
@@ -73,11 +77,7 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
         await connection.DeleteAsync<SessionExercise>(sessionExerciseId);
     }
 
-    public async Task ClearAsync()
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.DeleteAllAsync<SessionExercise>();
-    }
+    public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<SessionExercise>();
 
     private static List<SessionExercise> BuildSnapshot(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises) =>
     [

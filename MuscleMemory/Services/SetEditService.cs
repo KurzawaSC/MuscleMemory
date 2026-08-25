@@ -26,6 +26,7 @@ public sealed class SetEditService : ISetEditService
         if (!double.TryParse(weightInput, NumberStyles.Any, CultureInfo.InvariantCulture, out double weight)
             || !int.TryParse(repsInput, out int reps))
         {
+            await Shell.Current.DisplayAlertAsync(UiText.TitleInvalidInput, UiText.BodyInvalidWeightReps, UiText.ButtonOk);
             return null;
         }
 

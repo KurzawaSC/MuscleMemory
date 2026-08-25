@@ -27,6 +27,7 @@ public static class UiText
     public const string ButtonAdd = "Add";
     public const string ButtonSave = "Save";
     public const string ButtonYesEraseIt = "Yes, erase it";
+    public const string ButtonResume = "Resume";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyNoExercisesInLibrary = "You must create an exercise in the library first.";
@@ -35,6 +36,7 @@ public static class UiText
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyNoExercisesForWorkout = "You don't have any exercises in the database. Go to the 'List' tab and add some first!";
     public const string BodyEnterWorkoutName = "Please enter a workout name.";
+    public const string BodyEnterExerciseName = "Please enter an exercise name.";
     public const string BodyAddAtLeastOneExercise = "Add at least one exercise to your workout.";
     public const string BodyEraseAllDataConfirmation = "Are you sure you want to delete ALL your exercises and workouts? This action cannot be undone.";
     public const string BodyDataErased = "All your data has been erased.";
@@ -42,8 +44,14 @@ public static class UiText
     public const string PromptEnterWeightKg = "Enter weight (kg):";
     public const string PromptEnterReps = "Enter reps:";
 
+    public const string FieldSets = "Sets";
+    public const string FieldReps = "Reps";
+    public const string FieldBreakTime = "Break time";
+
+    public const string NumericRangeFormat = "{0} must be a whole number between {1} and {2}.";
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
+    public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
     public const string ExportFailedFormat = "Failed to export data: {0}";
 
     public const string LoadingWorkoutTitle = "Loading...";

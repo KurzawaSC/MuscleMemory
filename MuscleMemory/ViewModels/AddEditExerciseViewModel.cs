@@ -51,6 +51,7 @@ public partial class AddEditExerciseViewModel(IPopupService popupService) : Obse
     {
         if (string.IsNullOrWhiteSpace(Name))
         {
+            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyEnterExerciseName, UiText.ButtonOk);
             return;
         }
 
@@ -61,7 +62,7 @@ public partial class AddEditExerciseViewModel(IPopupService popupService) : Obse
     {
         if (_existingExercise != null)
         {
-            _existingExercise.Name = Name;
+            _existingExercise.Name = Name.Trim();
             _existingExercise.TargetMuscleGroup = SelectedMuscleGroup;
             _existingExercise.Equipment = SelectedEquipment;
             return _existingExercise;
@@ -69,7 +70,7 @@ public partial class AddEditExerciseViewModel(IPopupService popupService) : Obse
 
         return new Exercise
         {
-            Name = Name,
+            Name = Name.Trim(),
             TargetMuscleGroup = SelectedMuscleGroup,
             Equipment = SelectedEquipment
         };

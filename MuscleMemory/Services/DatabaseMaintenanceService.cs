@@ -16,11 +16,15 @@ public sealed class DatabaseMaintenanceService(
 
     public async Task ClearAllDataAsync()
     {
-        await workoutRepository.ClearAsync();
-        await exerciseRepository.ClearAsync();
-        await setRepository.ClearAsync();
-        await sessionExerciseRepository.ClearAsync();
-        await sessionRepository.ClearAsync();
-        await activeWorkoutStateRepository.ClearAsync();
+        var connection = await context.GetConnectionAsync();
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            workoutRepository.Clear(transaction);
+            exerciseRepository.Clear(transaction);
+            setRepository.Clear(transaction);
+            sessionExerciseRepository.Clear(transaction);
+            sessionRepository.Clear(transaction);
+            activeWorkoutStateRepository.Clear(transaction);
+        });
     }
 }
