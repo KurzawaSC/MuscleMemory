@@ -1,3 +1,4 @@
+using SQLite;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data.Repositories;
@@ -94,9 +95,5 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, exerciseId, currentSessionId);
     }
 
-    public async Task ClearAsync()
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.DeleteAllAsync<WorkoutSet>();
-    }
+    public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSet>();
 }
