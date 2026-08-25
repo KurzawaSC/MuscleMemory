@@ -1,3 +1,4 @@
+using SQLite;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data.Repositories;
@@ -9,5 +10,5 @@ public interface IWorkoutSessionRepository
     Task<WorkoutSession?> GetAsync(int sessionId);
     Task<List<WorkoutSession>> GetCompletedByIdsAsync(IReadOnlyCollection<int> sessionIds);
     Task<List<WorkoutSession>> GetCompletedForWorkoutAsync(int workoutId);
-    Task ClearAsync();
+    void Clear(SQLiteConnection transaction);
 }

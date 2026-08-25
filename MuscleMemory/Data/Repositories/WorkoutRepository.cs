@@ -39,8 +39,11 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
     public async Task DeleteAsync(int workoutId)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.DeleteAsync<Workout>(workoutId);
-        await connection.ExecuteAsync(DeleteExercisesByWorkout, workoutId);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            transaction.Delete<Workout>(workoutId);
+            transaction.Execute(DeleteExercisesByWorkout, workoutId);
+        });
     }
 
     public async Task<List<WorkoutExercise>> GetExercisesAsync(int workoutId)
@@ -52,11 +55,10 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
                                .ToListAsync();
     }
 
-    public async Task ClearAsync()
+    public void Clear(SQLiteConnection transaction)
     {
-        var connection = await context.GetConnectionAsync();
-        await connection.DeleteAllAsync<WorkoutExercise>();
-        await connection.DeleteAllAsync<Workout>();
+        transaction.DeleteAll<WorkoutExercise>();
+        transaction.DeleteAll<Workout>();
     }
 
     private static void InsertOrderedExercises(SQLiteConnection transaction, int workoutId, List<WorkoutExercise> exercises)

@@ -1,3 +1,4 @@
+using SQLite;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Data.Repositories;
@@ -9,5 +10,5 @@ public interface IWorkoutRepository
     Task UpdateWithExercisesAsync(Workout workout, List<WorkoutExercise> exercises);
     Task DeleteAsync(int workoutId);
     Task<List<WorkoutExercise>> GetExercisesAsync(int workoutId);
-    Task ClearAsync();
+    void Clear(SQLiteConnection transaction);
 }
