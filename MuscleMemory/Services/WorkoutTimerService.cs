@@ -21,10 +21,12 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
 
     public string ElapsedSince(DateTime startTimeUtc) => FormatElapsed(DateTime.UtcNow - startTimeUtc);
 
-    public string FormatElapsed(TimeSpan elapsed) =>
-        elapsed.ToString(elapsed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
+    public string FormatElapsed(TimeSpan elapsed) => Format(elapsed);
 
     public TimeSpan RemainingUntil(DateTime endTimeUtc) => endTimeUtc - DateTime.UtcNow;
 
-    public string FormatCountdown(TimeSpan remaining) => remaining.ToString(UiText.ElapsedFormat);
+    public string FormatCountdown(TimeSpan remaining) => Format(remaining);
+
+    private static string Format(TimeSpan duration) =>
+        duration.ToString(duration.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
 }
