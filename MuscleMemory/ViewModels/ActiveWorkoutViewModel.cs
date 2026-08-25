@@ -465,7 +465,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task ResumeWorkoutAsync()
+    public async Task ResumeWorkoutAsync()
     {
         await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
     }

@@ -27,6 +27,7 @@ public static class UiText
     public const string ButtonAdd = "Add";
     public const string ButtonSave = "Save";
     public const string ButtonYesEraseIt = "Yes, erase it";
+    public const string ButtonResume = "Resume";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyNoExercisesInLibrary = "You must create an exercise in the library first.";
@@ -50,6 +51,7 @@ public static class UiText
     public const string NumericRangeFormat = "{0} must be a whole number between {1} and {2}.";
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
+    public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
     public const string ExportFailedFormat = "Failed to export data: {0}";
 
     public const string LoadingWorkoutTitle = "Loading...";

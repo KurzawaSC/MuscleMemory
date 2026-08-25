@@ -34,11 +34,32 @@ public partial class WorkoutListViewModel(IWorkoutRepository workoutRepository, 
     private async Task StartWorkoutAsync(Workout selectedWorkout)
     {
         if (selectedWorkout == null) return;
+
+        if (ActiveWorkout.IsWorkoutActive)
+        {
+            await OfferToResumeActiveWorkoutAsync();
+            return;
+        }
+
         var navigationParameter = new Dictionary<string, object>
         {
             { QueryKeys.Workout, selectedWorkout }
         };
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
+    }
+
+    private async Task OfferToResumeActiveWorkoutAsync()
+    {
+        bool resume = await Shell.Current.DisplayAlertAsync(
+            UiText.TitleHoldOn,
+            string.Format(UiText.WorkoutAlreadyActiveFormat, ActiveWorkout.WorkoutTitle),
+            UiText.ButtonResume,
+            UiText.ButtonCancel);
+
+        if (resume)
+        {
+            await ActiveWorkout.ResumeWorkoutAsync();
+        }
     }
 
     [RelayCommand]
