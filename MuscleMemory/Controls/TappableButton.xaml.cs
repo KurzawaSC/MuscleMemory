@@ -142,7 +142,7 @@ public partial class TappableButton : ContentView
 
     private async void OnTapped(object? sender, TappedEventArgs e)
     {
-        if (!IsEnabled || Command?.CanExecute(CommandParameter) != true)
+        if (!CanRunCommand())
         {
             return;
         }
@@ -150,6 +150,11 @@ public partial class TappableButton : ContentView
         await Surface.ScaleToAsync(PressedScale, PressFeedbackMilliseconds);
         await Surface.ScaleToAsync(1, PressFeedbackMilliseconds);
 
-        Command.Execute(CommandParameter);
+        if (CanRunCommand())
+        {
+            Command?.Execute(CommandParameter);
+        }
     }
+
+    private bool CanRunCommand() => IsEnabled && Command?.CanExecute(CommandParameter) == true;
 }

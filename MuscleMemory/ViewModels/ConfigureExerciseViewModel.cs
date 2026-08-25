@@ -10,6 +10,15 @@ public partial class ConfigureExerciseViewModel(IPopupService popupService) : Ob
 {
     private readonly IPopupService _popupService = popupService;
 
+    private static readonly NumericField SetsField =
+        new(UiText.FieldSets, DomainDefaults.MinSets, DomainDefaults.MaxSets);
+
+    private static readonly NumericField RepsField =
+        new(UiText.FieldReps, DomainDefaults.MinReps, DomainDefaults.MaxReps);
+
+    private static readonly NumericField BreakTimeField =
+        new(UiText.FieldBreakTime, DomainDefaults.MinBreakTimeInSeconds, DomainDefaults.MaxBreakTimeInSeconds);
+
     [ObservableProperty]
     public partial string ExerciseName { get; set; } = string.Empty;
 
@@ -62,14 +71,37 @@ public partial class ConfigureExerciseViewModel(IPopupService popupService) : Ob
     [RelayCommand]
     private async Task ConfirmAsync()
     {
-        var configuration = new ExerciseConfiguration(
-            ParseOrZero(SetsInput),
-            ParseOrZero(RepsInput),
-            ParseOrZero(BreakTimeInput),
-            TargetRPE);
+        if (SetsField.Parse(SetsInput) is not int sets)
+        {
+            await ShowRangeAlertAsync(SetsField);
+            return;
+        }
 
-        await _popupService.ClosePopupAsync<ExerciseConfiguration?>(Shell.Current.Navigation, configuration);
+        if (RepsField.Parse(RepsInput) is not int reps)
+        {
+            await ShowRangeAlertAsync(RepsField);
+            return;
+        }
+
+        if (BreakTimeField.Parse(BreakTimeInput) is not int breakTimeInSeconds)
+        {
+            await ShowRangeAlertAsync(BreakTimeField);
+            return;
+        }
+
+        await _popupService.ClosePopupAsync<ExerciseConfiguration?>(
+            Shell.Current.Navigation,
+            new ExerciseConfiguration(sets, reps, breakTimeInSeconds, TargetRPE));
     }
 
-    private static int ParseOrZero(string value) => int.TryParse(value, out int parsed) ? parsed : 0;
+    private static Task ShowRangeAlertAsync(NumericField field) =>
+        Shell.Current.DisplayAlertAsync(UiText.TitleInvalidInput, field.RangeMessage, UiText.ButtonOk);
+
+    private sealed record NumericField(string Label, int Minimum, int Maximum)
+    {
+        public int? Parse(string input) =>
+            int.TryParse(input, out int value) && value >= Minimum && value <= Maximum ? value : null;
+
+        public string RangeMessage => string.Format(UiText.NumericRangeFormat, Label, Minimum, Maximum);
+    }
 }

@@ -1,3 +1,4 @@
+using SQLite;
 using MuscleMemory.Constants;
 using MuscleMemory.Models;
 
@@ -33,4 +34,6 @@ public sealed class ActiveWorkoutStateRepository(DatabaseContext context) : IAct
         var connection = await context.GetConnectionAsync();
         await connection.DeleteAllAsync<ActiveWorkoutState>();
     }
+
+    public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<ActiveWorkoutState>();
 }
