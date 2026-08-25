@@ -28,62 +28,59 @@
                                                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="services:WorkoutHistoryExercise">
-                                        <SwipeView Margin="0,10,0,0">
-                                            <SwipeView.RightItems>
-                                                <SwipeItems Mode="Reveal">
-                                                    <SwipeItemView Command="{Binding BindingContext.DeleteExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}">
-                                                        <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                                    </SwipeItemView>
-                                                </SwipeItems>
-                                            </SwipeView.RightItems>
-                                            
-                                            <VerticalStackLayout Spacing="5">
-                                                <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" />
-                                                <Border Stroke="{AppThemeBinding Light={StaticResource SubtleStrokeLight}, Dark={StaticResource SubtleStrokeDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}">
-                                                    <Border.StrokeShape>
-                                                        <RoundRectangle CornerRadius="12" />
-                                                    </Border.StrokeShape>
-                                                    <VerticalStackLayout>
-                                                        <controls:SetTableHeader />
-                                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
-                                                            <BindableLayout.ItemTemplate>
-                                                                <DataTemplate x:DataType="models:WorkoutSet">
-                                                                    <SwipeView>
-                                                                        <SwipeView.RightItems>
-                                                                            <SwipeItems Mode="Reveal">
-                                                                                <SwipeItemView Command="{Binding BindingContext.DeleteSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}">
-                                                                                    <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                                                                </SwipeItemView>
-                                                                            </SwipeItems>
-                                                                        </SwipeView.RightItems>
-                                                                        <Border BackgroundColor="Transparent" StrokeThickness="0">
-                                                                            <Border.GestureRecognizers>
-                                                                                <TapGestureRecognizer Command="{Binding BindingContext.EditSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}" />
-                                                                            </Border.GestureRecognizers>
-                                                                            <Grid ColumnDefinitions="*,*,*" Padding="8">
-                                                                                <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                                <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                                <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                            </Grid>
-                                                                        </Border>
-                                                                    </SwipeView>
-                                                                </DataTemplate>
-                                                            </BindableLayout.ItemTemplate>
-                                                        </VerticalStackLayout>
-                                                        
-                                                        <controls:TappableButton Text="+ Add Set"
-                                                                                 TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                                                                                 FontSize="12"
-                                                                                 HeightRequest="30"
-                                                                                 ContentPadding="10,0"
-                                                                                 Margin="0,5,0,5"
-                                                                                 HorizontalOptions="Center"
-                                                                                 Command="{Binding BindingContext.AddSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                                 CommandParameter="{Binding .}" />
+                                        <VerticalStackLayout Margin="0,10,0,0" Spacing="5">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <Label Grid.Column="0" Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" VerticalOptions="Center" />
+                                                <controls:TappableButton Grid.Column="1"
+                                                                         Style="{StaticResource DangerOutlineButton}"
+                                                                         Text="Remove"
+                                                                         Command="{Binding BindingContext.DeleteExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                         CommandParameter="{Binding .}" />
+                                            </Grid>
+                                            <Border Stroke="{AppThemeBinding Light={StaticResource SubtleStrokeLight}, Dark={StaticResource SubtleStrokeDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SubtleSurfaceBackgroundLight}, Dark={StaticResource SubtleSurfaceBackgroundDark}}">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="12" />
+                                                </Border.StrokeShape>
+                                                <VerticalStackLayout>
+                                                    <controls:SetTableHeader />
+                                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                                        <BindableLayout.ItemTemplate>
+                                                            <DataTemplate x:DataType="models:WorkoutSet">
+                                                                <SwipeView HeightRequest="50">
+                                                                    <SwipeView.RightItems>
+                                                                        <SwipeItems Mode="Reveal">
+                                                                            <SwipeItemView Command="{Binding BindingContext.DeleteSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}">
+                                                                                <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
+                                                                            </SwipeItemView>
+                                                                        </SwipeItems>
+                                                                    </SwipeView.RightItems>
+                                                                    <Border BackgroundColor="Transparent" StrokeThickness="0">
+                                                                        <Border.GestureRecognizers>
+                                                                            <TapGestureRecognizer Command="{Binding BindingContext.EditSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}" />
+                                                                        </Border.GestureRecognizers>
+                                                                        <Grid ColumnDefinitions="*,*,*" Padding="8" VerticalOptions="Center">
+                                                                            <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                                            <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                                            <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="14" HorizontalTextAlignment="Center" />
+                                                                        </Grid>
+                                                                    </Border>
+                                                                </SwipeView>
+                                                            </DataTemplate>
+                                                        </BindableLayout.ItemTemplate>
                                                     </VerticalStackLayout>
-                                                </Border>
-                                            </VerticalStackLayout>
-                                        </SwipeView>
+                                                    
+                                                    <controls:TappableButton Text="+ Add Set"
+                                                                             TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                                                                             FontSize="12"
+                                                                             HeightRequest="30"
+                                                                             ContentPadding="10,0"
+                                                                             Margin="0,5,0,5"
+                                                                             HorizontalOptions="Center"
+                                                                             Command="{Binding BindingContext.AddSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                                                             CommandParameter="{Binding .}" />
+                                                </VerticalStackLayout>
+                                            </Border>
+                                        </VerticalStackLayout>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
