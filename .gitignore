@@ -370,6 +370,7 @@ FodyWeavers.xsd
 
 # Agents files
 CLAUDE.md
+docs/
 
 # macOS Finder metadata
 .DS_Store
