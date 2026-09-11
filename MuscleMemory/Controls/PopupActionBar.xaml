@@ -6,14 +6,15 @@
              x:Name="Root"
              x:DataType="controls:PopupActionBar">
 
-    <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+    <Grid ColumnDefinitions="*, 1.4*" ColumnSpacing="10">
         <controls:TappableButton Grid.Column="0"
-                                 Style="{StaticResource NeutralTextButton}"
+                                 Style="{StaticResource SecondaryButton}"
                                  Text="Cancel"
                                  Command="{Binding CancelCommand, Source={x:Reference Root}}" />
         <controls:TappableButton Grid.Column="1"
-                                 Style="{StaticResource TextButton}"
+                                 Style="{StaticResource PrimaryButton}"
                                  Text="{Binding ConfirmText, Source={x:Reference Root}}"
-                                 Command="{Binding ConfirmCommand, Source={x:Reference Root}}" />
+                                 Command="{Binding ConfirmCommand, Source={x:Reference Root}}"
+                                 IsEnabled="{Binding IsConfirmEnabled, Source={x:Reference Root}}" />
     </Grid>
 </ContentView>

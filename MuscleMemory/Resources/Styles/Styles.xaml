@@ -14,17 +14,29 @@
     <CornerRadius x:Key="SmallControlRadius">12</CornerRadius>
     <CornerRadius x:Key="ControlRadius">16</CornerRadius>
     <CornerRadius x:Key="CardRadius">20</CornerRadius>
+    <CornerRadius x:Key="PillRadius">20</CornerRadius>
     <CornerRadius x:Key="FabRadius">20</CornerRadius>
     <CornerRadius x:Key="DialogRadius">24</CornerRadius>
     <CornerRadius x:Key="SheetRadius">28,28,0,0</CornerRadius>
 
     <x:Single x:Key="CardShadowOpacityLight">0.05</x:Single>
     <x:Single x:Key="CardShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="SheetShadowOpacityLight">0.2</x:Single>
+    <x:Single x:Key="SheetShadowOpacityDark">0.55</x:Single>
 
     <Shadow x:Key="CardShadow"
             Offset="0,1"
             Radius="2"
             Opacity="{AppThemeBinding Light={StaticResource CardShadowOpacityLight}, Dark={StaticResource CardShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="SheetShadow"
+            Offset="0,-10"
+            Radius="40"
+            Opacity="{AppThemeBinding Light={StaticResource SheetShadowOpacityLight}, Dark={StaticResource SheetShadowOpacityDark}}">
         <Shadow.Brush>
             <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
         </Shadow.Brush>
@@ -83,6 +95,18 @@
         <Setter Property="FontSize" Value="12" />
     </Style>
 
+    <Style x:Key="Divider" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource LineDark}}" />
+    </Style>
+
+    <Style x:Key="OverflowDot" TargetType="BoxView">
+        <Setter Property="WidthRequest" Value="3" />
+        <Setter Property="HeightRequest" Value="3" />
+        <Setter Property="CornerRadius" Value="1.5" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+    </Style>
+
     <Style x:Key="SurfaceCard" TargetType="Border">
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
@@ -102,6 +126,81 @@
         <Setter Property="FontSize" Value="17" />
         <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
         <Setter Property="SurfaceShadow" Value="{StaticResource PrimaryButtonShadow}" />
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="controls:TappableButton">
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
+    </Style>
+
+    <ControlTemplate x:Key="ChoiceChipTemplate">
+        <Border x:Name="ChipSurface"
+                x:DataType="RadioButton"
+                Padding="14,10"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="FilterChipTemplate">
+        <Border x:Name="ChipSurface"
+                x:DataType="RadioButton"
+                Padding="14,8"
+                StrokeThickness="1"
+                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource PillRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13" />
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="ChoiceChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource ChoiceChipTemplate}" />
+    </Style>
+
+    <Style x:Key="FilterChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource FilterChipTemplate}" />
     </Style>
 
     <Style x:Key="OutlineButton" TargetType="controls:TappableButton">
