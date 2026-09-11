@@ -12,7 +12,7 @@
 
     <Border Padding="16"
             StrokeThickness="0"
-            BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
             Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="12" />
@@ -22,7 +22,7 @@
         </Border.GestureRecognizers>
         <Label Text="Workout in Progress - Tap to Resume"
                HorizontalTextAlignment="Center"
-               TextColor="{StaticResource OnAccentText}"
+               TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                FontSize="16"
                VerticalOptions="Center" />
     </Border>
