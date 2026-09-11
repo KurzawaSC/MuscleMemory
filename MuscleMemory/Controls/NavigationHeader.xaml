@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.NavigationHeader"
+             x:Name="Root"
+             x:DataType="controls:NavigationHeader"
+             Padding="14,4,20,4">
+
+    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
+        <Grid WidthRequest="{StaticResource TouchTarget}"
+              HeightRequest="{StaticResource TouchTarget}">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding BackCommand, Source={x:Reference Root}}" />
+            </Grid.GestureRecognizers>
+            <Border WidthRequest="36"
+                    HeightRequest="36"
+                    InputTransparent="True"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                    StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+                </Border.StrokeShape>
+                <Label Text="‹"
+                       FontSize="20"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
+        </Grid>
+        <Label Grid.Column="1"
+               Style="{StaticResource TitleLabel}"
+               Text="{Binding Title, Source={x:Reference Root}}"
+               LineBreakMode="TailTruncation"
+               VerticalOptions="Center" />
+    </Grid>
+</ContentView>

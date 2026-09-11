@@ -21,6 +21,8 @@ public partial class AddEditWorkoutViewModel(
     private Workout? _workoutToEdit;
 
     [ObservableProperty]
+    public partial string HeaderTitle { get; set; } = UiText.HeaderNewWorkout;
+    [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
@@ -39,6 +41,7 @@ public partial class AddEditWorkoutViewModel(
         if (query.TryGetValue(QueryKeys.WorkoutToEdit, out var editable) && editable is Workout workout)
         {
             _workoutToEdit = workout;
+            HeaderTitle = UiText.HeaderEditWorkout;
             _ = LoadWorkoutAsync(workout);
         }
     }
@@ -88,6 +91,12 @@ public partial class AddEditWorkoutViewModel(
         {
             await Shell.Current.GoToAsync(destination);
         }
+    }
+
+    [RelayCommand]
+    private async Task GoBackAsync()
+    {
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 
     private static bool IsLeavingEditor(ShellNavigatingEventArgs e) =>

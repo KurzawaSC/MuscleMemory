@@ -8,18 +8,19 @@
              x:Name="PageRoot"
              x:Class="MuscleMemory.Views.ExerciseListPage"
              x:DataType="viewmodels:ExerciseListViewModel"
-             Title="Exercise List"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadExercisesCommand, Source={x:Reference PageRoot}}" />
     </ContentPage.Behaviors>
 
-    <Grid>
-        <controls:EmptyState IconSource="empty_exercise_list_icon.png"
+    <Grid RowDefinitions="Auto, *">
+        <controls:ScreenHeader Title="Exercises" Subtitle="Build your movement library" />
+        <controls:EmptyState Grid.Row="1"
+                             IconSource="empty_exercise_list_icon.png"
                              Message="Your exercise list is empty.&#10;Tap + to add your first!"
                              IsVisible="{Binding IsEmpty}" />
-        <CollectionView ItemsSource="{Binding Exercises}" Margin="20">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Exercises}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
                     <SwipeView Margin="0,0,0,10">
@@ -63,8 +64,8 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <controls:FloatingActionButton Command="{Binding AddExerciseCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
-        <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
+        <controls:FloatingActionButton Grid.Row="1" Command="{Binding AddExerciseCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
+        <controls:ResumeWorkoutBanner Grid.Row="1" ActiveWorkout="{Binding ActiveWorkout}" />
     </Grid>
 
 </ContentPage>

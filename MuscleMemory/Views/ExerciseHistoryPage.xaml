@@ -7,14 +7,16 @@
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
              x:DataType="viewmodels:ExerciseHistoryViewModel"
-             Title="{Binding ExerciseName}"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
-    <Grid>
-        <controls:EmptyState Message="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!"
+    <Grid RowDefinitions="Auto, *">
+        <controls:NavigationHeader Title="{Binding ExerciseName, StringFormat='{0} · history'}" BackCommand="{Binding GoBackCommand}" />
+
+        <controls:EmptyState Grid.Row="1"
+                             Message="No history available for this exercise yet.&#10;Complete it in a workout to see your progress!"
                              IsVisible="{Binding IsEmpty}" />
-        
-        <CollectionView ItemsSource="{Binding History}" Margin="20">
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding History}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="services:ExerciseHistoryEntry">
                     <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
