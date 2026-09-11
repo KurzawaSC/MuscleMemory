@@ -6,12 +6,11 @@
              x:Name="Root"
              x:DataType="controls:Chip">
 
-    <Border Padding="8,4"
-            BackgroundColor="Transparent"
-            Stroke="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
-            StrokeThickness="1">
+    <Border Padding="10,5"
+            StrokeThickness="0"
+            BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="8" />
+            <RoundRectangle CornerRadius="{StaticResource ChipRadius}" />
         </Border.StrokeShape>
         <Label Text="{Binding Text, Source={x:Reference Root}}"
                TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"

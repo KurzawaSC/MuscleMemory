@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.ActionSheetRow"
+             x:Name="Root"
+             x:DataType="controls:ActionSheetRow">
+
+    <Grid ColumnDefinitions="*, Auto"
+          Padding="4,0"
+          MinimumHeightRequest="52"
+          BackgroundColor="Transparent">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference Root}}" />
+        </Grid.GestureRecognizers>
+        <Label Text="{Binding Text, Source={x:Reference Root}}"
+               TextColor="{Binding TextColor, Source={x:Reference Root}}"
+               VerticalOptions="Center" />
+        <Label Grid.Column="1"
+               Text="›"
+               FontSize="17"
+               IsVisible="{Binding ShowsChevron, Source={x:Reference Root}}"
+               TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+               VerticalOptions="Center" />
+    </Grid>
+</ContentView>

@@ -36,7 +36,6 @@ public static class UiText
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyNoExercisesForWorkout = "You don't have any exercises in the database. Go to the 'List' tab and add some first!";
     public const string BodyEnterWorkoutName = "Please enter a workout name.";
-    public const string BodyEnterExerciseName = "Please enter an exercise name.";
     public const string BodyAddAtLeastOneExercise = "Add at least one exercise to your workout.";
     public const string BodyEraseAllDataConfirmation = "Are you sure you want to delete ALL your exercises and workouts? This action cannot be undone.";
     public const string BodyDataErased = "All your data has been erased.";
@@ -54,8 +53,12 @@ public static class UiText
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
     public const string ExportFailedFormat = "Failed to export data: {0}";
 
+    public const string HeaderNewExercise = "New exercise";
+    public const string HeaderEditExercise = "Edit exercise";
     public const string HeaderNewWorkout = "New workout";
     public const string HeaderEditWorkout = "Edit workout";
+
+    public const string FilterAll = "All";
 
     public const string LoadingWorkoutTitle = "Loading...";
     public const string FirstTimePerformingExercise = "First time performing this exercise!";

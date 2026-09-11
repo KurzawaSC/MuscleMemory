@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.BottomSheet"
+             x:Name="Root"
+             x:DataType="controls:BottomSheet"
+             IsVisible="False">
+
+    <ContentView.Content>
+        <Grid>
+            <BoxView x:Name="Scrim"
+                     Opacity="0"
+                     Color="{AppThemeBinding Light={StaticResource OverlayLight}, Dark={StaticResource OverlayDark}}">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnScrimTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+
+            <Border x:Name="Sheet"
+                    VerticalOptions="End"
+                    Padding="20,12,20,24"
+                    StrokeThickness="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                    Shadow="{StaticResource SheetShadow}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="{StaticResource SheetRadius}" />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnPanUpdated" />
+                </Border.GestureRecognizers>
+                <VerticalStackLayout Spacing="14">
+                    <BoxView WidthRequest="40"
+                             HeightRequest="4"
+                             CornerRadius="2"
+                             HorizontalOptions="Center"
+                             Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}" />
+                    <ContentView Content="{Binding SheetContent, Source={x:Reference Root}}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </ContentView.Content>
+</ContentView>

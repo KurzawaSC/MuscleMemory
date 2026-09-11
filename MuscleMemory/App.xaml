@@ -8,7 +8,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:VariableMultiValueConverter x:Key="AllTrueConverter" ConditionType="All" />
             <converters:EnumDisplayNameConverter x:Key="EnumDisplayNameConverter" />
+            <converters:AreEqualConverter x:Key="AreEqualConverter" />
+            <converters:InitialsConverter x:Key="InitialsConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />

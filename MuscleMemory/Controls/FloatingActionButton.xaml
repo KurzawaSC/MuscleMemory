@@ -6,9 +6,9 @@
              x:Class="MuscleMemory.Controls.FloatingActionButton"
              x:Name="Root"
              x:DataType="controls:FloatingActionButton"
-             Margin="20"
-             HeightRequest="60"
-             WidthRequest="60"
+             Margin="0,0,20,24"
+             HeightRequest="58"
+             WidthRequest="58"
              HorizontalOptions="End"
              VerticalOptions="End">
 
@@ -16,7 +16,7 @@
             StrokeThickness="0"
             Shadow="{StaticResource FabShadow}">
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="30" />
+            <RoundRectangle CornerRadius="{StaticResource FabRadius}" />
         </Border.StrokeShape>
         <Border.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding Command, Source={x:Reference Root}}" />
