@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:models="clr-namespace:MuscleMemory.Models"
+             x:Class="MuscleMemory.Controls.ExerciseFormSheet"
+             x:Name="Root"
+             x:DataType="controls:ExerciseFormSheet">
+
+    <VerticalStackLayout Spacing="16">
+        <VerticalStackLayout Spacing="4">
+            <Label Style="{StaticResource TitleLabel}" Text="{Binding Form.Title, Source={x:Reference Root}}" />
+            <Label Style="{StaticResource CaptionLabel}" Text="Name is required, everything else is optional" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="6">
+            <Label Style="{StaticResource OverlineLabel}" Text="Name" />
+            <Border Style="{StaticResource FormField}" HeightRequest="52">
+                <Entry Text="{Binding Form.Name, Source={x:Reference Root}}"
+                       Placeholder="e.g. Incline Bench Press"
+                       VerticalOptions="Center" />
+            </Border>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="6">
+            <Label Style="{StaticResource OverlineLabel}" Text="Muscle group" />
+            <FlexLayout Wrap="Wrap"
+                        AlignContent="Start"
+                        AlignItems="Start"
+                        RadioButtonGroup.GroupName="ExerciseFormMuscleGroup"
+                        RadioButtonGroup.SelectedValue="{Binding Form.SelectedMuscleGroup, Source={x:Reference Root}}"
+                        BindableLayout.ItemsSource="{Binding Form.MuscleGroups, Source={x:Reference Root}}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:MuscleGroup">
+                        <RadioButton Style="{StaticResource ChoiceChip}"
+                                     Margin="0,0,4,4"
+                                     Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
+                                     Value="{Binding .}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="6">
+            <Label Style="{StaticResource OverlineLabel}" Text="Equipment" />
+            <FlexLayout Wrap="Wrap"
+                        AlignContent="Start"
+                        AlignItems="Start"
+                        RadioButtonGroup.GroupName="ExerciseFormEquipment"
+                        RadioButtonGroup.SelectedValue="{Binding Form.SelectedEquipment, Source={x:Reference Root}}"
+                        BindableLayout.ItemsSource="{Binding Form.EquipmentTypes, Source={x:Reference Root}}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:EquipmentType">
+                        <RadioButton Style="{StaticResource ChoiceChip}"
+                                     Margin="0,0,4,4"
+                                     Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
+                                     Value="{Binding .}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+        </VerticalStackLayout>
+
+        <controls:SheetActionBar ConfirmText="{Binding Form.ConfirmText, Source={x:Reference Root}}"
+                                 IsConfirmEnabled="{Binding Form.CanSave, Source={x:Reference Root}}"
+                                 CancelCommand="{Binding CancelCommand, Source={x:Reference Root}}"
+                                 ConfirmCommand="{Binding ConfirmCommand, Source={x:Reference Root}}" />
+    </VerticalStackLayout>
+</ContentView>

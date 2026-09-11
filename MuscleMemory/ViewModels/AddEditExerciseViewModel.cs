@@ -52,18 +52,19 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         SelectedEquipment = exercise.Equipment;
     }
 
-    public async Task SaveAsync()
+    public async Task<Exercise> SaveAsync()
     {
         if (_existingExercise is { } exercise)
         {
             ApplyTo(exercise);
             await _exerciseRepository.UpdateAsync(exercise);
-            return;
+            return exercise;
         }
 
         var newExercise = new Exercise();
         ApplyTo(newExercise);
         await _exerciseRepository.AddAsync(newExercise);
+        return newExercise;
     }
 
     private void ApplyTo(Exercise exercise)

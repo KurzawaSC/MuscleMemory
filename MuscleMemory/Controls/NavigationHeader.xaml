@@ -8,26 +8,9 @@
              Padding="14,4,20,4">
 
     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
-        <Grid WidthRequest="{StaticResource TouchTarget}"
-              HeightRequest="{StaticResource TouchTarget}">
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding BackCommand, Source={x:Reference Root}}" />
-            </Grid.GestureRecognizers>
-            <Border WidthRequest="36"
-                    HeightRequest="36"
-                    InputTransparent="True"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                    Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
-                    StrokeThickness="1">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
-                </Border.StrokeShape>
-                <Label Text="‹"
-                       FontSize="20"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center" />
-            </Border>
-        </Grid>
+        <controls:GlyphButton Glyph="‹"
+                              Style="{StaticResource NavigationGlyphButton}"
+                              Command="{Binding BackCommand, Source={x:Reference Root}}" />
         <Label Grid.Column="1"
                Style="{StaticResource TitleLabel}"
                Text="{Binding Title, Source={x:Reference Root}}"

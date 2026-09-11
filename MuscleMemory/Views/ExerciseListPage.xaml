@@ -22,7 +22,7 @@
                 Style="{StaticResource FormField}"
                 Margin="20,8,20,0"
                 IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
-            <Entry Text="{Binding SearchText}"
+            <Entry Text="{Binding Filter.SearchText}"
                    Placeholder="Search exercises"
                    ClearButtonVisibility="WhileEditing" />
         </Border>
@@ -35,8 +35,8 @@
             <HorizontalStackLayout Padding="20,0"
                                    Spacing="8"
                                    RadioButtonGroup.GroupName="ExerciseListFilters"
-                                   RadioButtonGroup.SelectedValue="{Binding SelectedFilter}"
-                                   BindableLayout.ItemsSource="{Binding Filters}">
+                                   RadioButtonGroup.SelectedValue="{Binding Filter.SelectedFilter}"
+                                   BindableLayout.ItemsSource="{Binding Filter.Filters}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:MuscleGroupFilter">
                         <RadioButton Style="{StaticResource FilterChip}"
@@ -63,7 +63,7 @@
             </CollectionView.Footer>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
-                    <Border Style="{StaticResource SurfaceCard}" Stroke="Transparent" StrokeThickness="2" Padding="14">
+                    <Border Style="{StaticResource SelectableCard}">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Value="True">
                                 <DataTrigger.Binding>
@@ -88,30 +88,9 @@
                                     <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
-                            <Grid Grid.Column="1"
-                                  WidthRequest="{StaticResource TouchTarget}"
-                                  HeightRequest="{StaticResource TouchTarget}"
-                                  VerticalOptions="Start"
-                                  Margin="0,-9,-9,0">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ShowExerciseActionsCommand}"
-                                                          CommandParameter="{Binding .}" />
-                                </Grid.GestureRecognizers>
-                                <Border WidthRequest="30"
-                                        HeightRequest="30"
-                                        StrokeThickness="0"
-                                        InputTransparent="True"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10" />
-                                    </Border.StrokeShape>
-                                    <HorizontalStackLayout Spacing="3" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <BoxView Style="{StaticResource OverflowDot}" />
-                                        <BoxView Style="{StaticResource OverflowDot}" />
-                                        <BoxView Style="{StaticResource OverflowDot}" />
-                                    </HorizontalStackLayout>
-                                </Border>
-                            </Grid>
+                            <controls:OverflowButton Grid.Column="1"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ShowExerciseActionsCommand}"
+                                                     CommandParameter="{Binding .}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -138,118 +117,20 @@
         <controls:ResumeWorkoutBanner Grid.Row="3" ActiveWorkout="{Binding ActiveWorkout}" />
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsActionSheetOpen}">
-            <VerticalStackLayout Spacing="16">
-                <Grid ColumnDefinitions="Auto, *"
-                      ColumnSpacing="12"
-                      BindingContext="{Binding ActionExercise}"
-                      x:DataType="models:Exercise">
-                    <Border WidthRequest="44"
-                            HeightRequest="44"
-                            StrokeThickness="0"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
-                        </Border.StrokeShape>
-                        <Label Text="{Binding Name, Converter={StaticResource InitialsConverter}, FallbackValue=''}"
-                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center" />
-                    </Border>
-                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                        <Label Style="{StaticResource TitleLabel}"
-                               Text="{Binding Name, FallbackValue=''}"
-                               LineBreakMode="TailTruncation" />
-                        <Label Style="{StaticResource CaptionLabel}">
-                            <Label.Text>
-                                <MultiBinding StringFormat="{}{0} · {1}" FallbackValue="">
-                                    <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                    <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                </MultiBinding>
-                            </Label.Text>
-                        </Label>
-                    </VerticalStackLayout>
-                </Grid>
-
-                <VerticalStackLayout>
-                    <controls:ActionSheetRow Text="Edit exercise"
-                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                             Command="{Binding EditActionExerciseCommand}" />
-                    <BoxView Style="{StaticResource Divider}" />
-                    <controls:ActionSheetRow Text="View history"
-                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                             Command="{Binding ViewActionExerciseHistoryCommand}" />
-                    <BoxView Style="{StaticResource Divider}" />
-                    <controls:ActionSheetRow Text="Delete exercise"
-                                             TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                             ShowsChevron="False"
-                                             Command="{Binding DeleteActionExerciseCommand}" />
-                </VerticalStackLayout>
-
-                <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                         Text="Cancel"
-                                         Command="{Binding CancelExerciseActionsCommand}" />
-            </VerticalStackLayout>
+            <controls:ItemActionsSheet Title="{Binding ActionExercise.Name, FallbackValue=''}"
+                                       Subtitle="{Binding ActionExerciseSubtitle}"
+                                       EditText="Edit exercise"
+                                       DeleteText="Delete exercise"
+                                       EditCommand="{Binding EditActionExerciseCommand}"
+                                       HistoryCommand="{Binding ViewActionExerciseHistoryCommand}"
+                                       DeleteCommand="{Binding DeleteActionExerciseCommand}"
+                                       CancelCommand="{Binding CancelExerciseActionsCommand}" />
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseFormOpen}">
-            <VerticalStackLayout Spacing="16">
-                <VerticalStackLayout Spacing="4">
-                    <Label Style="{StaticResource TitleLabel}" Text="{Binding ExerciseForm.Title}" />
-                    <Label Style="{StaticResource CaptionLabel}" Text="Name is required, everything else is optional" />
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource OverlineLabel}" Text="Name" />
-                    <Border Style="{StaticResource FormField}" HeightRequest="52">
-                        <Entry Text="{Binding ExerciseForm.Name}"
-                               Placeholder="e.g. Incline Bench Press"
-                               VerticalOptions="Center" />
-                    </Border>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource OverlineLabel}" Text="Muscle group" />
-                    <FlexLayout Wrap="Wrap"
-                                AlignContent="Start"
-                                AlignItems="Start"
-                                RadioButtonGroup.GroupName="ExerciseFormMuscleGroup"
-                                RadioButtonGroup.SelectedValue="{Binding ExerciseForm.SelectedMuscleGroup}"
-                                BindableLayout.ItemsSource="{Binding ExerciseForm.MuscleGroups}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:MuscleGroup">
-                                <RadioButton Style="{StaticResource ChoiceChip}"
-                                             Margin="0,0,4,4"
-                                             Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
-                                             Value="{Binding .}" />
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource OverlineLabel}" Text="Equipment" />
-                    <FlexLayout Wrap="Wrap"
-                                AlignContent="Start"
-                                AlignItems="Start"
-                                RadioButtonGroup.GroupName="ExerciseFormEquipment"
-                                RadioButtonGroup.SelectedValue="{Binding ExerciseForm.SelectedEquipment}"
-                                BindableLayout.ItemsSource="{Binding ExerciseForm.EquipmentTypes}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:EquipmentType">
-                                <RadioButton Style="{StaticResource ChoiceChip}"
-                                             Margin="0,0,4,4"
-                                             Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
-                                             Value="{Binding .}" />
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
-
-                <controls:PopupActionBar ConfirmText="{Binding ExerciseForm.ConfirmText}"
-                                         IsConfirmEnabled="{Binding ExerciseForm.CanSave}"
-                                         CancelCommand="{Binding CancelExerciseFormCommand}"
-                                         ConfirmCommand="{Binding SaveExerciseCommand}" />
-            </VerticalStackLayout>
+            <controls:ExerciseFormSheet Form="{Binding ExerciseForm}"
+                                        CancelCommand="{Binding CancelExerciseFormCommand}"
+                                        ConfirmCommand="{Binding SaveExerciseCommand}" />
         </controls:BottomSheet>
     </Grid>
 

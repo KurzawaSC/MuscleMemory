@@ -12,6 +12,8 @@ public static class DomainDefaults
     public const int MaxReps = 100;
     public const int MinBreakTimeInSeconds = 0;
     public const int MaxBreakTimeInSeconds = 600;
+    public const int BreakTimeStepInSeconds = 15;
+    public static readonly int[] BreakTimePresetsInSeconds = [60, 90, 120];
     public const int MinTargetRPE = 1;
     public const int MaxTargetRPE = 10;
     public const int ActiveWorkoutStateId = 1;
