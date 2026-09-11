@@ -8,7 +8,6 @@
              x:Name="PageRoot"
              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
              x:DataType="viewmodels:AddEditWorkoutViewModel"
-             Title="Create Workout"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
@@ -16,77 +15,80 @@
         <toolkit:EventToCommandBehavior EventName="Disappearing" Command="{Binding BindingContext.StopGuardingUnsavedChangesCommand, Source={x:Reference PageRoot}}" />
     </ContentPage.Behaviors>
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+    <Grid RowDefinitions="Auto, *">
+        <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding GoBackCommand}" />
+        <Grid Grid.Row="1" RowDefinitions="Auto, *, Auto" Padding="20">
 
-        <Border Style="{StaticResource FormField}" Grid.Row="0" Margin="0,0,0,20">
-            <Entry Text="{Binding WorkoutName}"
-                   Placeholder="Workout name"
-                   PlaceholderColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                   TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                   FontSize="20"
-                   ClearButtonVisibility="WhileEditing"/>
-        </Border>
+            <Border Style="{StaticResource FormField}" Grid.Row="0" Margin="0,0,0,20">
+                <Entry Text="{Binding WorkoutName}"
+                       Placeholder="Workout name"
+                       PlaceholderColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                       TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                       FontSize="20"
+                       ClearButtonVisibility="WhileEditing"/>
+            </Border>
 
-        <Grid Grid.Row="1">
-            <CollectionView ItemsSource="{Binding Exercises}">
-                <CollectionView.Header>
+            <Grid Grid.Row="1">
+                <CollectionView ItemsSource="{Binding Exercises}">
+                    <CollectionView.Header>
+                        <controls:TappableButton Style="{StaticResource TextButton}"
+                                                 Text="Add exercise +"
+                                                 Command="{Binding AddExerciseCommand}"
+                                                 HorizontalOptions="End"
+                                                 Margin="0,0,0,15" />
+                    </CollectionView.Header>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:WorkoutExercise">
+                            <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="18"/>
+                                        <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                        <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                        <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                        <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                    </VerticalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                                        <controls:TappableButton Style="{StaticResource OutlineButton}"
+                                                                 Text="Edit"
+                                                                 HeightRequest="36"
+                                                                 ContentPadding="10,0"
+                                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
+                                                                 CommandParameter="{Binding .}" />
+                                        <controls:TappableButton Style="{StaticResource DangerOutlineButton}"
+                                                                 Text="Delete"
+                                                                 HeightRequest="36"
+                                                                 ContentPadding="10,0"
+                                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
+                                                                 CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="{Binding IsEmpty}">
+                    <controls:EmptyState Message="You have no exercises in&#10;that workout, let's add&#10;more!" />
                     <controls:TappableButton Style="{StaticResource TextButton}"
                                              Text="Add exercise +"
-                                             Command="{Binding AddExerciseCommand}"
-                                             HorizontalOptions="End"
-                                             Margin="0,0,0,15" />
-                </CollectionView.Header>
+                                             Command="{Binding AddExerciseCommand}" />
+                </VerticalStackLayout>
+            </Grid>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:WorkoutExercise">
-                        <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="*, Auto">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="18"/>
-                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
-                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
-                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
-                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
-                                </VerticalStackLayout>
-
-                                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
-                                                             Text="Edit"
-                                                             HeightRequest="36"
-                                                             ContentPadding="10,0"
-                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
-                                                             CommandParameter="{Binding .}" />
-                                    <controls:TappableButton Style="{StaticResource DangerOutlineButton}"
-                                                             Text="Delete"
-                                                             HeightRequest="36"
-                                                             ContentPadding="10,0"
-                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=RemoveExerciseCommand}"
-                                                             CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="{Binding IsEmpty}">
-                <controls:EmptyState Message="You have no exercises in&#10;that workout, let's add&#10;more!" />
-                <controls:TappableButton Style="{StaticResource TextButton}"
-                                         Text="Add exercise +"
-                                         Command="{Binding AddExerciseCommand}" />
-            </VerticalStackLayout>
+            <controls:TappableButton Grid.Row="2"
+                                     Style="{StaticResource PrimaryButton}"
+                                     Text="Save"
+                                     FontSize="18"
+                                     HeightRequest="50"
+                                     Margin="0,20,0,0"
+                                     Command="{Binding SaveWorkoutCommand}" />
         </Grid>
-
-        <controls:TappableButton Grid.Row="2"
-                                 Style="{StaticResource PrimaryButton}"
-                                 Text="Save"
-                                 FontSize="18"
-                                 HeightRequest="50"
-                                 Margin="0,20,0,0"
-                                 Command="{Binding SaveWorkoutCommand}" />
     </Grid>
 
 </ContentPage>

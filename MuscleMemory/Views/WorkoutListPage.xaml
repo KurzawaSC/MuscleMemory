@@ -8,18 +8,19 @@
              x:Name="PageRoot"
              x:Class="MuscleMemory.Views.WorkoutListPage"
              x:DataType="viewmodels:WorkoutListViewModel"
-             Title="Start Workout"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadWorkoutsCommand, Source={x:Reference PageRoot}}" />
     </ContentPage.Behaviors>
 
-    <Grid>
-        <controls:EmptyState IconSource="empty_workout_list_icon.png"
+    <Grid RowDefinitions="Auto, *">
+        <controls:ScreenHeader Title="Workouts" Subtitle="Your training plans" />
+        <controls:EmptyState Grid.Row="1"
+                             IconSource="empty_workout_list_icon.png"
                              Message="No workouts added yet.&#10;Tap + to create one!"
                              IsVisible="{Binding IsEmpty}" />
-        <CollectionView ItemsSource="{Binding Workouts}" Margin="20">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Workout">
                     <SwipeView Margin="0,0,0,10">
@@ -68,8 +69,8 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <controls:FloatingActionButton Command="{Binding NavigateToAddWorkoutCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
-        <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
+        <controls:FloatingActionButton Grid.Row="1" Command="{Binding NavigateToAddWorkoutCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
+        <controls:ResumeWorkoutBanner Grid.Row="1" ActiveWorkout="{Binding ActiveWorkout}" />
     </Grid>
 
 </ContentPage>

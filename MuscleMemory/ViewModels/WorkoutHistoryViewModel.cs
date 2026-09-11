@@ -52,6 +52,12 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
+    private async Task GoBackAsync()
+    {
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+    }
+
+    [RelayCommand]
     private async Task EditSetAsync(WorkoutSet set)
     {
         if (set == null) return;

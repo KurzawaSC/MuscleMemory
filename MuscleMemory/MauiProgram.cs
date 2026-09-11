@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using Plugin.Maui.Audio;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Services;
@@ -23,7 +24,7 @@ public static class MauiProgram
             })
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("LilitaOne-Regular.ttf", "LilitaOne");
+                fonts.AddFont(FontFamilies.LilitaOneFile, FontFamilies.LilitaOne);
             })
             .ConfigureMauiHandlers(handlers =>
             {

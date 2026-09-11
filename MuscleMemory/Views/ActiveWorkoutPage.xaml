@@ -7,12 +7,12 @@
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
-             Title="Workout"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
              BackCommand="{Binding ExitWorkoutCommand}">
 
-        <Grid>
-                <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid RowDefinitions="Auto, *">
+                <controls:NavigationHeader BackCommand="{Binding ExitWorkoutCommand}" />
+                <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
 
                         <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
                 <Label Text="{Binding WorkoutTitle}"
@@ -224,7 +224,7 @@
                                  SurfaceShadow="{StaticResource CardShadow}" />
         </Grid>
 
-                <Grid BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" IsVisible="{Binding IsWorkoutCompleted}">
+                <Grid Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" IsVisible="{Binding IsWorkoutCompleted}">
             <ScrollView>
                 <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
                     <Label Text="Workout Complete! 🎉" 

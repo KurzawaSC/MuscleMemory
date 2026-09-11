@@ -54,6 +54,9 @@ public static class UiText
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
     public const string ExportFailedFormat = "Failed to export data: {0}";
 
+    public const string HeaderNewWorkout = "New workout";
+    public const string HeaderEditWorkout = "Edit workout";
+
     public const string LoadingWorkoutTitle = "Loading...";
     public const string FirstTimePerformingExercise = "First time performing this exercise!";
     public const string LastSessionPrefix = "Last Session: ";
