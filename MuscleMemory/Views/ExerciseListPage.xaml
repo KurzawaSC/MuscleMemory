@@ -9,7 +9,7 @@
              x:Class="MuscleMemory.Views.ExerciseListPage"
              x:DataType="viewmodels:ExerciseListViewModel"
              Title="Exercise List"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadExercisesCommand, Source={x:Reference PageRoot}}" />
@@ -42,7 +42,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="5">
                                     <Label Text="{Binding Name}" 
-                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
+                                           TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" 
                                            FontSize="18" 
  />
                                     <HorizontalStackLayout Spacing="8">

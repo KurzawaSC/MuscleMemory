@@ -7,26 +7,26 @@
                x:Class="MuscleMemory.Views.ConfigureExercisePopup"
                x:DataType="viewmodels:ConfigureExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="20" WidthRequest="300" Shadow="{StaticResource CardShadow}">
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="20" WidthRequest="300" Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <VerticalStackLayout Spacing="20">
-            <Label Text="{Binding ExerciseName}" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" HorizontalOptions="Center"/>
+            <Label Text="{Binding ExerciseName}" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalOptions="Center"/>
 
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="15">
-                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Sets:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="0" Grid.Column="1" Text="{Binding SetsInput}" Keyboard="Numeric" FontSize="18"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Reps:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="1" Grid.Column="1" Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="18"/>
 
-                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
+                <Label Grid.Row="2" Grid.Column="0" Text="Break (sec):" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center"/>
                 <Entry Grid.Row="2" Grid.Column="1" Text="{Binding BreakTimeInput}" Keyboard="Numeric" FontSize="18"/>
 
-                <Label Grid.Row="3" Grid.Column="0" Text="Target RPE:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center"/>
-                <Picker Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TargetRpeOptions}" SelectedItem="{Binding TargetRPE}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Target RPE:" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center"/>
+                <Picker Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TargetRpeOptions}" SelectedItem="{Binding TargetRPE}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"/>
             </Grid>
 
             <controls:PopupActionBar ConfirmText="{Binding ConfirmText}" CancelCommand="{Binding CancelCommand}" ConfirmCommand="{Binding ConfirmCommand}" Margin="0,10,0,0" />

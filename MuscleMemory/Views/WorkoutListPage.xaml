@@ -9,7 +9,7 @@
              x:Class="MuscleMemory.Views.WorkoutListPage"
              x:DataType="viewmodels:WorkoutListViewModel"
              Title="Start Workout"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadWorkoutsCommand, Source={x:Reference PageRoot}}" />
@@ -43,7 +43,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" 
                                        Text="{Binding Name}" 
-                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
+                                       TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" 
                                        FontSize="20" 
                                        VerticalOptions="Center"/>
 
@@ -55,7 +55,6 @@
                                     <controls:TappableButton Style="{StaticResource PrimaryButton}"
                                                              Text="Start"
                                                              FontSize="14"
-                                                             FontAttributes="Bold"
                                                              HeightRequest="40"
                                                              ContentPadding="15,0"
                                                              SurfaceShadow="{x:Null}"

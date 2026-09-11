@@ -12,9 +12,9 @@
              HorizontalOptions="End"
              VerticalOptions="End">
 
-    <Border BackgroundColor="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
             StrokeThickness="0"
-            Shadow="{StaticResource CardShadow}">
+            Shadow="{StaticResource FabShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="30" />
         </Border.StrokeShape>
@@ -28,7 +28,7 @@
                VerticalOptions="Center"
                InputTransparent="True">
             <Image.Behaviors>
-                <toolkit:IconTintColorBehavior TintColor="{StaticResource OnAccentText}" />
+                <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
             </Image.Behaviors>
         </Image>
     </Border>

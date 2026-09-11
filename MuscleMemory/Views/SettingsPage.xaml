@@ -6,25 +6,25 @@
              x:Class="MuscleMemory.Views.SettingsPage"
              x:DataType="viewmodels:SettingsViewModel"
              Title="Settings"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <Grid>
         <VerticalStackLayout Padding="20" Spacing="20">
             <Border Style="{StaticResource SettingsRow}">
                 <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="App Theme" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
-                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
+                    <Label Grid.Column="0" Text="App Theme" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
+                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
                 </Grid>
             </Border>
 
             <controls:SettingsActionRow Text="Export data"
                                         IconSource="export_data_icon.png"
-                                        Tint="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                        Tint="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                         Command="{Binding ExportDataCommand}" />
 
             <controls:SettingsActionRow Text="Erase data"
                                         IconSource="erease_data_icon.png"
-                                        Tint="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
+                                        Tint="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                         Command="{Binding EraseDataCommand}" />
 
         </VerticalStackLayout>

@@ -5,7 +5,7 @@
 
     <Grid ColumnDefinitions="*,*,*"
           Padding="8"
-          BackgroundColor="{AppThemeBinding Light={StaticResource TableHeaderBackgroundLight}, Dark={StaticResource TableHeaderBackgroundDark}}">
+          BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
         <Label Grid.Column="0" Text="Set" FontSize="12" HorizontalTextAlignment="Center" />
         <Label Grid.Column="1" Text="Weight (kg)" FontSize="12" HorizontalTextAlignment="Center" />
         <Label Grid.Column="2" Text="Reps" FontSize="12" HorizontalTextAlignment="Center" />

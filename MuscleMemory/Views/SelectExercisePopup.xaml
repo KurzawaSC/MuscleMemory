@@ -8,20 +8,20 @@
                x:Class="MuscleMemory.Views.SelectExercisePopup"
                x:DataType="viewmodels:SelectExerciseViewModel">
 
-    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" Padding="15" WidthRequest="320" HeightRequest="500" Shadow="{StaticResource CardShadow}">
+    <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Padding="15" WidthRequest="320" HeightRequest="500" Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="16" />
         </Border.StrokeShape>
 
         <Grid RowDefinitions="Auto, Auto, *">
-            <Label Grid.Row="0" Text="Select Exercise" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalOptions="Center" Margin="0,0,0,15"/>
+            <Label Grid.Row="0" Text="Select Exercise" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalOptions="Center" Margin="0,0,0,15"/>
 
             <Border Style="{StaticResource FormField}" Grid.Row="1" Padding="10,0" Margin="0,0,0,15" BackgroundColor="Transparent">
                 <Picker Title="Filter by Muscle Group"
                         ItemsSource="{Binding MuscleGroupFilters}"
                         SelectedItem="{Binding SelectedMuscleGroupFilter}"
-                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                        TitleColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                        TitleColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
  />
             </Border>
 
@@ -30,7 +30,7 @@
                     <DataTemplate x:DataType="models:Exercise">
                         <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
                             <VerticalStackLayout Spacing="5">
-                                <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18"/>
+                                <Label Text="{Binding Name}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="18"/>
                                 <HorizontalStackLayout Spacing="8">
                                     <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
                                     <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />

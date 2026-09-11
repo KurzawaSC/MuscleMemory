@@ -8,13 +8,13 @@
 
     <Border Padding="8,4"
             BackgroundColor="Transparent"
-            Stroke="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}"
+            Stroke="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
             StrokeThickness="1">
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="8" />
         </Border.StrokeShape>
         <Label Text="{Binding Text, Source={x:Reference Root}}"
-               TextColor="{AppThemeBinding Light={StaticResource ChipTextLight}, Dark={StaticResource ChipTextDark}}"
+               TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
                FontSize="12" />
     </Border>
 </ContentView>

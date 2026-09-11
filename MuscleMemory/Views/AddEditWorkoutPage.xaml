@@ -9,7 +9,7 @@
              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
              x:DataType="viewmodels:AddEditWorkoutViewModel"
              Title="Create Workout"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.StartGuardingUnsavedChangesCommand, Source={x:Reference PageRoot}}" />
@@ -21,10 +21,9 @@
         <Border Style="{StaticResource FormField}" Grid.Row="0" Margin="0,0,0,20">
             <Entry Text="{Binding WorkoutName}"
                    Placeholder="Workout name"
-                   PlaceholderColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                   TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                    FontSize="20"
-                   FontAttributes="Bold"
                    ClearButtonVisibility="WhileEditing"/>
         </Border>
 
@@ -46,11 +45,11 @@
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18"/>
-                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
-                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
-                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
-                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" FontSize="14" />
+                                    <Label Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="18"/>
+                                    <Label Text="{Binding Sets, StringFormat='Sets: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                    <Label Text="{Binding Reps, StringFormat='Reps: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                    <Label Text="{Binding BreakTimeInSeconds, StringFormat='Break: {0} sec'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
+                                    <Label Text="{Binding TargetRPE, StringFormat='Target RPE: {0}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="14" />
                                 </VerticalStackLayout>
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
