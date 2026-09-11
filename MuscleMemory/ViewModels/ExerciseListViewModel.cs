@@ -10,27 +10,32 @@ using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseListViewModel(
-    IExerciseRepository exerciseRepository,
-    ActiveWorkoutViewModel activeWorkout,
-    AddEditExerciseViewModel exerciseForm,
-    IHapticService hapticService) : ObservableObject
+public partial class ExerciseListViewModel : ObservableObject
 {
-    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
-    private readonly IHapticService _hapticService = hapticService;
+    private readonly IExerciseRepository _exerciseRepository;
+    private readonly IHapticService _hapticService;
     private List<Exercise> _allExercises = [];
+
+    public ExerciseListViewModel(
+        IExerciseRepository exerciseRepository,
+        ActiveWorkoutViewModel activeWorkout,
+        AddEditExerciseViewModel exerciseForm,
+        ExerciseFilterViewModel filter,
+        IHapticService hapticService)
+    {
+        _exerciseRepository = exerciseRepository;
+        _hapticService = hapticService;
+        ActiveWorkout = activeWorkout;
+        ExerciseForm = exerciseForm;
+        Filter = filter;
+        Filter.Changed += (_, _) => ApplyFilter();
+    }
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
     [ObservableProperty]
     public partial bool HasNoMatches { get; set; }
-
-    [ObservableProperty]
-    public partial string SearchText { get; set; } = string.Empty;
-
-    [ObservableProperty]
-    public partial MuscleGroupFilter SelectedFilter { get; set; } = MuscleGroupFilter.All;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
@@ -41,21 +46,22 @@ public partial class ExerciseListViewModel(
     public partial bool IsActionSheetOpen { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActionExerciseSubtitle))]
     public partial Exercise? ActionExercise { get; set; }
 
     public ObservableCollection<Exercise> Exercises { get; } = [];
 
-    public ObservableCollection<MuscleGroupFilter> Filters { get; } = [];
+    public ExerciseFilterViewModel Filter { get; }
 
-    public AddEditExerciseViewModel ExerciseForm { get; } = exerciseForm;
+    public AddEditExerciseViewModel ExerciseForm { get; }
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    public string ActionExerciseSubtitle => ActionExercise is { } exercise
+        ? string.Join(UiText.ListSeparator, exercise.TargetMuscleGroup.ToDisplayName(), exercise.Equipment.ToDisplayName())
+        : string.Empty;
 
     private bool IsAnySheetOpen => IsExerciseFormOpen || IsActionSheetOpen;
-
-    partial void OnSearchTextChanged(string value) => ApplyFilter();
-
-    partial void OnSelectedFilterChanged(MuscleGroupFilter value) => ApplyFilter();
 
     partial void OnIsActionSheetOpenChanged(bool value)
     {
@@ -70,40 +76,13 @@ public partial class ExerciseListViewModel(
     {
         _allExercises = await _exerciseRepository.GetAllAsync();
         IsEmpty = _allExercises.Count == 0;
-        RebuildFilters();
+        Filter.UpdateFilters(_allExercises);
         ApplyFilter();
-    }
-
-    private void RebuildFilters()
-    {
-        List<MuscleGroupFilter> filters =
-        [
-            MuscleGroupFilter.All,
-            .. _allExercises
-                .Select(exercise => exercise.TargetMuscleGroup)
-                .Distinct()
-                .Order()
-                .Select(MuscleGroupFilter.For)
-        ];
-
-        if (!Filters.SequenceEqual(filters))
-        {
-            Filters.ReplaceAll(filters);
-        }
-
-        if (!Filters.Contains(SelectedFilter))
-        {
-            SelectedFilter = MuscleGroupFilter.All;
-        }
     }
 
     private void ApplyFilter()
     {
-        var matches = _allExercises
-            .Where(SelectedFilter.Matches)
-            .Where(exercise => exercise.Name.Contains(SearchText.Trim(), StringComparison.CurrentCultureIgnoreCase));
-
-        Exercises.ReplaceAll(matches);
+        Exercises.ReplaceAll(Filter.Apply(_allExercises));
         HasNoMatches = !IsEmpty && Exercises.Count == 0;
     }
 
@@ -203,7 +182,7 @@ public partial class ExerciseListViewModel(
     {
         var exercise = ActionExercise;
         IsActionSheetOpen = false;
-        await Task.Delay((int)UiTiming.SheetCloseMilliseconds);
+        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
         return exercise;
     }
 

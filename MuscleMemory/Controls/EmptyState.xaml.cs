@@ -4,10 +4,6 @@ namespace MuscleMemory.Controls;
 
 public partial class EmptyState : ContentView
 {
-    public static readonly BindableProperty IconSourceProperty =
-        BindableProperty.Create(nameof(IconSource), typeof(ImageSource), typeof(EmptyState),
-            propertyChanged: (bindable, _, _) => ((EmptyState)bindable).OnPropertyChanged(nameof(HasIcon)));
-
     public static readonly BindableProperty MessageProperty =
         BindableProperty.Create(nameof(Message), typeof(string), typeof(EmptyState), string.Empty);
 
@@ -27,12 +23,6 @@ public partial class EmptyState : ContentView
             propertyChanged: (bindable, _, _) => ((EmptyState)bindable).OnPropertyChanged(nameof(HasAction)));
 
     public EmptyState() => InitializeComponent();
-
-    public ImageSource? IconSource
-    {
-        get => (ImageSource?)GetValue(IconSourceProperty);
-        set => SetValue(IconSourceProperty, value);
-    }
 
     public string Message
     {
@@ -63,8 +53,6 @@ public partial class EmptyState : ContentView
         get => (bool)GetValue(ShowsActionProperty);
         set => SetValue(ShowsActionProperty, value);
     }
-
-    public bool HasIcon => IconSource is not null;
 
     public bool HasDetail => !string.IsNullOrEmpty(Detail);
 

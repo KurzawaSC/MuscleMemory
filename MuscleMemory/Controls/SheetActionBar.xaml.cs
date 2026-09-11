@@ -2,21 +2,21 @@ using System.Windows.Input;
 
 namespace MuscleMemory.Controls;
 
-public partial class PopupActionBar : ContentView
+public partial class SheetActionBar : ContentView
 {
     public static readonly BindableProperty ConfirmTextProperty =
-        BindableProperty.Create(nameof(ConfirmText), typeof(string), typeof(PopupActionBar), string.Empty);
+        BindableProperty.Create(nameof(ConfirmText), typeof(string), typeof(SheetActionBar), string.Empty);
 
     public static readonly BindableProperty CancelCommandProperty =
-        BindableProperty.Create(nameof(CancelCommand), typeof(ICommand), typeof(PopupActionBar));
+        BindableProperty.Create(nameof(CancelCommand), typeof(ICommand), typeof(SheetActionBar));
 
     public static readonly BindableProperty ConfirmCommandProperty =
-        BindableProperty.Create(nameof(ConfirmCommand), typeof(ICommand), typeof(PopupActionBar));
+        BindableProperty.Create(nameof(ConfirmCommand), typeof(ICommand), typeof(SheetActionBar));
 
     public static readonly BindableProperty IsConfirmEnabledProperty =
-        BindableProperty.Create(nameof(IsConfirmEnabled), typeof(bool), typeof(PopupActionBar), true);
+        BindableProperty.Create(nameof(IsConfirmEnabled), typeof(bool), typeof(SheetActionBar), true);
 
-    public PopupActionBar() => InitializeComponent();
+    public SheetActionBar() => InitializeComponent();
 
     public bool IsConfirmEnabled
     {

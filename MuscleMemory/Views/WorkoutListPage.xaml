@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Name="PageRoot"
-             x:Class="MuscleMemory.Views.WorkoutListPage"
-             x:DataType="viewmodels:WorkoutListViewModel"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+<controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+                             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             x:Name="PageRoot"
+                             x:Class="MuscleMemory.Views.WorkoutListPage"
+                             x:DataType="viewmodels:WorkoutListViewModel"
+                             BackCommand="{Binding CloseSheetsCommand}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadWorkoutsCommand, Source={x:Reference PageRoot}}" />
@@ -16,61 +16,95 @@
 
     <Grid RowDefinitions="Auto, *">
         <controls:ScreenHeader Title="Workouts" Subtitle="Your training plans" />
-        <controls:EmptyState Grid.Row="1"
-                             IconSource="empty_workout_list_icon.png"
-                             Message="No workouts added yet.&#10;Tap + to create one!"
-                             IsVisible="{Binding IsEmpty}" />
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20">
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,12,20,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="100" Color="Transparent" />
+            </CollectionView.Footer>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Workout">
-                    <SwipeView Margin="0,0,0,10">
-                        <SwipeView.RightItems>
-                            <SwipeItems Mode="Reveal">
-                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=DeleteWorkoutCommand}" CommandParameter="{Binding .}">
-                                    <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                </SwipeItemView>
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-                        <SwipeView.LeftItems>
-                            <SwipeItems Mode="Reveal">
-                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=EditWorkoutCommand}" CommandParameter="{Binding .}">
-                                    <controls:SwipeAction Style="{StaticResource EditSwipeAction}" />
-                                </SwipeItemView>
-                            </SwipeItems>
-                        </SwipeView.LeftItems>
-
-                        <Border Style="{StaticResource SurfaceCard}">
-
+                <DataTemplate x:DataType="viewmodels:WorkoutListItem">
+                    <Border Style="{StaticResource SelectableCard}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource AreEqualConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="ActionWorkout" Source="{RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <VerticalStackLayout Spacing="14">
                             <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" 
-                                       Text="{Binding Name}" 
-                                       TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" 
-                                       FontSize="20" 
-                                       VerticalOptions="Center"/>
-
-                                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
-                                                             Text="History"
-                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ViewHistoryCommand}"
-                                                             CommandParameter="{Binding .}" />
-                                    <controls:TappableButton Style="{StaticResource PrimaryButton}"
-                                                             Text="Start"
-                                                             FontSize="14"
-                                                             HeightRequest="40"
-                                                             ContentPadding="15,0"
-                                                             SurfaceShadow="{x:Null}"
-                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
-                                                             CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout>
+                                <VerticalStackLayout x:Name="CardContent" Spacing="10" BackgroundColor="Transparent">
+                                    <VerticalStackLayout.Behaviors>
+                                        <toolkit:TouchBehavior LongPressDuration="{x:Static constants:UiTiming.LongPressMilliseconds}"
+                                                               LongPressCommand="{Binding BindingContext.LongPressWorkoutCommand, Source={x:Reference PageRoot}}"
+                                                               LongPressCommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
+                                    </VerticalStackLayout.Behaviors>
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Style="{StaticResource TitleLabel}" Text="{Binding Workout.Name}" />
+                                        <Label Style="{StaticResource CaptionLabel}"
+                                               Text="{Binding ExerciseSummary}"
+                                               LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout>
+                                        <controls:Chip Text="{Binding SetsText}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <controls:OverflowButton Grid.Column="1"
+                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=ShowWorkoutActionsCommand}"
+                                                         CommandParameter="{Binding .}" />
                             </Grid>
-                        </Border>
-                    </SwipeView>
+                            <controls:TappableButton Style="{StaticResource SoftPrimaryButton}"
+                                                     Text="Start"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
+                                                     CommandParameter="{Binding .}">
+                                <controls:TappableButton.Triggers>
+                                    <DataTrigger TargetType="controls:TappableButton" Binding="{Binding IsFeatured}" Value="True">
+                                        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                    </DataTrigger>
+                                </controls:TappableButton.Triggers>
+                            </controls:TappableButton>
+                        </VerticalStackLayout>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <controls:FloatingActionButton Grid.Row="1" Command="{Binding NavigateToAddWorkoutCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
+        <controls:EmptyState Grid.Row="1"
+                             Message="No workouts yet"
+                             Detail="Build a workout from your exercises, set sets and rest — starting takes one tap."
+                             ActionText="Create workout"
+                             ActionCommand="{Binding NavigateToAddWorkoutCommand}"
+                             ShowsAction="{Binding ActiveWorkout.CanAddItems}"
+                             IsVisible="{Binding IsEmpty}" />
+
+        <controls:FloatingActionButton Grid.Row="1" Command="{Binding NavigateToAddWorkoutCommand}">
+            <controls:FloatingActionButton.IsVisible>
+                <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                    <Binding Path="ActiveWorkout.CanAddItems" />
+                    <Binding Path="IsEmpty" Converter="{StaticResource InvertedBoolConverter}" />
+                </MultiBinding>
+            </controls:FloatingActionButton.IsVisible>
+        </controls:FloatingActionButton>
         <controls:ResumeWorkoutBanner Grid.Row="1" ActiveWorkout="{Binding ActiveWorkout}" />
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding ActionWorkout.Workout.Name, FallbackValue=''}"
+                                       Subtitle="{Binding ActionWorkout.ExerciseSummary, FallbackValue=''}"
+                                       EditText="Edit workout"
+                                       DeleteText="Delete workout"
+                                       EditCommand="{Binding EditActionWorkoutCommand}"
+                                       HistoryCommand="{Binding ViewActionWorkoutHistoryCommand}"
+                                       DeleteCommand="{Binding DeleteActionWorkoutCommand}"
+                                       CancelCommand="{Binding CancelWorkoutActionsCommand}" />
+        </controls:BottomSheet>
     </Grid>
 
-</ContentPage>
+</controls:BackNavigationPage>

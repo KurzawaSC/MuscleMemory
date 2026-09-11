@@ -17,11 +17,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit(toolkit =>
-            {
-                toolkit.SetPopupDefaults(new DefaultPopupSettings { BackgroundColor = Colors.Transparent });
-                toolkit.SetPopupOptionsDefaults(new DefaultPopupOptionsSettings { Shape = null });
-            })
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont(FontFamilies.LilitaOneFile, FontFamilies.LilitaOne);
@@ -62,6 +58,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<ExerciseListViewModel>();
         builder.Services.AddTransient<AddEditExerciseViewModel>();
+        builder.Services.AddTransient<ExerciseFilterViewModel>();
+        builder.Services.AddTransient<SelectExerciseViewModel>();
+        builder.Services.AddTransient<ConfigureExerciseViewModel>();
         builder.Services.AddSingleton<WorkoutListViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddTransient<AddEditWorkoutPage>();
@@ -72,8 +71,6 @@ public static class MauiProgram
         builder.Services.AddTransient<ExerciseHistoryPage>();
         builder.Services.AddTransient<WorkoutHistoryViewModel>();
         builder.Services.AddTransient<WorkoutHistoryPage>();
-        builder.Services.AddTransientPopup<ConfigureExercisePopup, ConfigureExerciseViewModel>();
-        builder.Services.AddTransientPopup<SelectExercisePopup, SelectExerciseViewModel>();
 
         return builder.Build();
     }
