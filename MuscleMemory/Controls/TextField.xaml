@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.TextField"
+             x:Name="Root"
+             x:DataType="controls:TextField">
+
+    <Border Style="{StaticResource FormField}">
+        <Border.Triggers>
+            <DataTrigger TargetType="Border" Binding="{Binding IsFilled, Source={x:Reference Root}}" Value="True">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}" />
+                <Setter Property="Stroke" Value="Transparent" />
+            </DataTrigger>
+            <DataTrigger TargetType="Border" Binding="{Binding IsFocused, Source={x:Reference Input}}" Value="True">
+                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                <Setter Property="StrokeThickness" Value="2" />
+            </DataTrigger>
+        </Border.Triggers>
+        <Entry x:Name="Input"
+               Text="{Binding Text, Source={x:Reference Root}}"
+               Placeholder="{Binding Placeholder, Source={x:Reference Root}}"
+               ClearButtonVisibility="{Binding ClearButtonVisibility, Source={x:Reference Root}}"
+               VerticalOptions="Center" />
+    </Border>
+</ContentView>

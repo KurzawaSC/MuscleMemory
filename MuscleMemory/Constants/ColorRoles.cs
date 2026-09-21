@@ -2,6 +2,6 @@ namespace MuscleMemory.Constants;
 
 public static class ColorRoles
 {
-    public const string NavBarBackgroundLight = "NavBarBackgroundLight";
-    public const string NavBarBackgroundDark = "NavBarBackgroundDark";
+    public const string BackgroundLight = "BackgroundLight";
+    public const string BackgroundDark = "BackgroundDark";
 }

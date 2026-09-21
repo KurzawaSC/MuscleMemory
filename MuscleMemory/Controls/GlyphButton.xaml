@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.GlyphButton"
+             x:Name="Root"
+             x:DataType="controls:GlyphButton"
+             WidthRequest="{StaticResource TouchTarget}"
+             HeightRequest="{StaticResource TouchTarget}">
+
+    <ContentView.Triggers>
+        <Trigger TargetType="controls:GlyphButton" Property="IsEnabled" Value="False">
+            <Setter Property="Opacity" Value="0.4" />
+        </Trigger>
+    </ContentView.Triggers>
+
+    <Grid BackgroundColor="Transparent">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference Root}}" />
+        </Grid.GestureRecognizers>
+        <Border WidthRequest="{Binding SurfaceSize, Source={x:Reference Root}}"
+                HeightRequest="{Binding SurfaceSize, Source={x:Reference Root}}"
+                InputTransparent="True"
+                BackgroundColor="{Binding FillColor, Source={x:Reference Root}}"
+                StrokeThickness="{Binding StrokeThickness, Source={x:Reference Root}}">
+            <Border.Stroke>
+                <SolidColorBrush Color="{Binding StrokeColor, Source={x:Reference Root}}" />
+            </Border.Stroke>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Border.StrokeShape>
+            <Label Text="{Binding Glyph, Source={x:Reference Root}}"
+                   TextColor="{Binding GlyphColor, Source={x:Reference Root}}"
+                   FontSize="20"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+    </Grid>
+</ContentView>

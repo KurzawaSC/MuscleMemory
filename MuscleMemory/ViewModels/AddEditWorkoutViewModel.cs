@@ -1,4 +1,3 @@
-using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -12,19 +11,38 @@ namespace MuscleMemory.ViewModels;
 
 public partial class AddEditWorkoutViewModel(
     IWorkoutRepository workoutRepository,
-    IExerciseRepository exerciseRepository,
-    IPopupService popupService) : ObservableObject, IQueryAttributable
+    SelectExerciseViewModel exercisePicker,
+    ConfigureExerciseViewModel exerciseConfiguration,
+    AddEditExerciseViewModel exerciseForm) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
-    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
-    private readonly IPopupService _popupService = popupService;
     private Workout? _workoutToEdit;
+    private Exercise? _exerciseToAdd;
+    private WorkoutExercise? _exerciseBeingEdited;
 
     [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public partial string HeaderTitle { get; set; } = UiText.HeaderNewWorkout;
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
+    public partial bool IsEmpty { get; set; } = true;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ExerciseCountCaption))]
+    public partial int ExerciseCount { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
+    public partial int TotalSets { get; set; }
+
+    public string ExerciseCountCaption => ExerciseCount == 1 ? UiText.CaptionExercise : UiText.CaptionExercises;
+
+    public string TotalSetsCaption => TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
     public partial string WorkoutName { get; set; } = string.Empty;
-    
+
     partial void OnWorkoutNameChanged(string value)
     {
         HasUnsavedChanges = true;
@@ -32,13 +50,37 @@ public partial class AddEditWorkoutViewModel(
 
     [ObservableProperty]
     public partial bool HasUnsavedChanges { get; set; } = false;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsExercisePickerOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsExerciseFormOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsConfigurationOpen { get; set; }
+
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
+
+    public SelectExerciseViewModel ExercisePicker { get; } = exercisePicker;
+
+    public ConfigureExerciseViewModel ExerciseConfiguration { get; } = exerciseConfiguration;
+
+    public AddEditExerciseViewModel ExerciseForm { get; } = exerciseForm;
+
+    public bool CanSave => !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
+
+    private bool IsAnySheetOpen => IsExercisePickerOpen || IsExerciseFormOpen || IsConfigurationOpen;
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue(QueryKeys.WorkoutToEdit, out var editable) && editable is Workout workout)
         {
             _workoutToEdit = workout;
+            HeaderTitle = UiText.HeaderEditWorkout;
             _ = LoadWorkoutAsync(workout);
         }
     }
@@ -49,7 +91,7 @@ public partial class AddEditWorkoutViewModel(
 
         Exercises.ReplaceAll(await _workoutRepository.GetExercisesAsync(workout.Id));
 
-        IsEmpty = !Exercises.Any();
+        RefreshSummary();
         HasUnsavedChanges = false;
     }
 
@@ -90,6 +132,12 @@ public partial class AddEditWorkoutViewModel(
         }
     }
 
+    [RelayCommand]
+    private async Task GoBackAsync()
+    {
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+    }
+
     private static bool IsLeavingEditor(ShellNavigatingEventArgs e) =>
         IsEditorLocation(e.Current) && !IsEditorLocation(e.Target) && !KeepsEditorOnStack(e);
 
@@ -102,53 +150,119 @@ public partial class AddEditWorkoutViewModel(
     [RelayCommand]
     private async Task AddExerciseAsync()
     {
-        var allExercises = await _exerciseRepository.GetAllAsync();
-
-        if (!allExercises.Any())
-        {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyNoExercisesForWorkout, UiText.ButtonOk);
-            return;
-        }
-
-        var selection = await _popupService.ShowPopupAsync<SelectExercisePopup, Exercise?>(
-            Shell.Current,
-            shellParameters: new Dictionary<string, object> { [QueryKeys.AvailableExercises] = allExercises });
-
-        if (selection.Result is not Exercise selectedExercise) return;
-
-        await Task.Delay(UiTiming.SequentialPopupDelayMilliseconds);
-
-        var configuration = await ShowConfigurationPopupAsync(QueryKeys.SelectedExercise, selectedExercise);
-        if (configuration != null)
-        {
-            AddExerciseToWorkout(selectedExercise, configuration);
-        }
+        await ExercisePicker.LoadAsync();
+        IsExercisePickerOpen = true;
     }
 
     [RelayCommand]
-    private async Task EditExerciseAsync(WorkoutExercise exerciseToEdit)
+    private void CloseExercisePicker()
     {
-        if (exerciseToEdit == null) return;
+        IsExercisePickerOpen = false;
+    }
 
-        var configuration = await ShowConfigurationPopupAsync(QueryKeys.WorkoutExerciseToEdit, exerciseToEdit);
-        if (configuration != null)
+    [RelayCommand]
+    private async Task PickExerciseAsync(Exercise exercise)
+    {
+        IsExercisePickerOpen = false;
+        await WaitForSheetToCloseAsync();
+        OpenConfigurationForNewExercise(exercise);
+    }
+
+    [RelayCommand]
+    private async Task CreateExerciseAsync()
+    {
+        IsExercisePickerOpen = false;
+        await WaitForSheetToCloseAsync();
+        ExerciseForm.BeginNew();
+        IsExerciseFormOpen = true;
+    }
+
+    [RelayCommand]
+    private void CancelExerciseForm()
+    {
+        IsExerciseFormOpen = false;
+    }
+
+    [RelayCommand]
+    private async Task SaveNewExerciseAsync()
+    {
+        if (!ExerciseForm.CanSave)
         {
-            UpdateExerciseInWorkout(exerciseToEdit, configuration);
+            return;
         }
+
+        var exercise = await ExerciseForm.SaveAsync();
+        IsExerciseFormOpen = false;
+        await WaitForSheetToCloseAsync();
+        OpenConfigurationForNewExercise(exercise);
     }
 
-    private async Task<ExerciseConfiguration?> ShowConfigurationPopupAsync(string queryKey, object parameter)
+    [RelayCommand]
+    private void EditExercise(WorkoutExercise exercise)
     {
-        var result = await _popupService.ShowPopupAsync<ConfigureExercisePopup, ExerciseConfiguration?>(
-            Shell.Current,
-            shellParameters: new Dictionary<string, object> { [queryKey] = parameter });
-
-        return result.Result;
+        _exerciseToAdd = null;
+        _exerciseBeingEdited = exercise;
+        ExerciseConfiguration.BeginEdit(exercise);
+        IsConfigurationOpen = true;
     }
+
+    [RelayCommand]
+    private void CancelConfiguration()
+    {
+        IsConfigurationOpen = false;
+    }
+
+    [RelayCommand]
+    private void ConfirmConfiguration()
+    {
+        var configuration = ExerciseConfiguration.ToConfiguration();
+
+        if (_exerciseBeingEdited is { } editedExercise)
+        {
+            UpdateExerciseInWorkout(editedExercise, configuration);
+        }
+        else if (_exerciseToAdd is { } newExercise)
+        {
+            AddExerciseToWorkout(newExercise, configuration);
+        }
+
+        IsConfigurationOpen = false;
+    }
+
+    [RelayCommand]
+    private void RemoveEditedExercise()
+    {
+        if (_exerciseBeingEdited is { } exercise && Exercises.Remove(exercise))
+        {
+            RefreshSummary();
+            HasUnsavedChanges = true;
+        }
+
+        IsConfigurationOpen = false;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
+    private void CloseSheets()
+    {
+        IsExercisePickerOpen = false;
+        IsExerciseFormOpen = false;
+        IsConfigurationOpen = false;
+    }
+
+    private void OpenConfigurationForNewExercise(Exercise exercise)
+    {
+        _exerciseBeingEdited = null;
+        _exerciseToAdd = exercise;
+        ExerciseConfiguration.BeginNew(exercise.Name);
+        IsConfigurationOpen = true;
+    }
+
+    private static Task WaitForSheetToCloseAsync() =>
+        Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
 
     private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {
-        var newWorkoutExercise = new WorkoutExercise
+        Exercises.Add(new WorkoutExercise
         {
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
@@ -156,49 +270,42 @@ public partial class AddEditWorkoutViewModel(
             Reps = configuration.Reps,
             BreakTimeInSeconds = configuration.BreakTimeInSeconds,
             TargetRPE = configuration.TargetRPE
-        };
+        });
 
-        Exercises.Add(newWorkoutExercise);
-        IsEmpty = !Exercises.Any();
+        RefreshSummary();
         HasUnsavedChanges = true;
     }
 
     private void UpdateExerciseInWorkout(WorkoutExercise exercise, ExerciseConfiguration configuration)
     {
         var index = Exercises.IndexOf(exercise);
-        if (index >= 0)
+        if (index < 0)
         {
-            exercise.Sets = configuration.Sets;
-            exercise.Reps = configuration.Reps;
-            exercise.BreakTimeInSeconds = configuration.BreakTimeInSeconds;
-            exercise.TargetRPE = configuration.TargetRPE;
-            Exercises[index] = exercise;
-            HasUnsavedChanges = true;
-        }
-    }
-
-    [RelayCommand]
-    private void RemoveExercise(WorkoutExercise exerciseToRemove)
-    {
-        if (Exercises.Contains(exerciseToRemove))
-        {
-            Exercises.Remove(exerciseToRemove);
-        }
-        IsEmpty = !Exercises.Any();
-        HasUnsavedChanges = true;
-    }
-    [RelayCommand]
-    private async Task SaveWorkoutAsync()
-    {
-        if (string.IsNullOrWhiteSpace(WorkoutName))
-        {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyEnterWorkoutName, UiText.ButtonOk);
             return;
         }
 
-        if (!Exercises.Any())
+        exercise.Sets = configuration.Sets;
+        exercise.Reps = configuration.Reps;
+        exercise.BreakTimeInSeconds = configuration.BreakTimeInSeconds;
+        exercise.TargetRPE = configuration.TargetRPE;
+        Exercises[index] = exercise;
+
+        RefreshSummary();
+        HasUnsavedChanges = true;
+    }
+
+    private void RefreshSummary()
+    {
+        ExerciseCount = Exercises.Count;
+        IsEmpty = ExerciseCount == 0;
+        TotalSets = Exercises.Sum(exercise => exercise.Sets);
+    }
+
+    [RelayCommand]
+    private async Task SaveWorkoutAsync()
+    {
+        if (!CanSave)
         {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyAddAtLeastOneExercise, UiText.ButtonOk);
             return;
         }
 
@@ -209,11 +316,7 @@ public partial class AddEditWorkoutViewModel(
         }
         else
         {
-            var newWorkout = new Workout
-            {
-                Name = WorkoutName.Trim()
-            };
-            await _workoutRepository.SaveWithExercisesAsync(newWorkout, [.. Exercises]);
+            await _workoutRepository.SaveWithExercisesAsync(new Workout { Name = WorkoutName.Trim() }, [.. Exercises]);
         }
 
         HasUnsavedChanges = false;

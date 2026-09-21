@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using Plugin.Maui.Audio;
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Services;
@@ -16,19 +17,16 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiCommunityToolkit(toolkit =>
-            {
-                toolkit.SetPopupDefaults(new DefaultPopupSettings { BackgroundColor = Colors.Transparent });
-                toolkit.SetPopupOptionsDefaults(new DefaultPopupOptionsSettings { Shape = null });
-            })
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("LilitaOne-Regular.ttf", "LilitaOne");
+                fonts.AddFont(FontFamilies.LilitaOneFile, FontFamilies.LilitaOne);
             })
             .ConfigureMauiHandlers(handlers =>
             {
 #if ANDROID
                 handlers.AddHandler<Shell, InstantTabBarShellRenderer>();
+                BorderlessEntryMapping.Register();
 #endif
             });
 
@@ -52,11 +50,17 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISetEditService, SetEditService>();
         builder.Services.AddSingleton<IWorkoutSummaryService, WorkoutSummaryService>();
         builder.Services.AddSingleton<INavigationStackService, NavigationStackService>();
+        builder.Services.AddSingleton(HapticFeedback.Default);
+        builder.Services.AddSingleton<IHapticService, HapticService>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<ExerciseListPage>();
         builder.Services.AddSingleton<WorkoutListPage>();
         builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<ExerciseListViewModel>();
+        builder.Services.AddTransient<AddEditExerciseViewModel>();
+        builder.Services.AddTransient<ExerciseFilterViewModel>();
+        builder.Services.AddTransient<SelectExerciseViewModel>();
+        builder.Services.AddTransient<ConfigureExerciseViewModel>();
         builder.Services.AddSingleton<WorkoutListViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddTransient<AddEditWorkoutPage>();
@@ -67,9 +71,6 @@ public static class MauiProgram
         builder.Services.AddTransient<ExerciseHistoryPage>();
         builder.Services.AddTransient<WorkoutHistoryViewModel>();
         builder.Services.AddTransient<WorkoutHistoryPage>();
-        builder.Services.AddTransientPopup<ConfigureExercisePopup, ConfigureExerciseViewModel>();
-        builder.Services.AddTransientPopup<AddExercisePopup, AddEditExerciseViewModel>();
-        builder.Services.AddTransientPopup<SelectExercisePopup, SelectExerciseViewModel>();
 
         return builder.Build();
     }

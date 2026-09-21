@@ -2,128 +2,513 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:MuscleMemory.Controls">
+    xmlns:controls="clr-namespace:MuscleMemory.Controls"
+    xmlns:constants="clr-namespace:MuscleMemory.Constants">
 
-    <Shadow x:Key="CardShadow" Brush="{StaticResource ShadowColor}" Offset="0,4" Opacity="0.15" Radius="10" />
+    <Thickness x:Key="ScreenPadding">20</Thickness>
+    <x:Double x:Key="CardSpacing">12</x:Double>
+    <x:Double x:Key="TouchTarget">48</x:Double>
+    <x:Double x:Key="PrimaryButtonHeight">54</x:Double>
+
+    <CornerRadius x:Key="ChipRadius">8</CornerRadius>
+    <CornerRadius x:Key="SmallControlRadius">12</CornerRadius>
+    <CornerRadius x:Key="ControlRadius">16</CornerRadius>
+    <CornerRadius x:Key="CardRadius">20</CornerRadius>
+    <CornerRadius x:Key="PillRadius">20</CornerRadius>
+    <CornerRadius x:Key="FabRadius">20</CornerRadius>
+    <CornerRadius x:Key="DialogRadius">24</CornerRadius>
+    <CornerRadius x:Key="SheetRadius">28,28,0,0</CornerRadius>
+
+    <x:Single x:Key="CardShadowOpacityLight">0.05</x:Single>
+    <x:Single x:Key="CardShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="SheetShadowOpacityLight">0.2</x:Single>
+    <x:Single x:Key="SheetShadowOpacityDark">0.55</x:Single>
+    <x:Single x:Key="RestPanelShadowOpacityLight">0.22</x:Single>
+    <x:Single x:Key="RestPanelShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="PrimaryButtonShadowOpacityLight">0.3</x:Single>
+    <x:Single x:Key="PrimaryButtonShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="FabShadowOpacityLight">0.38</x:Single>
+    <x:Single x:Key="FabShadowOpacityDark">0.4</x:Single>
+
+    <Shadow x:Key="CardShadow"
+            Offset="0,1"
+            Radius="2"
+            Opacity="{AppThemeBinding Light={StaticResource CardShadowOpacityLight}, Dark={StaticResource CardShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="SheetShadow"
+            Offset="0,-10"
+            Radius="40"
+            Opacity="{AppThemeBinding Light={StaticResource SheetShadowOpacityLight}, Dark={StaticResource SheetShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="RestPanelShadow"
+            Offset="0,14"
+            Radius="30"
+            Opacity="{AppThemeBinding Light={StaticResource RestPanelShadowOpacityLight}, Dark={StaticResource RestPanelShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="PrimaryButtonShadow"
+            Offset="0,6"
+            Radius="16"
+            Opacity="{AppThemeBinding Light={StaticResource PrimaryButtonShadowOpacityLight}, Dark={StaticResource PrimaryButtonShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="FabShadow"
+            Offset="0,8"
+            Radius="20"
+            Opacity="{AppThemeBinding Light={StaticResource FabShadowOpacityLight}, Dark={StaticResource FabShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Style x:Key="BaseLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style TargetType="Label" BasedOn="{StaticResource BaseLabel}" />
+
+    <Style x:Key="DisplayLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="32" />
+        <Setter Property="CharacterSpacing" Value="-0.25" />
+    </Style>
+
+    <Style x:Key="TimerLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="48" />
+        <Setter Property="CharacterSpacing" Value="-0.5" />
+    </Style>
+
+    <Style x:Key="TitleLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="21" />
+        <Setter Property="CharacterSpacing" Value="-0.15" />
+    </Style>
+
+    <Style x:Key="ValueLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="CharacterSpacing" Value="-0.33" />
+    </Style>
+
+    <Style x:Key="OverlineLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="CharacterSpacing" Value="1.07" />
+        <Setter Property="TextTransform" Value="Uppercase" />
+    </Style>
+
+    <Style x:Key="CaptionLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="Divider" TargetType="BoxView">
+        <Setter Property="HeightRequest" Value="1" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource LineDark}}" />
+    </Style>
+
+    <Style x:Key="OverflowDot" TargetType="BoxView">
+        <Setter Property="WidthRequest" Value="3" />
+        <Setter Property="HeightRequest" Value="3" />
+        <Setter Property="CornerRadius" Value="1.5" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+    </Style>
 
     <Style x:Key="SurfaceCard" TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceBackgroundLight}, Dark={StaticResource SurfaceBackgroundDark}}" />
-        <Setter Property="Padding" Value="15" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="Padding" Value="16" />
         <Setter Property="Shadow" Value="{StaticResource CardShadow}" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="16" />
+                <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="SelectableCard" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Padding" Value="14" />
     </Style>
 
     <Style x:Key="PrimaryButton" TargetType="controls:TappableButton">
-        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-        <Setter Property="TextColor" Value="{StaticResource OnAccentText}" />
-        <Setter Property="CornerRadius" Value="30" />
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="HeightRequest" Value="60" />
-        <Setter Property="SurfaceShadow" Value="{StaticResource CardShadow}" />
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="PressedFillColor" Value="{AppThemeBinding Light={StaticResource PrimaryPressedLight}, Dark={StaticResource PrimaryPressedDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
+        <Setter Property="Shadow" Value="{StaticResource PrimaryButtonShadow}" />
+        <Style.Triggers>
+            <Trigger TargetType="controls:TappableButton" Property="IsEnabled" Value="False">
+                <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource DisabledFillLight}, Dark={StaticResource DisabledFillDark}}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DisabledTextLight}, Dark={StaticResource DisabledTextDark}}" />
+                <Setter Property="Shadow" Value="{x:Null}" />
+                <Setter Property="DisabledOpacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
-    <Style x:Key="OutlineButton" TargetType="controls:TappableButton">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
+    <Style x:Key="SetTable" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="30" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontAttributes" Value="Bold" />
-        <Setter Property="HeightRequest" Value="40" />
-        <Setter Property="ContentPadding" Value="15,0" />
-    </Style>
-
-    <Style x:Key="DangerOutlineButton" TargetType="controls:TappableButton" BasedOn="{StaticResource OutlineButton}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-    </Style>
-
-    <Style x:Key="TextButton" TargetType="controls:TappableButton">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-        <Setter Property="FontSize" Value="18" />
-    </Style>
-
-    <Style x:Key="NeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-    </Style>
-
-    <Style x:Key="SettingsRow" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
-        <Setter Property="Padding" Value="15,0" />
-        <Setter Property="HeightRequest" Value="60" />
-    </Style>
-
-    <Style x:Key="FormField" TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
-        <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Padding" Value="15,5" />
-        <Setter Property="Shadow" Value="{StaticResource CardShadow}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="12" />
+                <RoundRectangle CornerRadius="14" />
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="DeleteSwipeAction" TargetType="controls:SwipeAction">
-        <Setter Property="Text" Value="Delete" />
-        <Setter Property="Tint" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
+    <Style x:Key="SetTableRow" TargetType="Grid">
+        <Setter Property="ColumnDefinitions" Value="40, *, 60" />
     </Style>
 
-    <Style x:Key="EditSwipeAction" TargetType="controls:SwipeAction">
-        <Setter Property="Text" Value="Edit" />
-        <Setter Property="Tint" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+    <Style x:Key="RestPanel" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource RestPanelLight}, Dark={StaticResource RestPanelDark}}" />
+        <Setter Property="Padding" Value="22" />
+        <Setter Property="Shadow" Value="{StaticResource RestPanelShadow}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="26" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
-    <Style TargetType="Label">
+    <Style x:Key="SecondaryButton" TargetType="controls:TappableButton">
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
+    </Style>
+
+    <ControlTemplate x:Key="ChoiceChipTemplate">
+        <Border x:Name="ChipSurface"
+                x:DataType="RadioButton"
+                Padding="14,10"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13"
+                   TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="FilterChipTemplate">
+        <Border x:Name="ChipSurface"
+                x:DataType="RadioButton"
+                Padding="14,8"
+                StrokeThickness="1"
+                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource PillRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13" />
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="SessionChipTemplate">
+        <Border x:Name="ChipSurface"
+                x:DataType="RadioButton"
+                Padding="14,8"
+                StrokeThickness="1"
+                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource PillRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13" />
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="SegmentChipTemplate">
+        <Border x:DataType="RadioButton"
+                Padding="0,8"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource LineStrongDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Label x:Name="ChipLabel"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
+                   FontSize="13"
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="SegmentChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource SegmentChipTemplate}" />
+    </Style>
+
+    <Style x:Key="ChoiceChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource ChoiceChipTemplate}" />
+    </Style>
+
+    <ControlTemplate x:Key="ThemeCardTemplate">
+        <Border x:Name="CardSurface"
+                x:DataType="RadioButton"
+                Padding="12"
+                StrokeThickness="2"
+                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="18" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter />
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="ThemeCard" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource ThemeCardTemplate}" />
+    </Style>
+
+    <Style x:Key="ThemePreview" TargetType="Border">
+        <Setter Property="HeightRequest" Value="56" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SettingsGroup" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="Padding" Value="12,0" />
+    </Style>
+
+    <Style x:Key="SessionChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource SessionChipTemplate}" />
+    </Style>
+
+    <Style x:Key="FilterChip" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource FilterChipTemplate}" />
+    </Style>
+
+    <Style x:Key="SoftPrimaryButton" TargetType="controls:TappableButton">
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
+    </Style>
+
+    <Style x:Key="AccentOutlineButton" TargetType="controls:TappableButton">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="{StaticResource TouchTarget}" />
+        <Setter Property="ContentPadding" Value="20,0" />
+    </Style>
+
+    <Style x:Key="NavigationGlyphButton" TargetType="controls:GlyphButton">
+        <Setter Property="SurfaceSize" Value="36" />
+        <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+
+    <Style x:Key="StepperGlyphButton" TargetType="controls:GlyphButton">
+        <Setter Property="SurfaceSize" Value="34" />
+        <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource LineStrongDark}}" />
+    </Style>
+
+    <Style x:Key="DashedOutline" TargetType="Border">
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="LilitaOne" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeDashArray" Value="4,3" />
+        <Setter Property="Padding" Value="14" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="OutlineButton" TargetType="controls:TappableButton">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="{StaticResource TouchTarget}" />
+        <Setter Property="ContentPadding" Value="16,0" />
+    </Style>
+
+    <Style x:Key="DangerOutlineButton" TargetType="controls:TappableButton" BasedOn="{StaticResource OutlineButton}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="StrokeColor" Value="{AppThemeBinding Light={StaticResource PrimaryLineLight}, Dark={StaticResource PrimaryLineDark}}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+    </Style>
+
+    <Style x:Key="TextButton" TargetType="controls:TappableButton">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="FontSize" Value="17" />
+    </Style>
+
+    <Style x:Key="NeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
+    </Style>
+
+    <Style x:Key="InsetPanel" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="Padding" Value="16,14" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FormField" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="Padding" Value="16,4" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="Entry">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-        <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="LilitaOne" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="MinimumHeightRequest" Value="44" />
-        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
     </Style>
 
     <Style TargetType="Picker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-        <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="LilitaOne" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="MinimumHeightRequest" Value="44" />
-        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
     </Style>
 
     <Style TargetType="Button">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="LilitaOne" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontSize" Value="17" />
         <Setter Property="BorderWidth" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="14,10" />
-        <Setter Property="MinimumHeightRequest" Value="44" />
-        <Setter Property="MinimumWidthRequest" Value="44" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
+        <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DisabledTextLight}, Dark={StaticResource DisabledTextDark}}" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -132,25 +517,26 @@
     </Style>
 
     <Style TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource StrokeColorLight}, Dark={StaticResource StrokeColorDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
         <Setter Property="StrokeShape" Value="Rectangle" />
         <Setter Property="StrokeThickness" Value="1" />
     </Style>
 
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}" />
     </Style>
 
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource NavBarBackgroundLight}, Dark={StaticResource NavBarBackgroundDark}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{StaticResource OnAccentText}" />
-        <Setter Property="Shell.TitleColor" Value="{StaticResource OnAccentText}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+        <Setter Property="Shell.NavBarIsVisible" Value="False" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
-        <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light={StaticResource TabBarBackgroundLight}, Dark={StaticResource TabBarBackgroundDark}}" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
         <Setter Property="Shell.TabBarForegroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-        <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource TabBarUnselectedLight}, Dark={StaticResource TabBarUnselectedDark}}" />
+        <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
     </Style>
 
 </ResourceDictionary>

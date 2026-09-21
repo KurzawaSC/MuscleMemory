@@ -55,6 +55,15 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
                                .ToListAsync();
     }
 
+    public async Task<List<WorkoutExercise>> GetAllExercisesAsync()
+    {
+        var connection = await context.GetConnectionAsync();
+        return await connection.Table<WorkoutExercise>()
+                               .OrderBy(exercise => exercise.WorkoutId)
+                               .ThenBy(exercise => exercise.Order)
+                               .ToListAsync();
+    }
+
     public void Clear(SQLiteConnection transaction)
     {
         transaction.DeleteAll<WorkoutExercise>();

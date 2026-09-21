@@ -1,70 +1,135 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Name="PageRoot"
-             x:Class="MuscleMemory.Views.ExerciseListPage"
-             x:DataType="viewmodels:ExerciseListViewModel"
-             Title="Exercise List"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+<controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             x:Name="PageRoot"
+                             x:Class="MuscleMemory.Views.ExerciseListPage"
+                             x:DataType="viewmodels:ExerciseListViewModel"
+                             BackCommand="{Binding CloseSheetsCommand}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.LoadExercisesCommand, Source={x:Reference PageRoot}}" />
     </ContentPage.Behaviors>
 
-    <Grid>
-        <controls:EmptyState IconSource="empty_exercise_list_icon.png"
-                             Message="Your exercise list is empty.&#10;Tap + to add your first!"
-                             IsVisible="{Binding IsEmpty}" />
-        <CollectionView ItemsSource="{Binding Exercises}" Margin="20">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+        <controls:ScreenHeader Title="Exercises" Subtitle="Build your movement library" />
+
+        <controls:TextField Grid.Row="1"
+                            Margin="20,8,20,0"
+                            Text="{Binding Filter.SearchText}"
+                            Placeholder="Search exercises"
+                            ClearButtonVisibility="WhileEditing"
+                            IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
+
+        <ScrollView Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Never"
+                    Margin="0,12,0,0"
+                    IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+            <HorizontalStackLayout Padding="20,0"
+                                   Spacing="8"
+                                   RadioButtonGroup.GroupName="ExerciseListFilters"
+                                   RadioButtonGroup.SelectedValue="{Binding Filter.SelectedFilter}"
+                                   BindableLayout.ItemsSource="{Binding Filter.Filters}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:MuscleGroupFilter">
+                        <RadioButton Style="{StaticResource FilterChip}"
+                                     Content="{Binding Label}"
+                                     Value="{Binding .}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <Label Grid.Row="3"
+               Text="No exercises match your search"
+               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+               HorizontalOptions="Center"
+               Margin="20,24,20,0"
+               IsVisible="{Binding HasNoMatches}" />
+
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Exercises}" Margin="20,12,20,0">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="100" Color="Transparent" />
+            </CollectionView.Footer>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
-                    <SwipeView Margin="0,0,0,10">
-                        <SwipeView.RightItems>
-                            <SwipeItems Mode="Reveal">
-                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=DeleteExerciseCommand}" CommandParameter="{Binding .}">
-                                    <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                </SwipeItemView>
-                            </SwipeItems>
-                        </SwipeView.RightItems>
-                        <SwipeView.LeftItems>
-                            <SwipeItems Mode="Reveal">
-                                <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=EditExerciseCommand}" CommandParameter="{Binding .}">
-                                    <controls:SwipeAction Style="{StaticResource EditSwipeAction}" />
-                                </SwipeItemView>
-                            </SwipeItems>
-                        </SwipeView.LeftItems>
-
-                        <Border Style="{StaticResource SurfaceCard}">
-                            <Grid ColumnDefinitions="*, Auto">
-                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="5">
-                                    <Label Text="{Binding Name}" 
-                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                                           FontSize="18" 
- />
-                                    <HorizontalStackLayout Spacing="8">
-                                        <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
-                                        <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                                    <controls:TappableButton Style="{StaticResource OutlineButton}"
-                                                             Text="History"
-                                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ViewHistoryCommand}"
-                                                             CommandParameter="{Binding .}" />
+                    <Border Style="{StaticResource SelectableCard}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource AreEqualConverter}">
+                                        <Binding Path="." />
+                                        <Binding Path="ActionExercise" Source="{RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout x:Name="CardContent" Spacing="8" BackgroundColor="Transparent">
+                                <VerticalStackLayout.Behaviors>
+                                    <toolkit:TouchBehavior LongPressDuration="{x:Static constants:UiTiming.LongPressMilliseconds}"
+                                                           LongPressCommand="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
+                                                           LongPressCommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
+                                </VerticalStackLayout.Behaviors>
+                                <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" />
+                                <HorizontalStackLayout Spacing="6">
+                                    <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
+                                    <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
                                 </HorizontalStackLayout>
-                            </Grid>
-                        </Border>
-                    </SwipeView>
+                            </VerticalStackLayout>
+                            <controls:OverflowButton Grid.Column="1"
+                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ExerciseListViewModel}}, Path=ShowExerciseActionsCommand}"
+                                                     CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <controls:FloatingActionButton Command="{Binding AddExerciseCommand}" IsVisible="{Binding ActiveWorkout.CanAddItems}" />
-        <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
+        <controls:EmptyState Grid.Row="1"
+                             Grid.RowSpan="3"
+                             Message="No exercises yet"
+                             Detail="Add your first exercise, then build a workout from it."
+                             ActionText="Add exercise"
+                             ActionCommand="{Binding AddExerciseCommand}"
+                             ShowsAction="{Binding ActiveWorkout.CanAddItems}"
+                             IsVisible="{Binding IsEmpty}" />
+
+        <controls:FloatingActionButton Grid.Row="3" Command="{Binding AddExerciseCommand}">
+            <controls:FloatingActionButton.IsVisible>
+                <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                    <Binding Path="ActiveWorkout.CanAddItems" />
+                    <Binding Path="IsEmpty" Converter="{StaticResource InvertedBoolConverter}" />
+                </MultiBinding>
+            </controls:FloatingActionButton.IsVisible>
+        </controls:FloatingActionButton>
+        <controls:ResumeWorkoutBanner Grid.Row="3" ActiveWorkout="{Binding ActiveWorkout}" />
+
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding ActionExercise.Name, FallbackValue=''}"
+                                       Subtitle="{Binding ActionExerciseSubtitle}"
+                                       EditText="Edit exercise"
+                                       DeleteText="Delete exercise"
+                                       EditCommand="{Binding EditActionExerciseCommand}"
+                                       HistoryCommand="{Binding ViewActionExerciseHistoryCommand}"
+                                       DeleteCommand="{Binding DeleteActionExerciseCommand}"
+                                       CancelCommand="{Binding CancelExerciseActionsCommand}" />
+        </controls:BottomSheet>
+
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseFormOpen}">
+            <controls:ExerciseFormSheet Form="{Binding ExerciseForm}"
+                                        CancelCommand="{Binding CancelExerciseFormCommand}"
+                                        ConfirmCommand="{Binding SaveExerciseCommand}" />
+        </controls:BottomSheet>
     </Grid>
 
-</ContentPage>
+</controls:BackNavigationPage>
