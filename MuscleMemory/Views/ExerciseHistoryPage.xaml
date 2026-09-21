@@ -26,20 +26,13 @@
                                 <Label Grid.Column="1" Text="{Binding LocalDate, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="16" />
                             </Grid>
                             
-                                                        <Border Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
+                            <Border Style="{StaticResource SetTable}">
                                 <VerticalStackLayout>
                                     <controls:SetTableHeader />
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate x:DataType="models:WorkoutSet">
-                                                <Grid ColumnDefinitions="*,*,*" Padding="8" BackgroundColor="Transparent">
-                                                    <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                    <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                    <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                </Grid>
+                                                <controls:SetTableRow Set="{Binding .}" />
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </VerticalStackLayout>

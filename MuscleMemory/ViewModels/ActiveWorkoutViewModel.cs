@@ -25,6 +25,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly INavigationStackService _navigationStack;
     private readonly IHapticService _haptics;
     private int _sessionId;
+    private int _workoutId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
     private int _restDurationSeconds;
@@ -106,7 +107,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial double TotalVolume { get; set; } = 0;
 
-    public ObservableCollection<CompletedExerciseSummary> CompletedExercises { get; } = [];
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
+    public partial int TotalSets { get; set; }
+
+    public string TotalSetsCaption => TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets;
+
+    [ObservableProperty]
+    public partial string SummaryDateText { get; set; } = string.Empty;
+
+    public ObservableCollection<SummaryExerciseItem> CompletedExercises { get; } = [];
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
@@ -214,6 +224,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
 
         WorkoutTitle = workout.Name;
+        _workoutId = workout.Id;
 
         var session = await _sessionRepository.CreateAsync(workout);
         _sessionId = session.Id;
@@ -266,6 +277,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutActive = true;
         IsWorkoutCompleted = false;
         WorkoutTitle = session.WorkoutName;
+        _workoutId = session.WorkoutId;
 
         var performedExercises = await _sessionExerciseRepository.GetForSessionAsync(_sessionId);
         await ShowExercisesAsync(performedExercises, restoreIndex: true);
@@ -454,8 +466,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
 
         var summary = await _summaryService.BuildAsync([.. Exercises]);
-        CompletedExercises.ReplaceAll(summary.Exercises);
+        CompletedExercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
         TotalVolume = summary.TotalVolume;
+        TotalSets = summary.Exercises.Sum(exercise => exercise.Sets.Count);
+        SummaryDateText = _workoutStartTimeUtc.ToLocalTime().ToString(UiText.SummaryDateFormat, CultureInfo.InvariantCulture);
 
         await _sessionRepository.FinishAsync(_sessionId);
         IsWorkoutCompleted = true;
@@ -626,6 +640,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         ClearCompletedSummary();
     }
 
+    [RelayCommand]
+    private async Task ViewCompletedHistoryAsync()
+    {
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { QueryKeys.WorkoutId, _workoutId },
+            { QueryKeys.WorkoutName, WorkoutTitle }
+        };
+        await Shell.Current.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
+        ClearCompletedSummary();
+    }
+
     private void ClearCompletedSummary()
     {
         if (!IsWorkoutCompleted)
@@ -634,6 +660,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
+        TotalSets = 0;
+        SummaryDateText = string.Empty;
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
@@ -646,6 +674,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
         _sessionId = 0;
+        _workoutId = 0;
         _currentExerciseIndex = 0;
         _totalSetsForExercise = 0;
         _workoutStartTimeUtc = default;
@@ -675,6 +704,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         WeightInput = string.Empty;
         RepsInput = string.Empty;
         TotalVolume = 0;
+        TotalSets = 0;
+        SummaryDateText = string.Empty;
     }
 
     public void TrackCurrentPage(Shell shell)

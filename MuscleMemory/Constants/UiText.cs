@@ -7,8 +7,6 @@ public static class UiText
     public const string TitleDeleteSet = "Delete Set";
     public const string TitleEditSet = "Edit Set";
     public const string TitleAddSet = "Add Set";
-    public const string TitleNoExercises = "No Exercises";
-    public const string TitleSelectExercise = "Select Exercise";
     public const string TitleError = "Error";
     public const string TitleInvalidInput = "Invalid Input";
     public const string TitleFinishWorkout = "Finish Workout";
@@ -31,7 +29,6 @@ public static class UiText
     public const string ButtonAddToWorkout = "Add to workout";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
-    public const string BodyNoExercisesInLibrary = "You must create an exercise in the library first.";
     public const string BodyInvalidWeightReps = "Please enter valid numbers for weight and reps.";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
@@ -71,7 +68,13 @@ public static class UiText
     public const string TargetRpeFormat = "RPE {0}";
     public const string SetResultFormat = "{0}×{1}";
     public const string LoggedSetFormat = "{0} kg × {1}";
-    public const string VolumeFormat = "{0} kg";
+    public const string VolumeFormat = "{0:N0} kg";
+    public const string WeightFormat = "{0} kg";
+    public const string VolumeNumberFormat = "{0:N0}";
+    public const string ShortDateFormat = "MMM dd";
+    public const string LongDateFormat = "MMM dd, yyyy";
+    public const string SummaryDateFormat = "MMM dd, yyyy · HH:mm";
+    public const string SessionStatsFormat = "Time {0} · {1} {2}";
     public const string RestTotalFormat = "of {0} s";
     public const string ResultSeparator = ", ";
 
