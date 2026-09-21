@@ -20,7 +20,8 @@ public partial class ItemActionsSheet : ContentView
         BindableProperty.Create(nameof(EditCommand), typeof(ICommand), typeof(ItemActionsSheet));
 
     public static readonly BindableProperty HistoryCommandProperty =
-        BindableProperty.Create(nameof(HistoryCommand), typeof(ICommand), typeof(ItemActionsSheet));
+        BindableProperty.Create(nameof(HistoryCommand), typeof(ICommand), typeof(ItemActionsSheet),
+            propertyChanged: (bindable, _, _) => ((ItemActionsSheet)bindable).OnPropertyChanged(nameof(HasHistory)));
 
     public static readonly BindableProperty DeleteCommandProperty =
         BindableProperty.Create(nameof(DeleteCommand), typeof(ICommand), typeof(ItemActionsSheet));
@@ -77,4 +78,6 @@ public partial class ItemActionsSheet : ContentView
         get => (ICommand?)GetValue(CancelCommandProperty);
         set => SetValue(CancelCommandProperty, value);
     }
+
+    public bool HasHistory => HistoryCommand is not null;
 }

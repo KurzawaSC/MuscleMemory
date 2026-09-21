@@ -62,16 +62,19 @@ public static class UiText
     public const string ListSeparator = " · ";
 
     public const string LoadingWorkoutTitle = "Loading...";
-    public const string FirstTimePerformingExercise = "First time performing this exercise!";
-    public const string LastSessionPrefix = "Last Session: ";
-    public const string ExerciseProgressFormat = "Exercise {0} of {1}: {2}";
+    public const string FirstTimePerformingExercise = "First time";
+    public const string LastSessionPrefix = "Last: ";
+    public const string ExerciseProgressFormat = "Exercise {0} of {1}";
     public const string SetProgressWithTotalFormat = "Set {0} of {1}";
     public const string SetProgressFormat = "Set {0}";
-    public const string TargetRepsFormat = "Target: {0} reps";
+    public const string TargetRepsFormat = "Target {0} reps · RPE {1}";
+    public const string TargetRpeFormat = "RPE {0}";
+    public const string SetResultFormat = "{0}×{1}";
+    public const string LoggedSetFormat = "{0} kg × {1}";
+    public const string VolumeFormat = "{0} kg";
+    public const string RestTotalFormat = "of {0} s";
+    public const string ResultSeparator = ", ";
 
     public const string ElapsedFormat = @"mm\:ss";
     public const string ElapsedWithHoursFormat = @"h\:mm\:ss";
-
-    public const string KgTimesSeparator = " kg × ";
-    public const string RepsSuffix = " reps";
 }

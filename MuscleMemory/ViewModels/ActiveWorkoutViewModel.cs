@@ -6,6 +6,7 @@ using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
@@ -22,9 +23,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly ISetEditService _setEditService;
     private readonly IWorkoutSummaryService _summaryService;
     private readonly INavigationStackService _navigationStack;
+    private readonly IHapticService _haptics;
     private int _sessionId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
+    private int _restDurationSeconds;
     private DateTime _workoutStartTimeUtc;
     private DateTime _breakEndTimeUtc;
 
@@ -52,21 +55,24 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public ObservableCollection<SessionExercise> Exercises { get; } = [];
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
+    public ObservableCollection<LevelSegment> SetSegments { get; } = [];
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasTargetReps))]
-    [NotifyPropertyChangedFor(nameof(TargetRepsText))]
+    [NotifyPropertyChangedFor(nameof(TargetText))]
     public partial SessionExercise CurrentExercise { get; set; } = new();
 
-    public bool HasTargetReps => CurrentExercise.PlannedReps > 0;
-
-    public string TargetRepsText => string.Format(UiText.TargetRepsFormat, CurrentExercise.PlannedReps);
+    public string TargetText => CurrentExercise.PlannedReps > 0
+        ? string.Format(UiText.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
+        : string.Format(UiText.TargetRpeFormat, CurrentExercise.TargetRPE);
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial string ExerciseProgressText { get; set; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial string SetProgressText { get; set; } = string.Empty;
+
     [ObservableProperty]
     public partial bool HasSavedSets { get; set; } = false;
     [ObservableProperty]
@@ -79,10 +85,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool HasNextExercise { get; set; } = false;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsSetCounterVisible))]
+    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial bool IsExerciseComplete { get; set; } = false;
 
-    public bool IsSetCounterVisible => !IsExerciseComplete;
+    public string ProgressCaption => IsExerciseComplete
+        ? ExerciseProgressText
+        : string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText);
 
     [ObservableProperty]
     public partial bool IsResting { get; set; } = false;
@@ -99,13 +107,40 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial string LastSessionResultsText { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial bool HasLastSession { get; set; }
+
+    [ObservableProperty]
     public partial string RestTimerText { get; set; } = "00:00";
 
     [ObservableProperty]
+    public partial string RestTotalText { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial double RestProgress { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSaveSet))]
     public partial string WeightInput { get; set; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSaveSet))]
     public partial string RepsInput { get; set; } = string.Empty;
+
+    public bool CanSaveSet => TryReadWeight(out _) && TryReadReps(out _);
+
+    public string CurrentVolumeText => string.Format(UiText.VolumeFormat, CurrentSets.Sum(set => set.Weight * set.Reps));
+
+    [ObservableProperty]
+    public partial bool IsSetActionSheetOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActionSetTitle))]
+    [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
+    public partial WorkoutSet? ActionSet { get; set; }
+
+    public string ActionSetTitle => ActionSet is { } set ? string.Format(UiText.SetProgressFormat, set.SetNumber) : string.Empty;
+
+    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
     public ActiveWorkoutViewModel(
         IWorkoutRepository workoutRepository,
@@ -117,7 +152,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IAudioCueService audioCues,
         ISetEditService setEditService,
         IWorkoutSummaryService summaryService,
-        INavigationStackService navigationStack)
+        INavigationStackService navigationStack,
+        IHapticService haptics)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
@@ -129,8 +165,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _setEditService = setEditService;
         _summaryService = summaryService;
         _navigationStack = navigationStack;
+        _haptics = haptics;
 
         _timer.Ticked += OnTimerTicked;
+        CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
     }
 
     private void OnTimerTicked(object? sender, EventArgs e)
@@ -145,14 +183,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
-        if (remaining.TotalSeconds > 0)
+        if (_timer.RemainingUntil(_breakEndTimeUtc).TotalSeconds > 0)
         {
-            RestTimerText = _timer.FormatCountdown(remaining);
+            UpdateRestCountdown();
             return;
         }
 
         ClearRestState();
+        _haptics.LongPress();
         _ = _audioCues.PlayBreakEndAsync();
         _ = SaveStateAsync();
     }
@@ -227,6 +265,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var performedExercises = await _sessionExerciseRepository.GetForSessionAsync(_sessionId);
         await ShowExercisesAsync(performedExercises, restoreIndex: true);
 
+        if (IsResting)
+        {
+            var remainingSeconds = (int)Math.Ceiling(_timer.RemainingUntil(_breakEndTimeUtc).TotalSeconds);
+            _restDurationSeconds = Math.Max(CurrentExercise.BreakTimeInSeconds, remainingSeconds);
+            RestTotalText = string.Format(UiText.RestTotalFormat, _restDurationSeconds);
+            UpdateRestCountdown();
+        }
+
         _timer.Start();
     }
 
@@ -261,21 +307,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasPreviousExercise = index > 0;
         HasNextExercise = index < Exercises.Count - 1;
 
-        ExerciseProgressText = string.Format(UiText.ExerciseProgressFormat, index + 1, Exercises.Count, exercise.ExerciseName);
+        ExerciseProgressText = string.Format(UiText.ExerciseProgressFormat, index + 1, Exercises.Count);
 
         WeightInput = string.Empty;
         RepsInput = string.Empty;
 
         var lastSessionSets = await _setRepository.GetLastSessionSetsAsync(exercise.ExerciseId, _sessionId);
-        if (lastSessionSets.Any())
-        {
-            var setStrings = lastSessionSets.Select(s => $"{s.Weight}{UiText.KgTimesSeparator}{s.Reps}");
-            LastSessionResultsText = UiText.LastSessionPrefix + string.Join(", ", setStrings);
-        }
-        else
-        {
-            LastSessionResultsText = UiText.FirstTimePerformingExercise;
-        }
+        HasLastSession = lastSessionSets.Count > 0;
+        LastSessionResultsText = HasLastSession
+            ? UiText.LastSessionPrefix + string.Join(UiText.ResultSeparator, lastSessionSets.Select(set => string.Format(UiText.SetResultFormat, set.Weight, set.Reps)))
+            : UiText.FirstTimePerformingExercise;
 
         await LoadSetsForCurrentExerciseAsync();
         UpdateSetProgress();
@@ -297,22 +338,49 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             SetProgressText = string.Format(UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise);
             IsExerciseComplete = CurrentSets.Count >= _totalSetsForExercise;
+            SetSegments.ReplaceAll(Enumerable.Range(1, _totalSetsForExercise)
+                                             .Select(setNumber => new LevelSegment(setNumber, setNumber <= CurrentSets.Count)));
         }
         else
         {
             SetProgressText = string.Format(UiText.SetProgressFormat, currentSetNumber);
             IsExerciseComplete = false;
+            SetSegments.Clear();
         }
     }
 
     [RelayCommand]
+    private void IncreaseWeight() =>
+        WeightInput = FormatWeight(ReadWeightOrZero() + DomainDefaults.WeightStepInKg);
+
+    [RelayCommand]
+    private void DecreaseWeight() =>
+        WeightInput = FormatWeight(Math.Max(0, ReadWeightOrZero() - DomainDefaults.WeightStepInKg));
+
+    [RelayCommand]
+    private void IncreaseReps() =>
+        RepsInput = (ReadRepsOrZero() + DomainDefaults.RepsStep).ToString(CultureInfo.InvariantCulture);
+
+    [RelayCommand]
+    private void DecreaseReps() =>
+        RepsInput = Math.Max(0, ReadRepsOrZero() - DomainDefaults.RepsStep).ToString(CultureInfo.InvariantCulture);
+
+    private double ReadWeightOrZero() => TryReadWeight(out double weight) ? weight : 0;
+
+    private int ReadRepsOrZero() => TryReadReps(out int reps) ? reps : 0;
+
+    private bool TryReadWeight(out double weight) =>
+        double.TryParse(WeightInput, NumberStyles.Any, CultureInfo.InvariantCulture, out weight);
+
+    private bool TryReadReps(out int reps) => int.TryParse(RepsInput, out reps);
+
+    private static string FormatWeight(double weight) => weight.ToString(CultureInfo.InvariantCulture);
+
+    [RelayCommand]
     private async Task SaveSetAsync()
     {
-        if (!double.TryParse(WeightInput, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out double weight)
-            || !int.TryParse(RepsInput, out int reps))
+        if (!TryReadWeight(out double weight) || !TryReadReps(out int reps))
         {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleInvalidInput, UiText.BodyInvalidWeightReps, UiText.ButtonOk);
             return;
         }
 
@@ -324,13 +392,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
 
         await _setRepository.AddAsync(newSet);
+        _haptics.Click();
         CurrentSets.Add(newSet);
         HasSavedSets = true;
         RepsInput = string.Empty;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
-            _breakEndTimeUtc = DateTime.UtcNow.AddSeconds(CurrentExercise.BreakTimeInSeconds);
-            IsResting = true;
+            StartRest(CurrentExercise.BreakTimeInSeconds);
         }
         await SaveStateAsync();
 
@@ -350,6 +418,24 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         UpdateSetProgress();
+    }
+
+    private void StartRest(int durationSeconds)
+    {
+        _restDurationSeconds = durationSeconds;
+        _breakEndTimeUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+        RestTotalText = string.Format(UiText.RestTotalFormat, durationSeconds);
+        IsResting = true;
+        UpdateRestCountdown();
+    }
+
+    private void UpdateRestCountdown()
+    {
+        var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
+        RestTimerText = _timer.FormatCountdown(remaining);
+        RestProgress = _restDurationSeconds > 0
+            ? Math.Clamp(remaining.TotalSeconds / _restDurationSeconds, 0, 1)
+            : 0;
     }
 
     private async Task CompleteWorkoutAsync()
@@ -373,7 +459,21 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         IsResting = false;
         _breakEndTimeUtc = default;
+        _restDurationSeconds = 0;
+        RestProgress = 0;
         RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
+    }
+
+    [RelayCommand]
+    private async Task ExtendRestAsync()
+    {
+        if (!IsResting) return;
+
+        _restDurationSeconds += DomainDefaults.RestExtensionInSeconds;
+        _breakEndTimeUtc = _breakEndTimeUtc.AddSeconds(DomainDefaults.RestExtensionInSeconds);
+        RestTotalText = string.Format(UiText.RestTotalFormat, _restDurationSeconds);
+        UpdateRestCountdown();
+        await SaveStateAsync();
     }
 
     [RelayCommand]
@@ -386,26 +486,26 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task DeleteSetAsync(WorkoutSet set)
+    private void ShowSetActions(WorkoutSet set)
     {
-        if (set == null) return;
-        if (!await _setEditService.ConfirmDeleteAsync()) return;
-
-        await RemoveSetAsync(set);
-    }
-
-    private async Task RemoveSetAsync(WorkoutSet set)
-    {
-        await _setRepository.DeleteAsync(set.Id);
-        await LoadSetsForCurrentExerciseAsync();
-
-        UpdateSetProgress();
+        ActionSet = set;
+        IsSetActionSheetOpen = true;
     }
 
     [RelayCommand]
-    private async Task EditLoggedSetAsync(WorkoutSet set)
+    private void CancelSetActions()
     {
-        if (set == null) return;
+        IsSetActionSheetOpen = false;
+        ActionSet = null;
+    }
+
+    [RelayCommand]
+    private async Task EditActionSetAsync()
+    {
+        if (await DismissSetActionsAsync() is not { } set)
+        {
+            return;
+        }
 
         var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
         if (values is null) return;
@@ -420,6 +520,35 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             CurrentSets[index] = set;
         }
+    }
+
+    [RelayCommand]
+    private async Task DeleteActionSetAsync()
+    {
+        if (await DismissSetActionsAsync() is not { } set)
+        {
+            return;
+        }
+
+        if (!await _setEditService.ConfirmDeleteAsync()) return;
+
+        await RemoveSetAsync(set);
+    }
+
+    private async Task<WorkoutSet?> DismissSetActionsAsync()
+    {
+        var set = ActionSet;
+        CancelSetActions();
+        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        return set;
+    }
+
+    private async Task RemoveSetAsync(WorkoutSet set)
+    {
+        await _setRepository.DeleteAsync(set.Id);
+        await LoadSetsForCurrentExerciseAsync();
+
+        UpdateSetProgress();
     }
 
     [RelayCommand]
@@ -471,6 +600,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
+    private async Task NavigateBackAsync()
+    {
+        if (IsSetActionSheetOpen)
+        {
+            CancelSetActions();
+            return;
+        }
+
+        await ExitWorkoutAsync();
+    }
+
+    [RelayCommand]
     private async Task ExitWorkoutAsync()
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
@@ -493,6 +634,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer.Stop();
         _audioCues.Stop();
         ClearRestState();
+        CancelSetActions();
         _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
         _sessionId = 0;
@@ -507,9 +649,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasSavedSets = false;
         HasPreviousExercise = false;
         HasNextExercise = false;
+        HasLastSession = false;
 
         Exercises.Clear();
         CurrentSets.Clear();
+        SetSegments.Clear();
         CompletedExercises.Clear();
         CurrentExercise = new();
 
@@ -519,6 +663,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         ExerciseProgressText = string.Empty;
         SetProgressText = string.Empty;
         LastSessionResultsText = string.Empty;
+        RestTotalText = string.Empty;
         WeightInput = string.Empty;
         RepsInput = string.Empty;
         TotalVolume = 0;
