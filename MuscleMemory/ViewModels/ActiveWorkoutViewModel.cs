@@ -59,6 +59,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TargetText))]
+    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial SessionExercise CurrentExercise { get; set; } = new();
 
     public string TargetText => CurrentExercise.PlannedReps > 0
@@ -88,11 +89,15 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial bool IsExerciseComplete { get; set; } = false;
 
-    public string ProgressCaption => IsExerciseComplete
-        ? ExerciseProgressText
-        : string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText);
+    public string ProgressCaption => (IsResting, IsExerciseComplete) switch
+    {
+        (true, _) => string.Join(UiText.ListSeparator, SetProgressText, TargetText),
+        (false, true) => ExerciseProgressText,
+        (false, false) => string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText)
+    };
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
     public partial bool IsResting { get; set; } = false;
 
     [ObservableProperty]
@@ -309,9 +314,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         ExerciseProgressText = string.Format(UiText.ExerciseProgressFormat, index + 1, Exercises.Count);
 
-        WeightInput = string.Empty;
-        RepsInput = string.Empty;
-
         var lastSessionSets = await _setRepository.GetLastSessionSetsAsync(exercise.ExerciseId, _sessionId);
         HasLastSession = lastSessionSets.Count > 0;
         LastSessionResultsText = HasLastSession
@@ -319,8 +321,15 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             : UiText.FirstTimePerformingExercise;
 
         await LoadSetsForCurrentExerciseAsync();
+        PrefillInputs(CurrentSets.LastOrDefault() ?? lastSessionSets.FirstOrDefault());
         UpdateSetProgress();
         await SaveStateAsync();
+    }
+
+    private void PrefillInputs(WorkoutSet? source)
+    {
+        WeightInput = source is null ? string.Empty : FormatWeight(source.Weight);
+        RepsInput = source?.Reps.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
     private async Task LoadSetsForCurrentExerciseAsync()
@@ -395,7 +404,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _haptics.Click();
         CurrentSets.Add(newSet);
         HasSavedSets = true;
-        RepsInput = string.Empty;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
             StartRest(CurrentExercise.BreakTimeInSeconds);

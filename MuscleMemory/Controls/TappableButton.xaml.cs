@@ -41,9 +41,6 @@ public partial class TappableButton : ContentView
     public static readonly BindableProperty ContentPaddingProperty =
         BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(14, 10));
 
-    public static readonly BindableProperty SurfaceShadowProperty =
-        BindableProperty.Create(nameof(SurfaceShadow), typeof(Shadow), typeof(TappableButton));
-
     public static readonly BindableProperty DisabledOpacityProperty =
         BindableProperty.Create(nameof(DisabledOpacity), typeof(double), typeof(TappableButton), 0.4d,
             propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceOpacity)));
@@ -114,12 +111,6 @@ public partial class TappableButton : ContentView
     {
         get => (Thickness)GetValue(ContentPaddingProperty);
         set => SetValue(ContentPaddingProperty, value);
-    }
-
-    public Shadow? SurfaceShadow
-    {
-        get => (Shadow?)GetValue(SurfaceShadowProperty);
-        set => SetValue(SurfaceShadowProperty, value);
     }
 
     public double DisabledOpacity
