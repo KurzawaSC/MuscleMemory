@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MuscleMemory.Controls.SetTableHeader">
 
-    <Grid ColumnDefinitions="*,*,*"
-          Padding="8"
-          BackgroundColor="{AppThemeBinding Light={StaticResource TableHeaderBackgroundLight}, Dark={StaticResource TableHeaderBackgroundDark}}">
-        <Label Grid.Column="0" Text="Set" FontSize="12" HorizontalTextAlignment="Center" />
-        <Label Grid.Column="1" Text="Weight (kg)" FontSize="12" HorizontalTextAlignment="Center" />
-        <Label Grid.Column="2" Text="Reps" FontSize="12" HorizontalTextAlignment="Center" />
+    <Grid Style="{StaticResource SetTableRow}"
+          Padding="12,8"
+          BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource FillDark}}">
+        <Label Style="{StaticResource OverlineLabel}" FontSize="11" Text="Set" />
+        <Label Grid.Column="1" Style="{StaticResource OverlineLabel}" FontSize="11" Text="Weight" HorizontalTextAlignment="Center" />
+        <Label Grid.Column="2" Style="{StaticResource OverlineLabel}" FontSize="11" Text="Reps" HorizontalTextAlignment="End" />
     </Grid>
 </ContentView>

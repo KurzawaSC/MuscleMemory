@@ -4,24 +4,24 @@
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Controls.EmptyState"
              x:Name="Root"
-             x:DataType="controls:EmptyState">
+             x:DataType="controls:EmptyState"
+             Padding="40,0">
 
-    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="20">
-        <Image Source="{Binding IconSource, Source={x:Reference Root}}"
-               IsVisible="{Binding HasIcon, Source={x:Reference Root}}"
-               WidthRequest="80"
-               HeightRequest="80"
-               Opacity="0.3" />
-        <VerticalStackLayout Spacing="8">
-            <Label Text="{Binding Message, Source={x:Reference Root}}"
-                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                   FontSize="18"
+    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+        <VerticalStackLayout Spacing="6">
+            <Label Style="{StaticResource TitleLabel}"
+                   Text="{Binding Message, Source={x:Reference Root}}"
                    HorizontalTextAlignment="Center" />
             <Label Text="{Binding Detail, Source={x:Reference Root}}"
                    IsVisible="{Binding HasDetail, Source={x:Reference Root}}"
-                   TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}"
-                   FontSize="13"
+                   TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
+        <controls:TappableButton Style="{StaticResource PrimaryButton}"
+                                 Text="{Binding ActionText, Source={x:Reference Root}}"
+                                 Command="{Binding ActionCommand, Source={x:Reference Root}}"
+                                 IsVisible="{Binding HasAction, Source={x:Reference Root}}"
+                                 HorizontalOptions="Center"
+                                 ContentPadding="24,0" />
     </VerticalStackLayout>
 </ContentView>

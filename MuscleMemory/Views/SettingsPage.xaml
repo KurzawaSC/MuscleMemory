@@ -1,34 +1,119 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Class="MuscleMemory.Views.SettingsPage"
-             x:DataType="viewmodels:SettingsViewModel"
-             Title="Settings"
-             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackgroundLight}, Dark={StaticResource PageBackgroundDark}}">
+<controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             x:Class="MuscleMemory.Views.SettingsPage"
+                             x:DataType="viewmodels:SettingsViewModel"
+                             BackCommand="{Binding CloseSheetsCommand}">
 
-    <Grid>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Border Style="{StaticResource SettingsRow}">
-                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="App Theme" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" VerticalOptions="Center" HorizontalOptions="Start" />
-                    <Picker Grid.Column="1" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding SelectedTheme}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="16" MinimumWidthRequest="130" VerticalOptions="Center" HorizontalOptions="End" />
+    <Grid RowDefinitions="Auto, *">
+        <controls:ScreenHeader Title="Settings" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
+                <Label Style="{StaticResource OverlineLabel}" Text="Appearance" />
+                <Border Style="{StaticResource SettingsGroup}">
+                    <controls:ActionSheetRow Text="App theme"
+                                             Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
+                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                             Command="{Binding OpenThemeSheetCommand}" />
+                </Border>
+
+                <Label Style="{StaticResource OverlineLabel}" Text="Data" Margin="0,10,0,0" />
+                <Border Style="{StaticResource SettingsGroup}">
+                    <VerticalStackLayout>
+                        <controls:ActionSheetRow Text="Export data"
+                                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                                 Command="{Binding ExportDataCommand}" />
+                        <BoxView Style="{StaticResource Divider}" />
+                        <controls:ActionSheetRow Text="Erase all data"
+                                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                                 Command="{Binding OpenEraseSheetCommand}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label Style="{StaticResource CaptionLabel}"
+                       Text="{Binding VersionText}"
+                       TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,10,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:ResumeWorkoutBanner Grid.Row="1" ActiveWorkout="{Binding ActiveWorkout}" />
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsThemeSheetOpen}">
+            <VerticalStackLayout Spacing="16">
+                <Label Style="{StaticResource TitleLabel}" Text="App theme" />
+                <Grid ColumnDefinitions="*, *, *"
+                      ColumnSpacing="10"
+                      RadioButtonGroup.GroupName="AppTheme"
+                      RadioButtonGroup.SelectedValue="{Binding SelectedTheme}">
+                    <RadioButton Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.System}">
+                        <RadioButton.Content>
+                            <VerticalStackLayout Spacing="9">
+                                <Border Style="{StaticResource ThemePreview}">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{StaticResource SurfaceLight}" Offset="0.5" />
+                                            <GradientStop Color="{StaticResource InkLight}" Offset="0.5" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Label Text="System" FontSize="13" HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton Grid.Column="1" Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.Light}">
+                        <RadioButton.Content>
+                            <VerticalStackLayout Spacing="9">
+                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
+                                <Label Text="Light" FontSize="13" HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton Grid.Column="2" Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.Dark}">
+                        <RadioButton.Content>
+                            <VerticalStackLayout Spacing="9">
+                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />
+                                <Label Text="Dark" FontSize="13" HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
                 </Grid>
+            </VerticalStackLayout>
+        </controls:BottomSheet>
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsEraseSheetOpen}">
+            <Border StrokeThickness="0"
+                    Padding="16"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="6">
+                    <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="Erase all data?" />
+                    <Label Style="{StaticResource CaptionLabel}"
+                           FontSize="13"
+                           Text="This erases exercises, workouts and all history from this device. It can't be undone." />
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
+                        <controls:TappableButton Style="{StaticResource SecondaryButton}"
+                                                 Text="Cancel"
+                                                 HeightRequest="46"
+                                                 FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                                                 Command="{Binding CloseSheetsCommand}" />
+                        <controls:TappableButton Grid.Column="1"
+                                                 Style="{StaticResource PrimaryButton}"
+                                                 Text="Erase"
+                                                 HeightRequest="46"
+                                                 Shadow="{x:Null}"
+                                                 Command="{Binding EraseDataCommand}" />
+                    </Grid>
+                </VerticalStackLayout>
             </Border>
-
-            <controls:SettingsActionRow Text="Export data"
-                                        IconSource="export_data_icon.png"
-                                        Tint="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                        Command="{Binding ExportDataCommand}" />
-
-            <controls:SettingsActionRow Text="Erase data"
-                                        IconSource="erease_data_icon.png"
-                                        Tint="{AppThemeBinding Light={StaticResource AccentRedLight}, Dark={StaticResource AccentRedDark}}"
-                                        Command="{Binding EraseDataCommand}" />
-
-        </VerticalStackLayout>
-        
-        <controls:ResumeWorkoutBanner ActiveWorkout="{Binding ActiveWorkout}" />
+        </controls:BottomSheet>
     </Grid>
-</ContentPage>
+
+</controls:BackNavigationPage>

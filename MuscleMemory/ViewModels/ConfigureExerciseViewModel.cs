@@ -1,107 +1,87 @@
-using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ConfigureExerciseViewModel(IPopupService popupService) : ObservableObject, IQueryAttributable
+public partial class ConfigureExerciseViewModel : ObservableObject
 {
-    private readonly IPopupService _popupService = popupService;
-
-    private static readonly NumericField SetsField =
-        new(UiText.FieldSets, DomainDefaults.MinSets, DomainDefaults.MaxSets);
-
-    private static readonly NumericField RepsField =
-        new(UiText.FieldReps, DomainDefaults.MinReps, DomainDefaults.MaxReps);
-
-    private static readonly NumericField BreakTimeField =
-        new(UiText.FieldBreakTime, DomainDefaults.MinBreakTimeInSeconds, DomainDefaults.MaxBreakTimeInSeconds);
-
     [ObservableProperty]
     public partial string ExerciseName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string SetsInput { get; set; } = DomainDefaults.Sets.ToString();
+    public partial string ConfirmText { get; set; } = UiText.ButtonAddToWorkout;
 
     [ObservableProperty]
-    public partial string RepsInput { get; set; } = DomainDefaults.Reps.ToString();
+    public partial bool IsEditing { get; set; }
 
     [ObservableProperty]
-    public partial string BreakTimeInput { get; set; } = DomainDefaults.BreakTimeInSeconds.ToString();
+    public partial int Sets { get; set; } = DomainDefaults.Sets;
+
+    [ObservableProperty]
+    public partial int Reps { get; set; } = DomainDefaults.Reps;
+
+    [ObservableProperty]
+    public partial int BreakTimeInSeconds { get; set; } = DomainDefaults.BreakTimeInSeconds;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCustomRest))]
+    public partial RestPreset SelectedRestPreset { get; set; } = RestPreset.For(DomainDefaults.BreakTimeInSeconds);
 
     [ObservableProperty]
     public partial int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
 
-    [ObservableProperty]
-    public partial string ConfirmText { get; set; } = UiText.ButtonAdd;
+    public IReadOnlyList<RestPreset> RestPresets { get; } =
+        [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom];
 
-    public IReadOnlyList<int> TargetRpeOptions { get; } =
-        [.. Enumerable.Range(DomainDefaults.MinTargetRPE, DomainDefaults.MaxTargetRPE - DomainDefaults.MinTargetRPE + 1)];
+    public ObservableCollection<LevelSegment> RpeLevels { get; } = [.. BuildRpeLevels(DomainDefaults.TargetRPE)];
 
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    public bool IsCustomRest => SelectedRestPreset.IsCustom;
+
+    partial void OnSelectedRestPresetChanged(RestPreset value)
     {
-        if (query.TryGetValue(QueryKeys.SelectedExercise, out var selected) && selected is Exercise exercise)
+        if (value.Seconds is int seconds)
         {
-            ExerciseName = exercise.Name;
-        }
-        else if (query.TryGetValue(QueryKeys.WorkoutExerciseToEdit, out var editable) && editable is WorkoutExercise workoutExercise)
-        {
-            LoadExerciseToEdit(workoutExercise);
+            BreakTimeInSeconds = seconds;
         }
     }
 
-    private void LoadExerciseToEdit(WorkoutExercise workoutExercise)
+    partial void OnTargetRPEChanged(int value) => RpeLevels.ReplaceAll(BuildRpeLevels(value));
+
+    public void BeginNew(string exerciseName)
     {
-        ExerciseName = workoutExercise.ExerciseName;
-        SetsInput = workoutExercise.Sets.ToString();
-        RepsInput = workoutExercise.Reps.ToString();
-        BreakTimeInput = workoutExercise.BreakTimeInSeconds.ToString();
-        TargetRPE = workoutExercise.TargetRPE;
+        ExerciseName = exerciseName;
+        IsEditing = false;
+        ConfirmText = UiText.ButtonAddToWorkout;
+        Apply(new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE));
+    }
+
+    public void BeginEdit(WorkoutExercise exercise)
+    {
+        ExerciseName = exercise.ExerciseName;
+        IsEditing = true;
         ConfirmText = UiText.ButtonSave;
+        Apply(new ExerciseConfiguration(exercise.Sets, exercise.Reps, exercise.BreakTimeInSeconds, exercise.TargetRPE));
     }
+
+    public ExerciseConfiguration ToConfiguration() => new(Sets, Reps, BreakTimeInSeconds, TargetRPE);
 
     [RelayCommand]
-    private async Task CancelAsync()
+    private void SelectRpe(int value) => TargetRPE = value;
+
+    private void Apply(ExerciseConfiguration configuration)
     {
-        await _popupService.ClosePopupAsync<ExerciseConfiguration?>(Shell.Current.Navigation, null);
+        Sets = configuration.Sets;
+        Reps = configuration.Reps;
+        SelectedRestPreset = RestPresets.FirstOrDefault(preset => preset.Seconds == configuration.BreakTimeInSeconds) ?? RestPreset.Custom;
+        BreakTimeInSeconds = configuration.BreakTimeInSeconds;
+        TargetRPE = configuration.TargetRPE;
     }
 
-    [RelayCommand]
-    private async Task ConfirmAsync()
-    {
-        if (SetsField.Parse(SetsInput) is not int sets)
-        {
-            await ShowRangeAlertAsync(SetsField);
-            return;
-        }
-
-        if (RepsField.Parse(RepsInput) is not int reps)
-        {
-            await ShowRangeAlertAsync(RepsField);
-            return;
-        }
-
-        if (BreakTimeField.Parse(BreakTimeInput) is not int breakTimeInSeconds)
-        {
-            await ShowRangeAlertAsync(BreakTimeField);
-            return;
-        }
-
-        await _popupService.ClosePopupAsync<ExerciseConfiguration?>(
-            Shell.Current.Navigation,
-            new ExerciseConfiguration(sets, reps, breakTimeInSeconds, TargetRPE));
-    }
-
-    private static Task ShowRangeAlertAsync(NumericField field) =>
-        Shell.Current.DisplayAlertAsync(UiText.TitleInvalidInput, field.RangeMessage, UiText.ButtonOk);
-
-    private sealed record NumericField(string Label, int Minimum, int Maximum)
-    {
-        public int? Parse(string input) =>
-            int.TryParse(input, out int value) && value >= Minimum && value <= Maximum ? value : null;
-
-        public string RangeMessage => string.Format(UiText.NumericRangeFormat, Label, Minimum, Maximum);
-    }
+    private static IEnumerable<LevelSegment> BuildRpeLevels(int targetRpe) =>
+        Enumerable.Range(DomainDefaults.MinTargetRPE, DomainDefaults.MaxTargetRPE - DomainDefaults.MinTargetRPE + 1)
+                  .Select(value => new LevelSegment(value, value <= targetRpe));
 }

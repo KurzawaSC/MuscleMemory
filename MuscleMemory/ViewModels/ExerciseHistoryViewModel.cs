@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
@@ -37,5 +38,11 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
     {
         History.ReplaceAll(await _historyQueryService.GetExerciseHistoryAsync(_exerciseId));
         IsEmpty = !History.Any();
+    }
+
+    [RelayCommand]
+    private async Task GoBackAsync()
+    {
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
     }
 }

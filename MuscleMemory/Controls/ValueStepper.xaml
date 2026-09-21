@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.ValueStepper"
+             x:Name="Root"
+             x:DataType="controls:ValueStepper">
+
+    <Border Style="{StaticResource InsetPanel}" Padding="16,2,2,2">
+        <Grid ColumnDefinitions="*, Auto, Auto, Auto">
+            <Label Text="{Binding Title, Source={x:Reference Root}}" VerticalOptions="Center" />
+            <controls:GlyphButton Grid.Column="1"
+                                  Glyph="−"
+                                  Style="{StaticResource StepperGlyphButton}"
+                                  Command="{Binding DecrementCommand, Source={x:Reference Root}}"
+                                  IsEnabled="{Binding CanDecrement, Source={x:Reference Root}}" />
+            <Label Grid.Column="2"
+                   Style="{StaticResource TitleLabel}"
+                   MinimumWidthRequest="40"
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   Text="{Binding DisplayValue, Source={x:Reference Root}}" />
+            <controls:GlyphButton Grid.Column="3"
+                                  Glyph="+"
+                                  Style="{StaticResource StepperGlyphButton}"
+                                  Command="{Binding IncrementCommand, Source={x:Reference Root}}"
+                                  IsEnabled="{Binding CanIncrement, Source={x:Reference Root}}" />
+        </Grid>
+    </Border>
+</ContentView>

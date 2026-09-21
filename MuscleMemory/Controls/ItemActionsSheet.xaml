@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.ItemActionsSheet"
+             x:Name="Root"
+             x:DataType="controls:ItemActionsSheet">
+
+    <VerticalStackLayout Spacing="16">
+        <controls:SheetItemHeader Title="{Binding Title, Source={x:Reference Root}}"
+                                  Subtitle="{Binding Subtitle, Source={x:Reference Root}}" />
+
+        <VerticalStackLayout>
+            <controls:ActionSheetRow Text="{Binding EditText, Source={x:Reference Root}}"
+                                     TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                     Command="{Binding EditCommand, Source={x:Reference Root}}" />
+            <BoxView Style="{StaticResource Divider}" IsVisible="{Binding HasHistory, Source={x:Reference Root}}" />
+            <controls:ActionSheetRow Text="View history"
+                                     TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                     IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
+                                     Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
+            <BoxView Style="{StaticResource Divider}" />
+            <controls:ActionSheetRow Text="{Binding DeleteText, Source={x:Reference Root}}"
+                                     TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                     ShowsChevron="False"
+                                     Command="{Binding DeleteCommand, Source={x:Reference Root}}" />
+        </VerticalStackLayout>
+
+        <controls:TappableButton Style="{StaticResource SecondaryButton}"
+                                 Text="Cancel"
+                                 Command="{Binding CancelCommand, Source={x:Reference Root}}" />
+    </VerticalStackLayout>
+</ContentView>

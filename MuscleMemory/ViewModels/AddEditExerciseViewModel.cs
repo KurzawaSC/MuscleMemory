@@ -1,16 +1,23 @@
-using CommunityToolkit.Maui;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
+using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditExerciseViewModel(IPopupService popupService) : ObservableObject, IQueryAttributable
+public partial class AddEditExerciseViewModel(IExerciseRepository exerciseRepository) : ObservableObject
 {
-    private readonly IPopupService _popupService = popupService;
+    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
+    private Exercise? _existingExercise;
 
     [ObservableProperty]
+    public partial string Title { get; set; } = UiText.HeaderNewExercise;
+
+    [ObservableProperty]
+    public partial string ConfirmText { get; set; } = UiText.ButtonAdd;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
     public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -20,59 +27,50 @@ public partial class AddEditExerciseViewModel(IPopupService popupService) : Obse
     public partial EquipmentType SelectedEquipment { get; set; } = EquipmentType.Other;
 
     public MuscleGroup[] MuscleGroups { get; } = Enum.GetValues<MuscleGroup>();
+
     public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
 
-    private Exercise? _existingExercise;
+    public bool CanSave => !string.IsNullOrWhiteSpace(Name);
 
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    public void BeginNew()
     {
-        if (query.TryGetValue(QueryKeys.ExerciseToEdit, out var editable) && editable is Exercise exercise)
-        {
-            LoadExercise(exercise);
-        }
+        _existingExercise = null;
+        Title = UiText.HeaderNewExercise;
+        ConfirmText = UiText.ButtonAdd;
+        Name = string.Empty;
+        SelectedMuscleGroup = MuscleGroup.Other;
+        SelectedEquipment = EquipmentType.Other;
     }
 
-    private void LoadExercise(Exercise exercise)
+    public void BeginEdit(Exercise exercise)
     {
         _existingExercise = exercise;
+        Title = UiText.HeaderEditExercise;
+        ConfirmText = UiText.ButtonSave;
         Name = exercise.Name;
         SelectedMuscleGroup = exercise.TargetMuscleGroup;
         SelectedEquipment = exercise.Equipment;
     }
 
-    [RelayCommand]
-    private async Task CancelAsync()
+    public async Task<Exercise> SaveAsync()
     {
-        await _popupService.ClosePopupAsync<Exercise?>(Shell.Current.Navigation, null);
-    }
-
-    [RelayCommand]
-    private async Task ConfirmAsync()
-    {
-        if (string.IsNullOrWhiteSpace(Name))
+        if (_existingExercise is { } exercise)
         {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleHoldOn, UiText.BodyEnterExerciseName, UiText.ButtonOk);
-            return;
+            ApplyTo(exercise);
+            await _exerciseRepository.UpdateAsync(exercise);
+            return exercise;
         }
 
-        await _popupService.ClosePopupAsync<Exercise?>(Shell.Current.Navigation, BuildExercise());
+        var newExercise = new Exercise();
+        ApplyTo(newExercise);
+        await _exerciseRepository.AddAsync(newExercise);
+        return newExercise;
     }
 
-    private Exercise BuildExercise()
+    private void ApplyTo(Exercise exercise)
     {
-        if (_existingExercise != null)
-        {
-            _existingExercise.Name = Name.Trim();
-            _existingExercise.TargetMuscleGroup = SelectedMuscleGroup;
-            _existingExercise.Equipment = SelectedEquipment;
-            return _existingExercise;
-        }
-
-        return new Exercise
-        {
-            Name = Name.Trim(),
-            TargetMuscleGroup = SelectedMuscleGroup,
-            Equipment = SelectedEquipment
-        };
+        exercise.Name = Name.Trim();
+        exercise.TargetMuscleGroup = SelectedMuscleGroup;
+        exercise.Equipment = SelectedEquipment;
     }
 }

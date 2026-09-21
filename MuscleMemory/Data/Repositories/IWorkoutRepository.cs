@@ -10,5 +10,6 @@ public interface IWorkoutRepository
     Task UpdateWithExercisesAsync(Workout workout, List<WorkoutExercise> exercises);
     Task DeleteAsync(int workoutId);
     Task<List<WorkoutExercise>> GetExercisesAsync(int workoutId);
+    Task<List<WorkoutExercise>> GetAllExercisesAsync();
     void Clear(SQLiteConnection transaction);
 }

@@ -1,8 +1,9 @@
+using MuscleMemory.Controls;
 using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
 
-public partial class WorkoutListPage : ContentPage
+public partial class WorkoutListPage : BackNavigationPage
 {
     public WorkoutListPage(WorkoutListViewModel viewModel)
     {

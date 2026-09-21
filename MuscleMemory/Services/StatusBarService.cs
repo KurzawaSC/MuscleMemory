@@ -14,7 +14,7 @@ public sealed class StatusBarService : IStatusBarService
 {
     public void ApplyTheme()
     {
-        if (ResolveNavBarBackground() is not { } background)
+        if (ResolveStatusBarBackground() is not { } background)
         {
             return;
         }
@@ -27,7 +27,7 @@ public sealed class StatusBarService : IStatusBarService
         shell.Navigated += (_, _) => ApplyTheme();
     }
 
-    private static Color? ResolveNavBarBackground()
+    private static Color? ResolveStatusBarBackground()
     {
         if (Application.Current is not { } application)
         {
@@ -35,8 +35,8 @@ public sealed class StatusBarService : IStatusBarService
         }
 
         var role = application.RequestedTheme == AppTheme.Dark
-            ? ColorRoles.NavBarBackgroundDark
-            : ColorRoles.NavBarBackgroundLight;
+            ? ColorRoles.BackgroundDark
+            : ColorRoles.BackgroundLight;
 
         return application.Resources.TryGetValue(role, out var color) ? color as Color : null;
     }
