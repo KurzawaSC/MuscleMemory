@@ -25,6 +25,10 @@
     <x:Single x:Key="SheetShadowOpacityDark">0.55</x:Single>
     <x:Single x:Key="RestPanelShadowOpacityLight">0.22</x:Single>
     <x:Single x:Key="RestPanelShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="PrimaryButtonShadowOpacityLight">0.3</x:Single>
+    <x:Single x:Key="PrimaryButtonShadowOpacityDark">0</x:Single>
+    <x:Single x:Key="FabShadowOpacityLight">0.38</x:Single>
+    <x:Single x:Key="FabShadowOpacityDark">0.4</x:Single>
 
     <Shadow x:Key="CardShadow"
             Offset="0,1"
@@ -53,13 +57,19 @@
         </Shadow.Brush>
     </Shadow>
 
-    <Shadow x:Key="PrimaryButtonShadow" Offset="0,6" Radius="16" Opacity="0.3">
+    <Shadow x:Key="PrimaryButtonShadow"
+            Offset="0,6"
+            Radius="16"
+            Opacity="{AppThemeBinding Light={StaticResource PrimaryButtonShadowOpacityLight}, Dark={StaticResource PrimaryButtonShadowOpacityDark}}">
         <Shadow.Brush>
             <SolidColorBrush Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
         </Shadow.Brush>
     </Shadow>
 
-    <Shadow x:Key="FabShadow" Offset="0,8" Radius="20" Opacity="0.38">
+    <Shadow x:Key="FabShadow"
+            Offset="0,8"
+            Radius="20"
+            Opacity="{AppThemeBinding Light={StaticResource FabShadowOpacityLight}, Dark={StaticResource FabShadowOpacityDark}}">
         <Shadow.Brush>
             <SolidColorBrush Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
         </Shadow.Brush>
@@ -348,7 +358,7 @@
     <Style x:Key="ThemePreview" TargetType="Border">
         <Setter Property="HeightRequest" Value="56" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Stroke" Value="{StaticResource LineLight}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}" />
         <Setter Property="StrokeShape">
             <Setter.Value>
                 <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
