@@ -88,14 +88,14 @@
             </VerticalStackLayout>
 
             <Grid Grid.Row="1">
-                <Border Style="{StaticResource SurfaceCard}">
+                <Border Style="{StaticResource SurfaceCard}" Padding="0">
                     <Border.IsVisible>
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
                             <Binding Path="IsExerciseComplete" Converter="{StaticResource InvertedBoolConverter}" />
                         </MultiBinding>
                     </Border.IsVisible>
-                    <VerticalStackLayout Spacing="14">
+                    <VerticalStackLayout Spacing="14" Padding="16">
                         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                             <Label Style="{StaticResource OverlineLabel}" Text="{Binding TargetText}" />
                             <Label Grid.Column="1"
@@ -175,7 +175,7 @@
                                                      Text="Skip rest"
                                                      FontSize="15"
                                                      HeightRequest="46"
-                                                     SurfaceShadow="{x:Null}"
+                                                     Shadow="{x:Null}"
                                                      Command="{Binding SkipRestCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -201,7 +201,13 @@
 
             <ScrollView Grid.Row="2" IsVisible="{Binding HasSavedSets}">
                 <VerticalStackLayout Spacing="8">
-                    <Label Style="{StaticResource OverlineLabel}" Text="This session" />
+                    <Label Style="{StaticResource OverlineLabel}" Text="This session">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsResting}" Value="True">
+                                <Setter Property="Text" Value="Logged sets" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
                     <Border Style="{StaticResource SurfaceCard}" Padding="14,2">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
@@ -272,8 +278,14 @@
                 </Border>
                 <Label Style="{StaticResource CaptionLabel}"
                        FontSize="13"
-                       Text="No sets logged yet. Enter weight and reps, then save the set."
-                       HorizontalTextAlignment="Center" />
+                       Text="First time doing this exercise. Enter weight and reps — next time we will prefill your last session."
+                       HorizontalTextAlignment="Center">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding HasLastSession}" Value="True">
+                            <Setter Property="Text" Value="Weight and reps are prefilled from your last session." />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
             </VerticalStackLayout>
 
             <controls:TappableButton Grid.Row="3"

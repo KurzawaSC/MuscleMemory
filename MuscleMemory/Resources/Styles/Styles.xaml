@@ -23,6 +23,8 @@
     <x:Single x:Key="CardShadowOpacityDark">0</x:Single>
     <x:Single x:Key="SheetShadowOpacityLight">0.2</x:Single>
     <x:Single x:Key="SheetShadowOpacityDark">0.55</x:Single>
+    <x:Single x:Key="RestPanelShadowOpacityLight">0.22</x:Single>
+    <x:Single x:Key="RestPanelShadowOpacityDark">0</x:Single>
 
     <Shadow x:Key="CardShadow"
             Offset="0,1"
@@ -37,6 +39,15 @@
             Offset="0,-10"
             Radius="40"
             Opacity="{AppThemeBinding Light={StaticResource SheetShadowOpacityLight}, Dark={StaticResource SheetShadowOpacityDark}}">
+        <Shadow.Brush>
+            <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
+        </Shadow.Brush>
+    </Shadow>
+
+    <Shadow x:Key="RestPanelShadow"
+            Offset="0,14"
+            Radius="30"
+            Opacity="{AppThemeBinding Light={StaticResource RestPanelShadowOpacityLight}, Dark={StaticResource RestPanelShadowOpacityDark}}">
         <Shadow.Brush>
             <SolidColorBrush Color="{AppThemeBinding Light={StaticResource ShadowLight}, Dark={StaticResource ShadowDark}}" />
         </Shadow.Brush>
@@ -131,12 +142,12 @@
         <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
         <Setter Property="FontSize" Value="17" />
         <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
-        <Setter Property="SurfaceShadow" Value="{StaticResource PrimaryButtonShadow}" />
+        <Setter Property="Shadow" Value="{StaticResource PrimaryButtonShadow}" />
         <Style.Triggers>
             <Trigger TargetType="controls:TappableButton" Property="IsEnabled" Value="False">
                 <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource DisabledFillLight}, Dark={StaticResource DisabledFillDark}}" />
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DisabledTextLight}, Dark={StaticResource DisabledTextDark}}" />
-                <Setter Property="SurfaceShadow" Value="{x:Null}" />
+                <Setter Property="Shadow" Value="{x:Null}" />
                 <Setter Property="DisabledOpacity" Value="1" />
             </Trigger>
         </Style.Triggers>
@@ -146,6 +157,7 @@
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource RestPanelLight}, Dark={StaticResource RestPanelDark}}" />
         <Setter Property="Padding" Value="22" />
+        <Setter Property="Shadow" Value="{StaticResource RestPanelShadow}" />
         <Setter Property="StrokeShape">
             <Setter.Value>
                 <RoundRectangle CornerRadius="26" />

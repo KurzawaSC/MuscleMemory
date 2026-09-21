@@ -8,13 +8,28 @@
 
     <VerticalStackLayout Spacing="6">
         <Label Style="{StaticResource OverlineLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
-        <Border Style="{StaticResource InsetPanel}" Padding="0" HeightRequest="56">
+        <Border Style="{StaticResource InsetPanel}" Padding="0" HeightRequest="56" StrokeThickness="2" Stroke="Transparent">
+            <Border.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding IsFocused, Source={x:Reference ValueEntry}}" Value="True">
+                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                </DataTrigger>
+            </Border.Triggers>
             <Grid ColumnDefinitions="Auto, *, Auto">
                 <controls:GlyphButton Glyph="−"
                                       Style="{StaticResource StepperGlyphButton}"
                                       SurfaceSize="30"
-                                      Command="{Binding DecrementCommand, Source={x:Reference Root}}" />
-                <Entry Grid.Column="1"
+                                      IsVisible="{Binding HasValue, Source={x:Reference Root}}"
+                                      Command="{Binding DecrementCommand, Source={x:Reference Root}}">
+                    <controls:GlyphButton.Triggers>
+                        <DataTrigger TargetType="controls:GlyphButton" Binding="{Binding IsFocused, Source={x:Reference ValueEntry}}" Value="True">
+                            <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}" />
+                            <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </DataTrigger>
+                    </controls:GlyphButton.Triggers>
+                </controls:GlyphButton>
+                <Entry x:Name="ValueEntry"
+                       Grid.Column="1"
                        Text="{Binding Text, Source={x:Reference Root}}"
                        Placeholder="—"
                        Keyboard="Numeric"
@@ -25,7 +40,15 @@
                                       Glyph="+"
                                       Style="{StaticResource StepperGlyphButton}"
                                       SurfaceSize="30"
-                                      Command="{Binding IncrementCommand, Source={x:Reference Root}}" />
+                                      IsVisible="{Binding HasValue, Source={x:Reference Root}}"
+                                      Command="{Binding IncrementCommand, Source={x:Reference Root}}">
+                    <controls:GlyphButton.Triggers>
+                        <DataTrigger TargetType="controls:GlyphButton" Binding="{Binding IsFocused, Source={x:Reference ValueEntry}}" Value="True">
+                            <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}" />
+                            <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                        </DataTrigger>
+                    </controls:GlyphButton.Triggers>
+                </controls:GlyphButton>
             </Grid>
         </Border>
     </VerticalStackLayout>

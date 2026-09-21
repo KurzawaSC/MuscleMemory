@@ -8,7 +8,8 @@ public partial class InputStepper : ContentView
         BindableProperty.Create(nameof(Title), typeof(string), typeof(InputStepper), string.Empty);
 
     public static readonly BindableProperty TextProperty =
-        BindableProperty.Create(nameof(Text), typeof(string), typeof(InputStepper), string.Empty, BindingMode.TwoWay);
+        BindableProperty.Create(nameof(Text), typeof(string), typeof(InputStepper), string.Empty, BindingMode.TwoWay,
+            propertyChanged: (bindable, _, _) => ((InputStepper)bindable).OnPropertyChanged(nameof(HasValue)));
 
     public static readonly BindableProperty DecrementCommandProperty =
         BindableProperty.Create(nameof(DecrementCommand), typeof(ICommand), typeof(InputStepper));
@@ -41,4 +42,6 @@ public partial class InputStepper : ContentView
         get => (ICommand?)GetValue(IncrementCommandProperty);
         set => SetValue(IncrementCommandProperty, value);
     }
+
+    public bool HasValue => !string.IsNullOrEmpty(Text);
 }
