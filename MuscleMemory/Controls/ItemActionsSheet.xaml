@@ -14,9 +14,10 @@
             <controls:ActionSheetRow Text="{Binding EditText, Source={x:Reference Root}}"
                                      TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                      Command="{Binding EditCommand, Source={x:Reference Root}}" />
-            <BoxView Style="{StaticResource Divider}" />
+            <BoxView Style="{StaticResource Divider}" IsVisible="{Binding HasHistory, Source={x:Reference Root}}" />
             <controls:ActionSheetRow Text="View history"
                                      TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                     IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
                                      Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
             <BoxView Style="{StaticResource Divider}" />
             <controls:ActionSheetRow Text="{Binding DeleteText, Source={x:Reference Root}}"

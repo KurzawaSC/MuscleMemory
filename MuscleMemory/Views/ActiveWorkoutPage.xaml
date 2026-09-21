@@ -8,223 +8,282 @@
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
-             BackCommand="{Binding ExitWorkoutCommand}">
+             BackCommand="{Binding NavigateBackCommand}">
 
-        <Grid RowDefinitions="Auto, *">
-                <controls:NavigationHeader BackCommand="{Binding ExitWorkoutCommand}" />
-                <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" Padding="20" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+    <Grid RowDefinitions="Auto, *">
+        <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0">
+            <controls:GlyphButton Glyph="‹"
+                                  Style="{StaticResource NavigationGlyphButton}"
+                                  Command="{Binding NavigateBackCommand}" />
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                <Label Style="{StaticResource CaptionLabel}"
+                       FontSize="13"
+                       Text="{Binding WorkoutTitle}"
+                       LineBreakMode="TailTruncation"
+                       HorizontalTextAlignment="Center" />
+                <Label Style="{StaticResource TimerLabel}"
+                       FontSize="40"
+                       Text="{Binding TimerText}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+            <controls:TappableButton Grid.Column="2"
+                                     Style="{StaticResource SoftPrimaryButton}"
+                                     Text="Finish"
+                                     FontSize="13"
+                                     HeightRequest="36"
+                                     CornerRadius="{StaticResource SmallControlRadius}"
+                                     ContentPadding="12,0"
+                                     VerticalOptions="Center"
+                                     Command="{Binding FinishWorkoutCommand}"
+                                     IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}" />
+        </Grid>
 
-                        <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,10" HorizontalOptions="Center">
-                <Label Text="{Binding WorkoutTitle}"
-                       FontSize="24"
-                       TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                       HorizontalTextAlignment="Center"/>
-                <Label Text="{Binding TimerText}"
-                       FontSize="48"
-                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                       HorizontalTextAlignment="Center"/>
+        <Grid Grid.Row="1"
+              RowDefinitions="Auto, Auto, *, Auto"
+              RowSpacing="14"
+              Padding="20,16,20,12"
+              IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                <FlexLayout BindableLayout.ItemsSource="{Binding SetSegments}"
+                            IsVisible="{Binding IsResting, Converter={StaticResource InvertedBoolConverter}}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LevelSegment">
+                            <BoxView FlexLayout.Grow="1"
+                                     FlexLayout.Basis="0"
+                                     Margin="3,0"
+                                     HeightRequest="4"
+                                     CornerRadius="2"
+                                     Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}">
+                                <BoxView.Triggers>
+                                    <DataTrigger TargetType="BoxView" Binding="{Binding IsFilled}" Value="True">
+                                        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </BoxView.Triggers>
+                            </BoxView>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+
+                <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                        <Label Style="{StaticResource TitleLabel}"
+                               Text="{Binding CurrentExercise.ExerciseName, FallbackValue=''}"
+                               LineBreakMode="TailTruncation" />
+                        <Label Style="{StaticResource CaptionLabel}" Text="{Binding ProgressCaption}" />
+                    </VerticalStackLayout>
+                    <controls:GlyphButton Grid.Column="1"
+                                          Glyph="‹"
+                                          Style="{StaticResource NavigationGlyphButton}"
+                                          SurfaceSize="34"
+                                          Command="{Binding PreviousExerciseCommand}"
+                                          IsVisible="{Binding HasPreviousExercise}" />
+                    <controls:GlyphButton Grid.Column="2"
+                                          Glyph="›"
+                                          Style="{StaticResource NavigationGlyphButton}"
+                                          SurfaceSize="34"
+                                          Command="{Binding NextExerciseCommand}"
+                                          IsVisible="{Binding HasNextExercise}" />
+                </Grid>
             </VerticalStackLayout>
 
-                        <Grid Grid.Row="1" 
-                  ColumnDefinitions="50, *, 50"
-                  Margin="0,0,0,10"
-                  IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
-                <controls:TappableButton Grid.Column="0"
-                                         Text="&lt;"
-                                         Command="{Binding PreviousExerciseCommand}"
-                                         IsEnabled="{Binding HasPreviousExercise}"
-                                         DisabledOpacity="0"
-                                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                         FontSize="24"
-                                         VerticalOptions="Center" />
-                <Border Grid.Column="1"
-                        HorizontalOptions="Center"
-                        Padding="20,8"
-                        Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                        StrokeThickness="1.5">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="30" />
-                    </Border.StrokeShape>
-                    <Label Text="{Binding ExerciseProgressText}"
-                           FontSize="14"
-                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                           HorizontalTextAlignment="Center"
-                           VerticalOptions="Center"/>
-                </Border>
-                <controls:TappableButton Grid.Column="2"
-                                         Text="&gt;"
-                                         Command="{Binding NextExerciseCommand}"
-                                         IsEnabled="{Binding HasNextExercise}"
-                                         DisabledOpacity="0"
-                                         TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                         FontSize="24"
-                                         VerticalOptions="Center" />
-            </Grid>
+            <Grid Grid.Row="1">
+                <Border Style="{StaticResource SurfaceCard}">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                            <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
+                            <Binding Path="IsExerciseComplete" Converter="{StaticResource InvertedBoolConverter}" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                            <Label Style="{StaticResource OverlineLabel}" Text="{Binding TargetText}" />
+                            <Label Grid.Column="1"
+                                   Style="{StaticResource CaptionLabel}"
+                                   Text="{Binding LastSessionResultsText}"
+                                   LineBreakMode="TailTruncation"
+                                   HorizontalTextAlignment="End">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding HasLastSession}" Value="True">
+                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Grid>
 
-                        <VerticalStackLayout Grid.Row="2" Spacing="4" HorizontalOptions="Center" Margin="0,0,0,20">
-                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" IsVisible="{Binding IsSetCounterVisible}">
-                    <Label Text="{Binding SetProgressText}"
-                           FontSize="16"
-                           TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                           VerticalOptions="Center"/>
-                    <controls:Chip Text="{Binding TargetRepsText}"
-                                   IsVisible="{Binding HasTargetReps}"
-                                   VerticalOptions="Center" />
-                    <ContentView BindingContext="{Binding CurrentExercise}" x:DataType="models:SessionExercise" VerticalOptions="Center">
-                        <controls:Chip Text="{Binding TargetRPE, StringFormat='Target RPE: {0}', FallbackValue=0, TargetNullValue=0}" />
-                    </ContentView>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                            <controls:InputStepper Title="Weight (kg)"
+                                                   Text="{Binding WeightInput}"
+                                                   DecrementCommand="{Binding DecreaseWeightCommand}"
+                                                   IncrementCommand="{Binding IncreaseWeightCommand}" />
+                            <controls:InputStepper Grid.Column="1"
+                                                   Title="Reps"
+                                                   Text="{Binding RepsInput}"
+                                                   DecrementCommand="{Binding DecreaseRepsCommand}"
+                                                   IncrementCommand="{Binding IncreaseRepsCommand}" />
+                        </Grid>
 
-                        <Grid Grid.Row="3" Margin="0,0,0,20">
-                                <VerticalStackLayout Spacing="20" IsVisible="{Binding IsExerciseComplete, Converter={StaticResource InvertedBoolConverter}}">
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="20">
-                        <VerticalStackLayout Grid.Column="0" Spacing="10">
-                            <Label Text="Weight (kg)" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" HorizontalOptions="Center"/>
-                            <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
-                                <Entry Text="{Binding WeightInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
-                            </Border>
-                        </VerticalStackLayout>
-
-                        <VerticalStackLayout Grid.Column="1" Spacing="10">
-                            <Label Text="Reps" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" HorizontalOptions="Center"/>
-                            <Border Style="{StaticResource FormField}" Padding="0" HeightRequest="60">
-                                <Entry Text="{Binding RepsInput}" Keyboard="Numeric" FontSize="20" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
-                            </Border>
-                        </VerticalStackLayout>
-                    </Grid>
-
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                                                <Label Grid.Row="0"
-                               Text="{Binding LastSessionResultsText}"
-                               FontSize="14"
-                               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                               HorizontalOptions="Center"
-                               HorizontalTextAlignment="Center"
-                               Margin="0,0,0,15" />
-
-                        <controls:TappableButton Grid.Row="1"
-                                                 Style="{StaticResource PrimaryButton}"
-                                                 Text="Save Set"
-                                                 Command="{Binding SaveSetCommand}"
-                                                 IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}" />
-
-                        <Grid ColumnDefinitions="*,*" IsVisible="{Binding HasSavedSets}" Grid.Row="1">
-                            <controls:TappableButton Grid.Column="0"
-                                                     Text="Undo Last"
+                        <Grid ColumnDefinitions="Auto, *">
+                            <controls:TappableButton Style="{StaticResource SecondaryButton}"
+                                                     Text="Undo"
+                                                     WidthRequest="120"
+                                                     Margin="0,0,10,0"
                                                      Command="{Binding UndoLastSetCommand}"
-                                                     TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                                                     StrokeColor="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}"
-                                                     StrokeThickness="1.5"
-                                                     HeightRequest="60"
-                                                     Margin="0,0,10,0" />
-                            
+                                                     IsVisible="{Binding HasSavedSets}" />
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{StaticResource PrimaryButton}"
-                                                     Text="Save Set"
+                                                     Text="Save set"
                                                      Command="{Binding SaveSetCommand}"
-                                                     Margin="10,0,0,0" />
+                                                     IsEnabled="{Binding CanSaveSet}" />
                         </Grid>
-                    </Grid>
-                </VerticalStackLayout>
-                
-                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsExerciseComplete}">
-                    <Label Text="All Sets Completed! 🎉" 
-                           FontSize="20" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                           HorizontalOptions="Center" />
-                    <Label Text="Ready for the next exercise." 
-                           FontSize="14" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" 
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-                
-                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                        Stroke="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" StrokeThickness="2"
-                        Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill"
-                        IsVisible="{Binding IsResting}" Shadow="{StaticResource CardShadow}">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="16" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Label Text="REST" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" HorizontalOptions="Center" />
-                        <Label Text="{Binding RestTimerText}" FontSize="48" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" HorizontalOptions="Center" />
-                        <controls:TappableButton Text="Skip Rest"
-                                                 Command="{Binding SkipRestCommand}"
-                                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                                 StrokeColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                                                 StrokeThickness="1.5"
-                                                 HeightRequest="50"
-                                                 WidthRequest="150" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource RestPanel}" IsVisible="{Binding IsResting}">
+                    <VerticalStackLayout>
+                        <Label Style="{StaticResource OverlineLabel}"
+                               Text="Rest"
+                               TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
+                               HorizontalTextAlignment="Center" />
+                        <Grid WidthRequest="150" HeightRequest="150" Margin="0,14,0,6" HorizontalOptions="Center">
+                            <controls:RestRing Progress="{Binding RestProgress}"
+                                               Thickness="13"
+                                               ProgressColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                               TrackColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                <Label Style="{StaticResource TimerLabel}"
+                                       FontSize="40"
+                                       Text="{Binding RestTimerText}"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+                                       HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource CaptionLabel}"
+                                       Text="{Binding RestTotalText}"
+                                       TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
+                                       HorizontalTextAlignment="Center" />
+                            </VerticalStackLayout>
+                        </Grid>
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,14,0,0">
+                            <controls:TappableButton Text="+30 s"
+                                                     FontSize="15"
+                                                     HeightRequest="46"
+                                                     CornerRadius="{StaticResource ControlRadius}"
+                                                     FillColor="{AppThemeBinding Light={StaticResource OnRestPanelSubtleLight}, Dark={StaticResource OnRestPanelSubtleDark}}"
+                                                     TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+                                                     Command="{Binding ExtendRestCommand}" />
+                            <controls:TappableButton Grid.Column="1"
+                                                     Style="{StaticResource PrimaryButton}"
+                                                     Text="Skip rest"
+                                                     FontSize="15"
+                                                     HeightRequest="46"
+                                                     SurfaceShadow="{x:Null}"
+                                                     Command="{Binding SkipRestCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource SurfaceCard}">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                            <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
+                            <Binding Path="IsExerciseComplete" />
+                        </MultiBinding>
+                    </Border.IsVisible>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Style="{StaticResource TitleLabel}"
+                               Text="All sets done"
+                               HorizontalTextAlignment="Center" />
+                        <Label Style="{StaticResource CaptionLabel}"
+                               Text="Move on to the next exercise or finish the workout."
+                               HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
 
-                                    <Grid Grid.Row="4" Margin="0,20,0,0">
+            <ScrollView Grid.Row="2" IsVisible="{Binding HasSavedSets}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Style="{StaticResource OverlineLabel}" Text="This session" />
+                    <Border Style="{StaticResource SurfaceCard}" Padding="14,2">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout>
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding CurrentSets}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:WorkoutSet">
+                                        <VerticalStackLayout BackgroundColor="Transparent">
+                                            <VerticalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=ShowSetActionsCommand}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </VerticalStackLayout.GestureRecognizers>
+                                            <Grid ColumnDefinitions="*, Auto" Padding="0,12">
+                                                <Label Style="{StaticResource CaptionLabel}"
+                                                       FontSize="13"
+                                                       Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
+                                                <Label Grid.Column="1" FontSize="14">
+                                                    <Label.Text>
+                                                        <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
+                                                            <Binding Path="Weight" />
+                                                            <Binding Path="Reps" />
+                                                        </MultiBinding>
+                                                    </Label.Text>
+                                                </Label>
+                                            </Grid>
+                                            <BoxView Style="{StaticResource Divider}" />
+                                        </VerticalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                            <Grid ColumnDefinitions="*, Auto" Padding="0,12">
+                                <Label Style="{StaticResource CaptionLabel}" FontSize="13" Text="Volume" />
+                                <Label Grid.Column="1" FontSize="14" Text="{Binding CurrentVolumeText}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </ScrollView>
 
-                                <CollectionView ItemsSource="{Binding CurrentSets}"
-                                IsVisible="{Binding HasSavedSets}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:WorkoutSet">
-                            <SwipeView>
-                                                                <SwipeView.RightItems>
-                                    <SwipeItems Mode="Reveal">
-                                        <SwipeItemView Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=DeleteSetCommand}"
-                                                       CommandParameter="{Binding .}">
-                                            <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                        </SwipeItemView>
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
+            <VerticalStackLayout Grid.Row="2"
+                                 Spacing="10"
+                                 Padding="20,0"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+                <VerticalStackLayout.IsVisible>
+                    <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                        <Binding Path="HasSavedSets" Converter="{StaticResource InvertedBoolConverter}" />
+                        <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
+                    </MultiBinding>
+                </VerticalStackLayout.IsVisible>
+                <Border Style="{StaticResource SurfaceCard}"
+                        WidthRequest="64"
+                        HeightRequest="64"
+                        Padding="0"
+                        Shadow="{x:Null}"
+                        StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                        HorizontalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="22" />
+                    </Border.StrokeShape>
+                    <Label Style="{StaticResource TitleLabel}"
+                           Text="1"
+                           TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+                <Label Style="{StaticResource CaptionLabel}"
+                       FontSize="13"
+                       Text="No sets logged yet. Enter weight and reps, then save the set."
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
 
-                                <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=EditLoggedSetCommand}" CommandParameter="{Binding .}"/>
-                                    </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="Auto, *, Auto">
-                                        <Label Grid.Column="0"
-                                               Text="{Binding SetNumber, StringFormat='Set {0}'}"
-                                               FontSize="18"
-                                               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                                               VerticalOptions="Center"/>
-                                        <Label Grid.Column="2" FontSize="20" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" VerticalOptions="Center">
-                                            <Label.FormattedText>
-                                                <FormattedString>
-                                                    <Span Text="{Binding Weight}" />
-                                                    <Span Text="{x:Static constants:UiText.KgTimesSeparator}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
-                                                    <Span Text="{Binding Reps}" />
-                                                    <Span Text="{x:Static constants:UiText.RepsSuffix}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                    </Grid>
-                                </Border>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                                <controls:EmptyState Message="No sets saved yet"
-                                     Detail="Enter weight and reps above, then tap Save Set."
-                                     IsVisible="{Binding HasSavedSets, Converter={StaticResource InvertedBoolConverter}}" />
-
-            </Grid>
-
-        <controls:TappableButton Grid.Row="5"
-                                 Text="Finish Workout"
-                                 Command="{Binding FinishWorkoutCommand}"
-                                 FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                 StrokeColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                                 StrokeThickness="2"
-                                 HeightRequest="60"
-                                 Margin="0,10,0,0"
-                                 SurfaceShadow="{StaticResource CardShadow}" />
+            <controls:TappableButton Grid.Row="3"
+                                     Style="{StaticResource DangerOutlineButton}"
+                                     Text="Finish workout"
+                                     HeightRequest="52"
+                                     Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
-                <Grid Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" IsVisible="{Binding IsWorkoutCompleted}">
+        <Grid Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" IsVisible="{Binding IsWorkoutCompleted}">
             <ScrollView>
                 <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
                     <Label Text="Workout Complete! 🎉" 
@@ -289,6 +348,16 @@
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsSetActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding ActionSetTitle}"
+                                       Subtitle="{Binding ActionSetSubtitle}"
+                                       EditText="Edit set"
+                                       DeleteText="Delete set"
+                                       EditCommand="{Binding EditActionSetCommand}"
+                                       DeleteCommand="{Binding DeleteActionSetCommand}"
+                                       CancelCommand="{Binding CancelSetActionsCommand}" />
+        </controls:BottomSheet>
     </Grid>
 
 </controls:BackNavigationPage>

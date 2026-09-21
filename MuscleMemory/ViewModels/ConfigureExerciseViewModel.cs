@@ -37,7 +37,7 @@ public partial class ConfigureExerciseViewModel : ObservableObject
     public IReadOnlyList<RestPreset> RestPresets { get; } =
         [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom];
 
-    public ObservableCollection<RpeLevel> RpeLevels { get; } = [.. BuildRpeLevels(DomainDefaults.TargetRPE)];
+    public ObservableCollection<LevelSegment> RpeLevels { get; } = [.. BuildRpeLevels(DomainDefaults.TargetRPE)];
 
     public bool IsCustomRest => SelectedRestPreset.IsCustom;
 
@@ -81,7 +81,7 @@ public partial class ConfigureExerciseViewModel : ObservableObject
         TargetRPE = configuration.TargetRPE;
     }
 
-    private static IEnumerable<RpeLevel> BuildRpeLevels(int targetRpe) =>
+    private static IEnumerable<LevelSegment> BuildRpeLevels(int targetRpe) =>
         Enumerable.Range(DomainDefaults.MinTargetRPE, DomainDefaults.MaxTargetRPE - DomainDefaults.MinTargetRPE + 1)
-                  .Select(value => new RpeLevel(value, value <= targetRpe));
+                  .Select(value => new LevelSegment(value, value <= targetRpe));
 }

@@ -132,6 +132,25 @@
         <Setter Property="FontSize" Value="17" />
         <Setter Property="HeightRequest" Value="{StaticResource PrimaryButtonHeight}" />
         <Setter Property="SurfaceShadow" Value="{StaticResource PrimaryButtonShadow}" />
+        <Style.Triggers>
+            <Trigger TargetType="controls:TappableButton" Property="IsEnabled" Value="False">
+                <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource DisabledFillLight}, Dark={StaticResource DisabledFillDark}}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DisabledTextLight}, Dark={StaticResource DisabledTextDark}}" />
+                <Setter Property="SurfaceShadow" Value="{x:Null}" />
+                <Setter Property="DisabledOpacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="RestPanel" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource RestPanelLight}, Dark={StaticResource RestPanelDark}}" />
+        <Setter Property="Padding" Value="22" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="26" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="SecondaryButton" TargetType="controls:TappableButton">

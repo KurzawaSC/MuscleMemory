@@ -13,6 +13,9 @@ public static class DomainDefaults
     public const int MinBreakTimeInSeconds = 0;
     public const int MaxBreakTimeInSeconds = 600;
     public const int BreakTimeStepInSeconds = 15;
+    public const int RestExtensionInSeconds = 30;
+    public const double WeightStepInKg = 2.5;
+    public const int RepsStep = 1;
     public static readonly int[] BreakTimePresetsInSeconds = [60, 90, 120];
     public const int MinTargetRPE = 1;
     public const int MaxTargetRPE = 10;
