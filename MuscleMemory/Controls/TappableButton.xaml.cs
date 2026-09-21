@@ -5,8 +5,10 @@ namespace MuscleMemory.Controls;
 
 public partial class TappableButton : ContentView
 {
-    private const double PressedScale = 0.96;
-    private const uint PressFeedbackMilliseconds = 60;
+    private const double DefaultPressedScale = 0.98;
+    private const uint PressPhaseMilliseconds = 45;
+
+    private bool _isPressed;
 
     public static readonly BindableProperty TextProperty =
         BindableProperty.Create(nameof(Text), typeof(string), typeof(TappableButton), string.Empty);
@@ -18,7 +20,15 @@ public partial class TappableButton : ContentView
         BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TappableButton));
 
     public static readonly BindableProperty FillColorProperty =
-        BindableProperty.Create(nameof(FillColor), typeof(Color), typeof(TappableButton), Colors.Transparent);
+        BindableProperty.Create(nameof(FillColor), typeof(Color), typeof(TappableButton), Colors.Transparent,
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceFill)));
+
+    public static readonly BindableProperty PressedFillColorProperty =
+        BindableProperty.Create(nameof(PressedFillColor), typeof(Color), typeof(TappableButton),
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceFill)));
+
+    public static readonly BindableProperty PressedScaleProperty =
+        BindableProperty.Create(nameof(PressedScale), typeof(double), typeof(TappableButton), DefaultPressedScale);
 
     public static readonly BindableProperty TextColorProperty =
         BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(TappableButton), Colors.Transparent);
@@ -71,6 +81,18 @@ public partial class TappableButton : ContentView
         set => SetValue(FillColorProperty, value);
     }
 
+    public Color? PressedFillColor
+    {
+        get => (Color?)GetValue(PressedFillColorProperty);
+        set => SetValue(PressedFillColorProperty, value);
+    }
+
+    public double PressedScale
+    {
+        get => (double)GetValue(PressedScaleProperty);
+        set => SetValue(PressedScaleProperty, value);
+    }
+
     public Color TextColor
     {
         get => (Color)GetValue(TextColorProperty);
@@ -121,6 +143,8 @@ public partial class TappableButton : ContentView
 
     public double SurfaceOpacity => IsEnabled ? 1 : DisabledOpacity;
 
+    public Color SurfaceFill => _isPressed && PressedFillColor is { } pressedFill ? pressedFill : FillColor;
+
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         base.OnPropertyChanged(propertyName);
@@ -138,13 +162,21 @@ public partial class TappableButton : ContentView
             return;
         }
 
-        await Surface.ScaleToAsync(PressedScale, PressFeedbackMilliseconds);
-        await Surface.ScaleToAsync(1, PressFeedbackMilliseconds);
+        SetPressed(true);
+        await Surface.ScaleToAsync(PressedScale, PressPhaseMilliseconds);
+        await Surface.ScaleToAsync(1, PressPhaseMilliseconds);
+        SetPressed(false);
 
         if (CanRunCommand())
         {
             Command?.Execute(CommandParameter);
         }
+    }
+
+    private void SetPressed(bool isPressed)
+    {
+        _isPressed = isPressed;
+        OnPropertyChanged(nameof(SurfaceFill));
     }
 
     private bool CanRunCommand() => IsEnabled && Command?.CanExecute(CommandParameter) == true;

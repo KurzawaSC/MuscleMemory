@@ -148,6 +148,7 @@
 
     <Style x:Key="PrimaryButton" TargetType="controls:TappableButton">
         <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="PressedFillColor" Value="{AppThemeBinding Light={StaticResource PrimaryPressedLight}, Dark={StaticResource PrimaryPressedDark}}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
         <Setter Property="FontSize" Value="17" />
@@ -446,17 +447,6 @@
 
     <Style x:Key="NeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
-    </Style>
-
-    <Style x:Key="FilledField" TargetType="Border">
-        <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}" />
-        <Setter Property="Padding" Value="16,0" />
-        <Setter Property="StrokeShape">
-            <Setter.Value>
-                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <Style x:Key="InsetPanel" TargetType="Border">

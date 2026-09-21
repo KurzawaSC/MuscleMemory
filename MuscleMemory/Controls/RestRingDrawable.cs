@@ -18,20 +18,20 @@ internal sealed class RestRingDrawable(RestRing ring) : IDrawable
         canvas.StrokeColor = ring.TrackColor.WithAlpha(TrackAlpha);
         canvas.DrawEllipse(bounds);
 
-        if (ring.Progress <= 0)
+        if (ring.DisplayProgress <= 0)
         {
             return;
         }
 
         canvas.StrokeColor = ring.ProgressColor;
 
-        if (ring.Progress >= CompleteThreshold)
+        if (ring.DisplayProgress >= CompleteThreshold)
         {
             canvas.DrawEllipse(bounds);
             return;
         }
 
-        var endAngle = TopAngle - FullTurn * (float)ring.Progress;
+        var endAngle = TopAngle - FullTurn * (float)ring.DisplayProgress;
         canvas.DrawArc(bounds.X, bounds.Y, bounds.Width, bounds.Height, TopAngle, endAngle, clockwise: true, closed: false);
     }
 }

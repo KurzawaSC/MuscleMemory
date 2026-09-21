@@ -15,11 +15,9 @@
 
         <VerticalStackLayout Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="Name" />
-            <Border Style="{StaticResource FormField}" HeightRequest="52">
-                <Entry Text="{Binding Form.Name, Source={x:Reference Root}}"
-                       Placeholder="e.g. Incline Bench Press"
-                       VerticalOptions="Center" />
-            </Border>
+            <controls:TextField HeightRequest="52"
+                                Text="{Binding Form.Name, Source={x:Reference Root}}"
+                                Placeholder="e.g. Incline Bench Press" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">

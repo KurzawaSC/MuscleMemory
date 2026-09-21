@@ -9,7 +9,7 @@
              MinimumWidthRequest="44">
 
     <Border x:Name="Surface"
-            BackgroundColor="{Binding FillColor, Source={x:Reference Root}}"
+            BackgroundColor="{Binding SurfaceFill, Source={x:Reference Root}}"
             StrokeThickness="{Binding StrokeThickness, Source={x:Reference Root}}"
             Padding="{Binding ContentPadding, Source={x:Reference Root}}"
             Opacity="{Binding SurfaceOpacity, Source={x:Reference Root}}">
