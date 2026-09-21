@@ -133,6 +133,7 @@
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{StaticResource PrimaryButton}"
                                                      Text="Save set"
+                                                     PressedScale="0.97"
                                                      Command="{Binding SaveSetCommand}"
                                                      IsEnabled="{Binding CanSaveSet}" />
                         </Grid>
@@ -145,23 +146,25 @@
                                Text="Rest"
                                TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
                                HorizontalTextAlignment="Center" />
-                        <Grid WidthRequest="150" HeightRequest="150" Margin="0,14,0,6" HorizontalOptions="Center">
-                            <controls:RestRing Progress="{Binding RestProgress}"
-                                               Thickness="13"
-                                               ProgressColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
-                                               TrackColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                <Label Style="{StaticResource TimerLabel}"
-                                       FontSize="40"
-                                       Text="{Binding RestTimerText}"
-                                       TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
-                                       HorizontalTextAlignment="Center" />
-                                <Label Style="{StaticResource CaptionLabel}"
-                                       Text="{Binding RestTotalText}"
-                                       TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
-                                       HorizontalTextAlignment="Center" />
-                            </VerticalStackLayout>
-                        </Grid>
+                        <controls:PulseView PulseKey="{Binding RestTimerText}" IsPulsing="{Binding IsRestEnding}" Margin="0,14,0,6" HorizontalOptions="Center">
+                            <Grid WidthRequest="150" HeightRequest="150">
+                                <controls:RestRing Progress="{Binding RestProgress}"
+                                                   Thickness="13"
+                                                   ProgressColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                                   TrackColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Style="{StaticResource TimerLabel}"
+                                           FontSize="40"
+                                           Text="{Binding RestTimerText}"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+                                           HorizontalTextAlignment="Center" />
+                                    <Label Style="{StaticResource CaptionLabel}"
+                                           Text="{Binding RestTotalText}"
+                                           TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </controls:PulseView>
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,14,0,0">
                             <controls:TappableButton Text="+30 s"
                                                      FontSize="15"
@@ -199,7 +202,7 @@
                 </Border>
             </Grid>
 
-            <ScrollView Grid.Row="2" IsVisible="{Binding HasSavedSets}">
+            <ScrollView Grid.Row="2" VerticalScrollBarVisibility="Never" IsVisible="{Binding HasSavedSets}">
                 <VerticalStackLayout Spacing="8">
                     <Label Style="{StaticResource OverlineLabel}" Text="This session">
                         <Label.Triggers>
@@ -216,26 +219,28 @@
                             <VerticalStackLayout BindableLayout.ItemsSource="{Binding CurrentSets}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:WorkoutSet">
-                                        <VerticalStackLayout BackgroundColor="Transparent">
-                                            <VerticalStackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=ShowSetActionsCommand}"
-                                                                      CommandParameter="{Binding .}" />
-                                            </VerticalStackLayout.GestureRecognizers>
-                                            <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                                <Label Style="{StaticResource CaptionLabel}"
-                                                       FontSize="13"
-                                                       Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
-                                                <Label Grid.Column="1" FontSize="14">
-                                                    <Label.Text>
-                                                        <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
-                                                            <Binding Path="Weight" />
-                                                            <Binding Path="Reps" />
-                                                        </MultiBinding>
-                                                    </Label.Text>
-                                                </Label>
-                                            </Grid>
-                                            <BoxView Style="{StaticResource Divider}" />
-                                        </VerticalStackLayout>
+                                        <controls:FadeInView>
+                                            <VerticalStackLayout BackgroundColor="Transparent">
+                                                <VerticalStackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=ShowSetActionsCommand}"
+                                                                          CommandParameter="{Binding .}" />
+                                                </VerticalStackLayout.GestureRecognizers>
+                                                <Grid ColumnDefinitions="*, Auto" Padding="0,12">
+                                                    <Label Style="{StaticResource CaptionLabel}"
+                                                           FontSize="13"
+                                                           Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
+                                                    <Label Grid.Column="1" FontSize="14">
+                                                        <Label.Text>
+                                                            <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
+                                                                <Binding Path="Weight" />
+                                                                <Binding Path="Reps" />
+                                                            </MultiBinding>
+                                                        </Label.Text>
+                                                    </Label>
+                                                </Grid>
+                                                <BoxView Style="{StaticResource Divider}" />
+                                            </VerticalStackLayout>
+                                        </controls:FadeInView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>

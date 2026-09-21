@@ -18,11 +18,10 @@
                                      Command="{Binding CloseCommand, Source={x:Reference Root}}" />
         </Grid>
 
-        <Border Style="{StaticResource FilledField}">
-            <Entry Text="{Binding Picker.Filter.SearchText, Source={x:Reference Root}}"
-                   Placeholder="Search"
-                   ClearButtonVisibility="WhileEditing" />
-        </Border>
+        <controls:TextField IsFilled="True"
+                            Text="{Binding Picker.Filter.SearchText, Source={x:Reference Root}}"
+                            Placeholder="Search"
+                            ClearButtonVisibility="WhileEditing" />
 
         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
             <HorizontalStackLayout Spacing="8"

@@ -134,6 +134,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial double RestProgress { get; set; }
 
     [ObservableProperty]
+    public partial bool IsRestEnding { get; set; }
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSaveSet))]
     public partial string WeightInput { get; set; } = string.Empty;
 
@@ -453,6 +456,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
         RestTimerText = _timer.FormatCountdown(remaining);
+        IsRestEnding = remaining.TotalSeconds <= UiTiming.RestEndingPulseSeconds;
         RestProgress = _restDurationSeconds > 0
             ? Math.Clamp(remaining.TotalSeconds / _restDurationSeconds, 0, 1)
             : 0;
@@ -483,6 +487,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _breakEndTimeUtc = default;
         _restDurationSeconds = 0;
         RestProgress = 0;
+        IsRestEnding = false;
         RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 

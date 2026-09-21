@@ -18,14 +18,12 @@
     <Grid RowDefinitions="Auto, Auto, Auto, *">
         <controls:ScreenHeader Title="Exercises" Subtitle="Build your movement library" />
 
-        <Border Grid.Row="1"
-                Style="{StaticResource FormField}"
-                Margin="20,8,20,0"
-                IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
-            <Entry Text="{Binding Filter.SearchText}"
-                   Placeholder="Search exercises"
-                   ClearButtonVisibility="WhileEditing" />
-        </Border>
+        <controls:TextField Grid.Row="1"
+                            Margin="20,8,20,0"
+                            Text="{Binding Filter.SearchText}"
+                            Placeholder="Search exercises"
+                            ClearButtonVisibility="WhileEditing"
+                            IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
 
         <ScrollView Grid.Row="2"
                     Orientation="Horizontal"
