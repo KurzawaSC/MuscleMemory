@@ -12,7 +12,6 @@ public static class UiText
     public const string TitleFinishWorkout = "Finish Workout";
     public const string TitleUnsavedChanges = "Unsaved Changes";
     public const string TitleHoldOn = "Hold on!";
-    public const string TitleWarning = "Warning!";
     public const string TitleSuccess = "Success";
     public const string TitleOops = "Oops!";
 
@@ -24,7 +23,6 @@ public static class UiText
     public const string ButtonFinish = "Finish";
     public const string ButtonAdd = "Add";
     public const string ButtonSave = "Save";
-    public const string ButtonYesEraseIt = "Yes, erase it";
     public const string ButtonResume = "Resume";
     public const string ButtonAddToWorkout = "Add to workout";
 
@@ -32,7 +30,6 @@ public static class UiText
     public const string BodyInvalidWeightReps = "Please enter valid numbers for weight and reps.";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
-    public const string BodyEraseAllDataConfirmation = "Are you sure you want to delete ALL your exercises and workouts? This action cannot be undone.";
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
     public const string PromptEnterWeightKg = "Enter weight (kg):";
@@ -70,6 +67,7 @@ public static class UiText
     public const string LoggedSetFormat = "{0} kg × {1}";
     public const string VolumeFormat = "{0:N0} kg";
     public const string WeightFormat = "{0} kg";
+    public const string VersionFormat = "Version {0}";
     public const string VolumeNumberFormat = "{0:N0}";
     public const string ShortDateFormat = "MMM dd";
     public const string LongDateFormat = "MMM dd, yyyy";
