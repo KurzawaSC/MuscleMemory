@@ -145,94 +145,10 @@
         </VerticalStackLayout>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExercisePickerOpen}">
-            <VerticalStackLayout Spacing="14">
-                <Grid ColumnDefinitions="*, Auto">
-                    <Label Style="{StaticResource TitleLabel}" Text="Select exercise" VerticalOptions="Center" />
-                    <controls:TappableButton Grid.Column="1"
-                                             Style="{StaticResource NeutralTextButton}"
-                                             Text="Close"
-                                             FontSize="15"
-                                             Command="{Binding CloseExercisePickerCommand}" />
-                </Grid>
-
-                <Border Style="{StaticResource FilledField}">
-                    <Entry Text="{Binding ExercisePicker.Filter.SearchText}"
-                           Placeholder="Search"
-                           ClearButtonVisibility="WhileEditing" />
-                </Border>
-
-                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                    <HorizontalStackLayout Spacing="8"
-                                           RadioButtonGroup.GroupName="ExercisePickerFilters"
-                                           RadioButtonGroup.SelectedValue="{Binding ExercisePicker.Filter.SelectedFilter}"
-                                           BindableLayout.ItemsSource="{Binding ExercisePicker.Filter.Filters}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:MuscleGroupFilter">
-                                <RadioButton Style="{StaticResource FilterChip}"
-                                             Content="{Binding Label}"
-                                             Value="{Binding .}" />
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </HorizontalStackLayout>
-                </ScrollView>
-
-                <ScrollView MaximumHeightRequest="320">
-                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding ExercisePicker.Exercises}">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:Exercise">
-                                <Border Padding="14,12"
-                                        StrokeThickness="1"
-                                        Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
-                                    </Border.StrokeShape>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=PickExerciseCommand}"
-                                                              CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                        <VerticalStackLayout Spacing="2">
-                                            <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
-                                            <Label Style="{StaticResource CaptionLabel}">
-                                                <Label.Text>
-                                                    <MultiBinding StringFormat="{}{0} · {1}">
-                                                        <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                                        <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                                    </MultiBinding>
-                                                </Label.Text>
-                                            </Label>
-                                        </VerticalStackLayout>
-                                        <Border Grid.Column="1"
-                                                WidthRequest="28"
-                                                HeightRequest="28"
-                                                StrokeThickness="0"
-                                                VerticalOptions="Center"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="10" />
-                                            </Border.StrokeShape>
-                                            <Label Text="+"
-                                                   FontSize="17"
-                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center" />
-                                        </Border>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </VerticalStackLayout>
-                </ScrollView>
-
-                <Border Style="{StaticResource DashedOutline}">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding CreateExerciseCommand}" />
-                    </Border.GestureRecognizers>
-                    <Label Text="Not on the list? Create a new one"
-                           TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                           HorizontalOptions="Center" />
-                </Border>
-            </VerticalStackLayout>
+            <controls:ExercisePickerSheet Picker="{Binding ExercisePicker}"
+                                          PickCommand="{Binding PickExerciseCommand}"
+                                          CloseCommand="{Binding CloseExercisePickerCommand}"
+                                          CreateCommand="{Binding CreateExerciseCommand}" />
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsConfigurationOpen}">
