@@ -1,104 +1,151 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
-             xmlns:services="clr-namespace:MuscleMemory.Services"
-             xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Class="MuscleMemory.Views.WorkoutHistoryPage"
-             x:DataType="viewmodels:WorkoutHistoryViewModel"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+<controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:services="clr-namespace:MuscleMemory.Services"
+                             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             x:Class="MuscleMemory.Views.WorkoutHistoryPage"
+                             x:DataType="viewmodels:WorkoutHistoryViewModel"
+                             BackCommand="{Binding CloseSheetsCommand}">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *, Auto">
         <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat='{0} · history'}" BackCommand="{Binding GoBackCommand}" />
 
+        <ScrollView Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalScrollBarVisibility="Never"
+                    Padding="20,14,20,0"
+                    IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+            <HorizontalStackLayout Spacing="8"
+                                   RadioButtonGroup.GroupName="HistorySessions"
+                                   RadioButtonGroup.SelectedValue="{Binding SelectedSession}"
+                                   BindableLayout.ItemsSource="{Binding Sessions}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:HistorySessionItem">
+                        <RadioButton Style="{StaticResource SessionChip}"
+                                     Content="{Binding ChipText}"
+                                     Value="{Binding .}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <ScrollView Grid.Row="2" IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Spacing="12" Padding="20,14,20,14">
+                <Border Style="{StaticResource SurfaceCard}">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                            <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="{Binding SelectedSession.DateText, FallbackValue=''}" />
+                            <Label Style="{StaticResource CaptionLabel}" Text="{Binding SelectedSession.StatsText, FallbackValue=''}" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label HorizontalTextAlignment="End">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding SelectedSession.VolumeText, FallbackValue=''}"
+                                              FontSize="21"
+                                              TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                                        <Span Text=" kg"
+                                              FontSize="12"
+                                              TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Style="{StaticResource CaptionLabel}" Text="volume" HorizontalTextAlignment="End" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding SelectedSession.Session.Exercises, FallbackValue={x:Null}}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="services:WorkoutHistoryExercise">
+                            <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Style="{StaticResource TitleLabel}"
+                                               FontSize="17"
+                                               Text="{Binding ExerciseName}"
+                                               LineBreakMode="TailTruncation"
+                                               VerticalOptions="Center" />
+                                        <controls:TappableButton Grid.Column="1"
+                                                                 Style="{StaticResource SoftPrimaryButton}"
+                                                                 Text="Delete"
+                                                                 FontSize="12"
+                                                                 HeightRequest="30"
+                                                                 CornerRadius="{StaticResource PillRadius}"
+                                                                 ContentPadding="12,0"
+                                                                 VerticalOptions="Center"
+                                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=DeleteExerciseCommand}"
+                                                                 CommandParameter="{Binding .}" />
+                                    </Grid>
+                                    <Border Style="{StaticResource SetTable}">
+                                        <VerticalStackLayout>
+                                            <controls:SetTableHeader />
+                                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:WorkoutSet">
+                                                        <controls:SetTableRow Set="{Binding .}">
+                                                            <controls:SetTableRow.GestureRecognizers>
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=ShowSetActionsCommand}"
+                                                                                      CommandParameter="{Binding .}" />
+                                                            </controls:SetTableRow.GestureRecognizers>
+                                                        </controls:SetTableRow>
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+                                            </VerticalStackLayout>
+                                            <BoxView Style="{StaticResource Divider}" />
+                                            <controls:TappableButton Style="{StaticResource TextButton}"
+                                                                     Text="+ Add set"
+                                                                     FontSize="13"
+                                                                     HeightRequest="44"
+                                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=AddSetCommand}"
+                                                                     CommandParameter="{Binding .}" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <Border Style="{StaticResource DashedOutline}" Padding="15">
+                    <Label Text="This session is editable — you can add missing sets"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                           HorizontalTextAlignment="Center" />
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:TappableButton Grid.Row="3"
+                                 Style="{StaticResource PrimaryButton}"
+                                 Text="Add exercise to session"
+                                 Margin="20,0,20,14"
+                                 Command="{Binding AddExerciseCommand}"
+                                 IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
+
         <controls:EmptyState Grid.Row="1"
-                             Message="No history available for this workout yet.&#10;Complete a session to see your progress!"
+                             Grid.RowSpan="3"
+                             Message="No history yet"
+                             Detail="Finish a session of this workout to see it here."
                              IsVisible="{Binding IsEmpty}" />
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Sessions}" Margin="20">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="services:WorkoutHistorySession">
-                    <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,15">
-                        <VerticalStackLayout Spacing="10">
-                                                        <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="{Binding LocalStartTime, StringFormat='{0:MMM dd, yyyy}'}" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" FontSize="18" />
-                                <Label Grid.Column="1" Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}" TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" FontSize="16" />
-                            </Grid>
-                            <Label Text="{Binding TotalVolume, StringFormat='Total Volume: {0} kg'}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="16" />
-                            
-                                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Exercises}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="services:WorkoutHistoryExercise">
-                                        <VerticalStackLayout Margin="0,10,0,0" Spacing="5">
-                                            <Grid ColumnDefinitions="*, Auto">
-                                                <Label Grid.Column="0" Text="{Binding ExerciseName}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="16" VerticalOptions="Center" />
-                                                <controls:TappableButton Grid.Column="1"
-                                                                         Style="{StaticResource DangerOutlineButton}"
-                                                                         Text="Remove"
-                                                                         Command="{Binding BindingContext.DeleteExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                         CommandParameter="{Binding .}" />
-                                            </Grid>
-                                            <Border Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
-                                                <Border.StrokeShape>
-                                                    <RoundRectangle CornerRadius="12" />
-                                                </Border.StrokeShape>
-                                                <VerticalStackLayout>
-                                                    <controls:SetTableHeader />
-                                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
-                                                        <BindableLayout.ItemTemplate>
-                                                            <DataTemplate x:DataType="models:WorkoutSet">
-                                                                <SwipeView HeightRequest="50">
-                                                                    <SwipeView.RightItems>
-                                                                        <SwipeItems Mode="Reveal">
-                                                                            <SwipeItemView Command="{Binding BindingContext.DeleteSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}">
-                                                                                <controls:SwipeAction Style="{StaticResource DeleteSwipeAction}" />
-                                                                            </SwipeItemView>
-                                                                        </SwipeItems>
-                                                                    </SwipeView.RightItems>
-                                                                    <Border BackgroundColor="Transparent" StrokeThickness="0">
-                                                                        <Border.GestureRecognizers>
-                                                                            <TapGestureRecognizer Command="{Binding BindingContext.EditSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}" CommandParameter="{Binding .}" />
-                                                                        </Border.GestureRecognizers>
-                                                                        <Grid ColumnDefinitions="*,*,*" Padding="8" VerticalOptions="Center">
-                                                                            <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                            <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                            <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" FontSize="14" HorizontalTextAlignment="Center" />
-                                                                        </Grid>
-                                                                    </Border>
-                                                                </SwipeView>
-                                                            </DataTemplate>
-                                                        </BindableLayout.ItemTemplate>
-                                                    </VerticalStackLayout>
-                                                    
-                                                    <controls:TappableButton Text="+ Add Set"
-                                                                             TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                                                                             FontSize="12"
-                                                                             HeightRequest="30"
-                                                                             ContentPadding="10,0"
-                                                                             Margin="0,5,0,5"
-                                                                             HorizontalOptions="Center"
-                                                                             Command="{Binding BindingContext.AddSetCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                                             CommandParameter="{Binding .}" />
-                                                </VerticalStackLayout>
-                                            </Border>
-                                        </VerticalStackLayout>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
-                            
-                            <controls:TappableButton Style="{StaticResource PrimaryButton}"
-                                                     Text="Add Exercise"
-                                                     FontSize="16"
-                                                     HeightRequest="50"
-                                                     Margin="0,15,0,0"
-                                                     Command="{Binding BindingContext.AddExerciseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                                     CommandParameter="{Binding .}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </Grid>
-</ContentPage>
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExercisePickerOpen}">
+            <controls:ExercisePickerSheet Picker="{Binding ExercisePicker}"
+                                          PickCommand="{Binding PickExerciseCommand}"
+                                          CloseCommand="{Binding CloseExercisePickerCommand}" />
+        </controls:BottomSheet>
 
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding ActionSetTitle}"
+                                       Subtitle="{Binding ActionSetSubtitle}"
+                                       EditText="Edit set"
+                                       DeleteText="Delete set"
+                                       EditCommand="{Binding EditActionSetCommand}"
+                                       DeleteCommand="{Binding DeleteActionSetCommand}"
+                                       CancelCommand="{Binding CancelSetActionsCommand}" />
+        </controls:BottomSheet>
+    </Grid>
+
+</controls:BackNavigationPage>

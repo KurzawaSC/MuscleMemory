@@ -11,7 +11,7 @@
              BackCommand="{Binding NavigateBackCommand}">
 
     <Grid RowDefinitions="Auto, *">
-        <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0">
+        <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
             <controls:GlyphButton Glyph="‹"
                                   Style="{StaticResource NavigationGlyphButton}"
                                   Command="{Binding NavigateBackCommand}" />
@@ -295,70 +295,124 @@
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
-        <Grid Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" IsVisible="{Binding IsWorkoutCompleted}">
+        <Grid Grid.RowSpan="2" RowDefinitions="*, Auto" IsVisible="{Binding IsWorkoutCompleted}">
             <ScrollView>
-                <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Label Text="Workout Complete! 🎉" 
-                           FontSize="36" 
-                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" 
-                           HorizontalOptions="Center" 
-                           HorizontalTextAlignment="Center" />
-                    
-                    <Label Text="{Binding WorkoutTitle, StringFormat='You finished {0}'}" 
-                           FontSize="20" 
-                           TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" 
-                           HorizontalOptions="Center" />
+                <VerticalStackLayout Padding="20,16,20,0" Spacing="4">
+                    <Label Style="{StaticResource OverlineLabel}"
+                           Text="Workout complete"
+                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+                    <Label Style="{StaticResource DisplayLabel}" Text="{Binding WorkoutTitle}" />
+                    <Label Style="{StaticResource CaptionLabel}" FontSize="13" Text="{Binding SummaryDateText}" />
 
-                                        <Border Stroke="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}" StrokeThickness="1" Padding="20" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" Margin="0,10,0,0" Shadow="{StaticResource CardShadow}">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <VerticalStackLayout Spacing="10">
-                            <Label Text="{Binding TotalTimeText, StringFormat='⏱ Total Time: {0}'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                            <Label Text="{Binding TotalVolume, StringFormat='🏋️ Total Volume: {0} kg'}" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                        </VerticalStackLayout>
-                    </Border>
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,12,0,0">
+                        <Border Style="{StaticResource SurfaceCard}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalTimeText}" />
+                                <Label Style="{StaticResource CaptionLabel}" Text="time" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label LineBreakMode="NoWrap">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
+                                                  FontSize="24"
+                                                  TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                            <Span Text=" kg"
+                                                  FontSize="12"
+                                                  TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Style="{StaticResource CaptionLabel}" Text="volume" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource SurfaceCard}" Padding="14">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalSets}" />
+                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding TotalSetsCaption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
 
-                    <Label Text="Exercises" FontSize="22" TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" Margin="0,10,0,0" />
+                    <Label Style="{StaticResource OverlineLabel}" Text="Exercises" Margin="0,18,0,6" />
 
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding CompletedExercises}">
+                    <VerticalStackLayout Spacing="10" Margin="0,0,0,14" BindableLayout.ItemsSource="{Binding CompletedExercises}">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:CompletedExerciseSummary">
-                                <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10">
+                            <DataTemplate x:DataType="viewmodels:SummaryExerciseItem">
+                                <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
                                     <VerticalStackLayout Spacing="10">
-                                        <Label Text="{Binding ExerciseName}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                        <Border Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" StrokeThickness="1" BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="12" />
-                                            </Border.StrokeShape>
-                                            <VerticalStackLayout>
-                                                <controls:SetTableHeader />
-                                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
-                                                    <BindableLayout.ItemTemplate>
-                                                        <DataTemplate x:DataType="models:WorkoutSet">
-                                                            <Grid ColumnDefinitions="*,*,*" Padding="8" BackgroundColor="Transparent">
-                                                                <Label Grid.Column="0" Text="{Binding SetNumber}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                                <Label Grid.Column="1" Text="{Binding Weight}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                                <Label Grid.Column="2" Text="{Binding Reps}" TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" HorizontalTextAlignment="Center" />
-                                                            </Grid>
-                                                        </DataTemplate>
-                                                    </BindableLayout.ItemTemplate>
-                                                </VerticalStackLayout>
-                                            </VerticalStackLayout>
-                                        </Border>
+                                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                            <Label Style="{StaticResource TitleLabel}"
+                                                   FontSize="17"
+                                                   Text="{Binding ExerciseName}"
+                                                   LineBreakMode="TailTruncation" />
+                                            <Label Grid.Column="1"
+                                                   FontSize="12"
+                                                   Text="{Binding VolumeText}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                        <VerticalStackLayout Spacing="6" BindableLayout.ItemsSource="{Binding Sets}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="viewmodels:SummarySetBar">
+                                                    <Grid ColumnDefinitions="14, *" ColumnSpacing="10">
+                                                        <Label FontSize="11"
+                                                               Text="{Binding SetNumber}"
+                                                               TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+                                                               VerticalOptions="Center" />
+                                                        <AbsoluteLayout Grid.Column="1" HeightRequest="22">
+                                                            <BoxView AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                                                                     AbsoluteLayout.LayoutFlags="All"
+                                                                     CornerRadius="7"
+                                                                     Color="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}" />
+                                                            <BoxView AbsoluteLayout.LayoutBounds="{Binding FillBounds}"
+                                                                     AbsoluteLayout.LayoutFlags="All"
+                                                                     CornerRadius="7"
+                                                                     Color="{AppThemeBinding Light={StaticResource PrimaryLineLight}, Dark={StaticResource PrimaryLineDark}}">
+                                                                <BoxView.Triggers>
+                                                                    <DataTrigger TargetType="BoxView" Binding="{Binding IsBest}" Value="True">
+                                                                        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                                                    </DataTrigger>
+                                                                </BoxView.Triggers>
+                                                            </BoxView>
+                                                            <Label AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                                                                   AbsoluteLayout.LayoutFlags="All"
+                                                                   Padding="10,0"
+                                                                   FontSize="12"
+                                                                   Text="{Binding Text}"
+                                                                   VerticalTextAlignment="Center">
+                                                                <Label.Triggers>
+                                                                    <DataTrigger TargetType="Label" Binding="{Binding IsBest}" Value="True">
+                                                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
+                                                                    </DataTrigger>
+                                                                </Label.Triggers>
+                                                            </Label>
+                                                        </AbsoluteLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
-                    
-                    <controls:TappableButton Style="{StaticResource PrimaryButton}"
-                                             Text="Finish &amp; Save Workout"
-                                             Command="{Binding ExitWorkoutCommand}"
-                                             WidthRequest="250"
-                                             Margin="0,20,0,40" />
                 </VerticalStackLayout>
             </ScrollView>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*, 1.4*" ColumnSpacing="10" Padding="20,14,20,16">
+                <controls:TappableButton Style="{StaticResource SecondaryButton}"
+                                         Text="History"
+                                         HeightRequest="52"
+                                         Command="{Binding ViewCompletedHistoryCommand}" />
+                <controls:TappableButton Grid.Column="1"
+                                         Style="{StaticResource PrimaryButton}"
+                                         Text="Done"
+                                         HeightRequest="52"
+                                         Command="{Binding ExitWorkoutCommand}" />
+            </Grid>
         </Grid>
 
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsSetActionSheetOpen}">

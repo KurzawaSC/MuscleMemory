@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             x:Class="MuscleMemory.Controls.SetTableRow"
+             x:Name="Root"
+             x:DataType="controls:SetTableRow">
+
+    <VerticalStackLayout BackgroundColor="Transparent">
+        <BoxView Style="{StaticResource Divider}" />
+        <Grid Style="{StaticResource SetTableRow}" Padding="12,10">
+            <Label FontSize="13"
+                   Text="{Binding Set.SetNumber, Source={x:Reference Root}, FallbackValue=''}"
+                   TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
+            <Label Grid.Column="1"
+                   FontSize="13"
+                   Text="{Binding Set.Weight, Source={x:Reference Root}, StringFormat={x:Static constants:UiText.WeightFormat}, FallbackValue=''}"
+                   HorizontalTextAlignment="Center" />
+            <Label Grid.Column="2"
+                   FontSize="13"
+                   Text="{Binding Set.Reps, Source={x:Reference Root}, FallbackValue=''}"
+                   HorizontalTextAlignment="End" />
+        </Grid>
+    </VerticalStackLayout>
+</ContentView>
