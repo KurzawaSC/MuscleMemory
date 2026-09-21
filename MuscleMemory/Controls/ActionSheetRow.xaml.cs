@@ -10,6 +10,9 @@ public partial class ActionSheetRow : ContentView
     public static readonly BindableProperty TextColorProperty =
         BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(ActionSheetRow), Colors.Transparent);
 
+    public static readonly BindableProperty ValueProperty =
+        BindableProperty.Create(nameof(Value), typeof(string), typeof(ActionSheetRow), string.Empty);
+
     public static readonly BindableProperty ShowsChevronProperty =
         BindableProperty.Create(nameof(ShowsChevron), typeof(bool), typeof(ActionSheetRow), true);
 
@@ -28,6 +31,12 @@ public partial class ActionSheetRow : ContentView
     {
         get => (Color)GetValue(TextColorProperty);
         set => SetValue(TextColorProperty, value);
+    }
+
+    public string Value
+    {
+        get => (string)GetValue(ValueProperty);
+        set => SetValue(ValueProperty, value);
     }
 
     public bool ShowsChevron

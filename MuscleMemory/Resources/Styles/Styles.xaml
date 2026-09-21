@@ -315,6 +315,51 @@
         <Setter Property="ControlTemplate" Value="{StaticResource ChoiceChipTemplate}" />
     </Style>
 
+    <ControlTemplate x:Key="ThemeCardTemplate">
+        <Border x:Name="CardSurface"
+                x:DataType="RadioButton"
+                Padding="12"
+                StrokeThickness="2"
+                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="18" />
+            </Border.StrokeShape>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CheckedStates">
+                        <VisualState x:Name="Checked">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Unchecked" />
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter />
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="ThemeCard" TargetType="RadioButton">
+        <Setter Property="ControlTemplate" Value="{StaticResource ThemeCardTemplate}" />
+    </Style>
+
+    <Style x:Key="ThemePreview" TargetType="Border">
+        <Setter Property="HeightRequest" Value="56" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{StaticResource LineLight}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SettingsGroup" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="Padding" Value="12,0" />
+    </Style>
+
     <Style x:Key="SessionChip" TargetType="RadioButton">
         <Setter Property="ControlTemplate" Value="{StaticResource SessionChipTemplate}" />
     </Style>
@@ -391,11 +436,6 @@
 
     <Style x:Key="NeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
-    </Style>
-
-    <Style x:Key="SettingsRow" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
-        <Setter Property="Padding" Value="16,0" />
-        <Setter Property="HeightRequest" Value="60" />
     </Style>
 
     <Style x:Key="FilledField" TargetType="Border">

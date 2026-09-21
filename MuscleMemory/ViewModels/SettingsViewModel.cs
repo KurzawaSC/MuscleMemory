@@ -14,9 +14,19 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
 
-    public List<ThemePreference> ThemeOptions { get; } = [.. Enum.GetValues<ThemePreference>()];
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsThemeSheetOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsEraseSheetOpen { get; set; }
+
+    public string VersionText { get; } = string.Format(UiText.VersionFormat, AppInfo.Current.VersionString);
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
 
     public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, ActiveWorkoutViewModel activeWorkout)
     {
@@ -32,20 +42,33 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void OpenThemeSheet()
+    {
+        IsThemeSheetOpen = true;
+    }
+
+    [RelayCommand]
+    private void OpenEraseSheet()
+    {
+        IsEraseSheetOpen = true;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
+    private void CloseSheets()
+    {
+        IsThemeSheetOpen = false;
+        IsEraseSheetOpen = false;
+    }
+
+    [RelayCommand]
     private async Task EraseDataAsync()
     {
-        bool isConfirmed = await Shell.Current.DisplayAlertAsync(
-            UiText.TitleWarning,
-            UiText.BodyEraseAllDataConfirmation,
-            UiText.ButtonYesEraseIt,
-            UiText.ButtonCancel);
+        IsEraseSheetOpen = false;
+        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
 
-        if (isConfirmed)
-        {
-            await _maintenanceService.ClearAllDataAsync();
-            ActiveWorkout.Reset();
-            await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
-        }
+        await _maintenanceService.ClearAllDataAsync();
+        ActiveWorkout.Reset();
+        await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
     }
 
     [RelayCommand]

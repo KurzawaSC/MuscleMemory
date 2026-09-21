@@ -6,7 +6,8 @@
              x:Name="Root"
              x:DataType="controls:ActionSheetRow">
 
-    <Grid ColumnDefinitions="*, Auto"
+    <Grid ColumnDefinitions="*, Auto, Auto"
+          ColumnSpacing="6"
           Padding="4,0"
           MinimumHeightRequest="52"
           BackgroundColor="Transparent">
@@ -17,6 +18,11 @@
                TextColor="{Binding TextColor, Source={x:Reference Root}}"
                VerticalOptions="Center" />
         <Label Grid.Column="1"
+               Text="{Binding Value, Source={x:Reference Root}}"
+               FontSize="13"
+               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+               VerticalOptions="Center" />
+        <Label Grid.Column="2"
                Text="›"
                FontSize="17"
                IsVisible="{Binding ShowsChevron, Source={x:Reference Root}}"
