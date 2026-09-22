@@ -10,6 +10,7 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IDatabaseMaintenanceService _maintenanceService;
     private readonly IThemeService _themeService;
+    private readonly IDialogService _dialogs;
 
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
@@ -28,10 +29,11 @@ public partial class SettingsViewModel : ObservableObject
 
     private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
 
-    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, ActiveWorkoutViewModel activeWorkout)
+    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, IDialogService dialogs, ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
         _themeService = themeService;
+        _dialogs = dialogs;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
     }
@@ -68,7 +70,7 @@ public partial class SettingsViewModel : ObservableObject
 
         await _maintenanceService.ClearAllDataAsync();
         ActiveWorkout.Reset();
-        await Shell.Current.DisplayAlertAsync(UiText.TitleSuccess, UiText.BodyDataErased, UiText.ButtonOk);
+        await _dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
     }
 
     [RelayCommand]
@@ -80,7 +82,7 @@ public partial class SettingsViewModel : ObservableObject
 
             if (!File.Exists(dbPath))
             {
-                await Shell.Current.DisplayAlertAsync(UiText.TitleOops, UiText.BodyNoDataToExport, UiText.ButtonOk);
+                await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
                 return;
             }
             await Share.Default.RequestAsync(new ShareFileRequest
@@ -91,7 +93,7 @@ public partial class SettingsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message), UiText.ButtonOk);
+            await _dialogs.ShowMessageAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message));
         }
     }
 }

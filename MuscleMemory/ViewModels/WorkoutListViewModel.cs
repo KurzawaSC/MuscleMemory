@@ -13,10 +13,12 @@ namespace MuscleMemory.ViewModels;
 public partial class WorkoutListViewModel(
     IWorkoutRepository workoutRepository,
     ActiveWorkoutViewModel activeWorkout,
-    IHapticService hapticService) : ObservableObject
+    IHapticService hapticService,
+    IDialogService dialogs) : ObservableObject
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
     private readonly IHapticService _hapticService = hapticService;
+    private readonly IDialogService _dialogs = dialogs;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -75,7 +77,7 @@ public partial class WorkoutListViewModel(
 
     private async Task OfferToResumeActiveWorkoutAsync()
     {
-        bool resume = await Shell.Current.DisplayAlertAsync(
+        bool resume = await _dialogs.ConfirmAsync(
             UiText.TitleHoldOn,
             string.Format(UiText.WorkoutAlreadyActiveFormat, ActiveWorkout.WorkoutTitle),
             UiText.ButtonResume,
@@ -153,7 +155,7 @@ public partial class WorkoutListViewModel(
         IsActionSheetOpen = false;
         await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
 
-        bool answer = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteWorkout, string.Format(UiText.DeleteConfirmationFormat, item.Workout.Name), UiText.ButtonYes, UiText.ButtonNo);
+        bool answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _workoutRepository.DeleteAsync(item.Workout.Id);

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+             x:Class="MuscleMemory.Controls.ConfirmDialog"
+             x:DataType="viewmodels:ConfirmDialogViewModel">
+
+    <Grid>
+        <BoxView x:Name="Scrim"
+                 Opacity="0"
+                 Color="{AppThemeBinding Light={StaticResource OverlayLight}, Dark={StaticResource OverlayDark}}">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CancelCommand}" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <Border x:Name="Card"
+                Style="{StaticResource DialogCard}"
+                Opacity="0"
+                Scale="0.94">
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource TitleLabel}" FontSize="20" Text="{Binding Title}" />
+                <Label Text="{Binding Message}"
+                       TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,12,0,0">
+                    <controls:TappableButton Style="{StaticResource SecondaryButton}"
+                                             Text="{Binding CancelText}"
+                                             HeightRequest="{StaticResource TouchTarget}"
+                                             IsVisible="{Binding HasCancel}"
+                                             Command="{Binding CancelCommand}" />
+                    <controls:TappableButton Grid.Column="1"
+                                             Style="{StaticResource PrimaryButton}"
+                                             Text="{Binding ConfirmText}"
+                                             HeightRequest="{StaticResource TouchTarget}"
+                                             Shadow="{x:Null}"
+                                             Command="{Binding ConfirmCommand}">
+                        <controls:TappableButton.Triggers>
+                            <DataTrigger TargetType="controls:TappableButton" Binding="{Binding HasCancel}" Value="False">
+                                <Setter Property="Grid.Column" Value="0" />
+                                <Setter Property="Grid.ColumnSpan" Value="2" />
+                            </DataTrigger>
+                        </controls:TappableButton.Triggers>
+                    </controls:TappableButton>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>
