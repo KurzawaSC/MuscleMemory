@@ -180,9 +180,30 @@
         <Setter Property="ColumnDefinitions" Value="40, *, 60" />
     </Style>
 
+    <Style x:Key="DialogCard" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Margin" Value="24" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Shadow" Value="{StaticResource SheetShadow}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource DialogRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="RestPanel" TargetType="Border">
         <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource RestPanelLight}, Dark={StaticResource RestPanelDark}}" />
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Offset="0" Color="{AppThemeBinding Light={StaticResource RestPanelStartLight}, Dark={StaticResource RestPanelStartDark}}" />
+                    <GradientStop Offset="1" Color="{AppThemeBinding Light={StaticResource RestPanelEndLight}, Dark={StaticResource RestPanelEndDark}}" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Padding" Value="22" />
         <Setter Property="Shadow" Value="{StaticResource RestPanelShadow}" />
         <Setter Property="StrokeShape">

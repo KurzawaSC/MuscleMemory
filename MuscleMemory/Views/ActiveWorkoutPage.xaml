@@ -113,14 +113,14 @@
 
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                             <controls:InputStepper Title="Weight (kg)"
-                                                   Text="{Binding WeightInput}"
-                                                   DecrementCommand="{Binding DecreaseWeightCommand}"
-                                                   IncrementCommand="{Binding IncreaseWeightCommand}" />
+                                                   Text="{Binding SetInput.WeightInput}"
+                                                   DecrementCommand="{Binding SetInput.DecreaseWeightCommand}"
+                                                   IncrementCommand="{Binding SetInput.IncreaseWeightCommand}" />
                             <controls:InputStepper Grid.Column="1"
                                                    Title="Reps"
-                                                   Text="{Binding RepsInput}"
-                                                   DecrementCommand="{Binding DecreaseRepsCommand}"
-                                                   IncrementCommand="{Binding IncreaseRepsCommand}" />
+                                                   Text="{Binding SetInput.RepsInput}"
+                                                   DecrementCommand="{Binding SetInput.DecreaseRepsCommand}"
+                                                   IncrementCommand="{Binding SetInput.IncreaseRepsCommand}" />
                         </Grid>
 
                         <Grid ColumnDefinitions="Auto, *">
@@ -135,7 +135,7 @@
                                                      Text="Save set"
                                                      PressedScale="0.97"
                                                      Command="{Binding SaveSetCommand}"
-                                                     IsEnabled="{Binding CanSaveSet}" />
+                                                     IsEnabled="{Binding SetInput.IsValid}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -150,7 +150,7 @@
                             <Grid WidthRequest="150" HeightRequest="150">
                                 <controls:RestRing Progress="{Binding RestProgress}"
                                                    Thickness="13"
-                                                   ProgressColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                                   ProgressColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                                                    TrackColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
                                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                                     <Label Style="{StaticResource TimerLabel}"
@@ -174,11 +174,12 @@
                                                      TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                                                      Command="{Binding ExtendRestCommand}" />
                             <controls:TappableButton Grid.Column="1"
-                                                     Style="{StaticResource PrimaryButton}"
                                                      Text="Skip rest"
                                                      FontSize="15"
                                                      HeightRequest="46"
-                                                     Shadow="{x:Null}"
+                                                     CornerRadius="{StaticResource ControlRadius}"
+                                                     FillColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+                                                     TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                                      Command="{Binding SkipRestCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -428,6 +429,14 @@
                                        EditCommand="{Binding EditActionSetCommand}"
                                        DeleteCommand="{Binding DeleteActionSetCommand}"
                                        CancelCommand="{Binding CancelSetActionsCommand}" />
+        </controls:BottomSheet>
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsSetEditorOpen}">
+            <controls:SetEditorSheet Title="{x:Static constants:UiText.TitleEditSet}"
+                                     ConfirmText="{x:Static constants:UiText.ButtonSave}"
+                                     Editor="{Binding SetEditor}"
+                                     ConfirmCommand="{Binding SaveEditedSetCommand}"
+                                     CancelCommand="{Binding CloseSetEditorCommand}" />
         </controls:BottomSheet>
     </Grid>
 

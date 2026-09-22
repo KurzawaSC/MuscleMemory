@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             x:Class="MuscleMemory.Controls.SetEditorSheet"
+             x:Name="Root"
+             x:DataType="controls:SetEditorSheet">
+
+    <VerticalStackLayout Spacing="16">
+        <Label Style="{StaticResource TitleLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
+        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+            <controls:InputStepper Title="Weight (kg)"
+                                   Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
+                                   IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
+            <controls:InputStepper Grid.Column="1"
+                                   Title="Reps"
+                                   Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   DecrementCommand="{Binding Editor.DecreaseRepsCommand, Source={x:Reference Root}}"
+                                   IncrementCommand="{Binding Editor.IncreaseRepsCommand, Source={x:Reference Root}}" />
+        </Grid>
+        <controls:SheetActionBar ConfirmText="{Binding ConfirmText, Source={x:Reference Root}}"
+                                 IsConfirmEnabled="{Binding Editor.IsValid, Source={x:Reference Root}, FallbackValue=False}"
+                                 ConfirmCommand="{Binding ConfirmCommand, Source={x:Reference Root}}"
+                                 CancelCommand="{Binding CancelCommand, Source={x:Reference Root}}" />
+    </VerticalStackLayout>
+</ContentView>
