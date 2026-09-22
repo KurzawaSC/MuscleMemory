@@ -2,7 +2,7 @@ namespace MuscleMemory.Controls;
 
 internal sealed class RestRingDrawable(RestRing ring) : IDrawable
 {
-    private const float TrackAlpha = 0.14f;
+    private const float TrackAlpha = 0.25f;
     private const float TopAngle = 90;
     private const float FullTurn = 360;
     private const double CompleteThreshold = 0.999;

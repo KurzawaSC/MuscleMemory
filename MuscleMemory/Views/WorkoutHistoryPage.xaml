@@ -146,6 +146,14 @@
                                        DeleteCommand="{Binding DeleteActionSetCommand}"
                                        CancelCommand="{Binding CancelSetActionsCommand}" />
         </controls:BottomSheet>
+
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetEditorOpen}">
+            <controls:SetEditorSheet Title="{Binding SetEditorTitle}"
+                                     ConfirmText="{Binding SetEditorConfirmText}"
+                                     Editor="{Binding SetEditor}"
+                                     ConfirmCommand="{Binding SaveSetEditorCommand}"
+                                     CancelCommand="{Binding CloseSetEditorCommand}" />
+        </controls:BottomSheet>
     </Grid>
 
 </controls:BackNavigationPage>

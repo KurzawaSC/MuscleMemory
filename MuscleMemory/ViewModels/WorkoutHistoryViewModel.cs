@@ -13,16 +13,18 @@ public partial class WorkoutHistoryViewModel(
     IWorkoutHistoryQueryService historyQueryService,
     ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
-    ISetEditService setEditService,
+    IDialogService dialogs,
     IWorkoutTimerService timer,
     SelectExerciseViewModel exercisePicker) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
     private readonly ISessionExerciseRepository _sessionExerciseRepository = sessionExerciseRepository;
     private readonly IWorkoutSetRepository _setRepository = setRepository;
-    private readonly ISetEditService _setEditService = setEditService;
+    private readonly IDialogService _dialogs = dialogs;
     private readonly IWorkoutTimerService _timer = timer;
     private int _workoutId;
+    private WorkoutSet? _setBeingEdited;
+    private WorkoutHistoryExercise? _exerciseReceivingSet;
 
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
@@ -46,6 +48,18 @@ public partial class WorkoutHistoryViewModel(
     public partial bool IsSetActionSheetOpen { get; set; }
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsSetEditorOpen { get; set; }
+
+    [ObservableProperty]
+    public partial string SetEditorTitle { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string SetEditorConfirmText { get; set; } = string.Empty;
+
+    public SetInputViewModel SetEditor { get; } = new();
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ActionSetTitle))]
     [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
     public partial WorkoutSet? ActionSet { get; set; }
@@ -54,7 +68,7 @@ public partial class WorkoutHistoryViewModel(
 
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
-    private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen;
+    private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsSetEditorOpen;
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -91,6 +105,7 @@ public partial class WorkoutHistoryViewModel(
     {
         IsExercisePickerOpen = false;
         CancelSetActions();
+        CloseSetEditor();
     }
 
     [RelayCommand]
@@ -115,14 +130,9 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
-        if (values is null) return;
-
-        set.Weight = values.Weight;
-        set.Reps = values.Reps;
-
-        await _setRepository.UpdateAsync(set);
-        await LoadHistoryAsync();
+        _setBeingEdited = set;
+        SetEditor.Fill(set.Weight, set.Reps);
+        OpenSetEditor(UiText.TitleEditSet, UiText.ButtonSave);
     }
 
     [RelayCommand]
@@ -133,7 +143,7 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        if (!await _setEditService.ConfirmDeleteAsync()) return;
+        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
 
         await _setRepository.DeleteAsync(set.Id);
         await LoadHistoryAsync();
@@ -148,21 +158,66 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task AddSetAsync(WorkoutHistoryExercise loggedExercise)
+    private void AddSet(WorkoutHistoryExercise loggedExercise)
     {
         if (loggedExercise == null) return;
 
-        var lastSet = loggedExercise.Sets.LastOrDefault();
+        _exerciseReceivingSet = loggedExercise;
 
-        var values = await _setEditService.PromptForSetAsync(UiText.TitleAddSet, lastSet?.Weight ?? 0, lastSet?.Reps ?? 0);
-        if (values is null) return;
-
-        await _setRepository.AddAsync(new WorkoutSet
+        if (loggedExercise.Sets.LastOrDefault() is { } lastSet)
         {
-            SessionExerciseId = loggedExercise.SessionExerciseId,
-            Weight = values.Weight,
-            Reps = values.Reps
-        });
+            SetEditor.Fill(lastSet.Weight, lastSet.Reps);
+        }
+        else
+        {
+            SetEditor.Clear();
+        }
+
+        OpenSetEditor(UiText.TitleAddSet, UiText.ButtonAdd);
+    }
+
+    private void OpenSetEditor(string title, string confirmText)
+    {
+        SetEditorTitle = title;
+        SetEditorConfirmText = confirmText;
+        IsSetEditorOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseSetEditor()
+    {
+        IsSetEditorOpen = false;
+        _setBeingEdited = null;
+        _exerciseReceivingSet = null;
+    }
+
+    [RelayCommand]
+    private async Task SaveSetEditorAsync()
+    {
+        if (!SetEditor.TryRead(out var values))
+        {
+            return;
+        }
+
+        var editedSet = _setBeingEdited;
+        var receivingExercise = _exerciseReceivingSet;
+        CloseSetEditor();
+
+        if (editedSet is not null)
+        {
+            editedSet.Weight = values.Weight;
+            editedSet.Reps = values.Reps;
+            await _setRepository.UpdateAsync(editedSet);
+        }
+        else if (receivingExercise is not null)
+        {
+            await _setRepository.AddAsync(new WorkoutSet
+            {
+                SessionExerciseId = receivingExercise.SessionExerciseId,
+                Weight = values.Weight,
+                Reps = values.Reps
+            });
+        }
 
         await LoadHistoryAsync();
     }
@@ -171,7 +226,7 @@ public partial class WorkoutHistoryViewModel(
     private async Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise)
     {
         if (loggedExercise == null) return;
-        bool confirm = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonYes, UiText.ButtonNo);
+        bool confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
         if (!confirm) return;
 
         await _setRepository.DeleteForSessionExerciseAsync(loggedExercise.SessionExerciseId);

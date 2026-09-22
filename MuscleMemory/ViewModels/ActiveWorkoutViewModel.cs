@@ -20,7 +20,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IActiveWorkoutStateRepository _activeStateRepository;
     private readonly IWorkoutTimerService _timer;
     private readonly IAudioCueService _audioCues;
-    private readonly ISetEditService _setEditService;
+    private readonly IDialogService _dialogs;
     private readonly IWorkoutSummaryService _summaryService;
     private readonly INavigationStackService _navigationStack;
     private readonly IHapticService _haptics;
@@ -31,6 +31,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private int _restDurationSeconds;
     private DateTime _workoutStartTimeUtc;
     private DateTime _breakEndTimeUtc;
+    private WorkoutSet? _setBeingEdited;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
@@ -136,15 +137,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial bool IsRestEnding { get; set; }
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanSaveSet))]
-    public partial string WeightInput { get; set; } = string.Empty;
+    public SetInputViewModel SetInput { get; } = new();
+
+    public SetInputViewModel SetEditor { get; } = new();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanSaveSet))]
-    public partial string RepsInput { get; set; } = string.Empty;
-
-    public bool CanSaveSet => TryReadWeight(out _) && TryReadReps(out _);
+    public partial bool IsSetEditorOpen { get; set; }
 
     public string CurrentVolumeText => string.Format(UiText.VolumeFormat, CurrentSets.Sum(set => set.Weight * set.Reps));
 
@@ -168,7 +166,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IActiveWorkoutStateRepository activeStateRepository,
         IWorkoutTimerService timer,
         IAudioCueService audioCues,
-        ISetEditService setEditService,
+        IDialogService dialogs,
         IWorkoutSummaryService summaryService,
         INavigationStackService navigationStack,
         IHapticService haptics)
@@ -180,7 +178,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _activeStateRepository = activeStateRepository;
         _timer = timer;
         _audioCues = audioCues;
-        _setEditService = setEditService;
+        _dialogs = dialogs;
         _summaryService = summaryService;
         _navigationStack = navigationStack;
         _haptics = haptics;
@@ -343,8 +341,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private void PrefillInputs(WorkoutSet? source)
     {
-        WeightInput = source is null ? string.Empty : FormatWeight(source.Weight);
-        RepsInput = source?.Reps.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+        if (source is null)
+        {
+            SetInput.Clear();
+            return;
+        }
+
+        SetInput.Fill(source.Weight, source.Reps);
     }
 
     private async Task LoadSetsForCurrentExerciseAsync()
@@ -374,36 +377,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private void IncreaseWeight() =>
-        WeightInput = FormatWeight(ReadWeightOrZero() + DomainDefaults.WeightStepInKg);
-
-    [RelayCommand]
-    private void DecreaseWeight() =>
-        WeightInput = FormatWeight(Math.Max(0, ReadWeightOrZero() - DomainDefaults.WeightStepInKg));
-
-    [RelayCommand]
-    private void IncreaseReps() =>
-        RepsInput = (ReadRepsOrZero() + DomainDefaults.RepsStep).ToString(CultureInfo.InvariantCulture);
-
-    [RelayCommand]
-    private void DecreaseReps() =>
-        RepsInput = Math.Max(0, ReadRepsOrZero() - DomainDefaults.RepsStep).ToString(CultureInfo.InvariantCulture);
-
-    private double ReadWeightOrZero() => TryReadWeight(out double weight) ? weight : 0;
-
-    private int ReadRepsOrZero() => TryReadReps(out int reps) ? reps : 0;
-
-    private bool TryReadWeight(out double weight) =>
-        double.TryParse(WeightInput, NumberStyles.Any, CultureInfo.InvariantCulture, out weight);
-
-    private bool TryReadReps(out int reps) => int.TryParse(RepsInput, out reps);
-
-    private static string FormatWeight(double weight) => weight.ToString(CultureInfo.InvariantCulture);
-
-    [RelayCommand]
     private async Task SaveSetAsync()
     {
-        if (!TryReadWeight(out double weight) || !TryReadReps(out int reps))
+        if (!SetInput.TryRead(out var values))
         {
             return;
         }
@@ -411,8 +387,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var newSet = new WorkoutSet
         {
             SessionExerciseId = CurrentExercise.Id,
-            Weight = weight,
-            Reps = reps
+            Weight = values.Weight,
+            Reps = values.Reps
         };
 
         await _setRepository.AddAsync(newSet);
@@ -534,19 +510,32 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        var values = await _setEditService.PromptForSetAsync(UiText.TitleEditSet, set.Weight, set.Reps);
-        if (values is null) return;
+        _setBeingEdited = set;
+        SetEditor.Fill(set.Weight, set.Reps);
+        IsSetEditorOpen = true;
+    }
 
+    [RelayCommand]
+    private async Task SaveEditedSetAsync()
+    {
+        if (_setBeingEdited is not { } set || !SetEditor.TryRead(out var values))
+        {
+            return;
+        }
+
+        CloseSetEditor();
         set.Weight = values.Weight;
         set.Reps = values.Reps;
 
         await _setRepository.UpdateAsync(set);
+        await LoadSetsForCurrentExerciseAsync();
+    }
 
-        int index = CurrentSets.IndexOf(set);
-        if (index >= 0)
-        {
-            CurrentSets[index] = set;
-        }
+    [RelayCommand]
+    private void CloseSetEditor()
+    {
+        IsSetEditorOpen = false;
+        _setBeingEdited = null;
     }
 
     [RelayCommand]
@@ -557,7 +546,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        if (!await _setEditService.ConfirmDeleteAsync()) return;
+        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
 
         await RemoveSetAsync(set);
     }
@@ -608,7 +597,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private async Task FinishWorkoutAsync()
     {
-        bool isConfirmed = await Shell.Current.DisplayAlertAsync(
+        bool isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
             UiText.BodyFinishWorkoutConfirmation,
             UiText.ButtonFinish,
@@ -629,6 +618,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private async Task NavigateBackAsync()
     {
+        if (IsSetEditorOpen)
+        {
+            CloseSetEditor();
+            return;
+        }
+
         if (IsSetActionSheetOpen)
         {
             CancelSetActions();
@@ -676,6 +671,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioCues.Stop();
         ClearRestState();
         CancelSetActions();
+        CloseSetEditor();
         _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
         _sessionId = 0;
@@ -706,8 +702,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         SetProgressText = string.Empty;
         LastSessionResultsText = string.Empty;
         RestTotalText = string.Empty;
-        WeightInput = string.Empty;
-        RepsInput = string.Empty;
+        SetInput.Clear();
         TotalVolume = 0;
         TotalSets = 0;
         SummaryDateText = string.Empty;

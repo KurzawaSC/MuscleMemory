@@ -8,7 +8,7 @@
              IsVisible="False">
 
     <ContentView.Content>
-        <Grid>
+        <Grid x:Name="Layer">
             <BoxView x:Name="Scrim"
                      Opacity="0"
                      Color="{AppThemeBinding Light={StaticResource OverlayLight}, Dark={StaticResource OverlayDark}}">

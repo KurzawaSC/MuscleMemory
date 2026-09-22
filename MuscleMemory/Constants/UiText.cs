@@ -5,10 +5,9 @@ public static class UiText
     public const string TitleDeleteWorkout = "Delete Workout";
     public const string TitleDeleteExercise = "Delete Exercise";
     public const string TitleDeleteSet = "Delete Set";
-    public const string TitleEditSet = "Edit Set";
-    public const string TitleAddSet = "Add Set";
+    public const string TitleEditSet = "Edit set";
+    public const string TitleAddSet = "Add set";
     public const string TitleError = "Error";
-    public const string TitleInvalidInput = "Invalid Input";
     public const string TitleFinishWorkout = "Finish Workout";
     public const string TitleUnsavedChanges = "Unsaved Changes";
     public const string TitleHoldOn = "Hold on!";
@@ -16,8 +15,7 @@ public static class UiText
     public const string TitleOops = "Oops!";
 
     public const string ButtonOk = "OK";
-    public const string ButtonYes = "Yes";
-    public const string ButtonNo = "No";
+    public const string ButtonDelete = "Delete";
     public const string ButtonCancel = "Cancel";
     public const string ButtonDiscard = "Discard";
     public const string ButtonFinish = "Finish";
@@ -27,15 +25,14 @@ public static class UiText
     public const string ButtonAddToWorkout = "Add to workout";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
-    public const string BodyInvalidWeightReps = "Please enter valid numbers for weight and reps.";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
-    public const string PromptEnterWeightKg = "Enter weight (kg):";
-    public const string PromptEnterReps = "Enter reps:";
+    public const string BodyDeleteWorkout = "Session history is kept. The plan itself can't be restored.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
+    public const string DeleteWorkoutTitleFormat = "Delete “{0}”?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
     public const string ExportFailedFormat = "Failed to export data: {0}";
