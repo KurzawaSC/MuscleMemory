@@ -14,6 +14,7 @@ public partial class ExerciseListViewModel : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository;
     private readonly IHapticService _hapticService;
+    private readonly IDialogService _dialogs;
     private List<Exercise> _allExercises = [];
 
     public ExerciseListViewModel(
@@ -21,10 +22,12 @@ public partial class ExerciseListViewModel : ObservableObject
         ActiveWorkoutViewModel activeWorkout,
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
-        IHapticService hapticService)
+        IHapticService hapticService,
+        IDialogService dialogs)
     {
         _exerciseRepository = exerciseRepository;
         _hapticService = hapticService;
+        _dialogs = dialogs;
         ActiveWorkout = activeWorkout;
         ExerciseForm = exerciseForm;
         Filter = filter;
@@ -170,7 +173,7 @@ public partial class ExerciseListViewModel : ObservableObject
             return;
         }
 
-        bool answer = await Shell.Current.DisplayAlertAsync(UiText.TitleDeleteExercise, string.Format(UiText.DeleteConfirmationFormat, exercise.Name), UiText.ButtonYes, UiText.ButtonNo);
+        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.DeleteConfirmationFormat, exercise.Name), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _exerciseRepository.DeleteAsync(exercise.Id);

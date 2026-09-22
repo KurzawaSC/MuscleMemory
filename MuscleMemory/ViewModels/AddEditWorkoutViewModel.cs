@@ -5,6 +5,7 @@ using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Services;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
@@ -13,9 +14,11 @@ public partial class AddEditWorkoutViewModel(
     IWorkoutRepository workoutRepository,
     SelectExerciseViewModel exercisePicker,
     ConfigureExerciseViewModel exerciseConfiguration,
-    AddEditExerciseViewModel exerciseForm) : ObservableObject, IQueryAttributable
+    AddEditExerciseViewModel exerciseForm,
+    IDialogService dialogs) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
+    private readonly IDialogService _dialogs = dialogs;
     private Workout? _workoutToEdit;
     private Exercise? _exerciseToAdd;
     private WorkoutExercise? _exerciseBeingEdited;
@@ -117,7 +120,7 @@ public partial class AddEditWorkoutViewModel(
         var destination = e.Target;
         e.Cancel();
 
-        bool discard = await Shell.Current.DisplayAlertAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
         if (!discard)
         {
             return;
