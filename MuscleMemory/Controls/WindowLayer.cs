@@ -48,19 +48,36 @@ public static class WindowLayer
         focusedView.ClearFocus();
     }
 
-    public static double BottomInset
-    {
-        get
-        {
-            if (Platform.CurrentActivity?.Window?.DecorView is not { } decorView
-                || ViewCompat.GetRootWindowInsets(decorView)?.GetInsets(WindowInsetsCompat.Type.NavigationBars()) is not { } insets)
-            {
-                return 0;
-            }
+    public static double TopInset => ReadRootInsets(insets => insets.GetInsets(WindowInsetsCompat.Type.StatusBars())?.Top ?? 0);
 
-            return decorView.Context.FromPixels(insets.Bottom);
+    public static double BottomInset => ReadRootInsets(BottomPixels);
+
+    public static IDisposable ObserveBottomInset(Microsoft.Maui.Controls.View layer, Action<double> onChanged)
+    {
+        if (layer.Handler?.PlatformView is not PlatformView platformView)
+        {
+            return new InsetRegistration(null);
         }
+
+        ViewCompat.SetOnApplyWindowInsetsListener(platformView, new BottomInsetListener(onChanged));
+        ViewCompat.RequestApplyInsets(platformView);
+        return new InsetRegistration(platformView);
     }
+
+    private static double ReadRootInsets(Func<WindowInsetsCompat, int> selectPixels)
+    {
+        if (Platform.CurrentActivity?.Window?.DecorView is not { } decorView
+            || ViewCompat.GetRootWindowInsets(decorView) is not { } insets)
+        {
+            return 0;
+        }
+
+        return decorView.Context.FromPixels(selectPixels(insets));
+    }
+
+    private static int BottomPixels(WindowInsetsCompat insets) =>
+        Math.Max(insets.GetInsets(WindowInsetsCompat.Type.Ime())?.Bottom ?? 0,
+                 insets.GetInsets(WindowInsetsCompat.Type.NavigationBars())?.Bottom ?? 0);
 
     public static IDisposable InterceptBack(Action onBack)
     {
@@ -72,6 +89,30 @@ public static class WindowLayer
         var callback = new BackCallback(onBack);
         activity.OnBackPressedDispatcher.AddCallback(callback);
         return new BackRegistration(callback);
+    }
+
+    private sealed class BottomInsetListener(Action<double> onChanged) : Java.Lang.Object, IOnApplyWindowInsetsListener
+    {
+        public WindowInsetsCompat? OnApplyWindowInsets(PlatformView? view, WindowInsetsCompat? insets)
+        {
+            if (view is not null && insets is not null)
+            {
+                onChanged(view.Context.FromPixels(BottomPixels(insets)));
+            }
+
+            return insets;
+        }
+    }
+
+    private sealed class InsetRegistration(PlatformView? platformView) : IDisposable
+    {
+        public void Dispose()
+        {
+            if (platformView is not null)
+            {
+                ViewCompat.SetOnApplyWindowInsetsListener(platformView, null);
+            }
+        }
     }
 
     private sealed class BackCallback(Action onBack) : OnBackPressedCallback(true)
@@ -90,11 +131,15 @@ public static class WindowLayer
     {
     }
 
+    public static double TopInset => 0;
+
     public static double BottomInset => 0;
 
-    public static IDisposable InterceptBack(Action onBack) => new BackRegistration();
+    public static IDisposable ObserveBottomInset(Microsoft.Maui.Controls.View layer, Action<double> onChanged) => new NoRegistration();
 
-    private sealed class BackRegistration : IDisposable
+    public static IDisposable InterceptBack(Action onBack) => new NoRegistration();
+
+    private sealed class NoRegistration : IDisposable
     {
         public void Dispose()
         {
