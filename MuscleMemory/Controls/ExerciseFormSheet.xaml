@@ -57,10 +57,5 @@
                 </BindableLayout.ItemTemplate>
             </FlexLayout>
         </VerticalStackLayout>
-
-        <controls:SheetActionBar ConfirmText="{Binding Form.ConfirmText, Source={x:Reference Root}}"
-                                 IsConfirmEnabled="{Binding Form.CanSave, Source={x:Reference Root}}"
-                                 CancelCommand="{Binding CancelCommand, Source={x:Reference Root}}"
-                                 ConfirmCommand="{Binding ConfirmCommand, Source={x:Reference Root}}" />
     </VerticalStackLayout>
 </ContentView>
