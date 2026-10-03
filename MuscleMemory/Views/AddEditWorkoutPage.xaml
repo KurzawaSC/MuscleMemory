@@ -243,17 +243,22 @@
                                          HorizontalOptions="Center"
                                          IsVisible="{Binding ExerciseConfiguration.IsEditing}"
                                          Command="{Binding RemoveEditedExerciseCommand}" />
-
+            </VerticalStackLayout>
+            <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{Binding ExerciseConfiguration.ConfirmText}"
                                          CancelCommand="{Binding CancelConfigurationCommand}"
                                          ConfirmCommand="{Binding ConfirmConfigurationCommand}" />
-            </VerticalStackLayout>
+            </controls:BottomSheet.Footer>
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseFormOpen}">
-            <controls:ExerciseFormSheet Form="{Binding ExerciseForm}"
-                                        CancelCommand="{Binding CancelExerciseFormCommand}"
-                                        ConfirmCommand="{Binding SaveNewExerciseCommand}" />
+            <controls:ExerciseFormSheet Form="{Binding ExerciseForm}" />
+            <controls:BottomSheet.Footer>
+                <controls:SheetActionBar ConfirmText="{Binding ExerciseForm.ConfirmText}"
+                                         IsConfirmEnabled="{Binding ExerciseForm.CanSave}"
+                                         CancelCommand="{Binding CancelExerciseFormCommand}"
+                                         ConfirmCommand="{Binding SaveNewExerciseCommand}" />
+            </controls:BottomSheet.Footer>
         </controls:BottomSheet>
     </Grid>
 

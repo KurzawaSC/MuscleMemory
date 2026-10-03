@@ -6,7 +6,9 @@ namespace MuscleMemory.Controls;
 public partial class BottomSheet : ContentView
 {
     private const string AnimationName = nameof(BottomSheet);
+    private const string InsetAnimationName = nameof(BottomSheet) + nameof(WindowLayer.BottomInset);
     private const double DismissThreshold = 0.4;
+    private const double TopClearance = 24;
 
     public static readonly BindableProperty IsOpenProperty =
         BindableProperty.Create(nameof(IsOpen), typeof(bool), typeof(BottomSheet), false, BindingMode.TwoWay,
@@ -15,13 +17,23 @@ public partial class BottomSheet : ContentView
     public static readonly BindableProperty SheetContentProperty =
         BindableProperty.Create(nameof(SheetContent), typeof(View), typeof(BottomSheet));
 
+    public static readonly BindableProperty FooterProperty =
+        BindableProperty.Create(nameof(Footer), typeof(View), typeof(BottomSheet),
+            propertyChanged: (bindable, _, footer) => ((BottomSheet)bindable).OnFooterChanged(footer));
+
     private readonly Thickness _sheetPadding;
     private double _panStartTranslation;
+    private double _bottomInset;
+    private IDisposable? _insetRegistration;
 
     public BottomSheet()
     {
         InitializeComponent();
         _sheetPadding = Sheet.Padding;
+        Sheet.SizeChanged += (_, _) => LimitBodyHeight();
+        FooterHost.SizeChanged += (_, _) => LimitBodyHeight();
+        BodyContent.SizeChanged += (_, _) => OnBodyLayoutChanged();
+        Body.SizeChanged += (_, _) => OnBodyLayoutChanged();
     }
 
     public bool IsOpen
@@ -34,6 +46,18 @@ public partial class BottomSheet : ContentView
     {
         get => (View?)GetValue(SheetContentProperty);
         set => SetValue(SheetContentProperty, value);
+    }
+
+    public View? Footer
+    {
+        get => (View?)GetValue(FooterProperty);
+        set => SetValue(FooterProperty, value);
+    }
+
+    private void OnFooterChanged(object? footer)
+    {
+        FooterHost.IsVisible = footer is not null;
+        LimitBodyHeight();
     }
 
     private void OnIsOpenChanged(bool isOpen)
@@ -75,17 +99,104 @@ public partial class BottomSheet : ContentView
 
         if (WindowLayer.TryShow(Layer))
         {
-            Sheet.Padding = _sheetPadding with { Bottom = _sheetPadding.Bottom + WindowLayer.BottomInset };
+            SetBottomInset(WindowLayer.BottomInset);
+            _insetRegistration = WindowLayer.ObserveBottomInset(Layer, OnBottomInsetChanged);
             return;
         }
 
+        SetBottomInset(0);
         Content = Layer;
     }
 
     private void HideLayer()
     {
+        _insetRegistration?.Dispose();
+        _insetRegistration = null;
+        this.AbortAnimation(InsetAnimationName);
         IsVisible = false;
         WindowLayer.Hide(Layer);
+    }
+
+    private void SetBottomInset(double inset)
+    {
+        _bottomInset = inset;
+        ApplyBottomInset(inset);
+        LimitBodyHeight();
+    }
+
+    private void OnBottomInsetChanged(double inset)
+    {
+        if (inset == _bottomInset)
+        {
+            return;
+        }
+
+        _bottomInset = inset;
+        LimitBodyHeight();
+
+        new Animation(ApplyBottomInset, Sheet.Padding.Bottom - _sheetPadding.Bottom, inset)
+            .Commit(this, InsetAnimationName, length: UiTiming.KeyboardInsetMilliseconds, easing: Easing.CubicOut);
+    }
+
+    private void ApplyBottomInset(double inset) => Sheet.Padding = _sheetPadding with { Bottom = _sheetPadding.Bottom + inset };
+
+    private void LimitBodyHeight()
+    {
+        if (Window is not { Height: > 0 } window)
+        {
+            return;
+        }
+
+        var sheetMaximum = window.Height - WindowLayer.TopInset - TopClearance;
+        Body.MaximumHeightRequest = Math.Max(0, sheetMaximum - SheetChromeHeight());
+        UpdateBodyScrolling();
+    }
+
+    private void OnBodyLayoutChanged()
+    {
+        UpdateBodyScrolling();
+        ScrollFocusedFieldIntoView();
+    }
+
+    private void UpdateBodyScrolling()
+    {
+        if (Body.Width <= 0)
+        {
+            return;
+        }
+
+        var contentHeight = BodyContent.Measure(Body.Width, double.PositiveInfinity).Height;
+        Body.Orientation = contentHeight > Body.MaximumHeightRequest ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
+    }
+
+    private double SheetChromeHeight()
+    {
+        var footerHeight = FooterHost.IsVisible
+            ? SheetLayout.Spacing + FooterHost.Margin.VerticalThickness + Math.Max(0, FooterHost.Height)
+            : 0;
+
+        return _sheetPadding.VerticalThickness + _bottomInset + GrabHandle.HeightRequest + SheetLayout.Spacing + footerHeight;
+    }
+
+    private void ScrollFocusedFieldIntoView()
+    {
+        if (Body.GetVisualTreeDescendants().OfType<VisualElement>().FirstOrDefault(element => element.IsFocused) is { } focusedElement)
+        {
+            _ = Body.ScrollToAsync(OwningField(focusedElement), ScrollToPosition.MakeVisible, true);
+        }
+    }
+
+    private static VisualElement OwningField(VisualElement focusedElement)
+    {
+        for (var parent = focusedElement.Parent; parent is not null; parent = parent.Parent)
+        {
+            if (parent is ContentView field)
+            {
+                return field;
+            }
+        }
+
+        return focusedElement;
     }
 
     private void OnFirstSheetLayout(object? sender, EventArgs e)

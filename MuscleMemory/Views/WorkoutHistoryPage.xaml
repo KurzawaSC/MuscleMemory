@@ -148,11 +148,13 @@
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetEditorOpen}">
-            <controls:SetEditorSheet Title="{Binding SetEditorTitle}"
-                                     ConfirmText="{Binding SetEditorConfirmText}"
-                                     Editor="{Binding SetEditor}"
-                                     ConfirmCommand="{Binding SaveSetEditorCommand}"
-                                     CancelCommand="{Binding CloseSetEditorCommand}" />
+            <controls:SetEditorSheet Title="{Binding SetEditorTitle}" Editor="{Binding SetEditor}" />
+            <controls:BottomSheet.Footer>
+                <controls:SheetActionBar ConfirmText="{Binding SetEditorConfirmText}"
+                                         IsConfirmEnabled="{Binding SetEditor.IsValid, FallbackValue=False}"
+                                         ConfirmCommand="{Binding SaveSetEditorCommand}"
+                                         CancelCommand="{Binding CloseSetEditorCommand}" />
+            </controls:BottomSheet.Footer>
         </controls:BottomSheet>
     </Grid>
 

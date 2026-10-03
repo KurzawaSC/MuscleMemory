@@ -7,5 +7,6 @@ public static class UiTiming
     public const int LongPressMilliseconds = 400;
     public const uint SheetOpenMilliseconds = 260;
     public const uint SheetCloseMilliseconds = 200;
+    public const uint KeyboardInsetMilliseconds = 200;
     public const int RestEndingPulseSeconds = 5;
 }

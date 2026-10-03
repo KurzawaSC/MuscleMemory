@@ -29,13 +29,20 @@
                 <Border.GestureRecognizers>
                     <PanGestureRecognizer PanUpdated="OnPanUpdated" />
                 </Border.GestureRecognizers>
-                <VerticalStackLayout Spacing="14">
-                    <BoxView WidthRequest="40"
+                <VerticalStackLayout x:Name="SheetLayout" Spacing="14">
+                    <BoxView x:Name="GrabHandle"
+                             WidthRequest="40"
                              HeightRequest="4"
                              CornerRadius="2"
                              HorizontalOptions="Center"
                              Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}" />
-                    <ContentView Content="{Binding SheetContent, Source={x:Reference Root}}" />
+                    <ScrollView x:Name="Body" Orientation="Neither" VerticalScrollBarVisibility="Never">
+                        <ContentView x:Name="BodyContent" Content="{Binding SheetContent, Source={x:Reference Root}}" />
+                    </ScrollView>
+                    <ContentView x:Name="FooterHost"
+                                 Margin="0,2,0,0"
+                                 IsVisible="False"
+                                 Content="{Binding Footer, Source={x:Reference Root}}" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

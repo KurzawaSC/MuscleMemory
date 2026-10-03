@@ -16,9 +16,12 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
     public partial string ExerciseName { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial string SessionCountText { get; set; } = string.Empty;
+
+    [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
 
-    public ObservableCollection<ExerciseHistoryEntry> History { get; } = [];
+    public ObservableCollection<ExerciseHistoryItem> History { get; } = [];
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -36,9 +39,14 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
 
     private async Task LoadHistoryAsync()
     {
-        History.ReplaceAll(await _historyQueryService.GetExerciseHistoryAsync(_exerciseId));
-        IsEmpty = !History.Any();
+        var entries = await _historyQueryService.GetExerciseHistoryAsync(_exerciseId);
+        History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
+        IsEmpty = History.Count == 0;
+        SessionCountText = IsEmpty ? string.Empty : FormatSessionCount(History.Count);
     }
+
+    private static string FormatSessionCount(int count) =>
+        string.Format(UiText.SessionCountFormat, count, count == 1 ? UiText.CaptionSession : UiText.CaptionSessions);
 
     [RelayCommand]
     private async Task GoBackAsync()
