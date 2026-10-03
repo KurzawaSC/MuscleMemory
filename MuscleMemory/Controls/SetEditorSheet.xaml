@@ -19,9 +19,5 @@
                                    DecrementCommand="{Binding Editor.DecreaseRepsCommand, Source={x:Reference Root}}"
                                    IncrementCommand="{Binding Editor.IncreaseRepsCommand, Source={x:Reference Root}}" />
         </Grid>
-        <controls:SheetActionBar ConfirmText="{Binding ConfirmText, Source={x:Reference Root}}"
-                                 IsConfirmEnabled="{Binding Editor.IsValid, Source={x:Reference Root}, FallbackValue=False}"
-                                 ConfirmCommand="{Binding ConfirmCommand, Source={x:Reference Root}}"
-                                 CancelCommand="{Binding CancelCommand, Source={x:Reference Root}}" />
     </VerticalStackLayout>
 </ContentView>

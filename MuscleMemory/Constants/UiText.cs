@@ -50,6 +50,9 @@ public static class UiText
     public const string CaptionExercises = "exercises";
     public const string CaptionSet = "set";
     public const string CaptionSets = "sets";
+    public const string CaptionSession = "session";
+    public const string CaptionSessions = "sessions";
+    public const string SessionCountFormat = "{0} {1} · newest first";
     public const string ListSeparator = " · ";
 
     public const string LoadingWorkoutTitle = "Loading...";
@@ -69,6 +72,7 @@ public static class UiText
     public const string ShortDateFormat = "MMM dd";
     public const string LongDateFormat = "MMM dd, yyyy";
     public const string SummaryDateFormat = "MMM dd, yyyy · HH:mm";
+    public const string SessionDateTimeFormat = "ddd, MMM d · HH:mm";
     public const string SessionStatsFormat = "Time {0} · {1} {2}";
     public const string RestTotalFormat = "of {0} s";
     public const string ResultSeparator = ", ";
