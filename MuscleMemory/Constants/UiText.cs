@@ -29,6 +29,7 @@ public static class UiText
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
+    public const string BodyOperationFailed = "Something went wrong. Please try again.";
     public const string BodyDeleteWorkout = "Session history is kept. The plan itself can't be restored.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
