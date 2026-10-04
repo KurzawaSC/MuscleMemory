@@ -80,7 +80,7 @@
                                                            LongPressCommand="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
                                                            LongPressCommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
                                 </VerticalStackLayout.Behaviors>
-                                <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" />
+                                <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" LineBreakMode="TailTruncation" />
                                 <HorizontalStackLayout Spacing="6">
                                     <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
                                     <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
