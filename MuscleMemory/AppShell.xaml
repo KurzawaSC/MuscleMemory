@@ -9,23 +9,20 @@
 
     <TabBar>
 
-        <Tab Title="List" Icon="exercise_list_icon.png">
-            <ShellContent 
-                Title="Exercise List"
+        <Tab Title="Exercises" Icon="exercise_list_icon.png">
+            <ShellContent
                 ContentTemplate="{DataTemplate views:ExerciseListPage}"
                 Route="ExerciseListPage" />
         </Tab>
 
-        <Tab Title="Workout" Icon="workout_list_icon.png">
-            <ShellContent 
-                Title="Start Workout"
+        <Tab Title="Workouts" Icon="workout_list_icon.png">
+            <ShellContent
                 ContentTemplate="{DataTemplate views:WorkoutListPage}"
                 Route="WorkoutListPage" />
         </Tab>
 
         <Tab Title="Settings" Icon="settings_icon.png">
-            <ShellContent 
-                Title="Settings"
+            <ShellContent
                 ContentTemplate="{DataTemplate views:SettingsPage}"
                 Route="SettingsPage" />
         </Tab>
