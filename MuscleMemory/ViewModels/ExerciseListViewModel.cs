@@ -15,6 +15,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IExerciseRepository _exerciseRepository;
     private readonly IHapticService _hapticService;
     private readonly IDialogService _dialogs;
+    private readonly IErrorHandler _errors;
     private List<Exercise> _allExercises = [];
 
     public ExerciseListViewModel(
@@ -23,11 +24,13 @@ public partial class ExerciseListViewModel : ObservableObject
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
         IHapticService hapticService,
-        IDialogService dialogs)
+        IDialogService dialogs,
+        IErrorHandler errors)
     {
         _exerciseRepository = exerciseRepository;
         _hapticService = hapticService;
         _dialogs = dialogs;
+        _errors = errors;
         ActiveWorkout = activeWorkout;
         ExerciseForm = exerciseForm;
         Filter = filter;
@@ -75,13 +78,13 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadExercisesAsync()
+    private Task LoadExercisesAsync() => _errors.RunAsync(async () =>
     {
         _allExercises = await _exerciseRepository.GetAllAsync();
         IsEmpty = _allExercises.Count == 0;
         Filter.UpdateFilters(_allExercises);
         ApplyFilter();
-    }
+    });
 
     private void ApplyFilter()
     {
@@ -90,14 +93,14 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AddExerciseAsync()
+    private Task AddExerciseAsync() => _errors.RunAsync(async () =>
     {
         await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
-    }
+    });
 
     [RelayCommand]
-    private async Task SaveExerciseAsync()
+    private Task SaveExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (!ExerciseForm.CanSave)
         {
@@ -107,7 +110,7 @@ public partial class ExerciseListViewModel : ObservableObject
         await ExerciseForm.SaveAsync();
         IsExerciseFormOpen = false;
         await LoadExercisesAsync();
-    }
+    });
 
     [RelayCommand]
     private void CancelExerciseForm()
@@ -136,7 +139,7 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task EditActionExerciseAsync()
+    private Task EditActionExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissActionSheetAsync() is not { } exercise)
         {
@@ -145,10 +148,10 @@ public partial class ExerciseListViewModel : ObservableObject
 
         await ExerciseForm.BeginEditAsync(exercise);
         IsExerciseFormOpen = true;
-    }
+    });
 
     [RelayCommand]
-    private async Task ViewActionExerciseHistoryAsync()
+    private Task ViewActionExerciseHistoryAsync() => _errors.RunAsync(async () =>
     {
         if (ActionExercise is not { } exercise)
         {
@@ -163,10 +166,10 @@ public partial class ExerciseListViewModel : ObservableObject
             { QueryKeys.ExerciseName, exercise.Name }
         };
         await Shell.Current.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
-    }
+    });
 
     [RelayCommand]
-    private async Task DeleteActionExerciseAsync()
+    private Task DeleteActionExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissActionSheetAsync() is not { } exercise)
         {
@@ -179,7 +182,7 @@ public partial class ExerciseListViewModel : ObservableObject
             await _exerciseRepository.DeleteAsync(exercise.Id);
             await LoadExercisesAsync();
         }
-    }
+    });
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {
