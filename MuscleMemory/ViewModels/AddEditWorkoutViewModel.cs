@@ -112,7 +112,7 @@ public partial class AddEditWorkoutViewModel(
         Shell.Current.Navigating -= OnShellNavigating;
     }
 
-    private async void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
+    private void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
     {
         if (!HasUnsavedChanges || !e.CanCancel || !IsLeavingEditor(e))
         {
@@ -121,7 +121,11 @@ public partial class AddEditWorkoutViewModel(
 
         var destination = e.Target;
         e.Cancel();
+        _errors.ReportFailures(ConfirmLeavingEditorAsync(destination));
+    }
 
+    private async Task ConfirmLeavingEditorAsync(ShellNavigationState? destination)
+    {
         bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
         if (!discard)
         {
