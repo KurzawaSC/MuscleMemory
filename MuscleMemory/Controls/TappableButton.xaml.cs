@@ -1,5 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
+using MuscleMemory.Diagnostics;
+using MuscleMemory.Services;
 
 namespace MuscleMemory.Controls;
 
@@ -157,20 +160,33 @@ public partial class TappableButton : ContentView
 
     private async void OnTapped(object? sender, TappedEventArgs e)
     {
+        if (Handler?.MauiContext?.Services.GetService<IErrorHandler>() is { } errors)
+        {
+            await errors.RunAsync(PressAsync);
+        }
+    }
+
+    private async Task PressAsync()
+    {
         if (!CanRunCommand())
         {
             return;
         }
 
         SetPressed(true);
-        await Surface.ScaleToAsync(PressedScale, PressPhaseMilliseconds);
-        await Surface.ScaleToAsync(1, PressPhaseMilliseconds);
+        await AppLog.LogFailuresAsync(AnimatePressAsync());
         SetPressed(false);
 
         if (CanRunCommand())
         {
             Command?.Execute(CommandParameter);
         }
+    }
+
+    private async Task AnimatePressAsync()
+    {
+        await Surface.ScaleToAsync(PressedScale, PressPhaseMilliseconds);
+        await Surface.ScaleToAsync(1, PressPhaseMilliseconds);
     }
 
     private void SetPressed(bool isPressed)
