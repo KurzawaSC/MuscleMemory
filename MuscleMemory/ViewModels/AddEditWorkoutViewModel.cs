@@ -176,7 +176,7 @@ public partial class AddEditWorkoutViewModel(
     {
         IsExercisePickerOpen = false;
         await WaitForSheetToCloseAsync();
-        ExerciseForm.BeginNew();
+        await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
     }
 

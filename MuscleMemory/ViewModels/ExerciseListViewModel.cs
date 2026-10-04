@@ -90,9 +90,9 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AddExercise()
+    private async Task AddExerciseAsync()
     {
-        ExerciseForm.BeginNew();
+        await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
     }
 
@@ -143,7 +143,7 @@ public partial class ExerciseListViewModel : ObservableObject
             return;
         }
 
-        ExerciseForm.BeginEdit(exercise);
+        await ExerciseForm.BeginEditAsync(exercise);
         IsExerciseFormOpen = true;
     }
 
