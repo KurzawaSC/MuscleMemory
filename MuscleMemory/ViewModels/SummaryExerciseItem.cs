@@ -17,7 +17,7 @@ public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText,
             string.Format(CultureInfo.InvariantCulture, UiText.VolumeFormat, volumes.Sum()),
             [.. exercise.Sets.Select(set => new SummarySetBar(
                 set.SetNumber,
-                string.Format(UiText.LoggedSetFormat, set.Weight, set.Reps),
+                string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps),
                 new Rect(0, 0, bestVolume > 0 ? Volume(set) / bestVolume : 0, 1),
                 hasSingleBest && Volume(set) == bestVolume))]);
     }
