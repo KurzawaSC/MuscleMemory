@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Diagnostics;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
@@ -210,7 +211,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         ClearRestState();
         _haptics.LongPress();
-        _ = _audioCues.PlayBreakEndAsync();
+        AppLog.LogFailures(_audioCues.PlayBreakEndAsync());
         _ = SaveStateAsync();
     }
 
