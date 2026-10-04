@@ -17,6 +17,7 @@ public static class DomainDefaults
     public const double MinWeightInKg = 0;
     public const double MaxWeightInKg = 500;
     public const double WeightStepInKg = 2.5;
+    public const double WeightPrecisionInKg = 0.25;
     public const int RepsStep = 1;
     public static readonly int[] BreakTimePresetsInSeconds = [60, 90, 120];
     public const int MinTargetRPE = 1;
