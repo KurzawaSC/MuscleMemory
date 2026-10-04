@@ -70,6 +70,15 @@ public partial class WorkoutHistoryViewModel(
 
     private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsSetEditorOpen;
 
+    partial void OnIsSetEditorOpenChanged(bool value)
+    {
+        if (!value)
+        {
+            _setBeingEdited = null;
+            _exerciseReceivingSet = null;
+        }
+    }
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue(QueryKeys.WorkoutName, out var name) && name is string workoutName)
@@ -162,6 +171,7 @@ public partial class WorkoutHistoryViewModel(
     {
         if (loggedExercise == null) return;
 
+        _setBeingEdited = null;
         _exerciseReceivingSet = loggedExercise;
 
         if (loggedExercise.Sets.LastOrDefault() is { } lastSet)
@@ -187,8 +197,6 @@ public partial class WorkoutHistoryViewModel(
     private void CloseSetEditor()
     {
         IsSetEditorOpen = false;
-        _setBeingEdited = null;
-        _exerciseReceivingSet = null;
     }
 
     [RelayCommand]
