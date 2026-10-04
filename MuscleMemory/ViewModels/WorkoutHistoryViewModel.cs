@@ -208,17 +208,13 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        var editedSet = _setBeingEdited;
-        var receivingExercise = _exerciseReceivingSet;
-        CloseSetEditor();
-
-        if (editedSet is not null)
+        if (_setBeingEdited is { } editedSet)
         {
             editedSet.Weight = values.Weight;
             editedSet.Reps = values.Reps;
             await _setRepository.UpdateAsync(editedSet);
         }
-        else if (receivingExercise is not null)
+        else if (_exerciseReceivingSet is { } receivingExercise)
         {
             await _setRepository.AddAsync(new WorkoutSet
             {
@@ -228,6 +224,7 @@ public partial class WorkoutHistoryViewModel(
             });
         }
 
+        CloseSetEditor();
         await LoadHistoryAsync();
     });
 
