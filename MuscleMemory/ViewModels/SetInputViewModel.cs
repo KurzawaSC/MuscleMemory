@@ -8,6 +8,9 @@ namespace MuscleMemory.ViewModels;
 
 public sealed partial class SetInputViewModel : ObservableObject
 {
+    private const char CommaDecimalSeparator = ',';
+    private const char InvariantDecimalSeparator = '.';
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsValid))]
     public partial string WeightInput { get; set; } = string.Empty;
@@ -63,7 +66,11 @@ public sealed partial class SetInputViewModel : ObservableObject
     private int ReadRepsOrZero() => TryReadReps(out int reps) ? reps : 0;
 
     private bool TryReadWeight(out double weight) =>
-        double.TryParse(WeightInput, NumberStyles.Any, CultureInfo.InvariantCulture, out weight);
+        double.TryParse(NormalizeDecimalSeparator(WeightInput), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out weight)
+        && double.IsFinite(weight);
+
+    private static string NormalizeDecimalSeparator(string input) =>
+        input.Replace(CommaDecimalSeparator, InvariantDecimalSeparator);
 
     private bool TryReadReps(out int reps) =>
         int.TryParse(RepsInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out reps);
