@@ -76,26 +76,19 @@ public partial class SettingsViewModel : ObservableObject
     });
 
     [RelayCommand]
-    private async Task ExportDataAsync()
+    private Task ExportDataAsync() => _errors.RunAsync(async () =>
     {
-        try
-        {
-            var dbPath = _maintenanceService.DatabaseFilePath;
+        var dbPath = _maintenanceService.DatabaseFilePath;
 
-            if (!File.Exists(dbPath))
-            {
-                await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
-                return;
-            }
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Export Muscle Memory Data",
-                File = new ShareFile(dbPath)
-            });
-        }
-        catch (Exception ex)
+        if (!File.Exists(dbPath))
         {
-            await _dialogs.ShowMessageAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message));
+            await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
+            return;
         }
-    }
+        await Share.Default.RequestAsync(new ShareFileRequest
+        {
+            Title = "Export Muscle Memory Data",
+            File = new ShareFile(dbPath)
+        });
+    }, UiText.BodyExportFailed);
 }

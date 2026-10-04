@@ -30,13 +30,13 @@ public static class UiText
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
     public const string BodyOperationFailed = "Something went wrong. Please try again.";
+    public const string BodyExportFailed = "Export failed. Please try again.";
     public const string BodyDeleteWorkout = "Session history is kept. The plan itself can't be restored.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
     public const string DeleteWorkoutTitleFormat = "Delete “{0}”?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
-    public const string ExportFailedFormat = "Failed to export data: {0}";
 
     public const string HeaderNewExercise = "New exercise";
     public const string HeaderEditExercise = "Edit exercise";
