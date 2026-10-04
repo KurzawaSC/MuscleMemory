@@ -6,7 +6,10 @@ namespace MuscleMemory.Services;
 public sealed class ThemeService(IStatusBarService statusBarService) : IThemeService
 {
     public ThemePreference SavedPreference =>
-        Enum.Parse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)));
+        Enum.TryParse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)), out var preference)
+        && Enum.IsDefined(preference)
+            ? preference
+            : ThemePreference.System;
 
     public void RestoreSavedTheme()
     {
