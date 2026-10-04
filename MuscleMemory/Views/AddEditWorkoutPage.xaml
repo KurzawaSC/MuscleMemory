@@ -23,6 +23,7 @@
             <Label Style="{StaticResource OverlineLabel}" Text="Workout name" />
             <controls:TextField HeightRequest="52"
                                 Text="{Binding WorkoutName}"
+                                MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
                                 Placeholder="e.g. Monday Eve" />
         </VerticalStackLayout>
 
