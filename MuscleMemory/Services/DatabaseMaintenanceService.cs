@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 
@@ -12,7 +13,22 @@ public sealed class DatabaseMaintenanceService(
     IWorkoutSetRepository setRepository,
     IActiveWorkoutStateRepository activeWorkoutStateRepository) : IDatabaseMaintenanceService
 {
-    public string DatabaseFilePath => context.DatabasePath;
+    private const string VacuumIntoSql = "VACUUM INTO ?";
+
+    public async Task<string?> CreateExportSnapshotAsync()
+    {
+        if (!File.Exists(context.DatabasePath))
+        {
+            return null;
+        }
+
+        var snapshotPath = Path.Combine(FileSystem.CacheDirectory, DatabaseNames.ExportFileName);
+        File.Delete(snapshotPath);
+
+        var connection = await context.GetConnectionAsync();
+        await connection.ExecuteAsync(VacuumIntoSql, snapshotPath);
+        return snapshotPath;
+    }
 
     public async Task ClearAllDataAsync()
     {
