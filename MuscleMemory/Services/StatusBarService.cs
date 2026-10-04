@@ -101,9 +101,5 @@ public sealed class StatusBarService : IStatusBarService
             return insets ?? WindowInsetsCompat.Consumed!;
         }
     }
-#else
-    private static void Paint(Color background, bool useDarkIcons)
-    {
-    }
 #endif
 }
