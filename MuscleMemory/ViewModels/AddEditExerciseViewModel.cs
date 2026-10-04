@@ -18,6 +18,7 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(NameError))]
     public partial string Name { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -26,15 +27,25 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
     [ObservableProperty]
     public partial EquipmentType SelectedEquipment { get; set; } = EquipmentType.Other;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(NameError))]
+    private partial IReadOnlySet<string> TakenNames { get; set; } = new HashSet<string>();
+
     public MuscleGroup[] MuscleGroups { get; } = Enum.GetValues<MuscleGroup>();
 
     public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
 
-    public bool CanSave => !string.IsNullOrWhiteSpace(Name);
+    public bool CanSave => !string.IsNullOrWhiteSpace(Name) && !IsNameTaken;
 
-    public void BeginNew()
+    public string NameError => IsNameTaken ? UiText.ExerciseNameTakenError : string.Empty;
+
+    private bool IsNameTaken => TakenNames.Contains(Name.Trim());
+
+    public async Task BeginNewAsync()
     {
         _existingExercise = null;
+        TakenNames = await LoadTakenNamesAsync();
         Title = UiText.HeaderNewExercise;
         ConfirmText = UiText.ButtonAdd;
         Name = string.Empty;
@@ -42,9 +53,10 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         SelectedEquipment = EquipmentType.Other;
     }
 
-    public void BeginEdit(Exercise exercise)
+    public async Task BeginEditAsync(Exercise exercise)
     {
         _existingExercise = exercise;
+        TakenNames = await LoadTakenNamesAsync();
         Title = UiText.HeaderEditExercise;
         ConfirmText = UiText.ButtonSave;
         Name = exercise.Name;
@@ -65,6 +77,15 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         ApplyTo(newExercise);
         await _exerciseRepository.AddAsync(newExercise);
         return newExercise;
+    }
+
+    private async Task<IReadOnlySet<string>> LoadTakenNamesAsync()
+    {
+        var exercises = await _exerciseRepository.GetAllAsync();
+        return exercises
+            .Where(exercise => exercise.Id != _existingExercise?.Id)
+            .Select(exercise => exercise.Name.Trim())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     private void ApplyTo(Exercise exercise)

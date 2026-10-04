@@ -78,6 +78,7 @@ public static class UiText
     public const string ResultSeparator = ", ";
     public const string WeightRangeErrorFormat = "Enter {0}–{1} kg";
     public const string RepsRangeErrorFormat = "Enter {0}–{1} reps";
+    public const string ExerciseNameTakenError = "An exercise with this name already exists";
 
     public const string ElapsedFormat = @"mm\:ss";
     public const string ElapsedWithHoursFormat = @"h\:mm\:ss";

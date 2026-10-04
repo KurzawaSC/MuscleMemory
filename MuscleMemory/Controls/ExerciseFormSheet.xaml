@@ -16,8 +16,9 @@
 
         <VerticalStackLayout Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="Name" />
-            <controls:TextField HeightRequest="52"
+            <controls:TextField FieldHeight="52"
                                 Text="{Binding Form.Name, Source={x:Reference Root}}"
+                                ErrorText="{Binding Form.NameError, Source={x:Reference Root}, FallbackValue=''}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
                                 Placeholder="e.g. Incline Bench Press" />
         </VerticalStackLayout>
