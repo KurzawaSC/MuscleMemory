@@ -124,26 +124,5 @@ public static class WindowLayer
     {
         public void Dispose() => callback?.Remove();
     }
-#else
-    public static bool TryShow(Microsoft.Maui.Controls.View layer) => false;
-
-    public static void Hide(Microsoft.Maui.Controls.View layer)
-    {
-    }
-
-    public static double TopInset => 0;
-
-    public static double BottomInset => 0;
-
-    public static IDisposable ObserveBottomInset(Microsoft.Maui.Controls.View layer, Action<double> onChanged) => new NoRegistration();
-
-    public static IDisposable InterceptBack(Action onBack) => new NoRegistration();
-
-    private sealed class NoRegistration : IDisposable
-    {
-        public void Dispose()
-        {
-        }
-    }
 #endif
 }

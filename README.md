@@ -79,10 +79,8 @@ share sheet, and erasing all data behind a confirmation prompt.
 | XAML | Source-generated (`MauiXamlInflator=SourceGen`), compiled bindings throughout (`x:DataType`) |
 | Typography | LilitaOne, bundled as an app font |
 
-Android is the target platform: the shipping target framework is `net10.0-android`, with a minimum
-supported API level of 21. The iOS, Mac Catalyst and Windows target frameworks are left over from
-the MAUI template and are not maintained — the status-bar integration, for instance, is
-Android-only.
+Android is the only target platform: the target framework is `net10.0-android`, with a minimum
+supported API level of 21.
 
 ---
 
@@ -241,7 +239,7 @@ MuscleMemory/
 ├── Models/               # Exercise, Workout, WorkoutExercise, WorkoutSession, SessionExercise,
 │                         # WorkoutSet, ActiveWorkoutState, ExerciseConfiguration,
 │                         # CompletedExerciseSummary, MuscleGroup, EquipmentType, ThemePreference
-├── Platforms/            # Android head (MainActivity, MainApplication, manifest) and template heads
+├── Platforms/            # Android head (MainActivity, MainApplication, manifest)
 ├── Properties/           # launchSettings.json
 ├── Resources/
 │   ├── AppIcon/          # logo.png
