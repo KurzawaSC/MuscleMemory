@@ -34,7 +34,7 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
         if (query.TryGetValue(QueryKeys.ExerciseId, out var id) && id is int exerciseId && exerciseId > 0)
         {
             _exerciseId = exerciseId;
-            _ = LoadHistoryAsync();
+            _errors.ReportFailures(LoadHistoryAsync());
         }
     }
 

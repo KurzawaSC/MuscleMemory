@@ -92,7 +92,7 @@ public partial class WorkoutHistoryViewModel(
         if (query.TryGetValue(QueryKeys.WorkoutId, out var id) && id is int workoutId && workoutId > 0)
         {
             _workoutId = workoutId;
-            _ = LoadHistoryAsync();
+            _errors.ReportFailures(LoadHistoryAsync());
         }
     }
 

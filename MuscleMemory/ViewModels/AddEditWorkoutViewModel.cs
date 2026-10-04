@@ -86,7 +86,7 @@ public partial class AddEditWorkoutViewModel(
         {
             _workoutToEdit = workout;
             HeaderTitle = UiText.HeaderEditWorkout;
-            _ = LoadWorkoutAsync(workout);
+            _errors.ReportFailures(LoadWorkoutAsync(workout));
         }
     }
 

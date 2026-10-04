@@ -212,14 +212,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         ClearRestState();
         _haptics.LongPress();
         AppLog.LogFailures(_audioCues.PlayBreakEndAsync());
-        _ = SaveStateAsync();
+        _errors.ReportFailures(SaveStateAsync());
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive)
         {
-            _ = StartWorkoutAsync(workout);
+            _errors.ReportFailures(StartWorkoutAsync(workout));
         }
     }
 
