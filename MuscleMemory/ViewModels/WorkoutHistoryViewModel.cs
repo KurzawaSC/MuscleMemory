@@ -16,6 +16,7 @@ public partial class WorkoutHistoryViewModel(
     IWorkoutSetRepository setRepository,
     IDialogService dialogs,
     IWorkoutTimerService timer,
+    IErrorHandler errors,
     SelectExerciseViewModel exercisePicker) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
@@ -23,6 +24,7 @@ public partial class WorkoutHistoryViewModel(
     private readonly IWorkoutSetRepository _setRepository = setRepository;
     private readonly IDialogService _dialogs = dialogs;
     private readonly IWorkoutTimerService _timer = timer;
+    private readonly IErrorHandler _errors = errors;
     private int _workoutId;
     private WorkoutSet? _setBeingEdited;
     private WorkoutHistoryExercise? _exerciseReceivingSet;
@@ -105,10 +107,8 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task GoBackAsync()
-    {
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
-    }
+    private Task GoBackAsync() =>
+        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.GoBack));
 
     [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
     private void CloseSheets()
@@ -133,7 +133,7 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task EditActionSetAsync()
+    private Task EditActionSetAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissSetActionsAsync() is not { } set)
         {
@@ -143,10 +143,10 @@ public partial class WorkoutHistoryViewModel(
         _setBeingEdited = set;
         SetEditor.Fill(set.Weight, set.Reps);
         OpenSetEditor(UiText.TitleEditSet, UiText.ButtonSave);
-    }
+    });
 
     [RelayCommand]
-    private async Task DeleteActionSetAsync()
+    private Task DeleteActionSetAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissSetActionsAsync() is not { } set)
         {
@@ -157,7 +157,7 @@ public partial class WorkoutHistoryViewModel(
 
         await _setRepository.DeleteAsync(set.Id);
         await LoadHistoryAsync();
-    }
+    });
 
     private async Task<WorkoutSet?> DismissSetActionsAsync()
     {
@@ -201,7 +201,7 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task SaveSetEditorAsync()
+    private Task SaveSetEditorAsync() => _errors.RunAsync(async () =>
     {
         if (!SetEditor.TryRead(out var values))
         {
@@ -229,10 +229,10 @@ public partial class WorkoutHistoryViewModel(
         }
 
         await LoadHistoryAsync();
-    }
+    });
 
     [RelayCommand]
-    private async Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise)
+    private Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise) => _errors.RunAsync(async () =>
     {
         if (loggedExercise == null) return;
         bool confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
@@ -241,14 +241,14 @@ public partial class WorkoutHistoryViewModel(
         await _setRepository.DeleteForSessionExerciseAsync(loggedExercise.SessionExerciseId);
         await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
         await LoadHistoryAsync();
-    }
+    });
 
     [RelayCommand]
-    private async Task AddExerciseAsync()
+    private Task AddExerciseAsync() => _errors.RunAsync(async () =>
     {
         await ExercisePicker.LoadAsync();
         IsExercisePickerOpen = true;
-    }
+    });
 
     [RelayCommand]
     private void CloseExercisePicker()
@@ -257,7 +257,7 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private async Task PickExerciseAsync(Exercise exercise)
+    private Task PickExerciseAsync(Exercise exercise) => _errors.RunAsync(async () =>
     {
         IsExercisePickerOpen = false;
 
@@ -285,7 +285,7 @@ public partial class WorkoutHistoryViewModel(
         });
 
         await LoadHistoryAsync();
-    }
+    });
 
     private static Task WaitForSheetToCloseAsync() =>
         Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));

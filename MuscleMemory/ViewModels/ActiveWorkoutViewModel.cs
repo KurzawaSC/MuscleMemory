@@ -24,6 +24,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IWorkoutSummaryService _summaryService;
     private readonly INavigationStackService _navigationStack;
     private readonly IHapticService _haptics;
+    private readonly IErrorHandler _errors;
     private int _sessionId;
     private int _workoutId;
     private int _currentExerciseIndex;
@@ -169,7 +170,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IDialogService dialogs,
         IWorkoutSummaryService summaryService,
         INavigationStackService navigationStack,
-        IHapticService haptics)
+        IHapticService haptics,
+        IErrorHandler errors)
     {
         _workoutRepository = workoutRepository;
         _sessionRepository = sessionRepository;
@@ -182,6 +184,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _summaryService = summaryService;
         _navigationStack = navigationStack;
         _haptics = haptics;
+        _errors = errors;
 
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
@@ -377,7 +380,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task SaveSetAsync()
+    private Task SaveSetAsync() => _errors.RunAsync(async () =>
     {
         if (!SetInput.TryRead(out var values))
         {
@@ -417,7 +420,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         UpdateSetProgress();
-    }
+    });
 
     private void StartRest(int durationSeconds)
     {
@@ -468,7 +471,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task ExtendRestAsync()
+    private Task ExtendRestAsync() => _errors.RunAsync(async () =>
     {
         if (!IsResting) return;
 
@@ -477,16 +480,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         RestTotalText = string.Format(UiText.RestTotalFormat, _restDurationSeconds);
         UpdateRestCountdown();
         await SaveStateAsync();
-    }
+    });
 
     [RelayCommand]
-    private async Task SkipRestAsync()
+    private Task SkipRestAsync() => _errors.RunAsync(async () =>
     {
         ClearRestState();
 
         _audioCues.Stop();
         await SaveStateAsync();
-    }
+    });
 
     [RelayCommand]
     private void ShowSetActions(WorkoutSet set)
@@ -503,7 +506,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task EditActionSetAsync()
+    private Task EditActionSetAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissSetActionsAsync() is not { } set)
         {
@@ -513,10 +516,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _setBeingEdited = set;
         SetEditor.Fill(set.Weight, set.Reps);
         IsSetEditorOpen = true;
-    }
+    });
 
     [RelayCommand]
-    private async Task SaveEditedSetAsync()
+    private Task SaveEditedSetAsync() => _errors.RunAsync(async () =>
     {
         if (_setBeingEdited is not { } set || !SetEditor.TryRead(out var values))
         {
@@ -529,7 +532,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         await _setRepository.UpdateAsync(set);
         await LoadSetsForCurrentExerciseAsync();
-    }
+    });
 
     [RelayCommand]
     private void CloseSetEditor()
@@ -539,7 +542,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task DeleteActionSetAsync()
+    private Task DeleteActionSetAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissSetActionsAsync() is not { } set)
         {
@@ -549,7 +552,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
 
         await RemoveSetAsync(set);
-    }
+    });
 
     private async Task<WorkoutSet?> DismissSetActionsAsync()
     {
@@ -568,34 +571,34 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }
 
     [RelayCommand]
-    private async Task UndoLastSetAsync()
+    private Task UndoLastSetAsync() => _errors.RunAsync(async () =>
     {
         if (!CurrentSets.Any())
             return;
 
         await RemoveSetAsync(CurrentSets[^1]);
-    }
+    });
 
     [RelayCommand]
-    private async Task PreviousExerciseAsync()
+    private Task PreviousExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (HasPreviousExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex - 1);
         }
-    }
+    });
 
     [RelayCommand]
-    private async Task NextExerciseAsync()
+    private Task NextExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (HasNextExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
         }
-    }
+    });
 
     [RelayCommand]
-    private async Task FinishWorkoutAsync()
+    private Task FinishWorkoutAsync() => _errors.RunAsync(async () =>
     {
         bool isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
@@ -607,16 +610,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
 
         await CompleteWorkoutAsync();
-    }
+    });
 
     [RelayCommand]
-    public async Task ResumeWorkoutAsync()
-    {
-        await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
-    }
+    public Task ResumeWorkoutAsync() =>
+        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab));
 
     [RelayCommand]
-    private async Task NavigateBackAsync()
+    private Task NavigateBackAsync() => _errors.RunAsync(async () =>
     {
         if (IsSetEditorOpen)
         {
@@ -631,17 +632,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         await ExitWorkoutAsync();
-    }
+    });
 
     [RelayCommand]
-    private async Task ExitWorkoutAsync()
+    private Task ExitWorkoutAsync() => _errors.RunAsync(async () =>
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
         ClearCompletedSummary();
-    }
+    });
 
     [RelayCommand]
-    private async Task ViewCompletedHistoryAsync()
+    private Task ViewCompletedHistoryAsync() => _errors.RunAsync(async () =>
     {
         var navigationParameter = new Dictionary<string, object>
         {
@@ -650,7 +651,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
         await Shell.Current.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
         ClearCompletedSummary();
-    }
+    });
 
     private void ClearCompletedSummary()
     {
