@@ -19,7 +19,7 @@ public static class AppLog
     public static void LogFailures(Task task, [CallerMemberName] string context = "") =>
         _ = LogFailuresAsync(task, context);
 
-    private static async Task LogFailuresAsync(Task task, string context)
+    public static async Task LogFailuresAsync(Task task, [CallerMemberName] string context = "")
     {
         try
         {
