@@ -444,21 +444,25 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task CompleteWorkoutAsync()
     {
+        var summary = await _summaryService.BuildAsync([.. Exercises]);
+        await _sessionRepository.FinishAsync(_sessionId);
+        await _activeStateRepository.ClearAsync();
+
         _timer.Stop();
         ClearRestState();
         _audioCues.Stop();
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
+        ShowSummary(summary);
+        IsWorkoutCompleted = true;
+        IsWorkoutActive = false;
+    }
 
-        var summary = await _summaryService.BuildAsync([.. Exercises]);
+    private void ShowSummary(WorkoutSummary summary)
+    {
         CompletedExercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
         TotalVolume = summary.TotalVolume;
         TotalSets = summary.Exercises.Sum(exercise => exercise.Sets.Count);
         SummaryDateText = _workoutStartTimeUtc.ToLocalTime().ToString(UiText.SummaryDateFormat, CultureInfo.InvariantCulture);
-
-        await _sessionRepository.FinishAsync(_sessionId);
-        IsWorkoutCompleted = true;
-        IsWorkoutActive = false;
-        await _activeStateRepository.ClearAsync();
     }
 
     private void ClearRestState()
