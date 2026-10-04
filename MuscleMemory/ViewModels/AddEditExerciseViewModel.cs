@@ -30,21 +30,22 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
     [NotifyPropertyChangedFor(nameof(NameError))]
-    private partial IReadOnlySet<string> TakenNames { get; set; } = new HashSet<string>();
+    private partial IReadOnlySet<string>? TakenNames { get; set; }
 
     public MuscleGroup[] MuscleGroups { get; } = Enum.GetValues<MuscleGroup>();
 
     public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
 
-    public bool CanSave => !string.IsNullOrWhiteSpace(Name) && !IsNameTaken;
+    public bool CanSave => TakenNames is not null && !string.IsNullOrWhiteSpace(Name) && !IsNameTaken;
 
     public string NameError => IsNameTaken ? UiText.ExerciseNameTakenError : string.Empty;
 
-    private bool IsNameTaken => TakenNames.Contains(Name.Trim());
+    private bool IsNameTaken => TakenNames?.Contains(Name.Trim()) == true;
 
     public async Task BeginNewAsync()
     {
         _existingExercise = null;
+        TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
         Title = UiText.HeaderNewExercise;
         ConfirmText = UiText.ButtonAdd;
@@ -56,6 +57,7 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
     public async Task BeginEditAsync(Exercise exercise)
     {
         _existingExercise = exercise;
+        TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
         Title = UiText.HeaderEditExercise;
         ConfirmText = UiText.ButtonSave;
