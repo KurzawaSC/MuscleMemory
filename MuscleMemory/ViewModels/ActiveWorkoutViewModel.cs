@@ -156,7 +156,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public string ActionSetTitle => ActionSet is { } set ? string.Format(UiText.SetProgressFormat, set.SetNumber) : string.Empty;
 
-    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
+    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
     public ActiveWorkoutViewModel(
         IWorkoutRepository workoutRepository,
@@ -330,7 +330,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var lastSessionSets = await _setRepository.GetLastSessionSetsAsync(exercise.ExerciseId, _sessionId);
         HasLastSession = lastSessionSets.Count > 0;
         LastSessionResultsText = HasLastSession
-            ? UiText.LastSessionPrefix + string.Join(UiText.ResultSeparator, lastSessionSets.Select(set => string.Format(UiText.SetResultFormat, set.Weight, set.Reps)))
+            ? UiText.LastSessionPrefix + string.Join(UiText.ResultSeparator, lastSessionSets.Select(set => string.Format(CultureInfo.CurrentCulture, UiText.SetResultFormat, set.Weight, set.Reps)))
             : UiText.FirstTimePerformingExercise;
 
         await LoadSetsForCurrentExerciseAsync();
