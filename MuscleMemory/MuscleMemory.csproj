@@ -62,7 +62,6 @@
 		<PackageReference Include="SourceGear.sqlite3" Version="3.50.4.5" />
 		<PackageReference Include="SQLitePCLRaw.config.e_sqlite3" Version="3.0.5" />
 		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.5" />
-		<PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="3.0.5" />
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
 	</ItemGroup>
 
