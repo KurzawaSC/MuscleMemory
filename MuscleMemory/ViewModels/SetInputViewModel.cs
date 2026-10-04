@@ -37,7 +37,7 @@ public sealed partial class SetInputViewModel : ObservableObject
     {
         if (TryReadWeight(out double weight) && TryReadReps(out int reps))
         {
-            values = new SetValues(weight, reps);
+            values = new SetValues(RoundWeight(weight), reps);
             return true;
         }
 
@@ -91,6 +91,9 @@ public sealed partial class SetInputViewModel : ObservableObject
 
     private bool TryParseReps(out int reps) =>
         int.TryParse(RepsInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out reps);
+
+    private static double RoundWeight(double weight) =>
+        Math.Round(weight / DomainDefaults.WeightPrecisionInKg, MidpointRounding.AwayFromZero) * DomainDefaults.WeightPrecisionInKg;
 
     private static bool IsInvalid(string input, bool isReadable) => input.Length > 0 && !isReadable;
 
