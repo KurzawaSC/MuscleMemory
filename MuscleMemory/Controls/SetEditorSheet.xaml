@@ -11,11 +11,13 @@
         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
             <controls:InputStepper Title="Weight (kg)"
                                    Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   ErrorText="{Binding Editor.WeightError, Source={x:Reference Root}, FallbackValue=''}"
                                    DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
                                    IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
             <controls:InputStepper Grid.Column="1"
                                    Title="Reps"
                                    Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   ErrorText="{Binding Editor.RepsError, Source={x:Reference Root}, FallbackValue=''}"
                                    DecrementCommand="{Binding Editor.DecreaseRepsCommand, Source={x:Reference Root}}"
                                    IncrementCommand="{Binding Editor.IncreaseRepsCommand, Source={x:Reference Root}}" />
         </Grid>

@@ -114,11 +114,13 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                             <controls:InputStepper Title="Weight (kg)"
                                                    Text="{Binding SetInput.WeightInput}"
+                                                   ErrorText="{Binding SetInput.WeightError}"
                                                    DecrementCommand="{Binding SetInput.DecreaseWeightCommand}"
                                                    IncrementCommand="{Binding SetInput.IncreaseWeightCommand}" />
                             <controls:InputStepper Grid.Column="1"
                                                    Title="Reps"
                                                    Text="{Binding SetInput.RepsInput}"
+                                                   ErrorText="{Binding SetInput.RepsError}"
                                                    DecrementCommand="{Binding SetInput.DecreaseRepsCommand}"
                                                    IncrementCommand="{Binding SetInput.IncreaseRepsCommand}" />
                         </Grid>
