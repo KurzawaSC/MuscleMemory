@@ -5,6 +5,9 @@ public partial class TextField : ContentView
     public static readonly BindableProperty TextProperty =
         BindableProperty.Create(nameof(Text), typeof(string), typeof(TextField), string.Empty, BindingMode.TwoWay);
 
+    public static readonly BindableProperty MaxLengthProperty =
+        BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(TextField), int.MaxValue);
+
     public static readonly BindableProperty PlaceholderProperty =
         BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(TextField), string.Empty);
 
@@ -15,6 +18,12 @@ public partial class TextField : ContentView
         BindableProperty.Create(nameof(IsFilled), typeof(bool), typeof(TextField), false);
 
     public TextField() => InitializeComponent();
+
+    public int MaxLength
+    {
+        get => (int)GetValue(MaxLengthProperty);
+        set => SetValue(MaxLengthProperty, value);
+    }
 
     public string Text
     {
