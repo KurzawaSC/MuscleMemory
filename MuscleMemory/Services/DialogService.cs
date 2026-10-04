@@ -27,11 +27,17 @@ public sealed class DialogService : IDialogService
 
         using (WindowLayer.InterceptBack(() => viewModel.CancelCommand.Execute(null)))
         {
-            await dialog.AnimateInAsync();
-            var result = await viewModel.Result;
-            await dialog.AnimateOutAsync();
-            WindowLayer.Hide(dialog);
-            return result;
+            try
+            {
+                await dialog.AnimateInAsync();
+                var result = await viewModel.Result;
+                await dialog.AnimateOutAsync();
+                return result;
+            }
+            finally
+            {
+                WindowLayer.Hide(dialog);
+            }
         }
     }
 }
