@@ -31,7 +31,7 @@
 		<ApplicationTitle>Muscle Memory</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.musclememory</ApplicationId>
+		<ApplicationId>io.github.kurzawasc.musclememory</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
