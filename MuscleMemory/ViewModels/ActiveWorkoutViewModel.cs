@@ -278,8 +278,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _sessionId = state.SessionId;
         _workoutStartTimeUtc = state.StartTimeUtc;
         _currentExerciseIndex = state.CurrentExerciseIndex;
-        IsResting = state.IsResting;
-        _breakEndTimeUtc = state.BreakEndTimeUtc;
+        RestoreRest(state);
         IsWorkoutActive = true;
         IsWorkoutCompleted = false;
         WorkoutTitle = session.WorkoutName;
@@ -297,6 +296,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         _timer.Start();
+    }
+
+    private void RestoreRest(ActiveWorkoutState state)
+    {
+        if (!state.IsResting || _timer.RemainingUntil(state.BreakEndTimeUtc) <= TimeSpan.Zero)
+        {
+            ClearRestState();
+            return;
+        }
+
+        _breakEndTimeUtc = state.BreakEndTimeUtc;
+        IsResting = true;
     }
 
     private async Task ShowExercisesAsync(List<SessionExercise> performedExercises, bool restoreIndex)
