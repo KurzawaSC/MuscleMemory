@@ -23,7 +23,7 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
             SELECT earlier.WorkoutSessionId FROM SessionExercise earlier
             JOIN WorkoutSet earlierSet ON earlierSet.SessionExerciseId = earlier.Id
             JOIN WorkoutSession session ON session.Id = earlier.WorkoutSessionId
-            WHERE earlier.ExerciseId = ? AND earlier.WorkoutSessionId <> ?
+            WHERE earlier.ExerciseId = ? AND earlier.WorkoutSessionId <> ? AND session.EndTimeUtc IS NOT NULL
             ORDER BY session.StartTimeUtc DESC
             LIMIT 1)
         ORDER BY loggedSet.SetNumber
