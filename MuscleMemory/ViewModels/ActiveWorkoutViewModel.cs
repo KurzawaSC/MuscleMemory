@@ -283,7 +283,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _activeStateRepository.SaveAsync(state);
     }
 
-    public async Task LoadStateAsync()
+    public Task LoadStateAsync() => RunExclusiveAsync(RestoreStateAsync);
+
+    private async Task RestoreStateAsync()
     {
         var state = await _activeStateRepository.GetAsync();
         if (state is null)
