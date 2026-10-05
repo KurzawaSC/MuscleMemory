@@ -9,6 +9,8 @@ public sealed class ExerciseCatalogService(
     IExerciseRepository exerciseRepository,
     IWorkoutRepository workoutRepository) : IExerciseCatalogService
 {
+    public Task AddAsync(Exercise exercise) => exerciseRepository.AddAsync(exercise);
+
     public async Task UpdateAsync(Exercise exercise)
     {
         var connection = await context.GetConnectionAsync();
