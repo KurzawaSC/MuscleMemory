@@ -19,6 +19,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private readonly IErrorHandler _errors;
     private List<Exercise> _allExercises = [];
+    private int _latestLoad;
 
     public ExerciseListViewModel(
         IExerciseRepository exerciseRepository,
@@ -29,6 +30,7 @@ public partial class ExerciseListViewModel : ObservableObject
         ExerciseFilterViewModel filter,
         IHapticService hapticService,
         IDialogService dialogs,
+        IDataChangeNotifier dataChanges,
         IErrorHandler errors)
     {
         _exerciseRepository = exerciseRepository;
@@ -41,6 +43,7 @@ public partial class ExerciseListViewModel : ObservableObject
         ExerciseForm = exerciseForm;
         Filter = filter;
         Filter.Changed += (_, _) => ApplyFilter();
+        dataChanges.Changed += OnDataChanged;
     }
 
     [ObservableProperty]
@@ -83,14 +86,31 @@ public partial class ExerciseListViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private Task LoadExercisesAsync() => _errors.RunAsync(async () =>
+    private void OnDataChanged(object? sender, DataArea areas)
     {
-        _allExercises = await _exerciseRepository.GetAllAsync();
+        if (areas.HasFlag(DataArea.Exercises))
+        {
+            _errors.ReportFailures(ReloadAsync());
+        }
+    }
+
+    [RelayCommand]
+    private Task LoadExercisesAsync() => _errors.RunAsync(ReloadAsync);
+
+    private async Task ReloadAsync()
+    {
+        var load = ++_latestLoad;
+        var exercises = await _exerciseRepository.GetAllAsync();
+        if (load != _latestLoad)
+        {
+            return;
+        }
+
+        _allExercises = exercises;
         IsEmpty = _allExercises.Count == 0;
         Filter.UpdateFilters(_allExercises);
         ApplyFilter();
-    });
+    }
 
     private void ApplyFilter()
     {
@@ -115,7 +135,6 @@ public partial class ExerciseListViewModel : ObservableObject
 
         await ExerciseForm.SaveAsync();
         IsExerciseFormOpen = false;
-        await LoadExercisesAsync();
     });
 
     [RelayCommand]
@@ -187,7 +206,6 @@ public partial class ExerciseListViewModel : ObservableObject
         if (answer)
         {
             await _exerciseCatalog.DeleteAsync(exercise.Id);
-            await LoadExercisesAsync();
         }
     });
 
