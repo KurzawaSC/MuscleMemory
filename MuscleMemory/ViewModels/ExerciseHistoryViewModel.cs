@@ -7,9 +7,10 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService historyQueryService) : ObservableObject, IQueryAttributable
+public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService historyQueryService, IErrorHandler errors) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
+    private readonly IErrorHandler _errors = errors;
     private int _exerciseId;
 
     [ObservableProperty]
@@ -33,7 +34,7 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
         if (query.TryGetValue(QueryKeys.ExerciseId, out var id) && id is int exerciseId && exerciseId > 0)
         {
             _exerciseId = exerciseId;
-            _ = LoadHistoryAsync();
+            _errors.ReportFailures(LoadHistoryAsync());
         }
     }
 
@@ -49,8 +50,6 @@ public partial class ExerciseHistoryViewModel(IWorkoutHistoryQueryService histor
         string.Format(UiText.SessionCountFormat, count, count == 1 ? UiText.CaptionSession : UiText.CaptionSessions);
 
     [RelayCommand]
-    private async Task GoBackAsync()
-    {
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
-    }
+    private Task GoBackAsync() =>
+        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.GoBack));
 }

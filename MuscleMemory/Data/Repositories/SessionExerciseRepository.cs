@@ -7,27 +7,7 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
 {
     private const string SelectForSessionsFormat = "SELECT * FROM SessionExercise WHERE WorkoutSessionId IN ({0}) ORDER BY [Order]";
     private const string SelectNextOrder = "SELECT IFNULL(MAX([Order]), -1) + 1 FROM SessionExercise WHERE WorkoutSessionId = ?";
-
-    public async Task<List<SessionExercise>> CreateSnapshotAsync(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises)
-    {
-        var snapshot = BuildSnapshot(workoutSessionId, templateExercises);
-
-        if (snapshot.Count == 0)
-        {
-            return snapshot;
-        }
-
-        var connection = await context.GetConnectionAsync();
-        await connection.RunInTransactionAsync(transaction =>
-        {
-            foreach (var sessionExercise in snapshot)
-            {
-                transaction.Insert(sessionExercise);
-            }
-        });
-
-        return snapshot;
-    }
+    private const string DeleteSetsForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
 
     public async Task<List<SessionExercise>> GetForSessionAsync(int workoutSessionId)
     {
@@ -59,7 +39,7 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
                                .ToListAsync();
     }
 
-    public async Task<SessionExercise> AppendToSessionAsync(SessionExercise sessionExercise)
+    public async Task AppendToSessionAsync(SessionExercise sessionExercise)
     {
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
@@ -67,30 +47,17 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
             sessionExercise.Order = transaction.ExecuteScalar<int>(SelectNextOrder, sessionExercise.WorkoutSessionId);
             transaction.Insert(sessionExercise);
         });
-
-        return sessionExercise;
     }
 
     public async Task DeleteAsync(int sessionExerciseId)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.DeleteAsync<SessionExercise>(sessionExerciseId);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            transaction.Execute(DeleteSetsForSessionExercise, sessionExerciseId);
+            transaction.Delete<SessionExercise>(sessionExerciseId);
+        });
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<SessionExercise>();
-
-    private static List<SessionExercise> BuildSnapshot(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises) =>
-    [
-        .. templateExercises.Select((templateExercise, position) => new SessionExercise
-        {
-            WorkoutSessionId = workoutSessionId,
-            ExerciseId = templateExercise.ExerciseId,
-            ExerciseName = templateExercise.ExerciseName,
-            Order = position,
-            PlannedSets = templateExercise.Sets,
-            PlannedReps = templateExercise.Reps,
-            BreakTimeInSeconds = templateExercise.BreakTimeInSeconds,
-            TargetRPE = templateExercise.TargetRPE
-        })
-    ];
 }

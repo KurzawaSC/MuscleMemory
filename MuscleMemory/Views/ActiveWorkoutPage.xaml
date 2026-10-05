@@ -93,6 +93,7 @@
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
                             <Binding Path="IsExerciseComplete" Converter="{StaticResource InvertedBoolConverter}" />
+                            <Binding Path="IsExercisesEmpty" Converter="{StaticResource InvertedBoolConverter}" />
                         </MultiBinding>
                     </Border.IsVisible>
                     <VerticalStackLayout Spacing="14" Padding="16">
@@ -114,11 +115,15 @@
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                             <controls:InputStepper Title="Weight (kg)"
                                                    Text="{Binding SetInput.WeightInput}"
+                                                   MaxLength="{x:Static constants:DomainDefaults.MaxWeightInputLength}"
+                                                   ErrorText="{Binding SetInput.WeightError}"
                                                    DecrementCommand="{Binding SetInput.DecreaseWeightCommand}"
                                                    IncrementCommand="{Binding SetInput.IncreaseWeightCommand}" />
                             <controls:InputStepper Grid.Column="1"
                                                    Title="Reps"
                                                    Text="{Binding SetInput.RepsInput}"
+                                                   MaxLength="{x:Static constants:DomainDefaults.MaxRepsInputLength}"
+                                                   ErrorText="{Binding SetInput.RepsError}"
                                                    DecrementCommand="{Binding SetInput.DecreaseRepsCommand}"
                                                    IncrementCommand="{Binding SetInput.IncreaseRepsCommand}" />
                         </Grid>

@@ -13,21 +13,30 @@ namespace MuscleMemory.ViewModels;
 public partial class ExerciseListViewModel : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository;
+    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IExerciseCatalogService _exerciseCatalog;
     private readonly IHapticService _hapticService;
     private readonly IDialogService _dialogs;
+    private readonly IErrorHandler _errors;
     private List<Exercise> _allExercises = [];
 
     public ExerciseListViewModel(
         IExerciseRepository exerciseRepository,
+        IWorkoutRepository workoutRepository,
+        IExerciseCatalogService exerciseCatalog,
         ActiveWorkoutViewModel activeWorkout,
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
         IHapticService hapticService,
-        IDialogService dialogs)
+        IDialogService dialogs,
+        IErrorHandler errors)
     {
         _exerciseRepository = exerciseRepository;
+        _workoutRepository = workoutRepository;
+        _exerciseCatalog = exerciseCatalog;
         _hapticService = hapticService;
         _dialogs = dialogs;
+        _errors = errors;
         ActiveWorkout = activeWorkout;
         ExerciseForm = exerciseForm;
         Filter = filter;
@@ -75,13 +84,13 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LoadExercisesAsync()
+    private Task LoadExercisesAsync() => _errors.RunAsync(async () =>
     {
         _allExercises = await _exerciseRepository.GetAllAsync();
         IsEmpty = _allExercises.Count == 0;
         Filter.UpdateFilters(_allExercises);
         ApplyFilter();
-    }
+    });
 
     private void ApplyFilter()
     {
@@ -90,14 +99,14 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AddExercise()
+    private Task AddExerciseAsync() => _errors.RunAsync(async () =>
     {
-        ExerciseForm.BeginNew();
+        await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
-    }
+    });
 
     [RelayCommand]
-    private async Task SaveExerciseAsync()
+    private Task SaveExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (!ExerciseForm.CanSave)
         {
@@ -107,7 +116,7 @@ public partial class ExerciseListViewModel : ObservableObject
         await ExerciseForm.SaveAsync();
         IsExerciseFormOpen = false;
         await LoadExercisesAsync();
-    }
+    });
 
     [RelayCommand]
     private void CancelExerciseForm()
@@ -136,19 +145,19 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task EditActionExerciseAsync()
+    private Task EditActionExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissActionSheetAsync() is not { } exercise)
         {
             return;
         }
 
-        ExerciseForm.BeginEdit(exercise);
+        await ExerciseForm.BeginEditAsync(exercise);
         IsExerciseFormOpen = true;
-    }
+    });
 
     [RelayCommand]
-    private async Task ViewActionExerciseHistoryAsync()
+    private Task ViewActionExerciseHistoryAsync() => _errors.RunAsync(async () =>
     {
         if (ActionExercise is not { } exercise)
         {
@@ -163,23 +172,28 @@ public partial class ExerciseListViewModel : ObservableObject
             { QueryKeys.ExerciseName, exercise.Name }
         };
         await Shell.Current.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
-    }
+    });
 
     [RelayCommand]
-    private async Task DeleteActionExerciseAsync()
+    private Task DeleteActionExerciseAsync() => _errors.RunAsync(async () =>
     {
         if (await DismissActionSheetAsync() is not { } exercise)
         {
             return;
         }
 
-        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.DeleteConfirmationFormat, exercise.Name), UiText.ButtonDelete, UiText.ButtonCancel);
+        var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
+        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
-            await _exerciseRepository.DeleteAsync(exercise.Id);
+            await _exerciseCatalog.DeleteAsync(exercise.Id);
             await LoadExercisesAsync();
         }
-    }
+    });
+
+    private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
+        ? string.Format(UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, workoutCount == 1 ? UiText.CaptionWorkout : UiText.CaptionWorkouts)
+        : string.Format(UiText.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {

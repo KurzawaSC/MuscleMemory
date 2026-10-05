@@ -5,6 +5,9 @@ public partial class TextField : ContentView
     public static readonly BindableProperty TextProperty =
         BindableProperty.Create(nameof(Text), typeof(string), typeof(TextField), string.Empty, BindingMode.TwoWay);
 
+    public static readonly BindableProperty MaxLengthProperty =
+        BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(TextField), int.MaxValue);
+
     public static readonly BindableProperty PlaceholderProperty =
         BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(TextField), string.Empty);
 
@@ -14,7 +17,20 @@ public partial class TextField : ContentView
     public static readonly BindableProperty IsFilledProperty =
         BindableProperty.Create(nameof(IsFilled), typeof(bool), typeof(TextField), false);
 
+    public static readonly BindableProperty FieldHeightProperty =
+        BindableProperty.Create(nameof(FieldHeight), typeof(double), typeof(TextField), HeightRequestProperty.DefaultValue);
+
+    public static readonly BindableProperty ErrorTextProperty =
+        BindableProperty.Create(nameof(ErrorText), typeof(string), typeof(TextField), string.Empty,
+            propertyChanged: (bindable, _, _) => ((TextField)bindable).OnPropertyChanged(nameof(HasError)));
+
     public TextField() => InitializeComponent();
+
+    public int MaxLength
+    {
+        get => (int)GetValue(MaxLengthProperty);
+        set => SetValue(MaxLengthProperty, value);
+    }
 
     public string Text
     {
@@ -39,4 +55,18 @@ public partial class TextField : ContentView
         get => (bool)GetValue(IsFilledProperty);
         set => SetValue(IsFilledProperty, value);
     }
+
+    public double FieldHeight
+    {
+        get => (double)GetValue(FieldHeightProperty);
+        set => SetValue(FieldHeightProperty, value);
+    }
+
+    public string ErrorText
+    {
+        get => (string)GetValue(ErrorTextProperty);
+        set => SetValue(ErrorTextProperty, value);
+    }
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorText);
 }

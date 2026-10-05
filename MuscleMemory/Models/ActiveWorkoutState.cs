@@ -13,4 +13,5 @@ public class ActiveWorkoutState
     public int CurrentExerciseIndex { get; set; }
     public bool IsResting { get; set; }
     public DateTime BreakEndTimeUtc { get; set; }
+    public int RestDurationSeconds { get; set; }
 }

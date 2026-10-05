@@ -43,11 +43,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<IActiveWorkoutStateRepository, ActiveWorkoutStateRepository>();
         builder.Services.AddSingleton<IWorkoutHistoryQueryService, WorkoutHistoryQueryService>();
         builder.Services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
+        builder.Services.AddSingleton<IExerciseCatalogService, ExerciseCatalogService>();
         builder.Services.AddSingleton<IStatusBarService, StatusBarService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
         builder.Services.AddSingleton<IWorkoutTimerService, WorkoutTimerService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
+        builder.Services.AddSingleton<IErrorHandler, ErrorHandler>();
         builder.Services.AddSingleton<IWorkoutSummaryService, WorkoutSummaryService>();
         builder.Services.AddSingleton<INavigationStackService, NavigationStackService>();
         builder.Services.AddSingleton(HapticFeedback.Default);
