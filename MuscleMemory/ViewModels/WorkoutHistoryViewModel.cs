@@ -210,9 +210,7 @@ public partial class WorkoutHistoryViewModel(
 
         if (_setBeingEdited is { } editedSet)
         {
-            editedSet.Weight = values.Weight;
-            editedSet.Reps = values.Reps;
-            await _setRepository.UpdateAsync(editedSet);
+            await _setRepository.UpdateAsync(editedSet.Id, values.Weight, values.Reps);
         }
         else if (_exerciseReceivingSet is { } receivingExercise)
         {

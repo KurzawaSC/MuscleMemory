@@ -5,6 +5,8 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetRepository
 {
+    private const string SetNotFoundMessage = "The set to update no longer exists.";
+    private const string UpdateValues = "UPDATE WorkoutSet SET Weight = ?, Reps = ? WHERE Id = ?";
     private const string DeleteForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
     private const string RenumberForSessionExercise = """
         UPDATE WorkoutSet
@@ -39,10 +41,15 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         });
     }
 
-    public async Task UpdateAsync(WorkoutSet set)
+    public async Task UpdateAsync(int setId, double weight, int reps)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.UpdateAsync(set);
+        var updatedRows = await connection.ExecuteAsync(UpdateValues, weight, reps, setId);
+
+        if (updatedRows == 0)
+        {
+            throw new InvalidOperationException(SetNotFoundMessage);
+        }
     }
 
     public async Task DeleteAsync(int setId)
