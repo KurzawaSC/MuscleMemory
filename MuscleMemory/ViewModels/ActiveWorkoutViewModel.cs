@@ -225,8 +225,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task StartWorkoutAsync(Workout workout)
     {
+        ResetDisplayState();
         _workoutStartTimeUtc = DateTime.UtcNow;
-        IsWorkoutCompleted = false;
 
         WorkoutTitle = workout.Name;
         _workoutId = workout.Id;
@@ -678,9 +678,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private void ClearCompletedSummary()
     {
-        if (!IsWorkoutCompleted)
-            return;
+        if (IsWorkoutCompleted)
+        {
+            ClearSummary();
+        }
+    }
 
+    private void ClearSummary()
+    {
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
@@ -689,35 +694,35 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
+    private void ResetDisplayState()
+    {
+        ClearRestState();
+        CancelSetActions();
+        CloseSetEditor();
+        ResetCurrentExercise();
+        ClearSummary();
+
+        IsExercisesEmpty = false;
+        Exercises.Clear();
+
+        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        RestTotalText = string.Empty;
+    }
+
     public void Reset()
     {
         _timer.Stop();
         _audioCues.Stop();
-        ClearRestState();
-        CancelSetActions();
-        CloseSetEditor();
         _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
-        ResetCurrentExercise();
+        ResetDisplayState();
 
         _sessionId = 0;
         _workoutId = 0;
         _workoutStartTimeUtc = default;
 
         IsWorkoutActive = false;
-        IsWorkoutCompleted = false;
-        IsExercisesEmpty = false;
-
-        Exercises.Clear();
-        CompletedExercises.Clear();
-
-        WorkoutTitle = UiText.LoadingWorkoutTitle;
-        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
-        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
-        RestTotalText = string.Empty;
-        TotalVolume = 0;
-        TotalSets = 0;
-        SummaryDateText = string.Empty;
     }
 
     public void TrackCurrentPage(Shell shell)
