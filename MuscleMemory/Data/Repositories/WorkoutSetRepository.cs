@@ -7,7 +7,6 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
 {
     private const string SetNotFoundMessage = "The set to update no longer exists.";
     private const string UpdateValues = "UPDATE WorkoutSet SET Weight = ?, Reps = ? WHERE Id = ?";
-    private const string DeleteForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
     private const string RenumberForSessionExercise = """
         UPDATE WorkoutSet
         SET SetNumber = (
@@ -66,12 +65,6 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
             transaction.Delete<WorkoutSet>(setId);
             transaction.Execute(RenumberForSessionExercise, set.SessionExerciseId);
         });
-    }
-
-    public async Task DeleteForSessionExerciseAsync(int sessionExerciseId)
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.ExecuteAsync(DeleteForSessionExercise, sessionExerciseId);
     }
 
     public async Task<List<WorkoutSet>> GetForSessionExerciseAsync(int sessionExerciseId)

@@ -7,6 +7,7 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
 {
     private const string SelectForSessionsFormat = "SELECT * FROM SessionExercise WHERE WorkoutSessionId IN ({0}) ORDER BY [Order]";
     private const string SelectNextOrder = "SELECT IFNULL(MAX([Order]), -1) + 1 FROM SessionExercise WHERE WorkoutSessionId = ?";
+    private const string DeleteSetsForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
 
     public async Task<List<SessionExercise>> CreateSnapshotAsync(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises)
     {
@@ -72,7 +73,11 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
     public async Task DeleteAsync(int sessionExerciseId)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.DeleteAsync<SessionExercise>(sessionExerciseId);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            transaction.Execute(DeleteSetsForSessionExercise, sessionExerciseId);
+            transaction.Delete<SessionExercise>(sessionExerciseId);
+        });
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<SessionExercise>();
