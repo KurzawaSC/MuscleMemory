@@ -93,6 +93,7 @@
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
                             <Binding Path="IsExerciseComplete" Converter="{StaticResource InvertedBoolConverter}" />
+                            <Binding Path="IsExercisesEmpty" Converter="{StaticResource InvertedBoolConverter}" />
                         </MultiBinding>
                     </Border.IsVisible>
                     <VerticalStackLayout Spacing="14" Padding="16">
