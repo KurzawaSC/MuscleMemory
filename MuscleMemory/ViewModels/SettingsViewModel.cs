@@ -10,12 +10,14 @@ public partial class SettingsViewModel(
     IDatabaseMaintenanceService maintenanceService,
     IThemeService themeService,
     IDialogService dialogs,
+    INavigationStackService navigationStack,
     IErrorHandler errors,
     ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
     private readonly IDatabaseMaintenanceService _maintenanceService = maintenanceService;
     private readonly IThemeService _themeService = themeService;
     private readonly IDialogService _dialogs = dialogs;
+    private readonly INavigationStackService _navigationStack = navigationStack;
     private readonly IErrorHandler _errors = errors;
 
     [ObservableProperty]
@@ -66,6 +68,7 @@ public partial class SettingsViewModel(
         await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
 
         await _maintenanceService.ClearAllDataAsync();
+        _navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
         await _dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
     });

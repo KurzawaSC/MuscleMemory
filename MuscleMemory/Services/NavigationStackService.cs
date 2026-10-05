@@ -2,11 +2,11 @@ namespace MuscleMemory.Services;
 
 public sealed class NavigationStackService : INavigationStackService
 {
-    public void RemoveFromAllTabs<TPage>() where TPage : Page
+    public void PopAllTabsToRoot()
     {
         foreach (var section in AllTabs())
         {
-            foreach (var page in section.Navigation.NavigationStack.OfType<TPage>().ToList())
+            foreach (var page in section.Navigation.NavigationStack.Skip(1).OfType<Page>().ToList())
             {
                 section.Navigation.RemovePage(page);
             }
