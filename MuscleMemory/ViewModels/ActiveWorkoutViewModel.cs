@@ -773,7 +773,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         _timer.Stop();
         _audioCues.Stop();
-        _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
         ResetDisplayState();
 
