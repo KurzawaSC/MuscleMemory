@@ -384,7 +384,9 @@ public partial class AddEditWorkoutViewModel(
         }
         else
         {
-            await _workoutRepository.SaveWithExercisesAsync(new Workout { Name = WorkoutName.Trim() }, [.. Exercises]);
+            var workout = new Workout { Name = WorkoutName.Trim() };
+            await _workoutRepository.SaveWithExercisesAsync(workout, [.. Exercises]);
+            _workoutToEdit = workout;
         }
 
         HasUnsavedChanges = false;
