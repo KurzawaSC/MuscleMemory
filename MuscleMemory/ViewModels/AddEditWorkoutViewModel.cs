@@ -73,15 +73,12 @@ public partial class AddEditWorkoutViewModel(
     public partial bool HasUnsavedChanges { get; set; } = false;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsExercisePickerOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsExerciseFormOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsConfigurationOpen { get; set; }
 
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
@@ -196,8 +193,19 @@ public partial class AddEditWorkoutViewModel(
     }
 
     [RelayCommand]
-    private Task GoBackAsync() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.GoBack));
+    private Task NavigateBackAsync() => _errors.RunAsync(async () =>
+    {
+        if (IsAnySheetOpen)
+        {
+            CloseSheets();
+            return;
+        }
+
+        if (await ConfirmDiscardAsync())
+        {
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        }
+    });
 
     private static bool IsLeavingEditor(ShellNavigatingEventArgs e) =>
         IsEditorLocation(e.Current) && !IsEditorLocation(e.Target) && !KeepsEditorOnStack(e);
@@ -302,7 +310,6 @@ public partial class AddEditWorkoutViewModel(
         IsConfigurationOpen = false;
     }
 
-    [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
     private void CloseSheets()
     {
         IsExercisePickerOpen = false;
