@@ -255,7 +255,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             StartTimeUtc = _workoutStartTimeUtc,
             CurrentExerciseIndex = _currentExerciseIndex,
             IsResting = IsResting,
-            BreakEndTimeUtc = _breakEndTimeUtc
+            BreakEndTimeUtc = _breakEndTimeUtc,
+            RestDurationSeconds = _restDurationSeconds
         };
         await _activeStateRepository.SaveAsync(state);
     }
@@ -287,14 +288,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var performedExercises = await _sessionExerciseRepository.GetForSessionAsync(_sessionId);
         await ShowExercisesAsync(performedExercises, restoreIndex: true);
 
-        if (IsResting)
-        {
-            var remainingSeconds = (int)Math.Ceiling(_timer.RemainingUntil(_breakEndTimeUtc).TotalSeconds);
-            _restDurationSeconds = Math.Max(CurrentExercise.BreakTimeInSeconds, remainingSeconds);
-            RestTotalText = string.Format(UiText.RestTotalFormat, _restDurationSeconds);
-            UpdateRestCountdown();
-        }
-
         _timer.Start();
     }
 
@@ -306,8 +299,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        _breakEndTimeUtc = state.BreakEndTimeUtc;
-        IsResting = true;
+        ShowRest(state.BreakEndTimeUtc, state.RestDurationSeconds);
     }
 
     private async Task ShowExercisesAsync(List<SessionExercise> performedExercises, bool restoreIndex)
@@ -435,10 +427,12 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         UpdateSetProgress();
     });
 
-    private void StartRest(int durationSeconds)
+    private void StartRest(int durationSeconds) => ShowRest(DateTime.UtcNow.AddSeconds(durationSeconds), durationSeconds);
+
+    private void ShowRest(DateTime breakEndTimeUtc, int durationSeconds)
     {
         _restDurationSeconds = durationSeconds;
-        _breakEndTimeUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+        _breakEndTimeUtc = breakEndTimeUtc;
         RestTotalText = string.Format(UiText.RestTotalFormat, durationSeconds);
         IsResting = true;
         UpdateRestCountdown();
