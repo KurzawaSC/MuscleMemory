@@ -451,7 +451,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task CompleteWorkoutAsync()
     {
         var summary = await _summaryService.BuildAsync([.. Exercises]);
-        await _sessionRepository.FinishAsync(_sessionId);
+        await _sessionRepository.FinishOrDiscardAsync(_sessionId);
         await _activeStateRepository.ClearAsync();
 
         _timer.Stop();
