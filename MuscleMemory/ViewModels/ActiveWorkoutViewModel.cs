@@ -537,11 +537,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
+        await _setRepository.UpdateAsync(set.Id, values.Weight, values.Reps);
         CloseSetEditor();
-        set.Weight = values.Weight;
-        set.Reps = values.Reps;
-
-        await _setRepository.UpdateAsync(set);
         await LoadSetsForCurrentExerciseAsync();
     });
 
