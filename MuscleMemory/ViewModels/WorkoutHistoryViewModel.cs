@@ -26,6 +26,7 @@ public partial class WorkoutHistoryViewModel(
     private readonly IWorkoutTimerService _timer = timer;
     private readonly IErrorHandler _errors = errors;
     private int _workoutId;
+    private int _latestLoad;
     private WorkoutSet? _setBeingEdited;
     private WorkoutHistoryExercise? _exerciseReceivingSet;
 
@@ -43,15 +44,12 @@ public partial class WorkoutHistoryViewModel(
     public SelectExerciseViewModel ExercisePicker { get; } = exercisePicker;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsExercisePickerOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsSetActionSheetOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsSetEditorOpen { get; set; }
 
     [ObservableProperty]
@@ -98,8 +96,14 @@ public partial class WorkoutHistoryViewModel(
 
     private async Task LoadHistoryAsync()
     {
-        var selectedSessionId = SelectedSession?.Session.SessionId;
+        var load = ++_latestLoad;
         var history = await _historyQueryService.GetWorkoutHistoryAsync(_workoutId);
+        if (load != _latestLoad)
+        {
+            return;
+        }
+
+        var selectedSessionId = SelectedSession?.Session.SessionId;
 
         Sessions.ReplaceAll(history.Select(session => HistorySessionItem.Create(session, _timer.FormatElapsed(session.Duration))));
         SelectedSession = Sessions.FirstOrDefault(item => item.Session.SessionId == selectedSessionId) ?? Sessions.FirstOrDefault();
@@ -107,10 +111,17 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private Task GoBackAsync() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.GoBack));
+    private Task NavigateBackAsync() => _errors.RunAsync(async () =>
+    {
+        if (IsAnySheetOpen)
+        {
+            CloseSheets();
+            return;
+        }
 
-    [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+    });
+
     private void CloseSheets()
     {
         IsExercisePickerOpen = false;

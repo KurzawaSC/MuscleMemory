@@ -11,7 +11,8 @@ public sealed class DatabaseMaintenanceService(
     IWorkoutSessionRepository sessionRepository,
     ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
-    IActiveWorkoutStateRepository activeWorkoutStateRepository) : IDatabaseMaintenanceService
+    IActiveWorkoutStateRepository activeWorkoutStateRepository,
+    IDataChangeNotifier dataChanges) : IDatabaseMaintenanceService
 {
     private const string VacuumIntoSql = "VACUUM INTO ?";
 
@@ -42,5 +43,6 @@ public sealed class DatabaseMaintenanceService(
             sessionRepository.Clear(transaction);
             activeWorkoutStateRepository.Clear(transaction);
         });
+        dataChanges.Notify(DataArea.All);
     }
 }

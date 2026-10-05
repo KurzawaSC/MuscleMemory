@@ -49,6 +49,19 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public bool CanAddItems => !IsWorkoutActive;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveSetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UndoLastSetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(PreviousExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FinishWorkoutCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowSetActionsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExitWorkoutCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ViewCompletedHistoryCommand))]
+    public partial bool IsBusy { get; private set; }
+
+    private bool IsIdle => !IsBusy;
+
+    [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
 
     [ObservableProperty]
@@ -90,15 +103,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool HasNextExercise { get; set; } = false;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ProgressCaption))]
-    public partial bool IsExerciseComplete { get; set; } = false;
+    public partial bool IsPlanComplete { get; set; } = false;
 
-    public string ProgressCaption => (IsResting, IsExerciseComplete) switch
-    {
-        (true, _) => string.Join(UiText.ListSeparator, SetProgressText, TargetText),
-        (false, true) => ExerciseProgressText,
-        (false, false) => string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText)
-    };
+    public string ProgressCaption => IsResting
+        ? string.Join(UiText.ListSeparator, SetProgressText, TargetText)
+        : string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressCaption))]
@@ -217,16 +226,29 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive)
+        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive && IsIdle)
         {
-            _errors.ReportFailures(StartWorkoutAsync(workout));
+            _errors.ReportFailures(RunExclusiveAsync(() => StartWorkoutAsync(workout)));
+        }
+    }
+
+    private async Task RunExclusiveAsync(Func<Task> operation)
+    {
+        IsBusy = true;
+        try
+        {
+            await operation();
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
     private async Task StartWorkoutAsync(Workout workout)
     {
+        ResetDisplayState();
         _workoutStartTimeUtc = DateTime.UtcNow;
-        IsWorkoutCompleted = false;
 
         WorkoutTitle = workout.Name;
         _workoutId = workout.Id;
@@ -259,7 +281,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _activeStateRepository.SaveAsync(state);
     }
 
-    public async Task LoadStateAsync()
+    public Task LoadStateAsync() => RunExclusiveAsync(RestoreStateAsync);
+
+    private async Task RestoreStateAsync()
     {
         var state = await _activeStateRepository.GetAsync();
         if (state is null)
@@ -315,6 +339,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             IsExercisesEmpty = true;
             ResetCurrentExercise();
         }
+
+        await UpdatePlanCompletionAsync();
     }
 
     private void ResetCurrentExercise()
@@ -325,7 +351,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         CurrentSets.Clear();
         SetSegments.Clear();
         HasSavedSets = false;
-        IsExerciseComplete = false;
         HasPreviousExercise = false;
         HasNextExercise = false;
         HasLastSession = false;
@@ -384,23 +409,39 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         int currentSetNumber = CurrentSets.Count + 1;
 
+        SetProgressText = currentSetNumber <= _totalSetsForExercise
+            ? string.Format(UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
+            : string.Format(UiText.SetProgressFormat, currentSetNumber);
+
         if (_totalSetsForExercise > 0)
         {
-            SetProgressText = string.Format(UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise);
-            IsExerciseComplete = CurrentSets.Count >= _totalSetsForExercise;
             SetSegments.ReplaceAll(Enumerable.Range(1, _totalSetsForExercise)
                                              .Select(setNumber => new LevelSegment(setNumber, setNumber <= CurrentSets.Count)));
         }
         else
         {
-            SetProgressText = string.Format(UiText.SetProgressFormat, currentSetNumber);
-            IsExerciseComplete = false;
             SetSegments.Clear();
         }
     }
 
-    [RelayCommand]
-    private Task SaveSetAsync() => _errors.RunAsync(async () =>
+    private bool HasJustMetPlan() => _totalSetsForExercise > 0 && CurrentSets.Count == _totalSetsForExercise;
+
+    private async Task UpdatePlanCompletionAsync()
+    {
+        List<SessionExercise> plannedExercises = [.. Exercises.Where(exercise => exercise.PlannedSets > 0)];
+        if (plannedExercises.Count == 0)
+        {
+            IsPlanComplete = false;
+            return;
+        }
+
+        var loggedSets = await _setRepository.GetForSessionExercisesAsync([.. plannedExercises.Select(exercise => exercise.Id)]);
+        var loggedCounts = loggedSets.CountBy(set => set.SessionExerciseId).ToDictionary();
+        IsPlanComplete = plannedExercises.All(exercise => loggedCounts.GetValueOrDefault(exercise.Id) >= exercise.PlannedSets);
+    }
+
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task SaveSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (IsExercisesEmpty || !SetInput.TryRead(out var values))
         {
@@ -423,24 +464,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             StartRest(CurrentExercise.BreakTimeInSeconds);
         }
         await SaveStateAsync();
+        await UpdatePlanCompletionAsync();
 
-        if (_totalSetsForExercise > 0 && CurrentSets.Count >= _totalSetsForExercise)
+        if (HasJustMetPlan() && HasNextExercise)
         {
-            int nextIndex = _currentExerciseIndex + 1;
-            if (nextIndex < Exercises.Count)
-            {
-                await Task.Delay(UiTiming.ExerciseAdvanceDelayMilliseconds);
-                await AdvanceToExerciseAsync(nextIndex);
-                return;
-            }
-
-            UpdateSetProgress();
-            await CompleteWorkoutAsync();
+            await Task.Delay(UiTiming.ExerciseAdvanceDelayMilliseconds);
+            await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
             return;
         }
 
         UpdateSetProgress();
-    });
+    }));
 
     private void StartRest(int durationSeconds) => ShowRest(DateTime.UtcNow.AddSeconds(durationSeconds), durationSeconds);
 
@@ -463,15 +497,22 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             : 0;
     }
 
-    private async Task CompleteWorkoutAsync()
+    private async Task CompleteWorkoutAsync(WorkoutSummary summary)
     {
-        var summary = await _summaryService.BuildAsync([.. Exercises]);
         await _sessionRepository.FinishOrDiscardAsync(_sessionId);
         await _activeStateRepository.ClearAsync();
 
         _timer.Stop();
         ClearRestState();
         _audioCues.Stop();
+
+        if (!summary.HasLoggedSets)
+        {
+            IsWorkoutActive = false;
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            return;
+        }
+
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
         ShowSummary(summary);
         IsWorkoutCompleted = true;
@@ -517,7 +558,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await SaveStateAsync();
     });
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsIdle))]
     private void ShowSetActions(WorkoutSet set)
     {
         ActionSet = set;
@@ -591,53 +632,61 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await LoadSetsForCurrentExerciseAsync();
 
         UpdateSetProgress();
+        await UpdatePlanCompletionAsync();
     }
 
-    [RelayCommand]
-    private Task UndoLastSetAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task UndoLastSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (!CurrentSets.Any())
             return;
 
         await RemoveSetAsync(CurrentSets[^1]);
-    });
+    }));
 
-    [RelayCommand]
-    private Task PreviousExerciseAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task PreviousExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasPreviousExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex - 1);
         }
-    });
+    }));
 
-    [RelayCommand]
-    private Task NextExerciseAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task NextExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasNextExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
         }
-    });
+    }));
 
-    [RelayCommand]
-    private Task FinishWorkoutAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task FinishWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
+        var summary = await _summaryService.BuildAsync([.. Exercises]);
+
         bool isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
-            UiText.BodyFinishWorkoutConfirmation,
+            summary.HasLoggedSets ? UiText.BodyFinishWorkoutConfirmation : UiText.BodyFinishUnsavedWorkoutConfirmation,
             UiText.ButtonFinish,
             UiText.ButtonCancel);
 
         if (!isConfirmed)
             return;
 
-        await CompleteWorkoutAsync();
-    });
+        await CompleteWorkoutAsync(summary);
+    }));
 
     [RelayCommand]
-    public Task ResumeWorkoutAsync() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab));
+    private Task ResumeWorkoutAsync() => _errors.RunAsync(async () =>
+    {
+        if (await _navigationStack.ConfirmDiscardingChangesOnTabAsync(NavigationRoutes.WorkoutTab))
+        {
+            await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
+        }
+    });
 
     [RelayCommand]
     private Task NavigateBackAsync() => _errors.RunAsync(async () =>
@@ -654,18 +703,27 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        await ExitWorkoutAsync();
+        if (!IsWorkoutCompleted)
+        {
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            return;
+        }
+
+        if (ExitWorkoutCommand.CanExecute(null))
+        {
+            await ExitWorkoutCommand.ExecuteAsync(null);
+        }
     });
 
-    [RelayCommand]
-    private Task ExitWorkoutAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task ExitWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
         ClearCompletedSummary();
-    });
+    }));
 
-    [RelayCommand]
-    private Task ViewCompletedHistoryAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task ViewCompletedHistoryAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         var navigationParameter = new Dictionary<string, object>
         {
@@ -674,13 +732,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
         await Shell.Current.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
         ClearCompletedSummary();
-    });
+    }));
 
     private void ClearCompletedSummary()
     {
-        if (!IsWorkoutCompleted)
-            return;
+        if (IsWorkoutCompleted)
+        {
+            ClearSummary();
+        }
+    }
 
+    private void ClearSummary()
+    {
         IsWorkoutCompleted = false;
         CompletedExercises.Clear();
         TotalVolume = 0;
@@ -689,35 +752,35 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
     }
 
+    private void ResetDisplayState()
+    {
+        ClearRestState();
+        CancelSetActions();
+        CloseSetEditor();
+        ResetCurrentExercise();
+        ClearSummary();
+
+        IsExercisesEmpty = false;
+        IsPlanComplete = false;
+        Exercises.Clear();
+
+        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        RestTotalText = string.Empty;
+    }
+
     public void Reset()
     {
         _timer.Stop();
         _audioCues.Stop();
-        ClearRestState();
-        CancelSetActions();
-        CloseSetEditor();
-        _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
-        ResetCurrentExercise();
+        ResetDisplayState();
 
         _sessionId = 0;
         _workoutId = 0;
         _workoutStartTimeUtc = default;
 
         IsWorkoutActive = false;
-        IsWorkoutCompleted = false;
-        IsExercisesEmpty = false;
-
-        Exercises.Clear();
-        CompletedExercises.Clear();
-
-        WorkoutTitle = UiText.LoadingWorkoutTitle;
-        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
-        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
-        RestTotalText = string.Empty;
-        TotalVolume = 0;
-        TotalSets = 0;
-        SummaryDateText = string.Empty;
     }
 
     public void TrackCurrentPage(Shell shell)
