@@ -313,9 +313,26 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         else
         {
             IsExercisesEmpty = true;
-            ExerciseProgressText = string.Empty;
-            SetProgressText = string.Empty;
+            ResetCurrentExercise();
         }
+    }
+
+    private void ResetCurrentExercise()
+    {
+        _currentExerciseIndex = 0;
+        _totalSetsForExercise = 0;
+        CurrentExercise = new();
+        CurrentSets.Clear();
+        SetSegments.Clear();
+        HasSavedSets = false;
+        IsExerciseComplete = false;
+        HasPreviousExercise = false;
+        HasNextExercise = false;
+        HasLastSession = false;
+        ExerciseProgressText = string.Empty;
+        SetProgressText = string.Empty;
+        LastSessionResultsText = string.Empty;
+        SetInput.Clear();
     }
 
     private async Task AdvanceToExerciseAsync(int index)
@@ -385,7 +402,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private Task SaveSetAsync() => _errors.RunAsync(async () =>
     {
-        if (!SetInput.TryRead(out var values))
+        if (IsExercisesEmpty || !SetInput.TryRead(out var values))
         {
             return;
         }
@@ -681,35 +698,23 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         CloseSetEditor();
         _navigationStack.RemoveFromAllTabs<ActiveWorkoutPage>();
 
+        ResetCurrentExercise();
+
         _sessionId = 0;
         _workoutId = 0;
-        _currentExerciseIndex = 0;
-        _totalSetsForExercise = 0;
         _workoutStartTimeUtc = default;
 
         IsWorkoutActive = false;
         IsWorkoutCompleted = false;
-        IsExerciseComplete = false;
         IsExercisesEmpty = false;
-        HasSavedSets = false;
-        HasPreviousExercise = false;
-        HasNextExercise = false;
-        HasLastSession = false;
 
         Exercises.Clear();
-        CurrentSets.Clear();
-        SetSegments.Clear();
         CompletedExercises.Clear();
-        CurrentExercise = new();
 
         WorkoutTitle = UiText.LoadingWorkoutTitle;
         TimerText = _timer.FormatElapsed(TimeSpan.Zero);
         TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
-        ExerciseProgressText = string.Empty;
-        SetProgressText = string.Empty;
-        LastSessionResultsText = string.Empty;
         RestTotalText = string.Empty;
-        SetInput.Clear();
         TotalVolume = 0;
         TotalSets = 0;
         SummaryDateText = string.Empty;
