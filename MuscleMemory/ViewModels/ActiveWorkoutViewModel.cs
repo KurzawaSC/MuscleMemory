@@ -269,8 +269,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         var session = await _sessionRepository.GetAsync(state.SessionId);
-        if (session is null)
+        if (session is not { EndTimeUtc: null })
         {
+            await _activeStateRepository.ClearAsync();
             return;
         }
 
