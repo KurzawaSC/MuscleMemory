@@ -30,6 +30,8 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
 
     public async Task AddAsync(WorkoutSet set)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(set.SessionExerciseId);
+
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
         {
