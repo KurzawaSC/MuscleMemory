@@ -6,11 +6,23 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class ActiveWorkoutStateRepository(DatabaseContext context) : IActiveWorkoutStateRepository
 {
-    public async Task SaveAsync(ActiveWorkoutState state)
+    private const string CountOpenSession = "SELECT COUNT(*) FROM WorkoutSession WHERE Id = ? AND EndTimeUtc IS NULL";
+
+    private readonly SequentialWriter _writes = new();
+
+    public Task SaveAsync(ActiveWorkoutState state) => _writes.EnqueueAsync(() => SaveForOpenSessionAsync(state));
+
+    private async Task SaveForOpenSessionAsync(ActiveWorkoutState state)
     {
         var connection = await context.GetConnectionAsync();
         state.Id = DomainDefaults.ActiveWorkoutStateId;
-        await connection.InsertOrReplaceAsync(state);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            if (transaction.ExecuteScalar<int>(CountOpenSession, state.SessionId) > 0)
+            {
+                transaction.InsertOrReplace(state);
+            }
+        });
     }
 
     public async Task<ActiveWorkoutState?> GetAsync()
@@ -29,7 +41,9 @@ public sealed class ActiveWorkoutStateRepository(DatabaseContext context) : IAct
         return state;
     }
 
-    public async Task ClearAsync()
+    public Task ClearAsync() => _writes.EnqueueAsync(DeleteAllAsync);
+
+    private async Task DeleteAllAsync()
     {
         var connection = await context.GetConnectionAsync();
         await connection.DeleteAllAsync<ActiveWorkoutState>();
