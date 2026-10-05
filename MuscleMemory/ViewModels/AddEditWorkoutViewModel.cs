@@ -17,7 +17,7 @@ public partial class AddEditWorkoutViewModel(
     AddEditExerciseViewModel exerciseForm,
     IDialogService dialogs,
     INavigationStackService navigationStack,
-    IErrorHandler errors) : ObservableObject, IQueryAttributable
+    IErrorHandler errors) : ObservableObject, IQueryAttributable, IUnsavedChangesGuard
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
     private readonly IDialogService _dialogs = dialogs;
@@ -149,15 +149,29 @@ public partial class AddEditWorkoutViewModel(
         _errors.ReportFailures(ConfirmLeavingEditorAsync(destination));
     }
 
+    public async Task<bool> ConfirmDiscardAsync()
+    {
+        if (!HasUnsavedChanges)
+        {
+            return true;
+        }
+
+        bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        if (discard)
+        {
+            HasUnsavedChanges = false;
+        }
+
+        return discard;
+    }
+
     private async Task ConfirmLeavingEditorAsync(ShellNavigationState? destination)
     {
-        bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
-        if (!discard)
+        if (!await ConfirmDiscardAsync())
         {
             return;
         }
 
-        HasUnsavedChanges = false;
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
 
         if (destination != null && Shell.Current.CurrentState.Location != destination.Location)

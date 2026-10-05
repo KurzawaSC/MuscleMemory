@@ -680,8 +680,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     }));
 
     [RelayCommand]
-    private Task ResumeWorkoutAsync() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab));
+    private Task ResumeWorkoutAsync() => _errors.RunAsync(async () =>
+    {
+        if (await _navigationStack.ConfirmDiscardingChangesOnTabAsync(NavigationRoutes.WorkoutTab))
+        {
+            await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
+        }
+    });
 
     [RelayCommand]
     private Task NavigateBackAsync() => _errors.RunAsync(async () =>
