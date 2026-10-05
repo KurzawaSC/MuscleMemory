@@ -5,7 +5,7 @@ namespace MuscleMemory.Data.Repositories;
 
 public interface IWorkoutSessionRepository
 {
-    Task<WorkoutSession> CreateAsync(Workout workout);
+    Task<StartedSession> CreateWithSnapshotAsync(Workout workout, IReadOnlyList<WorkoutExercise> templateExercises);
     Task FinishOrDiscardAsync(int sessionId);
     Task<WorkoutSession?> GetAsync(int sessionId);
     Task<List<WorkoutSession>> GetCompletedByIdsAsync(IReadOnlyCollection<int> sessionIds);

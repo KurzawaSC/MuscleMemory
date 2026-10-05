@@ -231,15 +231,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         WorkoutTitle = workout.Name;
         _workoutId = workout.Id;
 
-        var session = await _sessionRepository.CreateAsync(workout);
-        _sessionId = session.Id;
-
         var template = await _workoutRepository.GetExercisesAsync(workout.Id);
-        var performedExercises = await _sessionExerciseRepository.CreateSnapshotAsync(_sessionId, template);
+        var session = await _sessionRepository.CreateWithSnapshotAsync(workout, template);
+        _sessionId = session.SessionId;
 
         _timer.Start();
 
-        await ShowExercisesAsync(performedExercises, restoreIndex: false);
+        await ShowExercisesAsync(session.Exercises, restoreIndex: false);
 
         await Task.Delay(UiTiming.NavigationAnimationMilliseconds);
         IsWorkoutActive = true;
