@@ -55,6 +55,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [NotifyCanExecuteChangedFor(nameof(NextExerciseCommand))]
     [NotifyCanExecuteChangedFor(nameof(FinishWorkoutCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowSetActionsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExitWorkoutCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ViewCompletedHistoryCommand))]
     public partial bool IsBusy { get; private set; }
 
     private bool IsIdle => !IsBusy;
@@ -680,18 +682,27 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        await ExitWorkoutAsync();
+        if (!IsWorkoutCompleted)
+        {
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            return;
+        }
+
+        if (ExitWorkoutCommand.CanExecute(null))
+        {
+            await ExitWorkoutCommand.ExecuteAsync(null);
+        }
     });
 
-    [RelayCommand]
-    private Task ExitWorkoutAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task ExitWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
         ClearCompletedSummary();
-    });
+    }));
 
-    [RelayCommand]
-    private Task ViewCompletedHistoryAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task ViewCompletedHistoryAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         var navigationParameter = new Dictionary<string, object>
         {
@@ -700,7 +711,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
         await Shell.Current.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
         ClearCompletedSummary();
-    });
+    }));
 
     private void ClearCompletedSummary()
     {
