@@ -2,12 +2,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
+using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditExerciseViewModel(IExerciseRepository exerciseRepository) : ObservableObject
+public partial class AddEditExerciseViewModel(IExerciseRepository exerciseRepository, IExerciseCatalogService exerciseCatalog) : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
+    private readonly IExerciseCatalogService _exerciseCatalog = exerciseCatalog;
     private Exercise? _existingExercise;
 
     [ObservableProperty]
@@ -68,15 +70,14 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
 
     public async Task<Exercise> SaveAsync()
     {
-        if (_existingExercise is { } exercise)
+        if (_existingExercise is { } existingExercise)
         {
-            ApplyTo(exercise);
-            await _exerciseRepository.UpdateAsync(exercise);
-            return exercise;
+            var updatedExercise = BuildExercise(existingExercise.Id);
+            await _exerciseCatalog.UpdateAsync(updatedExercise);
+            return updatedExercise;
         }
 
-        var newExercise = new Exercise();
-        ApplyTo(newExercise);
+        var newExercise = BuildExercise();
         await _exerciseRepository.AddAsync(newExercise);
         return newExercise;
     }
@@ -90,10 +91,11 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
-    private void ApplyTo(Exercise exercise)
+    private Exercise BuildExercise(int id = 0) => new()
     {
-        exercise.Name = Name.Trim();
-        exercise.TargetMuscleGroup = SelectedMuscleGroup;
-        exercise.Equipment = SelectedEquipment;
-    }
+        Id = id,
+        Name = Name.Trim(),
+        TargetMuscleGroup = SelectedMuscleGroup,
+        Equipment = SelectedEquipment
+    };
 }
