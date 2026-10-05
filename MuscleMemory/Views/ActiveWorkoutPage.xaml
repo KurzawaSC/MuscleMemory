@@ -5,10 +5,20 @@
              xmlns:models="clr-namespace:MuscleMemory.Models"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
              BackCommand="{Binding NavigateBackCommand}">
+
+    <controls:BackNavigationPage.Resources>
+        <toolkit:BoolToObjectConverter x:Key="SaveSetButtonStyleConverter"
+                                       TrueObject="{StaticResource SecondaryButton}"
+                                       FalseObject="{StaticResource PrimaryButton}" />
+        <toolkit:BoolToObjectConverter x:Key="FinishButtonStyleConverter"
+                                       TrueObject="{StaticResource PrimaryButton}"
+                                       FalseObject="{StaticResource DangerOutlineButton}" />
+    </controls:BackNavigationPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
         <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,10,20,0" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
@@ -92,7 +102,6 @@
                     <Border.IsVisible>
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
-                            <Binding Path="IsExerciseComplete" Converter="{StaticResource InvertedBoolConverter}" />
                             <Binding Path="IsExercisesEmpty" Converter="{StaticResource InvertedBoolConverter}" />
                         </MultiBinding>
                     </Border.IsVisible>
@@ -136,7 +145,7 @@
                                                      Command="{Binding UndoLastSetCommand}"
                                                      IsVisible="{Binding HasSavedSets}" />
                             <controls:TappableButton Grid.Column="1"
-                                                     Style="{StaticResource PrimaryButton}"
+                                                     Style="{Binding IsPlanComplete, Converter={StaticResource SaveSetButtonStyleConverter}}"
                                                      Text="Save set"
                                                      PressedScale="0.97"
                                                      Command="{Binding SaveSetCommand}"
@@ -187,23 +196,6 @@
                                                      TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                                      Command="{Binding SkipRestCommand}" />
                         </Grid>
-                    </VerticalStackLayout>
-                </Border>
-
-                <Border Style="{StaticResource SurfaceCard}">
-                    <Border.IsVisible>
-                        <MultiBinding Converter="{StaticResource AllTrueConverter}">
-                            <Binding Path="IsResting" Converter="{StaticResource InvertedBoolConverter}" />
-                            <Binding Path="IsExerciseComplete" />
-                        </MultiBinding>
-                    </Border.IsVisible>
-                    <VerticalStackLayout Spacing="4">
-                        <Label Style="{StaticResource TitleLabel}"
-                               Text="All sets done"
-                               HorizontalTextAlignment="Center" />
-                        <Label Style="{StaticResource CaptionLabel}"
-                               Text="Move on to the next exercise or finish the workout."
-                               HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </Border>
             </Grid>
@@ -300,7 +292,7 @@
             </VerticalStackLayout>
 
             <controls:TappableButton Grid.Row="3"
-                                     Style="{StaticResource DangerOutlineButton}"
+                                     Style="{Binding IsPlanComplete, Converter={StaticResource FinishButtonStyleConverter}}"
                                      Text="Finish workout"
                                      HeightRequest="52"
                                      Command="{Binding FinishWorkoutCommand}" />
