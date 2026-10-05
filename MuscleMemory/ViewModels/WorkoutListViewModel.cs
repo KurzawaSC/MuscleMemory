@@ -10,17 +10,29 @@ using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutListViewModel(
-    IWorkoutRepository workoutRepository,
-    ActiveWorkoutViewModel activeWorkout,
-    IHapticService hapticService,
-    IDialogService dialogs,
-    IErrorHandler errors) : ObservableObject
+public partial class WorkoutListViewModel : ObservableObject
 {
-    private readonly IWorkoutRepository _workoutRepository = workoutRepository;
-    private readonly IHapticService _hapticService = hapticService;
-    private readonly IDialogService _dialogs = dialogs;
-    private readonly IErrorHandler _errors = errors;
+    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IHapticService _hapticService;
+    private readonly IDialogService _dialogs;
+    private readonly IErrorHandler _errors;
+    private int _latestLoad;
+
+    public WorkoutListViewModel(
+        IWorkoutRepository workoutRepository,
+        ActiveWorkoutViewModel activeWorkout,
+        IHapticService hapticService,
+        IDialogService dialogs,
+        IDataChangeNotifier dataChanges,
+        IErrorHandler errors)
+    {
+        _workoutRepository = workoutRepository;
+        _hapticService = hapticService;
+        _dialogs = dialogs;
+        _errors = errors;
+        ActiveWorkout = activeWorkout;
+        dataChanges.Changed += OnDataChanged;
+    }
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -34,7 +46,7 @@ public partial class WorkoutListViewModel(
 
     public ObservableCollection<WorkoutListItem> Workouts { get; } = [];
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
 
     partial void OnIsActionSheetOpenChanged(bool value)
     {
@@ -44,16 +56,31 @@ public partial class WorkoutListViewModel(
         }
     }
 
-    [RelayCommand]
-    private Task LoadWorkoutsAsync() => _errors.RunAsync(async () =>
+    private void OnDataChanged(object? sender, DataArea areas)
     {
+        if (areas.HasFlag(DataArea.Workouts))
+        {
+            _errors.ReportFailures(ReloadAsync());
+        }
+    }
+
+    [RelayCommand]
+    private Task LoadWorkoutsAsync() => _errors.RunAsync(ReloadAsync);
+
+    private async Task ReloadAsync()
+    {
+        var load = ++_latestLoad;
         var workouts = await _workoutRepository.GetAllAsync();
         var exercisesByWorkout = (await _workoutRepository.GetAllExercisesAsync()).ToLookup(exercise => exercise.WorkoutId);
+        if (load != _latestLoad)
+        {
+            return;
+        }
 
         Workouts.ReplaceAll(workouts.Select((workout, index) =>
             WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id], isFeatured: index == 0)));
         IsEmpty = Workouts.Count == 0;
-    });
+    }
 
     [RelayCommand]
     private Task NavigateToAddWorkout() =>
@@ -161,7 +188,7 @@ public partial class WorkoutListViewModel(
         if (answer)
         {
             await _workoutRepository.DeleteAsync(item.Workout.Id);
-            await LoadWorkoutsAsync();
+            await ReloadAsync();
         }
     });
 
