@@ -9,6 +9,7 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
     private const string DeleteExercisesByWorkout = "DELETE FROM WorkoutExercise WHERE WorkoutId = ?";
     private const string RenameExerciseInTemplates = "UPDATE WorkoutExercise SET ExerciseName = ? WHERE ExerciseId = ?";
     private const string DeleteExerciseFromTemplates = "DELETE FROM WorkoutExercise WHERE ExerciseId = ?";
+    private const string SelectExistingExerciseIdsFormat = "SELECT Id FROM Exercise WHERE Id IN ({0})";
     private const string CountWorkoutsContainingExercise = "SELECT COUNT(DISTINCT WorkoutId) FROM WorkoutExercise WHERE ExerciseId = ?";
 
     public async Task<List<Workout>> GetAllAsync()
@@ -92,13 +93,29 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
 
     private static void InsertOrderedExercises(SQLiteConnection transaction, int workoutId, List<WorkoutExercise> exercises)
     {
-        for (int position = 0; position < exercises.Count; position++)
+        var existingExerciseIds = SelectExistingExerciseIds(transaction, exercises);
+        var insertable = exercises.Where(exercise => existingExerciseIds.Contains(exercise.ExerciseId)).ToList();
+
+        for (int position = 0; position < insertable.Count; position++)
         {
-            var exercise = exercises[position];
+            var exercise = insertable[position];
             exercise.WorkoutId = workoutId;
             exercise.Order = position;
             exercise.Id = 0;
             transaction.Insert(exercise);
         }
+    }
+
+    private static HashSet<int> SelectExistingExerciseIds(SQLiteConnection transaction, List<WorkoutExercise> exercises)
+    {
+        if (exercises.Count == 0)
+        {
+            return [];
+        }
+
+        var exerciseIds = exercises.Select(exercise => exercise.ExerciseId).Distinct().ToList();
+        var query = string.Format(SelectExistingExerciseIdsFormat, SqlPlaceholders.For(exerciseIds.Count));
+
+        return [.. transaction.QueryScalars<int>(query, [.. exerciseIds.Select(id => (object)id)])];
     }
 }
