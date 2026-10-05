@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Controls.SetEditorSheet"
              x:Name="Root"
              x:DataType="controls:SetEditorSheet">
@@ -11,11 +12,15 @@
         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
             <controls:InputStepper Title="Weight (kg)"
                                    Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   MaxLength="{x:Static constants:DomainDefaults.MaxWeightInputLength}"
+                                   ErrorText="{Binding Editor.WeightError, Source={x:Reference Root}, FallbackValue=''}"
                                    DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
                                    IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
             <controls:InputStepper Grid.Column="1"
                                    Title="Reps"
                                    Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
+                                   MaxLength="{x:Static constants:DomainDefaults.MaxRepsInputLength}"
+                                   ErrorText="{Binding Editor.RepsError, Source={x:Reference Root}, FallbackValue=''}"
                                    DecrementCommand="{Binding Editor.DecreaseRepsCommand, Source={x:Reference Root}}"
                                    IncrementCommand="{Binding Editor.IncreaseRepsCommand, Source={x:Reference Root}}" />
         </Grid>

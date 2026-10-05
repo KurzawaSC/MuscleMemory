@@ -11,5 +11,8 @@ public interface IWorkoutRepository
     Task DeleteAsync(int workoutId);
     Task<List<WorkoutExercise>> GetExercisesAsync(int workoutId);
     Task<List<WorkoutExercise>> GetAllExercisesAsync();
+    Task<int> CountWorkoutsContainingAsync(int exerciseId);
+    void RenameExercise(SQLiteConnection transaction, int exerciseId, string exerciseName);
+    void RemoveExercise(SQLiteConnection transaction, int exerciseId);
     void Clear(SQLiteConnection transaction);
 }

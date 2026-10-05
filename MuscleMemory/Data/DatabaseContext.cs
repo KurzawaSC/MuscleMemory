@@ -6,17 +6,28 @@ namespace MuscleMemory.Data;
 
 public sealed class DatabaseContext
 {
-    private readonly Lazy<Task<SQLiteAsyncConnection>> _connection;
+    private readonly Lock _connectionGate = new();
+    private Task<SQLiteAsyncConnection>? _connection;
 
     public DatabaseContext()
     {
         DatabasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
-        _connection = new Lazy<Task<SQLiteAsyncConnection>>(OpenConnectionAsync);
     }
 
     public string DatabasePath { get; }
 
-    public Task<SQLiteAsyncConnection> GetConnectionAsync() => _connection.Value;
+    public Task<SQLiteAsyncConnection> GetConnectionAsync()
+    {
+        lock (_connectionGate)
+        {
+            if (_connection is null or { IsFaulted: true } or { IsCanceled: true })
+            {
+                _connection = OpenConnectionAsync();
+            }
+
+            return _connection;
+        }
+    }
 
     private async Task<SQLiteAsyncConnection> OpenConnectionAsync()
     {

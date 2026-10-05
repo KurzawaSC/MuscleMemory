@@ -1,3 +1,5 @@
+using MuscleMemory.Diagnostics;
+
 namespace MuscleMemory.Controls;
 
 public class PulseView : ContentView
@@ -24,13 +26,16 @@ public class PulseView : ContentView
         set => SetValue(IsPulsingProperty, value);
     }
 
-    private async void OnPulseKeyChanged()
+    private void OnPulseKeyChanged()
     {
-        if (!IsPulsing)
+        if (IsPulsing)
         {
-            return;
+            AppLog.LogFailures(PulseAsync());
         }
+    }
 
+    private async Task PulseAsync()
+    {
         await this.ScaleToAsync(PulseScale, PulsePhaseMilliseconds, Easing.CubicOut);
         await this.ScaleToAsync(1, PulsePhaseMilliseconds, Easing.CubicIn);
     }

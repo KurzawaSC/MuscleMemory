@@ -1,3 +1,5 @@
+using MuscleMemory.Diagnostics;
+
 namespace MuscleMemory.Controls;
 
 public class FadeInView : ContentView
@@ -15,8 +17,11 @@ public class FadeInView : ContentView
     private async void OnLoaded(object? sender, EventArgs e)
     {
         Loaded -= OnLoaded;
+        await AppLog.LogFailuresAsync(AnimateInAsync());
+    }
+
+    private async Task AnimateInAsync() =>
         await Task.WhenAll(
             this.FadeToAsync(1, DurationMilliseconds, Easing.CubicOut),
             this.TranslateToAsync(0, 0, DurationMilliseconds, Easing.CubicOut));
-    }
 }

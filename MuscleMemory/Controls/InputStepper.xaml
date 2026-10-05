@@ -10,6 +10,9 @@
         <Label Style="{StaticResource OverlineLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
         <Border Style="{StaticResource InsetPanel}" Padding="0" HeightRequest="56" StrokeThickness="2" Stroke="Transparent">
             <Border.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding HasError, Source={x:Reference Root}}" Value="True">
+                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLineLight}, Dark={StaticResource PrimaryLineDark}}" />
+                </DataTrigger>
                 <DataTrigger TargetType="Border" Binding="{Binding IsFocused, Source={x:Reference ValueEntry}}" Value="True">
                     <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
                     <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
@@ -31,6 +34,7 @@
                 <Entry x:Name="ValueEntry"
                        Grid.Column="1"
                        Text="{Binding Text, Source={x:Reference Root}}"
+                       MaxLength="{Binding MaxLength, Source={x:Reference Root}}"
                        Placeholder="—"
                        Keyboard="Numeric"
                        FontSize="24"
@@ -51,5 +55,9 @@
                 </controls:GlyphButton>
             </Grid>
         </Border>
+        <Label Style="{StaticResource CaptionLabel}"
+               Text="{Binding ErrorText, Source={x:Reference Root}}"
+               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+               IsVisible="{Binding HasError, Source={x:Reference Root}}" />
     </VerticalStackLayout>
 </ContentView>

@@ -1,3 +1,4 @@
+using MuscleMemory.Diagnostics;
 using MuscleMemory.Services;
 using MuscleMemory.Views;
 using MuscleMemory.ViewModels;
@@ -17,6 +18,6 @@ public partial class AppShell : Shell
 
         activeWorkoutViewModel.TrackCurrentPage(this);
         statusBarService.TrackNavigation(this);
-        _ = activeWorkoutViewModel.LoadStateAsync();
+        AppLog.LogFailures(activeWorkoutViewModel.LoadStateAsync());
     }
 }

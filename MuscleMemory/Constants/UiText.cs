@@ -29,13 +29,15 @@ public static class UiText
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
+    public const string BodyOperationFailed = "Something went wrong. Please try again.";
+    public const string BodyExportFailed = "Export failed. Please try again.";
     public const string BodyDeleteWorkout = "Session history is kept. The plan itself can't be restored.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
+    public const string DeleteExerciseFromWorkoutsFormat = "Are you sure you want to delete '{0}'? It will be removed from {1} {2}.";
     public const string DeleteWorkoutTitleFormat = "Delete “{0}”?";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
-    public const string ExportFailedFormat = "Failed to export data: {0}";
 
     public const string HeaderNewExercise = "New exercise";
     public const string HeaderEditExercise = "Edit exercise";
@@ -50,6 +52,8 @@ public static class UiText
     public const string CaptionExercises = "exercises";
     public const string CaptionSet = "set";
     public const string CaptionSets = "sets";
+    public const string CaptionWorkout = "workout";
+    public const string CaptionWorkouts = "workouts";
     public const string CaptionSession = "session";
     public const string CaptionSessions = "sessions";
     public const string SessionCountFormat = "{0} {1} · newest first";
@@ -76,6 +80,9 @@ public static class UiText
     public const string SessionStatsFormat = "Time {0} · {1} {2}";
     public const string RestTotalFormat = "of {0} s";
     public const string ResultSeparator = ", ";
+    public const string WeightRangeErrorFormat = "Enter {0}–{1} kg";
+    public const string RepsRangeErrorFormat = "Enter {0}–{1} reps";
+    public const string ExerciseNameTakenError = "An exercise with this name already exists";
 
     public const string ElapsedFormat = @"mm\:ss";
     public const string ElapsedWithHoursFormat = @"h\:mm\:ss";

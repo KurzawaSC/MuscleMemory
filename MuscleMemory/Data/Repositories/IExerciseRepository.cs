@@ -7,7 +7,7 @@ public interface IExerciseRepository
 {
     Task<List<Exercise>> GetAllAsync();
     Task AddAsync(Exercise exercise);
-    Task UpdateAsync(Exercise exercise);
-    Task DeleteAsync(int exerciseId);
+    void Update(SQLiteConnection transaction, Exercise exercise);
+    void Delete(SQLiteConnection transaction, int exerciseId);
     void Clear(SQLiteConnection transaction);
 }

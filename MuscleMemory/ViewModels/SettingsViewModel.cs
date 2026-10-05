@@ -11,6 +11,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IDatabaseMaintenanceService _maintenanceService;
     private readonly IThemeService _themeService;
     private readonly IDialogService _dialogs;
+    private readonly IErrorHandler _errors;
 
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
@@ -29,11 +30,12 @@ public partial class SettingsViewModel : ObservableObject
 
     private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
 
-    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, IDialogService dialogs, ActiveWorkoutViewModel activeWorkout)
+    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, IDialogService dialogs, IErrorHandler errors, ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
         _themeService = themeService;
         _dialogs = dialogs;
+        _errors = errors;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
     }
@@ -63,7 +65,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task EraseDataAsync()
+    private Task EraseDataAsync() => _errors.RunAsync(async () =>
     {
         IsEraseSheetOpen = false;
         await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
@@ -71,29 +73,20 @@ public partial class SettingsViewModel : ObservableObject
         await _maintenanceService.ClearAllDataAsync();
         ActiveWorkout.Reset();
         await _dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
-    }
+    });
 
     [RelayCommand]
-    private async Task ExportDataAsync()
+    private Task ExportDataAsync() => _errors.RunAsync(async () =>
     {
-        try
+        if (await _maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
         {
-            var dbPath = _maintenanceService.DatabaseFilePath;
-
-            if (!File.Exists(dbPath))
-            {
-                await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
-                return;
-            }
-            await Share.Default.RequestAsync(new ShareFileRequest
-            {
-                Title = "Export Muscle Memory Data",
-                File = new ShareFile(dbPath)
-            });
+            await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
+            return;
         }
-        catch (Exception ex)
+        await Share.Default.RequestAsync(new ShareFileRequest
         {
-            await _dialogs.ShowMessageAsync(UiText.TitleError, string.Format(UiText.ExportFailedFormat, ex.Message));
-        }
-    }
+            Title = "Export Muscle Memory Data",
+            File = new ShareFile(snapshotPath)
+        });
+    }, UiText.BodyExportFailed);
 }

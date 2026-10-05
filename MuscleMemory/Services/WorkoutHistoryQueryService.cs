@@ -58,11 +58,6 @@ public sealed class WorkoutHistoryQueryService(
 
             var loggedExercises = BuildLoggedExercises(sessionPerformances, setsByPerformance);
 
-            if (loggedExercises.Count == 0)
-            {
-                continue;
-            }
-
             history.Add(new WorkoutHistorySession(
                 session.Id,
                 session.StartTimeUtc,
@@ -79,11 +74,10 @@ public sealed class WorkoutHistoryQueryService(
         Dictionary<int, List<WorkoutSet>> setsByPerformance) =>
     [
         .. performances.OrderBy(performance => performance.Order)
-                       .Where(performance => setsByPerformance.ContainsKey(performance.Id))
                        .Select(performance => new WorkoutHistoryExercise(
                            performance.Id,
                            performance.ExerciseName,
-                           setsByPerformance[performance.Id]))
+                           setsByPerformance.GetValueOrDefault(performance.Id, [])))
     ];
 
     private async Task<Dictionary<int, List<WorkoutSet>>> GetSetsByPerformanceAsync(List<SessionExercise> performances)

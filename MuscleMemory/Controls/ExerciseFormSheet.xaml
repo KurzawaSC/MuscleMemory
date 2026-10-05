@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:models="clr-namespace:MuscleMemory.Models"
              x:Class="MuscleMemory.Controls.ExerciseFormSheet"
              x:Name="Root"
@@ -15,8 +16,10 @@
 
         <VerticalStackLayout Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="Name" />
-            <controls:TextField HeightRequest="52"
+            <controls:TextField FieldHeight="52"
                                 Text="{Binding Form.Name, Source={x:Reference Root}}"
+                                ErrorText="{Binding Form.NameError, Source={x:Reference Root}, FallbackValue=''}"
+                                MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
                                 Placeholder="e.g. Incline Bench Press" />
         </VerticalStackLayout>
 

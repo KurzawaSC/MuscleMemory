@@ -14,11 +14,13 @@ public partial class WorkoutListViewModel(
     IWorkoutRepository workoutRepository,
     ActiveWorkoutViewModel activeWorkout,
     IHapticService hapticService,
-    IDialogService dialogs) : ObservableObject
+    IDialogService dialogs,
+    IErrorHandler errors) : ObservableObject
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
     private readonly IHapticService _hapticService = hapticService;
     private readonly IDialogService _dialogs = dialogs;
+    private readonly IErrorHandler _errors = errors;
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; } = true;
@@ -43,7 +45,7 @@ public partial class WorkoutListViewModel(
     }
 
     [RelayCommand]
-    private async Task LoadWorkoutsAsync()
+    private Task LoadWorkoutsAsync() => _errors.RunAsync(async () =>
     {
         var workouts = await _workoutRepository.GetAllAsync();
         var exercisesByWorkout = (await _workoutRepository.GetAllExercisesAsync()).ToLookup(exercise => exercise.WorkoutId);
@@ -51,16 +53,16 @@ public partial class WorkoutListViewModel(
         Workouts.ReplaceAll(workouts.Select((workout, index) =>
             WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id], isFeatured: index == 0)));
         IsEmpty = Workouts.Count == 0;
-    }
+    });
 
     [RelayCommand]
-    private async Task NavigateToAddWorkout()
-    {
-        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage));
-    }
+    private Task NavigateToAddWorkout() =>
+        _errors.RunAsync(() => Shell.Current.GoToAsync(nameof(AddEditWorkoutPage)));
 
-    [RelayCommand]
-    private async Task StartWorkoutAsync(WorkoutListItem item)
+    private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true;
+
+    [RelayCommand(CanExecute = nameof(CanStartWorkout))]
+    private Task StartWorkoutAsync(WorkoutListItem item) => _errors.RunAsync(async () =>
     {
         if (ActiveWorkout.IsWorkoutActive)
         {
@@ -73,7 +75,7 @@ public partial class WorkoutListViewModel(
             { QueryKeys.Workout, item.Workout }
         };
         await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
-    }
+    });
 
     private async Task OfferToResumeActiveWorkoutAsync()
     {
@@ -110,7 +112,7 @@ public partial class WorkoutListViewModel(
     }
 
     [RelayCommand]
-    private async Task EditActionWorkoutAsync()
+    private Task EditActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
         if (ActionWorkout is not { } item)
         {
@@ -124,10 +126,10 @@ public partial class WorkoutListViewModel(
             { QueryKeys.WorkoutToEdit, item.Workout }
         };
         await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
-    }
+    });
 
     [RelayCommand]
-    private async Task ViewActionWorkoutHistoryAsync()
+    private Task ViewActionWorkoutHistoryAsync() => _errors.RunAsync(async () =>
     {
         if (ActionWorkout is not { } item)
         {
@@ -142,10 +144,10 @@ public partial class WorkoutListViewModel(
             { QueryKeys.WorkoutName, item.Workout.Name }
         };
         await Shell.Current.GoToAsync(nameof(WorkoutHistoryPage), navigationParameter);
-    }
+    });
 
     [RelayCommand]
-    private async Task DeleteActionWorkoutAsync()
+    private Task DeleteActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
         if (ActionWorkout is not { } item)
         {
@@ -161,7 +163,7 @@ public partial class WorkoutListViewModel(
             await _workoutRepository.DeleteAsync(item.Workout.Id);
             await LoadWorkoutsAsync();
         }
-    }
+    });
 
     [RelayCommand(CanExecute = nameof(IsActionSheetOpen))]
     private void CloseSheets()

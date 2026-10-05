@@ -17,17 +17,9 @@ public sealed class ExerciseRepository(DatabaseContext context) : IExerciseRepos
         await connection.InsertAsync(exercise);
     }
 
-    public async Task UpdateAsync(Exercise exercise)
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.UpdateAsync(exercise);
-    }
+    public void Update(SQLiteConnection transaction, Exercise exercise) => transaction.Update(exercise);
 
-    public async Task DeleteAsync(int exerciseId)
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.DeleteAsync<Exercise>(exerciseId);
-    }
+    public void Delete(SQLiteConnection transaction, int exerciseId) => transaction.Delete<Exercise>(exerciseId);
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<Exercise>();
 }

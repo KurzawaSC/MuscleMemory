@@ -1,4 +1,5 @@
 using MuscleMemory.Constants;
+using MuscleMemory.Diagnostics;
 
 namespace MuscleMemory.Controls;
 
@@ -182,9 +183,12 @@ public partial class BottomSheet : ContentView
     {
         if (Body.GetVisualTreeDescendants().OfType<VisualElement>().FirstOrDefault(element => element.IsFocused) is { } focusedElement)
         {
-            _ = Body.ScrollToAsync(OwningField(focusedElement), ScrollToPosition.MakeVisible, true);
+            AppLog.LogFailures(ScrollIntoViewAsync(OwningField(focusedElement)));
         }
     }
+
+    private async Task ScrollIntoViewAsync(Element field) =>
+        await Body.ScrollToAsync(field, ScrollToPosition.MakeVisible, true);
 
     private static VisualElement OwningField(VisualElement focusedElement)
     {

@@ -5,7 +5,8 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetRepository
 {
-    private const string DeleteForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
+    private const string SetNotFoundMessage = "The set to update no longer exists.";
+    private const string UpdateValues = "UPDATE WorkoutSet SET Weight = ?, Reps = ? WHERE Id = ?";
     private const string RenumberForSessionExercise = """
         UPDATE WorkoutSet
         SET SetNumber = (
@@ -16,20 +17,21 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         """;
     private const string SelectForSessionExercisesFormat = "SELECT * FROM WorkoutSet WHERE SessionExerciseId IN ({0})";
     private const string SelectLastSessionSets = """
-        SELECT loggedSet.* FROM WorkoutSet loggedSet
-        JOIN SessionExercise performed ON performed.Id = loggedSet.SessionExerciseId
-        WHERE performed.ExerciseId = ? AND performed.WorkoutSessionId = (
-            SELECT earlier.WorkoutSessionId FROM SessionExercise earlier
+        SELECT * FROM WorkoutSet
+        WHERE SessionExerciseId = (
+            SELECT earlier.Id FROM SessionExercise earlier
             JOIN WorkoutSet earlierSet ON earlierSet.SessionExerciseId = earlier.Id
             JOIN WorkoutSession session ON session.Id = earlier.WorkoutSessionId
-            WHERE earlier.ExerciseId = ? AND earlier.WorkoutSessionId <> ?
-            ORDER BY session.StartTimeUtc DESC
+            WHERE earlier.ExerciseId = ? AND earlier.WorkoutSessionId <> ? AND session.EndTimeUtc IS NOT NULL
+            ORDER BY session.StartTimeUtc DESC, earlier.[Order] DESC
             LIMIT 1)
-        ORDER BY loggedSet.SetNumber
+        ORDER BY SetNumber
         """;
 
     public async Task AddAsync(WorkoutSet set)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(set.SessionExerciseId);
+
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
         {
@@ -39,10 +41,15 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         });
     }
 
-    public async Task UpdateAsync(WorkoutSet set)
+    public async Task UpdateAsync(int setId, double weight, int reps)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.UpdateAsync(set);
+        var updatedRows = await connection.ExecuteAsync(UpdateValues, weight, reps, setId);
+
+        if (updatedRows == 0)
+        {
+            throw new InvalidOperationException(SetNotFoundMessage);
+        }
     }
 
     public async Task DeleteAsync(int setId)
@@ -59,12 +66,6 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
             transaction.Delete<WorkoutSet>(setId);
             transaction.Execute(RenumberForSessionExercise, set.SessionExerciseId);
         });
-    }
-
-    public async Task DeleteForSessionExerciseAsync(int sessionExerciseId)
-    {
-        var connection = await context.GetConnectionAsync();
-        await connection.ExecuteAsync(DeleteForSessionExercise, sessionExerciseId);
     }
 
     public async Task<List<WorkoutSet>> GetForSessionExerciseAsync(int sessionExerciseId)
@@ -92,7 +93,7 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     public async Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId)
     {
         var connection = await context.GetConnectionAsync();
-        return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, exerciseId, currentSessionId);
+        return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, currentSessionId);
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSet>();
