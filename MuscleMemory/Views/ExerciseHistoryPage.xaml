@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
-             xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Class="MuscleMemory.Views.ExerciseHistoryPage"
-             x:DataType="viewmodels:ExerciseHistoryViewModel"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
+<controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
+                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             x:Class="MuscleMemory.Views.ExerciseHistoryPage"
+                             x:DataType="viewmodels:ExerciseHistoryViewModel"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
+                             BackCommand="{Binding GoBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *">
         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6" Padding="14,4,20,0">
@@ -115,4 +116,4 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
     </Grid>
-</ContentPage>
+</controls:BackNavigationPage>

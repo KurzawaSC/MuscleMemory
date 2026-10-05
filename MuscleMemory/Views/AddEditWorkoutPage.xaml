@@ -9,7 +9,7 @@
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
                              x:DataType="viewmodels:AddEditWorkoutViewModel"
-                             BackCommand="{Binding CloseSheetsCommand}">
+                             BackCommand="{Binding NavigateBackCommand}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior EventName="Appearing" Command="{Binding BindingContext.StartGuardingUnsavedChangesCommand, Source={x:Reference PageRoot}}" />
@@ -17,7 +17,7 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding GoBackCommand}" />
+        <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding NavigateBackCommand}" />
 
         <VerticalStackLayout Grid.Row="1" Padding="20,14,20,0" Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="Workout name" />

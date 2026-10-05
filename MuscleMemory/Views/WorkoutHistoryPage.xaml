@@ -7,10 +7,10 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
                              x:DataType="viewmodels:WorkoutHistoryViewModel"
-                             BackCommand="{Binding CloseSheetsCommand}">
+                             BackCommand="{Binding NavigateBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat='{0} · history'}" BackCommand="{Binding GoBackCommand}" />
+        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat='{0} · history'}" BackCommand="{Binding NavigateBackCommand}" />
 
         <ScrollView Grid.Row="1"
                     Orientation="Horizontal"

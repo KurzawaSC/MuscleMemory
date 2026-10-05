@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 namespace MuscleMemory.Controls;
 
@@ -15,6 +16,11 @@ public class BackNavigationPage : ContentPage
 
     protected override bool OnBackButtonPressed()
     {
+        if (BackCommand is IAsyncRelayCommand { IsRunning: true })
+        {
+            return true;
+        }
+
         if (BackCommand?.CanExecute(null) != true)
         {
             return base.OnBackButtonPressed();

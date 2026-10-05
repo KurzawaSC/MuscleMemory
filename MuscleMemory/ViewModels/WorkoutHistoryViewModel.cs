@@ -43,15 +43,12 @@ public partial class WorkoutHistoryViewModel(
     public SelectExerciseViewModel ExercisePicker { get; } = exercisePicker;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsExercisePickerOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsSetActionSheetOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsSetEditorOpen { get; set; }
 
     [ObservableProperty]
@@ -107,10 +104,17 @@ public partial class WorkoutHistoryViewModel(
     }
 
     [RelayCommand]
-    private Task GoBackAsync() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(NavigationRoutes.GoBack));
+    private Task NavigateBackAsync() => _errors.RunAsync(async () =>
+    {
+        if (IsAnySheetOpen)
+        {
+            CloseSheets();
+            return;
+        }
 
-    [RelayCommand(CanExecute = nameof(IsAnySheetOpen))]
+        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+    });
+
     private void CloseSheets()
     {
         IsExercisePickerOpen = false;
