@@ -59,7 +59,7 @@ public partial class WorkoutListViewModel(
     private Task NavigateToAddWorkout() =>
         _errors.RunAsync(() => Shell.Current.GoToAsync(nameof(AddEditWorkoutPage)));
 
-    private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true;
+    private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true && !ActiveWorkout.IsBusy;
 
     [RelayCommand(CanExecute = nameof(CanStartWorkout))]
     private Task StartWorkoutAsync(WorkoutListItem item) => _errors.RunAsync(async () =>

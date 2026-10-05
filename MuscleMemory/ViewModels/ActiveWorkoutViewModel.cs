@@ -49,6 +49,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public bool CanAddItems => !IsWorkoutActive;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveSetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UndoLastSetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(PreviousExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(FinishWorkoutCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ShowSetActionsCommand))]
+    public partial bool IsBusy { get; private set; }
+
+    private bool IsIdle => !IsBusy;
+
+    [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
 
     [ObservableProperty]
@@ -217,9 +228,22 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive)
+        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive && IsIdle)
         {
-            _errors.ReportFailures(StartWorkoutAsync(workout));
+            _errors.ReportFailures(RunExclusiveAsync(() => StartWorkoutAsync(workout)));
+        }
+    }
+
+    private async Task RunExclusiveAsync(Func<Task> operation)
+    {
+        IsBusy = true;
+        try
+        {
+            await operation();
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
@@ -399,8 +423,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
     }
 
-    [RelayCommand]
-    private Task SaveSetAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task SaveSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (IsExercisesEmpty || !SetInput.TryRead(out var values))
         {
@@ -440,7 +464,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         UpdateSetProgress();
-    });
+    }));
 
     private void StartRest(int durationSeconds) => ShowRest(DateTime.UtcNow.AddSeconds(durationSeconds), durationSeconds);
 
@@ -517,7 +541,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await SaveStateAsync();
     });
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsIdle))]
     private void ShowSetActions(WorkoutSet set)
     {
         ActionSet = set;
@@ -593,35 +617,35 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         UpdateSetProgress();
     }
 
-    [RelayCommand]
-    private Task UndoLastSetAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task UndoLastSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (!CurrentSets.Any())
             return;
 
         await RemoveSetAsync(CurrentSets[^1]);
-    });
+    }));
 
-    [RelayCommand]
-    private Task PreviousExerciseAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task PreviousExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasPreviousExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex - 1);
         }
-    });
+    }));
 
-    [RelayCommand]
-    private Task NextExerciseAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task NextExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasNextExercise)
         {
             await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
         }
-    });
+    }));
 
-    [RelayCommand]
-    private Task FinishWorkoutAsync() => _errors.RunAsync(async () =>
+    [RelayCommand(CanExecute = nameof(IsIdle))]
+    private Task FinishWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         bool isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
@@ -633,7 +657,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
 
         await CompleteWorkoutAsync();
-    });
+    }));
 
     [RelayCommand]
     private Task ResumeWorkoutAsync() =>
