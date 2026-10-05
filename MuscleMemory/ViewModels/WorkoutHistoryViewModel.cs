@@ -233,7 +233,6 @@ public partial class WorkoutHistoryViewModel(
         bool confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
         if (!confirm) return;
 
-        await _setRepository.DeleteForSessionExerciseAsync(loggedExercise.SessionExerciseId);
         await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
         await LoadHistoryAsync();
     });
