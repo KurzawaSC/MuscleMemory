@@ -59,7 +59,7 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
                                .ToListAsync();
     }
 
-    public async Task<SessionExercise> AppendToSessionAsync(SessionExercise sessionExercise)
+    public async Task AppendToSessionAsync(SessionExercise sessionExercise)
     {
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
@@ -67,8 +67,6 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
             sessionExercise.Order = transaction.ExecuteScalar<int>(SelectNextOrder, sessionExercise.WorkoutSessionId);
             transaction.Insert(sessionExercise);
         });
-
-        return sessionExercise;
     }
 
     public async Task DeleteAsync(int sessionExerciseId)

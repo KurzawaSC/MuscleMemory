@@ -261,7 +261,7 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        var addedExercise = await _sessionExerciseRepository.AppendToSessionAsync(new SessionExercise
+        await _sessionExerciseRepository.AppendToSessionAsync(new SessionExercise
         {
             WorkoutSessionId = selected.Session.SessionId,
             ExerciseId = exercise.Id,
@@ -270,13 +270,6 @@ public partial class WorkoutHistoryViewModel(
             PlannedReps = DomainDefaults.Reps,
             BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
             TargetRPE = DomainDefaults.TargetRPE
-        });
-
-        await _setRepository.AddAsync(new WorkoutSet
-        {
-            SessionExerciseId = addedExercise.Id,
-            Weight = 0,
-            Reps = 0
         });
 
         await LoadHistoryAsync();
