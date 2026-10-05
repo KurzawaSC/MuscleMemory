@@ -6,15 +6,20 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel(
+    IDatabaseMaintenanceService maintenanceService,
+    IThemeService themeService,
+    IDialogService dialogs,
+    IErrorHandler errors,
+    ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
-    private readonly IDatabaseMaintenanceService _maintenanceService;
-    private readonly IThemeService _themeService;
-    private readonly IDialogService _dialogs;
-    private readonly IErrorHandler _errors;
+    private readonly IDatabaseMaintenanceService _maintenanceService = maintenanceService;
+    private readonly IThemeService _themeService = themeService;
+    private readonly IDialogService _dialogs = dialogs;
+    private readonly IErrorHandler _errors = errors;
 
     [ObservableProperty]
-    public partial ThemePreference SelectedTheme { get; set; } = ThemePreference.System;
+    public partial ThemePreference SelectedTheme { get; set; } = themeService.SavedPreference;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
@@ -26,19 +31,9 @@ public partial class SettingsViewModel : ObservableObject
 
     public string VersionText { get; } = string.Format(UiText.VersionFormat, AppInfo.Current.VersionString);
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; }
+    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
 
     private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
-
-    public SettingsViewModel(IDatabaseMaintenanceService maintenanceService, IThemeService themeService, IDialogService dialogs, IErrorHandler errors, ActiveWorkoutViewModel activeWorkout)
-    {
-        _maintenanceService = maintenanceService;
-        _themeService = themeService;
-        _dialogs = dialogs;
-        _errors = errors;
-        ActiveWorkout = activeWorkout;
-        SelectedTheme = themeService.SavedPreference;
-    }
 
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
