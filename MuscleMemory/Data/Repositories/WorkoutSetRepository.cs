@@ -17,16 +17,15 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         """;
     private const string SelectForSessionExercisesFormat = "SELECT * FROM WorkoutSet WHERE SessionExerciseId IN ({0})";
     private const string SelectLastSessionSets = """
-        SELECT loggedSet.* FROM WorkoutSet loggedSet
-        JOIN SessionExercise performed ON performed.Id = loggedSet.SessionExerciseId
-        WHERE performed.ExerciseId = ? AND performed.WorkoutSessionId = (
-            SELECT earlier.WorkoutSessionId FROM SessionExercise earlier
+        SELECT * FROM WorkoutSet
+        WHERE SessionExerciseId = (
+            SELECT earlier.Id FROM SessionExercise earlier
             JOIN WorkoutSet earlierSet ON earlierSet.SessionExerciseId = earlier.Id
             JOIN WorkoutSession session ON session.Id = earlier.WorkoutSessionId
             WHERE earlier.ExerciseId = ? AND earlier.WorkoutSessionId <> ? AND session.EndTimeUtc IS NOT NULL
-            ORDER BY session.StartTimeUtc DESC
+            ORDER BY session.StartTimeUtc DESC, earlier.[Order] DESC
             LIMIT 1)
-        ORDER BY loggedSet.SetNumber
+        ORDER BY SetNumber
         """;
 
     public async Task AddAsync(WorkoutSet set)
@@ -92,7 +91,7 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     public async Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId)
     {
         var connection = await context.GetConnectionAsync();
-        return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, exerciseId, currentSessionId);
+        return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, currentSessionId);
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSet>();
