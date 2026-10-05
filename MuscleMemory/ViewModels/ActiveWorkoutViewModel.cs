@@ -497,15 +497,22 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             : 0;
     }
 
-    private async Task CompleteWorkoutAsync()
+    private async Task CompleteWorkoutAsync(WorkoutSummary summary)
     {
-        var summary = await _summaryService.BuildAsync([.. Exercises]);
         await _sessionRepository.FinishOrDiscardAsync(_sessionId);
         await _activeStateRepository.ClearAsync();
 
         _timer.Stop();
         ClearRestState();
         _audioCues.Stop();
+
+        if (!summary.HasLoggedSets)
+        {
+            IsWorkoutActive = false;
+            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            return;
+        }
+
         TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
         ShowSummary(summary);
         IsWorkoutCompleted = true;
@@ -658,16 +665,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand(CanExecute = nameof(IsIdle))]
     private Task FinishWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
+        var summary = await _summaryService.BuildAsync([.. Exercises]);
+
         bool isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
-            UiText.BodyFinishWorkoutConfirmation,
+            summary.HasLoggedSets ? UiText.BodyFinishWorkoutConfirmation : UiText.BodyFinishUnsavedWorkoutConfirmation,
             UiText.ButtonFinish,
             UiText.ButtonCancel);
 
         if (!isConfirmed)
             return;
 
-        await CompleteWorkoutAsync();
+        await CompleteWorkoutAsync(summary);
     }));
 
     [RelayCommand]
