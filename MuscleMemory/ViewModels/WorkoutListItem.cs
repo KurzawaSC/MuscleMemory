@@ -3,7 +3,7 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public sealed record WorkoutListItem(Workout Workout, string ExerciseSummary, int TotalSets, bool IsFeatured)
+public sealed record WorkoutListItem(Workout Workout, string ExerciseSummary, int TotalSets, bool HasExercises, bool IsFeatured)
 {
     public string SetsText => string.Format(UiText.CountFormat, TotalSets, TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets);
 
@@ -15,6 +15,7 @@ public sealed record WorkoutListItem(Workout Workout, string ExerciseSummary, in
             workout,
             string.Join(UiText.ListSeparator, ordered.Select(exercise => exercise.ExerciseName)),
             ordered.Sum(exercise => exercise.Sets),
+            ordered.Count > 0,
             isFeatured);
     }
 }
