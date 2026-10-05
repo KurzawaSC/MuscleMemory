@@ -85,9 +85,9 @@ public partial class WorkoutListViewModel(
             UiText.ButtonResume,
             UiText.ButtonCancel);
 
-        if (resume)
+        if (resume && ActiveWorkout.ResumeWorkoutCommand.CanExecute(null))
         {
-            await ActiveWorkout.ResumeWorkoutAsync();
+            await ActiveWorkout.ResumeWorkoutCommand.ExecuteAsync(null);
         }
     }
 
