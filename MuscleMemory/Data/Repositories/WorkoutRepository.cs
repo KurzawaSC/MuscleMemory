@@ -5,6 +5,7 @@ namespace MuscleMemory.Data.Repositories;
 
 public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutRepository
 {
+    private const string WorkoutNotFoundMessage = "The workout to update no longer exists.";
     private const string DeleteExercisesByWorkout = "DELETE FROM WorkoutExercise WHERE WorkoutId = ?";
 
     public async Task<List<Workout>> GetAllAsync()
@@ -30,7 +31,11 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
         {
-            transaction.Update(workout);
+            if (transaction.Update(workout) == 0)
+            {
+                throw new InvalidOperationException(WorkoutNotFoundMessage);
+            }
+
             transaction.Execute(DeleteExercisesByWorkout, workout.Id);
             InsertOrderedExercises(transaction, workout.Id, exercises);
         });
