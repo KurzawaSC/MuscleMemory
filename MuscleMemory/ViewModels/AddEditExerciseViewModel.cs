@@ -78,7 +78,7 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         }
 
         var newExercise = BuildExercise();
-        await _exerciseRepository.AddAsync(newExercise);
+        await _exerciseCatalog.AddAsync(newExercise);
         return newExercise;
     }
 
