@@ -52,6 +52,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IErrorHandler, ErrorHandler>();
         builder.Services.AddSingleton<IWorkoutSummaryService, WorkoutSummaryService>();
         builder.Services.AddSingleton<INavigationStackService, NavigationStackService>();
+        builder.Services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
         builder.Services.AddSingleton(HapticFeedback.Default);
         builder.Services.AddSingleton<IHapticService, HapticService>();
         builder.Services.AddSingleton<AppShell>();
