@@ -16,11 +16,14 @@ public partial class AddEditWorkoutViewModel(
     ConfigureExerciseViewModel exerciseConfiguration,
     AddEditExerciseViewModel exerciseForm,
     IDialogService dialogs,
+    INavigationStackService navigationStack,
     IErrorHandler errors) : ObservableObject, IQueryAttributable
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
     private readonly IDialogService _dialogs = dialogs;
+    private readonly INavigationStackService _navigationStack = navigationStack;
     private readonly IErrorHandler _errors = errors;
+    private Shell? _guardedShell;
     private Workout? _workoutToEdit;
     private Exercise? _exerciseToAdd;
     private WorkoutExercise? _exerciseBeingEdited;
@@ -103,13 +106,35 @@ public partial class AddEditWorkoutViewModel(
     [RelayCommand]
     private void StartGuardingUnsavedChanges()
     {
-        Shell.Current.Navigating += OnShellNavigating;
+        if (_guardedShell is not null)
+        {
+            return;
+        }
+
+        _guardedShell = Shell.Current;
+        _guardedShell.Navigating += OnShellNavigating;
+        _guardedShell.Navigated += OnShellNavigated;
     }
 
     [RelayCommand]
     private void StopGuardingUnsavedChanges()
     {
-        Shell.Current.Navigating -= OnShellNavigating;
+        if (_guardedShell is null)
+        {
+            return;
+        }
+
+        _guardedShell.Navigating -= OnShellNavigating;
+        _guardedShell.Navigated -= OnShellNavigated;
+        _guardedShell = null;
+    }
+
+    private void OnShellNavigated(object? sender, ShellNavigatedEventArgs e)
+    {
+        if (!_navigationStack.ContainsPageBoundTo(this))
+        {
+            StopGuardingUnsavedChanges();
+        }
     }
 
     private void OnShellNavigating(object? sender, ShellNavigatingEventArgs e)
