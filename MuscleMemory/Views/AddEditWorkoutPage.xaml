@@ -22,6 +22,7 @@
         <VerticalStackLayout Grid.Row="1" Padding="20,14,20,0" Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="Workout name" />
             <controls:TextField FieldHeight="52"
+                                IsEnabled="{Binding IsEditable}"
                                 Text="{Binding WorkoutName}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
                                 Placeholder="e.g. Monday Eve" />
@@ -32,7 +33,7 @@
                              Spacing="14"
                              HorizontalOptions="Center"
                              VerticalOptions="Center"
-                             IsVisible="{Binding IsEmpty}">
+                             IsVisible="{Binding IsEmptyHintVisible}">
             <Border Style="{StaticResource DashedOutline}"
                     WidthRequest="80"
                     HeightRequest="80"
@@ -55,6 +56,10 @@
                                      HorizontalOptions="Center"
                                      Command="{Binding AddExerciseCommand}" />
         </VerticalStackLayout>
+
+        <controls:EmptyState Grid.Row="2"
+                             Message="{x:Static constants:UiText.LoadingWorkoutTitle}"
+                             IsVisible="{Binding IsLoading}" />
 
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding Exercises}"

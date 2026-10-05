@@ -33,7 +33,20 @@ public partial class AddEditWorkoutViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(IsEmptyHintVisible))]
     public partial bool IsEmpty { get; set; } = true;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEditable))]
+    [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(IsEmptyHintVisible))]
+    [NotifyCanExecuteChangedFor(nameof(AddExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(EditExerciseCommand))]
+    public partial bool IsLoading { get; set; }
+
+    public bool IsEditable => !IsLoading;
+
+    public bool IsEmptyHintVisible => IsEmpty && !IsLoading;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ExerciseCountCaption))]
@@ -79,7 +92,7 @@ public partial class AddEditWorkoutViewModel(
 
     public AddEditExerciseViewModel ExerciseForm { get; } = exerciseForm;
 
-    public bool CanSave => !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
+    public bool CanSave => IsEditable && !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
 
     private bool IsAnySheetOpen => IsExercisePickerOpen || IsExerciseFormOpen || IsConfigurationOpen;
 
@@ -89,18 +102,20 @@ public partial class AddEditWorkoutViewModel(
         {
             _workoutToEdit = workout;
             HeaderTitle = UiText.HeaderEditWorkout;
+            IsLoading = true;
             _errors.ReportFailures(LoadWorkoutAsync(workout));
         }
     }
 
     private async Task LoadWorkoutAsync(Workout workout)
     {
+        var exercises = await _workoutRepository.GetExercisesAsync(workout.Id);
+
         WorkoutName = workout.Name;
-
-        Exercises.ReplaceAll(await _workoutRepository.GetExercisesAsync(workout.Id));
-
+        Exercises.ReplaceAll(exercises);
         RefreshSummary();
         HasUnsavedChanges = false;
+        IsLoading = false;
     }
 
     [RelayCommand]
@@ -193,7 +208,7 @@ public partial class AddEditWorkoutViewModel(
     private static bool IsEditorLocation(ShellNavigationState? state) =>
         state?.Location.OriginalString.Contains(nameof(AddEditWorkoutPage), StringComparison.Ordinal) == true;
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsEditable))]
     private Task AddExerciseAsync() => _errors.RunAsync(async () =>
     {
         await ExercisePicker.LoadAsync();
@@ -243,7 +258,7 @@ public partial class AddEditWorkoutViewModel(
         OpenConfigurationForNewExercise(exercise);
     });
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(IsEditable))]
     private void EditExercise(WorkoutExercise exercise)
     {
         _exerciseToAdd = null;
