@@ -9,27 +9,6 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
     private const string SelectNextOrder = "SELECT IFNULL(MAX([Order]), -1) + 1 FROM SessionExercise WHERE WorkoutSessionId = ?";
     private const string DeleteSetsForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
 
-    public async Task<List<SessionExercise>> CreateSnapshotAsync(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises)
-    {
-        var snapshot = BuildSnapshot(workoutSessionId, templateExercises);
-
-        if (snapshot.Count == 0)
-        {
-            return snapshot;
-        }
-
-        var connection = await context.GetConnectionAsync();
-        await connection.RunInTransactionAsync(transaction =>
-        {
-            foreach (var sessionExercise in snapshot)
-            {
-                transaction.Insert(sessionExercise);
-            }
-        });
-
-        return snapshot;
-    }
-
     public async Task<List<SessionExercise>> GetForSessionAsync(int workoutSessionId)
     {
         var connection = await context.GetConnectionAsync();
@@ -81,19 +60,4 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<SessionExercise>();
-
-    private static List<SessionExercise> BuildSnapshot(int workoutSessionId, IReadOnlyList<WorkoutExercise> templateExercises) =>
-    [
-        .. templateExercises.Select((templateExercise, position) => new SessionExercise
-        {
-            WorkoutSessionId = workoutSessionId,
-            ExerciseId = templateExercise.ExerciseId,
-            ExerciseName = templateExercise.ExerciseName,
-            Order = position,
-            PlannedSets = templateExercise.Sets,
-            PlannedReps = templateExercise.Reps,
-            BreakTimeInSeconds = templateExercise.BreakTimeInSeconds,
-            TargetRPE = templateExercise.TargetRPE
-        })
-    ];
 }

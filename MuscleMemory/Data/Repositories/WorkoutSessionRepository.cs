@@ -15,7 +15,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         WHERE performed.WorkoutSessionId = ?
         """;
 
-    public async Task<WorkoutSession> CreateAsync(Workout workout)
+    public async Task<StartedSession> CreateWithSnapshotAsync(Workout workout, IReadOnlyList<WorkoutExercise> templateExercises)
     {
         var connection = await context.GetConnectionAsync();
         var session = new WorkoutSession
@@ -24,9 +24,19 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
             WorkoutName = workout.Name,
             StartTimeUtc = DateTime.UtcNow
         };
+        var snapshot = BuildSnapshot(templateExercises);
 
-        await connection.InsertAsync(session);
-        return session;
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            transaction.Insert(session);
+            foreach (var sessionExercise in snapshot)
+            {
+                sessionExercise.WorkoutSessionId = session.Id;
+                transaction.Insert(sessionExercise);
+            }
+        });
+
+        return new StartedSession(session.Id, snapshot);
     }
 
     public async Task FinishOrDiscardAsync(int sessionId)
@@ -81,6 +91,20 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSession>();
+
+    private static List<SessionExercise> BuildSnapshot(IReadOnlyList<WorkoutExercise> templateExercises) =>
+    [
+        .. templateExercises.Select((templateExercise, position) => new SessionExercise
+        {
+            ExerciseId = templateExercise.ExerciseId,
+            ExerciseName = templateExercise.ExerciseName,
+            Order = position,
+            PlannedSets = templateExercise.Sets,
+            PlannedReps = templateExercise.Reps,
+            BreakTimeInSeconds = templateExercise.BreakTimeInSeconds,
+            TargetRPE = templateExercise.TargetRPE
+        })
+    ];
 
     private static WorkoutSession AsUtc(WorkoutSession session)
     {
