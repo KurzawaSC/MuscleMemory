@@ -13,6 +13,8 @@ namespace MuscleMemory.ViewModels;
 public partial class ExerciseListViewModel : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository;
+    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IExerciseCatalogService _exerciseCatalog;
     private readonly IHapticService _hapticService;
     private readonly IDialogService _dialogs;
     private readonly IErrorHandler _errors;
@@ -20,6 +22,8 @@ public partial class ExerciseListViewModel : ObservableObject
 
     public ExerciseListViewModel(
         IExerciseRepository exerciseRepository,
+        IWorkoutRepository workoutRepository,
+        IExerciseCatalogService exerciseCatalog,
         ActiveWorkoutViewModel activeWorkout,
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
@@ -28,6 +32,8 @@ public partial class ExerciseListViewModel : ObservableObject
         IErrorHandler errors)
     {
         _exerciseRepository = exerciseRepository;
+        _workoutRepository = workoutRepository;
+        _exerciseCatalog = exerciseCatalog;
         _hapticService = hapticService;
         _dialogs = dialogs;
         _errors = errors;
@@ -176,13 +182,18 @@ public partial class ExerciseListViewModel : ObservableObject
             return;
         }
 
-        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.DeleteConfirmationFormat, exercise.Name), UiText.ButtonDelete, UiText.ButtonCancel);
+        var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
+        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
-            await _exerciseRepository.DeleteAsync(exercise.Id);
+            await _exerciseCatalog.DeleteAsync(exercise.Id);
             await LoadExercisesAsync();
         }
     });
+
+    private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
+        ? string.Format(UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, workoutCount == 1 ? UiText.CaptionWorkout : UiText.CaptionWorkouts)
+        : string.Format(UiText.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {
