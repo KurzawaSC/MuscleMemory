@@ -26,6 +26,7 @@ public static class UiText
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
+    public const string BodyFinishUnsavedWorkoutConfirmation = "No sets were logged, so this workout will not be saved. Finish anyway?";
     public const string BodyUnsavedChangesConfirmation = "You have unsaved changes. Are you sure you want to discard them and exit?";
     public const string BodyDataErased = "All your data has been erased.";
     public const string BodyNoDataToExport = "There is no data to export yet.";
