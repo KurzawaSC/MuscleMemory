@@ -3,5 +3,6 @@ namespace MuscleMemory.Constants;
 public static class NavigationRoutes
 {
     public const string GoBack = "..";
-    public const string ActiveWorkoutOnWorkoutTab = "//WorkoutListPage/ActiveWorkoutPage";
+    public const string WorkoutTab = "WorkoutListPage";
+    public const string ActiveWorkoutOnWorkoutTab = $"//{WorkoutTab}/ActiveWorkoutPage";
 }

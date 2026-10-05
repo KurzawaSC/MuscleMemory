@@ -5,4 +5,6 @@ public interface INavigationStackService
     void RemoveFromAllTabs<TPage>() where TPage : Page;
 
     bool ContainsPageBoundTo(object bindingContext);
+
+    Task<bool> ConfirmDiscardingChangesOnTabAsync(string tabRoute);
 }
