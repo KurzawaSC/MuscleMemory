@@ -31,6 +31,9 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
 
     public string FormatCountdown(TimeSpan remaining) => Format(remaining);
 
-    private static string Format(TimeSpan duration) =>
-        duration.ToString(duration.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
+    private static string Format(TimeSpan duration)
+    {
+        var displayed = duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
+        return displayed.ToString(displayed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
+    }
 }
