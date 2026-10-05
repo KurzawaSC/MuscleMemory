@@ -8,6 +8,12 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
     private const string SelectCompletedSessionsByIdsFormat =
         "SELECT * FROM WorkoutSession WHERE EndTimeUtc IS NOT NULL AND Id IN ({0})";
     private const string FinishSession = "UPDATE WorkoutSession SET EndTimeUtc = ? WHERE Id = ?";
+    private const string DeleteSessionExercises = "DELETE FROM SessionExercise WHERE WorkoutSessionId = ?";
+    private const string CountLoggedSets = """
+        SELECT COUNT(*) FROM WorkoutSet loggedSet
+        JOIN SessionExercise performed ON performed.Id = loggedSet.SessionExerciseId
+        WHERE performed.WorkoutSessionId = ?
+        """;
 
     public async Task<WorkoutSession> CreateAsync(Workout workout)
     {
@@ -23,10 +29,20 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         return session;
     }
 
-    public async Task FinishAsync(int sessionId)
+    public async Task FinishOrDiscardAsync(int sessionId)
     {
         var connection = await context.GetConnectionAsync();
-        await connection.ExecuteAsync(FinishSession, DateTime.UtcNow, sessionId);
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            if (transaction.ExecuteScalar<int>(CountLoggedSets, sessionId) > 0)
+            {
+                transaction.Execute(FinishSession, DateTime.UtcNow, sessionId);
+                return;
+            }
+
+            transaction.Execute(DeleteSessionExercises, sessionId);
+            transaction.Delete<WorkoutSession>(sessionId);
+        });
     }
 
     public async Task<WorkoutSession?> GetAsync(int sessionId)
