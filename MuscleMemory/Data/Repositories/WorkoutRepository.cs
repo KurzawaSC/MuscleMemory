@@ -8,6 +8,8 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
     private const string WorkoutNotFoundMessage = "The workout to update no longer exists.";
     private const string DeleteExercisesByWorkout = "DELETE FROM WorkoutExercise WHERE WorkoutId = ?";
     private const string RenameExerciseInTemplates = "UPDATE WorkoutExercise SET ExerciseName = ? WHERE ExerciseId = ?";
+    private const string DeleteExerciseFromTemplates = "DELETE FROM WorkoutExercise WHERE ExerciseId = ?";
+    private const string CountWorkoutsContainingExercise = "SELECT COUNT(DISTINCT WorkoutId) FROM WorkoutExercise WHERE ExerciseId = ?";
 
     public async Task<List<Workout>> GetAllAsync()
     {
@@ -70,8 +72,17 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
                                .ToListAsync();
     }
 
+    public async Task<int> CountWorkoutsContainingAsync(int exerciseId)
+    {
+        var connection = await context.GetConnectionAsync();
+        return await connection.ExecuteScalarAsync<int>(CountWorkoutsContainingExercise, exerciseId);
+    }
+
     public void RenameExercise(SQLiteConnection transaction, int exerciseId, string exerciseName) =>
         transaction.Execute(RenameExerciseInTemplates, exerciseName, exerciseId);
+
+    public void RemoveExercise(SQLiteConnection transaction, int exerciseId) =>
+        transaction.Execute(DeleteExerciseFromTemplates, exerciseId);
 
     public void Clear(SQLiteConnection transaction)
     {

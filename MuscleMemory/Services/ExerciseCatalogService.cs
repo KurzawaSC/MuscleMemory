@@ -18,4 +18,14 @@ public sealed class ExerciseCatalogService(
             workoutRepository.RenameExercise(transaction, exercise.Id, exercise.Name);
         });
     }
+
+    public async Task DeleteAsync(int exerciseId)
+    {
+        var connection = await context.GetConnectionAsync();
+        await connection.RunInTransactionAsync(transaction =>
+        {
+            workoutRepository.RemoveExercise(transaction, exerciseId);
+            exerciseRepository.Delete(transaction, exerciseId);
+        });
+    }
 }
