@@ -7,6 +7,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
 {
     private const string SelectCompletedSessionsByIdsFormat =
         "SELECT * FROM WorkoutSession WHERE EndTimeUtc IS NOT NULL AND Id IN ({0})";
+    private const string FinishSession = "UPDATE WorkoutSession SET EndTimeUtc = ? WHERE Id = ?";
 
     public async Task<WorkoutSession> CreateAsync(Workout workout)
     {
@@ -25,15 +26,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
     public async Task FinishAsync(int sessionId)
     {
         var connection = await context.GetConnectionAsync();
-        var session = await GetAsync(sessionId);
-
-        if (session is null)
-        {
-            return;
-        }
-
-        session.EndTimeUtc = DateTime.UtcNow;
-        await connection.UpdateAsync(session);
+        await connection.ExecuteAsync(FinishSession, DateTime.UtcNow, sessionId);
     }
 
     public async Task<WorkoutSession?> GetAsync(int sessionId)
