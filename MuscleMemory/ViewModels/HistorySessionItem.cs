@@ -20,6 +20,6 @@ public sealed record HistorySessionItem(
             session.LocalStartTime.ToString(UiText.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),
             string.Format(UiText.SessionStatsFormat, durationText, setCount, setCount == 1 ? UiText.CaptionSet : UiText.CaptionSets),
-            string.Format(CultureInfo.InvariantCulture, UiText.VolumeNumberFormat, session.TotalVolume));
+            string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume));
     }
 }
