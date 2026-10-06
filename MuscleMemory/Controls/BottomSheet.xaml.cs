@@ -30,6 +30,7 @@ public partial class BottomSheet : ContentView
     public BottomSheet()
     {
         InitializeComponent();
+        DetachLayer();
         _sheetPadding = Sheet.Padding;
         Sheet.SizeChanged += (_, _) => LimitBodyHeight();
         FooterHost.SizeChanged += (_, _) => LimitBodyHeight();
@@ -91,12 +92,7 @@ public partial class BottomSheet : ContentView
     private void ShowLayer()
     {
         IsVisible = true;
-
-        if (ReferenceEquals(Content, Layer))
-        {
-            Content = null;
-            Layer.Parent = this;
-        }
+        AttachLayer();
 
         if (WindowLayer.TryShow(Layer))
         {
@@ -116,6 +112,23 @@ public partial class BottomSheet : ContentView
         this.AbortAnimation(InsetAnimationName);
         IsVisible = false;
         WindowLayer.Hide(Layer);
+        DetachLayer();
+    }
+
+    private void AttachLayer()
+    {
+        Content = null;
+
+        if (Layer.Parent is null)
+        {
+            AddLogicalChild(Layer);
+        }
+    }
+
+    private void DetachLayer()
+    {
+        Content = null;
+        RemoveLogicalChild(Layer);
     }
 
     private void SetBottomInset(double inset)
