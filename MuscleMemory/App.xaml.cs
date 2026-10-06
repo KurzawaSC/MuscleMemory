@@ -5,6 +5,8 @@ namespace MuscleMemory;
 
 public partial class App : Application
 {
+    private Window? _window;
+
     public App(IThemeService themeService)
     {
         InitializeComponent();
@@ -13,7 +15,12 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
+        if (_window is { Handler: null })
+        {
+            return _window;
+        }
+
         var shell = activationState?.Context.Services.GetService<AppShell>();
-        return new Window(shell ?? throw new InvalidOperationException("AppShell not found"));
+        return _window = new Window(shell ?? throw new InvalidOperationException("AppShell not found"));
     }
 }
