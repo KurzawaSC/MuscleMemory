@@ -11,13 +11,13 @@ public sealed record HistorySessionItem(
     string StatsText,
     string VolumeText)
 {
-    public static HistorySessionItem Create(WorkoutHistorySession session, string durationText)
+    public static HistorySessionItem Create(WorkoutHistorySession session, string durationText, bool sharesDate)
     {
         var setCount = session.Exercises.Sum(exercise => exercise.Sets.Count);
 
         return new HistorySessionItem(
             session,
-            session.LocalStartTime.ToString(UiText.ShortDateFormat, CultureInfo.InvariantCulture),
+            session.LocalStartTime.ToString(sharesDate ? UiText.ShortDateTimeFormat : UiText.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),
             string.Format(UiText.SessionStatsFormat, durationText, setCount, setCount == 1 ? UiText.CaptionSet : UiText.CaptionSets),
             string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume));
