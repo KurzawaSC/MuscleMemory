@@ -14,7 +14,7 @@ public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText,
 
         return new SummaryExerciseItem(
             exercise.ExerciseName,
-            string.Format(CultureInfo.InvariantCulture, UiText.VolumeFormat, volumes.Sum()),
+            string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, volumes.Sum()),
             [.. exercise.Sets.Select(set => new SummarySetBar(
                 set.SetNumber,
                 string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps),

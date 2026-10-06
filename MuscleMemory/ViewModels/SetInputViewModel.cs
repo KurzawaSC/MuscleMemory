@@ -111,5 +111,5 @@ public sealed partial class SetInputViewModel : ObservableObject
 
     private static string FormatWeight(double weight) => weight.ToString(CultureInfo.CurrentCulture);
 
-    private static string FormatReps(int reps) => reps.ToString(CultureInfo.InvariantCulture);
+    private static string FormatReps(int reps) => reps.ToString(CultureInfo.CurrentCulture);
 }
