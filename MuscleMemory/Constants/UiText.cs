@@ -82,6 +82,7 @@ public static class UiText
     public const string RestTotalFormat = "of {0} s";
     public const string ResultSeparator = ", ";
     public const string WeightRangeErrorFormat = "Enter {0}–{1} kg";
+    public const string WeightPrecisionErrorFormat = "Use {0} kg steps";
     public const string RepsRangeErrorFormat = "Enter {0}–{1} reps";
     public const string ExerciseNameTakenError = "An exercise with this name already exists";
 
