@@ -4,6 +4,7 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              x:Class="MuscleMemory.Views.SettingsPage"
                              x:DataType="viewmodels:SettingsViewModel"
                              BackCommand="{Binding CloseSheetsCommand}">
@@ -51,7 +52,9 @@
                       ColumnSpacing="10"
                       RadioButtonGroup.GroupName="AppTheme"
                       RadioButtonGroup.SelectedValue="{Binding SelectedTheme}">
-                    <RadioButton Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.System}">
+                    <RadioButton Style="{StaticResource ThemeCard}"
+                                 Value="{x:Static models:ThemePreference.System}"
+                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionSystem}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}">
@@ -66,7 +69,10 @@
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
-                    <RadioButton Grid.Column="1" Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.Light}">
+                    <RadioButton Grid.Column="1"
+                                 Style="{StaticResource ThemeCard}"
+                                 Value="{x:Static models:ThemePreference.Light}"
+                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionLight}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
@@ -74,7 +80,10 @@
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
-                    <RadioButton Grid.Column="2" Style="{StaticResource ThemeCard}" Value="{x:Static models:ThemePreference.Dark}">
+                    <RadioButton Grid.Column="2"
+                                 Style="{StaticResource ThemeCard}"
+                                 Value="{x:Static models:ThemePreference.Dark}"
+                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />

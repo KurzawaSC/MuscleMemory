@@ -45,6 +45,10 @@ public static class UiText
     public const string HeaderNewWorkout = "New workout";
     public const string HeaderEditWorkout = "Edit workout";
 
+    public const string ThemeOptionSystem = "System theme";
+    public const string ThemeOptionLight = "Light theme";
+    public const string ThemeOptionDark = "Dark theme";
+
     public const string FilterAll = "All";
     public const string RestPresetOther = "Other";
     public const string RestPresetFormat = "{0} s";
