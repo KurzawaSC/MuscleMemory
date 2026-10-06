@@ -107,10 +107,15 @@ public partial class WorkoutHistoryViewModel(
 
         var selectedSessionId = SelectedSession?.Session.SessionId;
 
-        Sessions.ReplaceAll(history.Select(session => HistorySessionItem.Create(session, _timer.FormatElapsed(session.Duration))));
+        var sharedDates = FindSharedDates(history);
+        Sessions.ReplaceAll(history.Select(session => HistorySessionItem.Create(
+            session, _timer.FormatElapsed(session.Duration), sharedDates.Contains(session.LocalStartTime.Date))));
         SelectedSession = Sessions.FirstOrDefault(item => item.Session.SessionId == selectedSessionId) ?? Sessions.FirstOrDefault();
         IsEmpty = Sessions.Count == 0;
     }
+
+    private static HashSet<DateTime> FindSharedDates(IEnumerable<WorkoutHistorySession> sessions) =>
+        [.. sessions.CountBy(session => session.LocalStartTime.Date).Where(day => day.Value > 1).Select(day => day.Key)];
 
     [RelayCommand]
     private Task NavigateBackAsync() => _errors.RunAsync(async () =>

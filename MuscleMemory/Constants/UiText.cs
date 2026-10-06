@@ -75,6 +75,7 @@ public static class UiText
     public const string VersionFormat = "Version {0}";
     public const string VolumeNumberFormat = "{0:N0}";
     public const string ShortDateFormat = "MMM dd";
+    public const string ShortDateTimeFormat = "MMM dd · HH:mm";
     public const string LongDateFormat = "MMM dd, yyyy";
     public const string SummaryDateFormat = "MMM dd, yyyy · HH:mm";
     public const string SessionDateTimeFormat = "ddd, MMM d · HH:mm";
