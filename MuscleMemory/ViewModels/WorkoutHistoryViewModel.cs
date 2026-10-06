@@ -16,6 +16,7 @@ public partial class WorkoutHistoryViewModel(
     IWorkoutSetRepository setRepository,
     IDialogService dialogs,
     IWorkoutTimerService timer,
+    INavigationService navigation,
     IErrorHandler errors,
     SelectExerciseViewModel exercisePicker) : ObservableObject, IQueryAttributable
 {
@@ -24,6 +25,7 @@ public partial class WorkoutHistoryViewModel(
     private readonly IWorkoutSetRepository _setRepository = setRepository;
     private readonly IDialogService _dialogs = dialogs;
     private readonly IWorkoutTimerService _timer = timer;
+    private readonly INavigationService _navigation = navigation;
     private readonly IErrorHandler _errors = errors;
     private int _workoutId;
     private int _latestLoad;
@@ -119,7 +121,7 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        await _navigation.GoToAsync(NavigationRoutes.GoBack);
     });
 
     private void CloseSheets()

@@ -24,6 +24,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IDialogService _dialogs;
     private readonly IWorkoutSummaryService _summaryService;
     private readonly INavigationStackService _navigationStack;
+    private readonly INavigationService _navigation;
     private readonly IHapticService _haptics;
     private readonly IErrorHandler _errors;
     private int _sessionId;
@@ -180,6 +181,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IDialogService dialogs,
         IWorkoutSummaryService summaryService,
         INavigationStackService navigationStack,
+        INavigationService navigation,
         IHapticService haptics,
         IErrorHandler errors)
     {
@@ -193,6 +195,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _dialogs = dialogs;
         _summaryService = summaryService;
         _navigationStack = navigationStack;
+        _navigation = navigation;
         _haptics = haptics;
         _errors = errors;
 
@@ -509,7 +512,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         if (!summary.HasLoggedSets)
         {
             IsWorkoutActive = false;
-            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            await _navigation.GoToAsync(NavigationRoutes.GoBack);
             return;
         }
 
@@ -684,7 +687,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         if (await _navigationStack.ConfirmDiscardingChangesOnTabAsync(NavigationRoutes.WorkoutTab))
         {
-            await Shell.Current.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
+            await _navigation.GoToAsync(NavigationRoutes.ActiveWorkoutOnWorkoutTab);
         }
     });
 
@@ -705,7 +708,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         if (!IsWorkoutCompleted)
         {
-            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            await _navigation.GoToAsync(NavigationRoutes.GoBack);
             return;
         }
 
@@ -718,7 +721,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand(CanExecute = nameof(IsIdle))]
     private Task ExitWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        await _navigation.GoToAsync(NavigationRoutes.GoBack);
         ClearCompletedSummary();
     }));
 
@@ -730,7 +733,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             { QueryKeys.WorkoutId, _workoutId },
             { QueryKeys.WorkoutName, WorkoutTitle }
         };
-        await Shell.Current.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
+        await _navigation.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
         ClearCompletedSummary();
     }));
 

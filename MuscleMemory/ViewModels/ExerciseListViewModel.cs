@@ -17,6 +17,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IExerciseCatalogService _exerciseCatalog;
     private readonly IHapticService _hapticService;
     private readonly IDialogService _dialogs;
+    private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
     private List<Exercise> _allExercises = [];
     private int _latestLoad;
@@ -31,6 +32,7 @@ public partial class ExerciseListViewModel : ObservableObject
         IHapticService hapticService,
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
+        INavigationService navigation,
         IErrorHandler errors)
     {
         _exerciseRepository = exerciseRepository;
@@ -38,6 +40,7 @@ public partial class ExerciseListViewModel : ObservableObject
         _exerciseCatalog = exerciseCatalog;
         _hapticService = hapticService;
         _dialogs = dialogs;
+        _navigation = navigation;
         _errors = errors;
         ActiveWorkout = activeWorkout;
         ExerciseForm = exerciseForm;
@@ -190,7 +193,7 @@ public partial class ExerciseListViewModel : ObservableObject
             { QueryKeys.ExerciseId, exercise.Id },
             { QueryKeys.ExerciseName, exercise.Name }
         };
-        await Shell.Current.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
+        await _navigation.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
     });
 
     [RelayCommand]

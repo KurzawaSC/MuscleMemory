@@ -17,11 +17,13 @@ public partial class AddEditWorkoutViewModel(
     AddEditExerciseViewModel exerciseForm,
     IDialogService dialogs,
     INavigationStackService navigationStack,
+    INavigationService navigation,
     IErrorHandler errors) : ObservableObject, IQueryAttributable, IUnsavedChangesGuard
 {
     private readonly IWorkoutRepository _workoutRepository = workoutRepository;
     private readonly IDialogService _dialogs = dialogs;
     private readonly INavigationStackService _navigationStack = navigationStack;
+    private readonly INavigationService _navigation = navigation;
     private readonly IErrorHandler _errors = errors;
     private Shell? _guardedShell;
     private Workout? _workoutToEdit;
@@ -184,11 +186,11 @@ public partial class AddEditWorkoutViewModel(
             return;
         }
 
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        await _navigation.GoToAsync(NavigationRoutes.GoBack);
 
         if (destination != null && Shell.Current.CurrentState.Location != destination.Location)
         {
-            await Shell.Current.GoToAsync(destination);
+            await _navigation.GoToAsync(destination);
         }
     }
 
@@ -203,7 +205,7 @@ public partial class AddEditWorkoutViewModel(
 
         if (await ConfirmDiscardAsync())
         {
-            await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+            await _navigation.GoToAsync(NavigationRoutes.GoBack);
         }
     });
 
@@ -390,6 +392,6 @@ public partial class AddEditWorkoutViewModel(
         }
 
         HasUnsavedChanges = false;
-        await Shell.Current.GoToAsync(NavigationRoutes.GoBack);
+        await _navigation.GoToAsync(NavigationRoutes.GoBack);
     });
 }
