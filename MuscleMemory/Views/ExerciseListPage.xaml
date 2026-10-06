@@ -55,9 +55,11 @@
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
-            <CollectionView.Footer>
-                <BoxView HeightRequest="100" Color="Transparent" />
-            </CollectionView.Footer>
+            <CollectionView.FooterTemplate>
+                <DataTemplate x:DataType="x:Object">
+                    <BoxView HeightRequest="100" Color="Transparent" />
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
                     <Border Style="{StaticResource SelectableCard}">
