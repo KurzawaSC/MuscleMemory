@@ -27,6 +27,7 @@ public static class MauiProgram
 #if ANDROID
                 handlers.AddHandler<Shell, InstantTabBarShellRenderer>();
                 BorderlessEntryMapping.Register();
+                NumericEntryMapping.Register();
 #endif
             });
 
