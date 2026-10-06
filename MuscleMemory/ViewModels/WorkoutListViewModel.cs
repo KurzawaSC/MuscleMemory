@@ -15,6 +15,7 @@ public partial class WorkoutListViewModel : ObservableObject
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IHapticService _hapticService;
     private readonly IDialogService _dialogs;
+    private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
     private int _latestLoad;
 
@@ -24,11 +25,13 @@ public partial class WorkoutListViewModel : ObservableObject
         IHapticService hapticService,
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
+        INavigationService navigation,
         IErrorHandler errors)
     {
         _workoutRepository = workoutRepository;
         _hapticService = hapticService;
         _dialogs = dialogs;
+        _navigation = navigation;
         _errors = errors;
         ActiveWorkout = activeWorkout;
         dataChanges.Changed += OnDataChanged;
@@ -84,7 +87,7 @@ public partial class WorkoutListViewModel : ObservableObject
 
     [RelayCommand]
     private Task NavigateToAddWorkout() =>
-        _errors.RunAsync(() => Shell.Current.GoToAsync(nameof(AddEditWorkoutPage)));
+        _errors.RunAsync(() => _navigation.GoToAsync(nameof(AddEditWorkoutPage)));
 
     private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true && !ActiveWorkout.IsBusy;
 
@@ -101,7 +104,7 @@ public partial class WorkoutListViewModel : ObservableObject
         {
             { QueryKeys.Workout, item.Workout }
         };
-        await Shell.Current.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
+        await _navigation.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
     });
 
     private async Task OfferToResumeActiveWorkoutAsync()
@@ -152,7 +155,7 @@ public partial class WorkoutListViewModel : ObservableObject
         {
             { QueryKeys.WorkoutToEdit, item.Workout }
         };
-        await Shell.Current.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
+        await _navigation.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
     });
 
     [RelayCommand]
@@ -170,7 +173,7 @@ public partial class WorkoutListViewModel : ObservableObject
             { QueryKeys.WorkoutId, item.Workout.Id },
             { QueryKeys.WorkoutName, item.Workout.Name }
         };
-        await Shell.Current.GoToAsync(nameof(WorkoutHistoryPage), navigationParameter);
+        await _navigation.GoToAsync(nameof(WorkoutHistoryPage), navigationParameter);
     });
 
     [RelayCommand]
