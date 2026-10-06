@@ -42,7 +42,7 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
 
     public string NameError => IsNameTaken ? UiText.ExerciseNameTakenError : string.Empty;
 
-    private bool IsNameTaken => TakenNames?.Contains(Name.Trim()) == true;
+    private bool IsNameTaken => TakenNames?.Contains(NormalizeName(Name)) == true;
 
     public async Task BeginNewAsync()
     {
@@ -87,15 +87,18 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         var exercises = await _exerciseRepository.GetAllAsync();
         return exercises
             .Where(exercise => exercise.Id != _existingExercise?.Id)
-            .Select(exercise => exercise.Name.Trim())
+            .Select(exercise => NormalizeName(exercise.Name))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
     private Exercise BuildExercise(int id = 0) => new()
     {
         Id = id,
-        Name = Name.Trim(),
+        Name = NormalizeName(Name),
         TargetMuscleGroup = SelectedMuscleGroup,
         Equipment = SelectedEquipment
     };
+
+    private static string NormalizeName(string name) =>
+        string.Join(' ', name.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 }
