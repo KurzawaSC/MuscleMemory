@@ -5,7 +5,6 @@
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.ExerciseListPage"
                              x:DataType="viewmodels:ExerciseListViewModel"
@@ -56,9 +55,11 @@
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
-            <CollectionView.Footer>
-                <BoxView HeightRequest="100" Color="Transparent" />
-            </CollectionView.Footer>
+            <CollectionView.FooterTemplate>
+                <DataTemplate x:DataType="x:Object">
+                    <BoxView HeightRequest="100" Color="Transparent" />
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Exercise">
                     <Border Style="{StaticResource SelectableCard}">
@@ -76,9 +77,8 @@
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout x:Name="CardContent" Spacing="8" BackgroundColor="Transparent">
                                 <VerticalStackLayout.Behaviors>
-                                    <toolkit:TouchBehavior LongPressDuration="{x:Static constants:UiTiming.LongPressMilliseconds}"
-                                                           LongPressCommand="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
-                                                           LongPressCommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
+                                    <controls:LongPressBehavior Command="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
+                                                                CommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
                                 </VerticalStackLayout.Behaviors>
                                 <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" LineBreakMode="TailTruncation" />
                                 <HorizontalStackLayout Spacing="6">

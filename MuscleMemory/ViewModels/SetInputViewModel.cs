@@ -14,6 +14,9 @@ public sealed partial class SetInputViewModel : ObservableObject
     private static readonly string WeightRangeError = string.Format(
         CultureInfo.CurrentCulture, UiText.WeightRangeErrorFormat, DomainDefaults.MinWeightInKg, DomainDefaults.MaxWeightInKg);
 
+    private static readonly string WeightPrecisionError = string.Format(
+        CultureInfo.CurrentCulture, UiText.WeightPrecisionErrorFormat, DomainDefaults.WeightPrecisionInKg);
+
     private static readonly string RepsRangeError = string.Format(
         CultureInfo.CurrentCulture, UiText.RepsRangeErrorFormat, DomainDefaults.MinReps, DomainDefaults.MaxReps);
 
@@ -29,7 +32,7 @@ public sealed partial class SetInputViewModel : ObservableObject
 
     public bool IsValid => TryRead(out _);
 
-    public string WeightError => IsInvalid(WeightInput, TryReadWeight(out _)) ? WeightRangeError : string.Empty;
+    public string WeightError => IsInvalid(WeightInput, TryReadWeight(out _)) ? DescribeWeightError() : string.Empty;
 
     public string RepsError => IsInvalid(RepsInput, TryReadReps(out _)) ? RepsRangeError : string.Empty;
 
@@ -37,7 +40,7 @@ public sealed partial class SetInputViewModel : ObservableObject
     {
         if (TryReadWeight(out double weight) && TryReadReps(out int reps))
         {
-            values = new SetValues(RoundWeight(weight), reps);
+            values = new SetValues(weight, reps);
             return true;
         }
 
@@ -80,7 +83,10 @@ public sealed partial class SetInputViewModel : ObservableObject
     private int ParseRepsOrZero() => TryParseReps(out int reps) ? reps : 0;
 
     private bool TryReadWeight(out double weight) =>
-        TryParseWeight(out weight) && weight is >= DomainDefaults.MinWeightInKg and <= DomainDefaults.MaxWeightInKg;
+        TryParseWeight(out weight) && IsWithinWeightRange(weight) && IsWeightPrecise(weight);
+
+    private string DescribeWeightError() =>
+        TryParseWeight(out double weight) && IsWithinWeightRange(weight) ? WeightPrecisionError : WeightRangeError;
 
     private bool TryReadReps(out int reps) =>
         TryParseReps(out reps) && reps is >= DomainDefaults.MinReps and <= DomainDefaults.MaxReps;
@@ -92,8 +98,11 @@ public sealed partial class SetInputViewModel : ObservableObject
     private bool TryParseReps(out int reps) =>
         int.TryParse(RepsInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out reps);
 
-    private static double RoundWeight(double weight) =>
-        Math.Round(weight / DomainDefaults.WeightPrecisionInKg, MidpointRounding.AwayFromZero) * DomainDefaults.WeightPrecisionInKg;
+    private static bool IsWithinWeightRange(double weight) =>
+        weight is >= DomainDefaults.MinWeightInKg and <= DomainDefaults.MaxWeightInKg;
+
+    private static bool IsWeightPrecise(double weight) =>
+        decimal.Remainder((decimal)weight, (decimal)DomainDefaults.WeightPrecisionInKg) == decimal.Zero;
 
     private static bool IsInvalid(string input, bool isReadable) => input.Length > 0 && !isReadable;
 
