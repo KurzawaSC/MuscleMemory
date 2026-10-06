@@ -460,6 +460,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         await _setRepository.AddAsync(newSet);
         _haptics.Click();
+        SetInput.Fill(newSet.Weight, newSet.Reps);
         CurrentSets.Add(newSet);
         HasSavedSets = true;
         if (CurrentExercise.BreakTimeInSeconds > 0)
