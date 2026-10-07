@@ -20,7 +20,7 @@
         <Border.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand, Source={x:Reference Root}}" />
         </Border.GestureRecognizers>
-        <Label Text="Workout in Progress - Tap to Resume"
+        <Label Text="Workout in progress · tap to resume"
                HorizontalTextAlignment="Center"
                TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                FontSize="16"
