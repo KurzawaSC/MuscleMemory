@@ -219,8 +219,7 @@ public partial class WorkoutHistoryViewModel(
     private async Task<WorkoutSet?> DismissSetActionsAsync()
     {
         var set = ActionSet;
-        CancelSetActions();
-        await WaitForSheetToCloseAsync();
+        await SheetTransition.CloseAsync(CancelSetActions);
         return set;
     }
 
@@ -330,7 +329,4 @@ public partial class WorkoutHistoryViewModel(
 
         await RefreshSessionAsync(selected.Session.SessionId);
     });
-
-    private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(UiTiming.SheetClose);
 }

@@ -218,8 +218,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private async Task<Exercise?> DismissActionSheetAsync()
     {
         var exercise = ActionExercise;
-        IsActionSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(CancelExerciseActions);
         return exercise;
     }
 

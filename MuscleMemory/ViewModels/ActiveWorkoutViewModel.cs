@@ -642,8 +642,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task<WorkoutSet?> DismissSetActionsAsync()
     {
         var set = ActionSet;
-        CancelSetActions();
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(CancelSetActions);
         return set;
     }
 

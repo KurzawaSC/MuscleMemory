@@ -228,16 +228,14 @@ public partial class AddEditWorkoutViewModel(
     [RelayCommand]
     private Task PickExerciseAsync(Exercise exercise) => errors.RunAsync(async () =>
     {
-        IsExercisePickerOpen = false;
-        await WaitForSheetToCloseAsync();
+        await SheetTransition.CloseAsync(CloseExercisePicker);
         OpenConfigurationForNewExercise(exercise);
     });
 
     [RelayCommand]
     private Task CreateExerciseAsync() => errors.RunAsync(async () =>
     {
-        IsExercisePickerOpen = false;
-        await WaitForSheetToCloseAsync();
+        await SheetTransition.CloseAsync(CloseExercisePicker);
         await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
     });
@@ -257,8 +255,7 @@ public partial class AddEditWorkoutViewModel(
         }
 
         var exercise = await ExerciseForm.SaveAsync();
-        IsExerciseFormOpen = false;
-        await WaitForSheetToCloseAsync();
+        await SheetTransition.CloseAsync(CancelExerciseForm);
         OpenConfigurationForNewExercise(exercise);
     });
 
@@ -320,9 +317,6 @@ public partial class AddEditWorkoutViewModel(
         ExerciseConfiguration.BeginNew(exercise.Name);
         IsConfigurationOpen = true;
     }
-
-    private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(UiTiming.SheetClose);
 
     private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {

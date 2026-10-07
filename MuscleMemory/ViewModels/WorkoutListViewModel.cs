@@ -177,13 +177,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task DeleteActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
 
         var answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
@@ -192,6 +189,13 @@ public partial class WorkoutListViewModel : ObservableObject
             await ReloadAsync();
         }
     });
+
+    private async Task<WorkoutListItem?> DismissActionSheetAsync()
+    {
+        var item = ActionWorkout;
+        await SheetTransition.CloseAsync(CancelWorkoutActions);
+        return item;
+    }
 
     [RelayCommand(CanExecute = nameof(IsActionSheetOpen))]
     private void CloseSheets()
