@@ -24,8 +24,7 @@ public partial class ExerciseHistoryViewModel(
     [ObservableProperty]
     public partial string SessionCountText { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     public ObservableCollection<ExerciseHistoryItem> History { get; } = [];
 
@@ -47,8 +46,8 @@ public partial class ExerciseHistoryViewModel(
     {
         var entries = await _historyQueryService.GetExerciseHistoryAsync(_exerciseId);
         History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
-        IsEmpty = History.Count == 0;
-        SessionCountText = IsEmpty ? string.Empty : FormatSessionCount(History.Count);
+        ListState.Complete(History.Count);
+        SessionCountText = ListState.IsEmpty ? string.Empty : FormatSessionCount(History.Count);
     }
 
     private static string FormatSessionCount(int count) =>

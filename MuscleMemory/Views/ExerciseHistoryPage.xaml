@@ -25,7 +25,7 @@
 
         <controls:EmptyState Grid.Row="2"
                              Message="No history yet. Complete this exercise in a workout to see it here."
-                             IsVisible="{Binding IsEmpty}" />
+                             IsVisible="{Binding ListState.IsEmpty}" />
 
         <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Margin="20,8,20,0">
             <CollectionView.ItemsLayout>

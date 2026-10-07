@@ -22,13 +22,13 @@
                             Text="{Binding Filter.SearchText}"
                             Placeholder="Search exercises"
                             ClearButtonVisibility="WhileEditing"
-                            IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
+                            IsVisible="{Binding ListState.HasItems}" />
 
         <ScrollView Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalScrollBarVisibility="Never"
                     Margin="0,12,0,0"
-                    IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                    IsVisible="{Binding ListState.HasItems}">
             <HorizontalStackLayout Padding="20,0"
                                    Spacing="8"
                                    RadioButtonGroup.GroupName="ExerciseListFilters"
@@ -106,13 +106,13 @@
                              ActionText="Add exercise"
                              ActionCommand="{Binding AddExerciseCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
-                             IsVisible="{Binding IsEmpty}" />
+                             IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:FloatingActionButton Grid.Row="3" Command="{Binding AddExerciseCommand}">
             <controls:FloatingActionButton.IsVisible>
                 <MultiBinding Converter="{StaticResource AllTrueConverter}">
                     <Binding Path="ActiveWorkout.CanAddItems" />
-                    <Binding Path="IsEmpty" Converter="{StaticResource InvertedBoolConverter}" />
+                    <Binding Path="ListState.HasItems" />
                 </MultiBinding>
             </controls:FloatingActionButton.IsVisible>
         </controls:FloatingActionButton>
