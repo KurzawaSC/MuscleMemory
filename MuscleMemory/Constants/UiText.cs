@@ -40,6 +40,11 @@ public static class UiText
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove “{0}”?";
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
 
+    public const string AppName = "Muscle Memory";
+
+    public const string HeaderExercises = "Exercises";
+    public const string HeaderWorkouts = "Workouts";
+    public const string HeaderSettings = "Settings";
     public const string HeaderNewExercise = "New exercise";
     public const string HeaderEditExercise = "Edit exercise";
     public const string HeaderNewWorkout = "New workout";
