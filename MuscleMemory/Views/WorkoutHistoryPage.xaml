@@ -5,12 +5,13 @@
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
                              x:DataType="viewmodels:WorkoutHistoryViewModel"
                              BackCommand="{Binding NavigateBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat='{0} · history'}" BackCommand="{Binding NavigateBackCommand}" />
+        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat={x:Static constants:UiText.WorkoutHistoryTitleFormat}}" BackCommand="{Binding NavigateBackCommand}" />
 
         <CollectionView Grid.Row="1"
                         Margin="0,14,0,0"
@@ -70,13 +71,13 @@
                                         <Span Text="{Binding SelectedSession.VolumeText, FallbackValue=''}"
                                               FontSize="21"
                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                        <Span Text=" kg"
+                                        <Span Text="{x:Static constants:UiText.KilogramSuffix}"
                                               FontSize="12"
                                               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Style="{StaticResource CaptionLabel}" Text="volume" HorizontalTextAlignment="End" />
+                            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" HorizontalTextAlignment="End" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
@@ -94,7 +95,7 @@
                                                VerticalOptions="Center" />
                                         <controls:TappableButton Grid.Column="1"
                                                                  Style="{StaticResource SoftPrimaryButton}"
-                                                                 Text="Delete"
+                                                                 Text="{x:Static constants:UiText.ButtonDelete}"
                                                                  FontSize="12"
                                                                  HeightRequest="30"
                                                                  CornerRadius="{StaticResource PillRadius}"
@@ -120,7 +121,7 @@
                                             </VerticalStackLayout>
                                             <BoxView Style="{StaticResource Divider}" />
                                             <controls:TappableButton Style="{StaticResource TextButton}"
-                                                                     Text="+ Add set"
+                                                                     Text="{x:Static constants:UiText.ButtonAddSetInline}"
                                                                      FontSize="13"
                                                                      HeightRequest="44"
                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=AddSetCommand}"
@@ -134,7 +135,7 @@
                 </VerticalStackLayout>
 
                 <Border Style="{StaticResource DashedOutline}" Padding="15">
-                    <Label Text="This session is editable — you can add missing sets"
+                    <Label Text="{x:Static constants:UiText.HintEditableSession}"
                            FontSize="14"
                            TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                            HorizontalTextAlignment="Center" />
@@ -144,15 +145,15 @@
 
         <controls:TappableButton Grid.Row="3"
                                  Style="{StaticResource PrimaryButton}"
-                                 Text="Add exercise to session"
+                                 Text="{x:Static constants:UiText.ButtonAddExerciseToSession}"
                                  Margin="20,0,20,14"
                                  Command="{Binding AddExerciseCommand}"
                                  IsVisible="{Binding ListState.HasItems}" />
 
         <controls:EmptyState Grid.Row="1"
                              Grid.RowSpan="3"
-                             Message="No history yet"
-                             Detail="Finish a session of this workout to see it here."
+                             Message="{x:Static constants:UiText.EmptyHistoryMessage}"
+                             Detail="{x:Static constants:UiText.EmptyWorkoutHistoryDetail}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExercisePickerOpen}">
@@ -164,8 +165,8 @@
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding ActionSetTitle}"
                                        Subtitle="{Binding ActionSetSubtitle}"
-                                       EditText="Edit set"
-                                       DeleteText="Delete set"
+                                       EditText="{x:Static constants:UiText.TitleEditSet}"
+                                       DeleteText="{x:Static constants:UiText.TitleDeleteSet}"
                                        EditCommand="{Binding EditActionSetCommand}"
                                        DeleteCommand="{Binding DeleteActionSetCommand}"
                                        CancelCommand="{Binding CancelSetActionsCommand}" />

@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:models="clr-namespace:MuscleMemory.Models"
              x:Class="MuscleMemory.Controls.ExercisePickerSheet"
@@ -10,17 +11,17 @@
 
     <VerticalStackLayout Spacing="14">
         <Grid ColumnDefinitions="*, Auto">
-            <Label Style="{StaticResource TitleLabel}" Text="Select exercise" VerticalOptions="Center" />
+            <Label Style="{StaticResource TitleLabel}" Text="{x:Static constants:UiText.HeaderSelectExercise}" VerticalOptions="Center" />
             <controls:TappableButton Grid.Column="1"
                                      Style="{StaticResource NeutralTextButton}"
-                                     Text="Close"
+                                     Text="{x:Static constants:UiText.ButtonClose}"
                                      FontSize="15"
                                      Command="{Binding CloseCommand, Source={x:Reference Root}}" />
         </Grid>
 
         <controls:TextField IsFilled="True"
                             Text="{Binding Picker.Filter.SearchText, Source={x:Reference Root}}"
-                            Placeholder="Search"
+                            Placeholder="{x:Static constants:UiText.PlaceholderSearch}"
                             ClearButtonVisibility="WhileEditing" />
 
         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -64,7 +65,7 @@
                                 <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
                                 <Label Style="{StaticResource CaptionLabel}">
                                     <Label.Text>
-                                        <MultiBinding StringFormat="{}{0} · {1}">
+                                        <MultiBinding StringFormat="{x:Static constants:UiText.ListPairFormat}">
                                             <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
                                             <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
                                         </MultiBinding>
@@ -93,7 +94,7 @@
             <CollectionView.FooterTemplate>
                 <DataTemplate x:DataType="x:Object">
                     <VerticalStackLayout Margin="0,8,0,0" Spacing="16">
-                        <Label Text="No exercises match your search"
+                        <Label Text="{x:Static constants:UiText.EmptyNoMatchingExercises}"
                                TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                HorizontalOptions="Center"
                                Margin="0,16,0,0"
@@ -103,7 +104,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CreateCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}" />
                             </Border.GestureRecognizers>
-                            <Label Text="Not on the list? Create a new one"
+                            <Label Text="{x:Static constants:UiText.ButtonCreateExercise}"
                                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                    HorizontalOptions="Center" />
                         </Border>

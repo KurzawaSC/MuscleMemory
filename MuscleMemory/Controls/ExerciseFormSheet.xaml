@@ -11,20 +11,20 @@
     <VerticalStackLayout Spacing="16">
         <VerticalStackLayout Spacing="4">
             <Label Style="{StaticResource TitleLabel}" Text="{Binding Form.Title, Source={x:Reference Root}}" />
-            <Label Style="{StaticResource CaptionLabel}" Text="Name is required, everything else is optional" />
+            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.HintExerciseForm}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="Name" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelName}" />
             <controls:TextField FieldHeight="52"
                                 Text="{Binding Form.Name, Source={x:Reference Root}}"
                                 ErrorText="{Binding Form.NameError, Source={x:Reference Root}, FallbackValue=''}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
-                                Placeholder="e.g. Incline Bench Press" />
+                                Placeholder="{x:Static constants:UiText.PlaceholderExerciseName}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="Muscle group" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelMuscleGroup}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"
@@ -43,7 +43,7 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="Equipment" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelEquipment}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"

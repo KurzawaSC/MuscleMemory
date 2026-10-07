@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Controls.SetTableHeader">
 
     <Grid Style="{StaticResource SetTableRow}"
           Padding="12,8"
           BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource FillDark}}">
-        <Label Style="{StaticResource OverlineLabel}" FontSize="11" Text="Set" />
-        <Label Grid.Column="1" Style="{StaticResource OverlineLabel}" FontSize="11" Text="Weight" HorizontalTextAlignment="Center" />
-        <Label Grid.Column="2" Style="{StaticResource OverlineLabel}" FontSize="11" Text="Reps" HorizontalTextAlignment="End" />
+        <Label Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelSet}" />
+        <Label Grid.Column="1" Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelWeight}" HorizontalTextAlignment="Center" />
+        <Label Grid.Column="2" Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelReps}" HorizontalTextAlignment="End" />
     </Grid>
 </ContentView>
