@@ -3,6 +3,8 @@ namespace MuscleMemory.Constants;
 public static class UiText
 {
     public const string TitleDeleteExercise = "Delete exercise";
+    public const string TitleDeleteWorkout = "Delete workout";
+    public const string TitleRemoveExercise = "Remove exercise";
     public const string TitleDeleteSet = "Delete set";
     public const string TitleEditSet = "Edit set";
     public const string TitleAddSet = "Add set";
@@ -31,12 +33,11 @@ public static class UiText
     public const string BodyNoDataToExport = "There is no data to export yet.";
     public const string BodyOperationFailed = "Something went wrong. Please try again.";
     public const string BodyExportFailed = "Export failed. Please try again.";
-    public const string BodyDeleteWorkout = "Session history is kept. The plan itself can't be restored.";
 
-    public const string DeleteConfirmationFormat = "Are you sure you want to delete '{0}'?";
-    public const string DeleteExerciseFromWorkoutsFormat = "Are you sure you want to delete '{0}'? It will be removed from {1} {2}.";
-    public const string DeleteWorkoutTitleFormat = "Delete “{0}”?";
-    public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove '{0}'?";
+    public const string DeleteConfirmationFormat = "Are you sure you want to delete “{0}”?";
+    public const string DeleteExerciseFromWorkoutsFormat = DeleteConfirmationFormat + " It will be removed from {1} {2}.";
+    public const string DeleteWorkoutConfirmationFormat = DeleteConfirmationFormat + " Session history is kept. The plan itself can't be restored.";
+    public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove “{0}”?";
     public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
 
     public const string HeaderNewExercise = "New exercise";
