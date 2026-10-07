@@ -26,6 +26,7 @@ public partial class BottomSheet : ContentView
     private readonly Thickness _sheetPadding;
     private double _panStartTranslation;
     private double _bottomInset;
+    private int _transition;
     private IDisposable? _insetRegistration;
 
     public BottomSheet()
@@ -71,13 +72,15 @@ public partial class BottomSheet : ContentView
         }
         else
         {
-            AnimateTo(ClosedTranslation(), UiTiming.SheetClose, Easing.CubicIn, hideWhenFinished: true);
+            Close();
         }
     }
 
+    private void Close() => AnimateTo(ClosedTranslation(), UiTiming.SheetClose, Easing.CubicIn, hideWhenFinished: true);
+
     private void Open()
     {
-        this.AbortAnimation(AnimationName);
+        SupersedeTransition();
         Sheet.TranslationY = Window?.Height ?? 0;
         ShowLayer();
 
@@ -232,24 +235,48 @@ public partial class BottomSheet : ContentView
         }
     }
 
+    private void SupersedeTransition()
+    {
+        _transition++;
+        this.AbortAnimation(AnimationName);
+    }
+
     private void AnimateTo(double translation, TimeSpan duration, Easing easing, bool hideWhenFinished)
     {
-        this.AbortAnimation(AnimationName);
+        SupersedeTransition();
+        var transition = _transition;
+        var scrimOpacity = hideWhenFinished ? 0 : 1;
 
         var animation = new Animation
         {
             { 0, 1, new Animation(value => Sheet.TranslationY = value, Sheet.TranslationY, translation) },
-            { 0, 1, new Animation(value => Scrim.Opacity = value, Scrim.Opacity, hideWhenFinished ? 0 : 1) }
+            { 0, 1, new Animation(value => Scrim.Opacity = value, Scrim.Opacity, scrimOpacity) }
         };
 
         animation.Commit(this, AnimationName, length: duration.ToAnimationLength(), easing: easing,
-            finished: (_, cancelled) =>
+            finished: (_, _) =>
             {
-                if (!cancelled && hideWhenFinished)
+                if (transition == _transition)
                 {
-                    HideLayer();
+                    CompleteTransition(translation, scrimOpacity, hideWhenFinished);
                 }
             });
+    }
+
+    private void CompleteTransition(double translation, double scrimOpacity, bool hideLayer)
+    {
+        Sheet.TranslationY = translation;
+        Scrim.Opacity = scrimOpacity;
+
+        if (!this.AnimationIsRunning(InsetAnimationName))
+        {
+            ApplyBottomInset(_bottomInset);
+        }
+
+        if (hideLayer)
+        {
+            HideLayer();
+        }
     }
 
     private double ClosedTranslation() => Sheet.Height > 0 ? Sheet.Height : Window?.Height ?? 0;
@@ -261,7 +288,7 @@ public partial class BottomSheet : ContentView
         switch (e.StatusType)
         {
             case GestureStatus.Started:
-                this.AbortAnimation(AnimationName);
+                SupersedeTransition();
                 _panStartTranslation = Sheet.TranslationY;
                 break;
             case GestureStatus.Running:
@@ -276,6 +303,12 @@ public partial class BottomSheet : ContentView
 
     private void SettleAfterDrag()
     {
+        if (!IsOpen)
+        {
+            Close();
+            return;
+        }
+
         if (Sheet.TranslationY > Sheet.Height * DismissThreshold)
         {
             IsOpen = false;
