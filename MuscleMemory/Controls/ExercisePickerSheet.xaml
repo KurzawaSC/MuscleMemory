@@ -79,7 +79,7 @@
                                     VerticalOptions="Center"
                                     BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
                                 <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="10" />
+                                    <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
                                 </Border.StrokeShape>
                                 <Label Text="+"
                                        FontSize="17"
