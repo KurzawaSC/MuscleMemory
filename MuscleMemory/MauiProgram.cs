@@ -64,7 +64,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ExerciseListViewModel>();
         builder.Services.AddTransient<AddEditExerciseViewModel>();
         builder.Services.AddTransient<ExerciseFilterViewModel>();
-        builder.Services.AddTransient<SelectExerciseViewModel>();
+        builder.Services.AddTransient<ExercisePickerViewModel>();
         builder.Services.AddTransient<ConfigureExerciseViewModel>();
         builder.Services.AddSingleton<WorkoutListViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();

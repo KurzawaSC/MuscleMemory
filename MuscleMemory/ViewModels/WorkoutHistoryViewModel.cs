@@ -19,7 +19,7 @@ public partial class WorkoutHistoryViewModel(
     IWorkoutTimerService timer,
     INavigationService navigation,
     IErrorHandler errors,
-    SelectExerciseViewModel exercisePicker) : ObservableObject, IQueryAttributable
+    ExercisePickerViewModel exercisePicker) : ObservableObject, IQueryAttributable
 {
     private readonly SequentialTaskQueue _historyUpdates = new();
     private int _workoutId;
@@ -36,7 +36,7 @@ public partial class WorkoutHistoryViewModel(
     [ObservableProperty]
     public partial HistorySessionItem? SelectedSession { get; set; }
 
-    public SelectExerciseViewModel ExercisePicker { get; } = exercisePicker;
+    public ExercisePickerViewModel ExercisePicker { get; } = exercisePicker;
 
     [ObservableProperty]
     public partial bool IsExercisePickerOpen { get; set; }

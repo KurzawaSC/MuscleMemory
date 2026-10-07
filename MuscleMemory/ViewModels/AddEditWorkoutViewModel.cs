@@ -11,7 +11,7 @@ namespace MuscleMemory.ViewModels;
 
 public partial class AddEditWorkoutViewModel(
     IWorkoutRepository workoutRepository,
-    SelectExerciseViewModel exercisePicker,
+    ExercisePickerViewModel exercisePicker,
     ConfigureExerciseViewModel exerciseConfiguration,
     AddEditExerciseViewModel exerciseForm,
     IDialogService dialogs,
@@ -79,7 +79,7 @@ public partial class AddEditWorkoutViewModel(
 
     public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
 
-    public SelectExerciseViewModel ExercisePicker { get; } = exercisePicker;
+    public ExercisePickerViewModel ExercisePicker { get; } = exercisePicker;
 
     public ConfigureExerciseViewModel ExerciseConfiguration { get; } = exerciseConfiguration;
 
