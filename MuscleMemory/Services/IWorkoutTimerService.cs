@@ -6,7 +6,6 @@ public interface IWorkoutTimerService
     void Start();
     void Stop();
     string ElapsedSince(DateTime startTimeUtc);
-    string FormatElapsed(TimeSpan elapsed);
     TimeSpan RemainingUntil(DateTime endTimeUtc);
-    string FormatCountdown(TimeSpan remaining);
+    string FormatDuration(TimeSpan duration);
 }

@@ -1,10 +1,12 @@
-using MuscleMemory.Constants;
-using MuscleMemory.Extensions;
 #if ANDROID
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
+#endif
+using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
+#if ANDROID
 using View = Android.Views.View;
 #endif
 

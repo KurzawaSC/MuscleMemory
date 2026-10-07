@@ -2,10 +2,11 @@ namespace MuscleMemory.Constants;
 
 public static class UiTiming
 {
-    public const int NavigationAnimationMilliseconds = 300;
-    public const int ExerciseAdvanceDelayMilliseconds = 400;
-    public const uint SheetOpenMilliseconds = 260;
-    public const uint SheetCloseMilliseconds = 200;
-    public const uint KeyboardInsetMilliseconds = 200;
-    public const int RestEndingPulseSeconds = 5;
+    public static readonly TimeSpan NavigationAnimation = TimeSpan.FromMilliseconds(300);
+    public static readonly TimeSpan ExerciseAdvanceDelay = TimeSpan.FromMilliseconds(400);
+    public static readonly TimeSpan SheetOpen = TimeSpan.FromMilliseconds(260);
+    public static readonly TimeSpan SheetClose = TimeSpan.FromMilliseconds(200);
+    public static readonly TimeSpan KeyboardInset = TimeSpan.FromMilliseconds(200);
+    public static readonly TimeSpan RestEndingPulse = TimeSpan.FromSeconds(5);
+    public static readonly TimeSpan TimerTick = TimeSpan.FromSeconds(1);
 }

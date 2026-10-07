@@ -96,7 +96,7 @@ public sealed class WorkoutRepository(DatabaseContext context) : IWorkoutReposit
         var existingExerciseIds = SelectExistingExerciseIds(transaction, exercises);
         var insertable = exercises.Where(exercise => existingExerciseIds.Contains(exercise.ExerciseId)).ToList();
 
-        for (int position = 0; position < insertable.Count; position++)
+        for (var position = 0; position < insertable.Count; position++)
         {
             var exercise = insertable[position];
             exercise.WorkoutId = workoutId;

@@ -8,7 +8,6 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
              x:DataType="viewmodels:ActiveWorkoutViewModel"
-             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
              BackCommand="{Binding NavigateBackCommand}">
 
     <controls:BackNavigationPage.Resources>
@@ -44,8 +43,7 @@
                                      CornerRadius="{StaticResource SmallControlRadius}"
                                      ContentPadding="12,0"
                                      VerticalOptions="Center"
-                                     Command="{Binding FinishWorkoutCommand}"
-                                     IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}" />
+                                     Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
         <Grid Grid.Row="1"

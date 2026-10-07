@@ -1,12 +1,11 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -58,9 +57,9 @@ public partial class AddEditWorkoutViewModel(
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
     public partial int TotalSets { get; set; }
 
-    public string ExerciseCountCaption => ExerciseCount == 1 ? UiText.CaptionExercise : UiText.CaptionExercises;
+    public string ExerciseCountCaption => CountCaption.Exercises(ExerciseCount);
 
-    public string TotalSetsCaption => TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets;
+    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
@@ -72,7 +71,7 @@ public partial class AddEditWorkoutViewModel(
     }
 
     [ObservableProperty]
-    public partial bool HasUnsavedChanges { get; set; } = false;
+    public partial bool HasUnsavedChanges { get; set; }
 
     [ObservableProperty]
     public partial bool IsExercisePickerOpen { get; set; }
@@ -170,7 +169,7 @@ public partial class AddEditWorkoutViewModel(
             return true;
         }
 
-        bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        var discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
         if (discard)
         {
             HasUnsavedChanges = false;
@@ -188,7 +187,7 @@ public partial class AddEditWorkoutViewModel(
 
         await _navigation.GoToAsync(NavigationRoutes.GoBack);
 
-        if (destination != null && Shell.Current.CurrentState.Location != destination.Location)
+        if (destination is not null && Shell.Current.CurrentState.Location != destination.Location)
         {
             await _navigation.GoToAsync(destination);
         }
@@ -216,7 +215,7 @@ public partial class AddEditWorkoutViewModel(
         e.Source is ShellNavigationSource.Push;
 
     private static bool IsEditorLocation(ShellNavigationState? state) =>
-        state?.Location.OriginalString.Contains(nameof(AddEditWorkoutPage), StringComparison.Ordinal) == true;
+        state?.Location.OriginalString.Contains(NavigationRoutes.AddEditWorkout, StringComparison.Ordinal) == true;
 
     [RelayCommand(CanExecute = nameof(IsEditable))]
     private Task AddExerciseAsync() => _errors.RunAsync(async () =>
@@ -328,7 +327,7 @@ public partial class AddEditWorkoutViewModel(
     }
 
     private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        Task.Delay(UiTiming.SheetClose);
 
     private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {
@@ -379,14 +378,16 @@ public partial class AddEditWorkoutViewModel(
             return;
         }
 
-        if (_workoutToEdit != null)
+        var name = WorkoutName.Trim();
+
+        if (_workoutToEdit is not null)
         {
-            _workoutToEdit.Name = WorkoutName.Trim();
-            await _workoutRepository.UpdateWithExercisesAsync(_workoutToEdit, [.. Exercises]);
+            await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, [.. Exercises]);
+            _workoutToEdit.Name = name;
         }
         else
         {
-            var workout = new Workout { Name = WorkoutName.Trim() };
+            var workout = new Workout { Name = name };
             await _workoutRepository.SaveWithExercisesAsync(workout, [.. Exercises]);
             _workoutToEdit = workout;
         }

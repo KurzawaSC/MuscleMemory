@@ -1,11 +1,13 @@
+using System.Globalization;
 using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
 public sealed record WorkoutListItem(Workout Workout, string ExerciseSummary, int TotalSets, bool HasExercises, bool IsFeatured)
 {
-    public string SetsText => string.Format(UiText.CountFormat, TotalSets, TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets);
+    public string SetsText => string.Format(CultureInfo.CurrentCulture, UiText.CountFormat, TotalSets, CountCaption.Sets(TotalSets));
 
     public static WorkoutListItem Create(Workout workout, IEnumerable<WorkoutExercise> exercises, bool isFeatured)
     {

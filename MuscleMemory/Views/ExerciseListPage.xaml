@@ -44,12 +44,13 @@
             </HorizontalStackLayout>
         </ScrollView>
 
-        <Label Grid.Row="3"
-               Text="No exercises match your search"
-               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-               HorizontalOptions="Center"
-               Margin="20,24,20,0"
-               IsVisible="{Binding HasNoMatches}" />
+        <VerticalStackLayout Grid.Row="3"
+                             Margin="20,24,20,0"
+                             IsVisible="{Binding HasNoMatches}">
+            <Label Text="No exercises match your search"
+                   TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
 
         <CollectionView Grid.Row="3" ItemsSource="{Binding Exercises}" Margin="20,12,20,0">
             <CollectionView.Behaviors>

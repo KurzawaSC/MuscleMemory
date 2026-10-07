@@ -1,12 +1,12 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
-using MuscleMemory.Services;
 using MuscleMemory.Models;
+using MuscleMemory.Services;
 using MuscleMemory.Threading;
 
 namespace MuscleMemory.ViewModels;
@@ -68,7 +68,7 @@ public partial class WorkoutHistoryViewModel(
     [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
     public partial WorkoutSet? ActionSet { get; set; }
 
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(UiText.SetProgressFormat, set.SetNumber) : string.Empty;
+    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
 
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
@@ -149,7 +149,7 @@ public partial class WorkoutHistoryViewModel(
         [.. Sessions.Where(item => item.Session.LocalStartTime.Date == localDate)];
 
     private HistorySessionItem CreateItem(WorkoutHistorySession session, bool sharesDate) =>
-        HistorySessionItem.Create(session, _timer.FormatElapsed(session.Duration), sharesDate);
+        HistorySessionItem.Create(session, _timer.FormatDuration(session.Duration), sharesDate);
 
     private void RestoreSelection(int? sessionId)
     {
@@ -214,7 +214,10 @@ public partial class WorkoutHistoryViewModel(
             return;
         }
 
-        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
+        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel))
+        {
+            return;
+        }
 
         var sessionId = SessionIdOf(set.SessionExerciseId);
         await _setRepository.DeleteAsync(set.Id);
@@ -232,8 +235,6 @@ public partial class WorkoutHistoryViewModel(
     [RelayCommand]
     private void AddSet(WorkoutHistoryExercise loggedExercise)
     {
-        if (loggedExercise == null) return;
-
         _setBeingEdited = null;
         _exerciseReceivingSet = loggedExercise;
 
@@ -290,9 +291,11 @@ public partial class WorkoutHistoryViewModel(
     [RelayCommand]
     private Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise) => _errors.RunAsync(async () =>
     {
-        if (loggedExercise == null) return;
-        bool confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
-        if (!confirm) return;
+        var confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
+        if (!confirm)
+        {
+            return;
+        }
 
         var sessionId = SessionIdOf(loggedExercise.SessionExerciseId);
         await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
@@ -337,5 +340,5 @@ public partial class WorkoutHistoryViewModel(
     });
 
     private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        Task.Delay(UiTiming.SheetClose);
 }
