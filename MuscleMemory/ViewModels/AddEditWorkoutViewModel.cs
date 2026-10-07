@@ -72,7 +72,7 @@ public partial class AddEditWorkoutViewModel(
     }
 
     [ObservableProperty]
-    public partial bool HasUnsavedChanges { get; set; } = false;
+    public partial bool HasUnsavedChanges { get; set; }
 
     [ObservableProperty]
     public partial bool IsExercisePickerOpen { get; set; }
