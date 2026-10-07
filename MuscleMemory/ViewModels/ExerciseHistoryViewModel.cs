@@ -9,7 +9,7 @@ using MuscleMemory.Services;
 namespace MuscleMemory.ViewModels;
 
 public partial class ExerciseHistoryViewModel(
-    IWorkoutHistoryQueryService historyQueryService,
+    IHistoryQueryService historyQueryService,
     INavigationService navigation,
     IErrorHandler errors) : ObservableObject, IQueryAttributable
 {
