@@ -11,13 +11,13 @@
         <Label Style="{StaticResource TitleLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
         <controls:InputStepper Title="Weight (kg)"
                                Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
-                               MaxLength="{x:Static constants:DomainDefaults.MaxWeightInputLength}"
+                               MaxLength="{x:Static constants:InputLimits.MaxWeightInputLength}"
                                ErrorText="{Binding Editor.WeightError, Source={x:Reference Root}, FallbackValue=''}"
                                DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
                                IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
         <controls:InputStepper Title="Reps"
                                Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
-                               MaxLength="{x:Static constants:DomainDefaults.MaxRepsInputLength}"
+                               MaxLength="{x:Static constants:InputLimits.MaxRepsInputLength}"
                                ErrorText="{Binding Editor.RepsError, Source={x:Reference Root}, FallbackValue=''}"
                                DecrementCommand="{Binding Editor.DecreaseRepsCommand, Source={x:Reference Root}}"
                                IncrementCommand="{Binding Editor.IncreaseRepsCommand, Source={x:Reference Root}}" />
