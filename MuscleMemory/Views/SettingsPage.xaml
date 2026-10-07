@@ -62,7 +62,7 @@
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                             <GradientStop Color="{StaticResource SurfaceLight}" Offset="0.5" />
-                                            <GradientStop Color="{StaticResource InkLight}" Offset="0.5" />
+                                            <GradientStop Color="{StaticResource SurfaceDark}" Offset="0.5" />
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
@@ -87,7 +87,7 @@
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
-                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />
+                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceDark}" />
                                 <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameDark}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
