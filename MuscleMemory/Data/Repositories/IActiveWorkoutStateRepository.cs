@@ -1,5 +1,5 @@
-using SQLite;
 using MuscleMemory.Models;
+using SQLite;
 
 namespace MuscleMemory.Data.Repositories;
 

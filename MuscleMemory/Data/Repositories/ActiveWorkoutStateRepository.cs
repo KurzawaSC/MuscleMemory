@@ -1,7 +1,7 @@
-using SQLite;
 using MuscleMemory.Constants;
 using MuscleMemory.Models;
 using MuscleMemory.Threading;
+using SQLite;
 
 namespace MuscleMemory.Data.Repositories;
 
