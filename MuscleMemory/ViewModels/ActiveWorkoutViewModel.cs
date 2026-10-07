@@ -66,7 +66,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
 
     [ObservableProperty]
-    public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
+    public partial string WorkoutTitle { get; set; } = UiText.LoadingText;
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = string.Empty;
@@ -789,7 +789,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsPlanComplete = false;
         Exercises.Clear();
 
-        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        WorkoutTitle = UiText.LoadingText;
         TimerText = ZeroTimeText;
         RestTotalText = string.Empty;
     }
