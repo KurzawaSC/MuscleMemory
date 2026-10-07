@@ -4,6 +4,7 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:platform="clr-namespace:MuscleMemory"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.WorkoutListPage"
                              x:DataType="viewmodels:WorkoutListViewModel"
@@ -43,7 +44,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout x:Name="CardContent" Spacing="10" BackgroundColor="Transparent">
                                     <VerticalStackLayout.Behaviors>
-                                        <controls:LongPressBehavior Command="{Binding BindingContext.LongPressWorkoutCommand, Source={x:Reference PageRoot}}"
+                                        <platform:LongPressBehavior Command="{Binding BindingContext.LongPressWorkoutCommand, Source={x:Reference PageRoot}}"
                                                                     CommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
                                     </VerticalStackLayout.Behaviors>
                                     <VerticalStackLayout Spacing="2">
