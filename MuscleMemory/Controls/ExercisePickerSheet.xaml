@@ -38,9 +38,17 @@
             </HorizontalStackLayout>
         </ScrollView>
 
-        <ScrollView MaximumHeightRequest="320">
-            <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Picker.Exercises, Source={x:Reference Root}}">
-                <BindableLayout.ItemTemplate>
+        <Grid>
+            <CollectionView HeightRequest="{StaticResource ExercisePickerListHeight}"
+                            ItemSizingStrategy="MeasureFirstItem"
+                            ItemsSource="{Binding Picker.Exercises, Source={x:Reference Root}}">
+                <CollectionView.Behaviors>
+                    <controls:ScrollToTopOnInsertBehavior />
+                </CollectionView.Behaviors>
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Exercise">
                         <Border Padding="14,12"
                                 StrokeThickness="1"
@@ -82,17 +90,29 @@
                             </Grid>
                         </Border>
                     </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
-        </ScrollView>
+                </CollectionView.ItemTemplate>
+                <CollectionView.FooterTemplate>
+                    <DataTemplate x:DataType="x:Object">
+                        <Border Style="{StaticResource DashedOutline}"
+                                Margin="0,8,0,0"
+                                IsVisible="{Binding CanCreate, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CreateCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="Not on the list? Create a new one"
+                                   TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                                   HorizontalOptions="Center" />
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.FooterTemplate>
+            </CollectionView>
 
-        <Border Style="{StaticResource DashedOutline}" IsVisible="{Binding CanCreate, Source={x:Reference Root}}">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding CreateCommand, Source={x:Reference Root}}" />
-            </Border.GestureRecognizers>
-            <Label Text="Not on the list? Create a new one"
+            <Label Text="No exercises match your search"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                   HorizontalOptions="Center" />
-        </Border>
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   InputTransparent="True"
+                   IsVisible="{Binding Picker.HasNoMatches, Source={x:Reference Root}}" />
+        </Grid>
     </VerticalStackLayout>
 </ContentView>
