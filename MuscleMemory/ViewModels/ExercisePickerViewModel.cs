@@ -6,12 +6,12 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class SelectExerciseViewModel : ObservableObject
+public partial class ExercisePickerViewModel : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository;
     private List<Exercise> _allExercises = [];
 
-    public SelectExerciseViewModel(IExerciseRepository exerciseRepository, ExerciseFilterViewModel filter)
+    public ExercisePickerViewModel(IExerciseRepository exerciseRepository, ExerciseFilterViewModel filter)
     {
         _exerciseRepository = exerciseRepository;
         Filter = filter;

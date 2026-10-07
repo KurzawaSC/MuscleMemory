@@ -6,7 +6,7 @@ namespace MuscleMemory.Controls;
 public partial class ExercisePickerSheet : ContentView
 {
     public static readonly BindableProperty PickerProperty =
-        BindableProperty.Create(nameof(Picker), typeof(SelectExerciseViewModel), typeof(ExercisePickerSheet));
+        BindableProperty.Create(nameof(Picker), typeof(ExercisePickerViewModel), typeof(ExercisePickerSheet));
 
     public static readonly BindableProperty PickCommandProperty =
         BindableProperty.Create(nameof(PickCommand), typeof(ICommand), typeof(ExercisePickerSheet));
@@ -20,9 +20,9 @@ public partial class ExercisePickerSheet : ContentView
 
     public ExercisePickerSheet() => InitializeComponent();
 
-    public SelectExerciseViewModel? Picker
+    public ExercisePickerViewModel? Picker
     {
-        get => (SelectExerciseViewModel?)GetValue(PickerProperty);
+        get => (ExercisePickerViewModel?)GetValue(PickerProperty);
         set => SetValue(PickerProperty, value);
     }
 
