@@ -33,7 +33,7 @@
                 </DataTemplate>
             </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodels:HistorySessionItem">
+                <DataTemplate x:DataType="viewmodels:WorkoutHistoryItem">
                     <Border Style="{StaticResource SessionChip}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroupList>
