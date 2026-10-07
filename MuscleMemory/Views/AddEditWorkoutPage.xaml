@@ -20,12 +20,12 @@
         <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding NavigateBackCommand}" />
 
         <VerticalStackLayout Grid.Row="1" Padding="20,14,20,0" Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="Workout name" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelWorkoutName}" />
             <controls:TextField FieldHeight="52"
                                 IsEnabled="{Binding IsEditable}"
                                 Text="{Binding WorkoutName}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
-                                Placeholder="e.g. Monday Eve" />
+                                Placeholder="{x:Static constants:UiText.PlaceholderWorkoutName}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Grid.Row="2"
@@ -48,11 +48,11 @@
                        HorizontalOptions="Center"
                        VerticalOptions="Center" />
             </Border>
-            <Label Text="This workout is empty.&#10;Add exercises and set their sets."
+            <Label Text="{x:Static constants:UiText.EmptyWorkoutEditor}"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalTextAlignment="Center" />
             <controls:TappableButton Style="{StaticResource AccentOutlineButton}"
-                                     Text="Add exercise"
+                                     Text="{x:Static constants:UiText.ButtonAddExercise}"
                                      HorizontalOptions="Center"
                                      Command="{Binding AddExerciseCommand}" />
         </VerticalStackLayout>
@@ -88,10 +88,10 @@
                             </Border>
                         </Grid>
                         <Grid ColumnDefinitions="*, Auto">
-                            <Label Style="{StaticResource OverlineLabel}" Text="Exercises" VerticalOptions="Center" />
+                            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" VerticalOptions="Center" />
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{StaticResource TextButton}"
-                                                     Text="+ Add"
+                                                     Text="{x:Static constants:UiText.ButtonAddInline}"
                                                      FontSize="15"
                                                      Command="{Binding AddExerciseCommand}" />
                         </Grid>
@@ -111,19 +111,19 @@
                                        Text="{Binding ExerciseName}"
                                        LineBreakMode="TailTruncation"
                                        VerticalOptions="Center" />
-                                <controls:Chip Grid.Column="1" Text="Edit" VerticalOptions="Center" />
+                                <controls:Chip Grid.Column="1" Text="{x:Static constants:UiText.ButtonEdit}" VerticalOptions="Center" />
                             </Grid>
                             <HorizontalStackLayout Spacing="6">
                                 <controls:Chip>
                                     <controls:Chip.Text>
-                                        <MultiBinding StringFormat="{}{0} × {1}">
+                                        <MultiBinding StringFormat="{x:Static constants:UiText.SetsByRepsFormat}">
                                             <Binding Path="Sets" />
                                             <Binding Path="Reps" />
                                         </MultiBinding>
                                     </controls:Chip.Text>
                                 </controls:Chip>
-                                <controls:Chip Text="{Binding BreakTimeInSeconds, StringFormat='{0} s rest'}" />
-                                <controls:Chip Text="{Binding TargetRPE, StringFormat='RPE {0}'}" IsAccent="True" />
+                                <controls:Chip Text="{Binding BreakTimeInSeconds, StringFormat={x:Static constants:UiText.RestChipFormat}}" />
+                                <controls:Chip Text="{Binding TargetRPE, StringFormat={x:Static constants:UiText.TargetRpeFormat}}" IsAccent="True" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
@@ -135,7 +135,7 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AddExerciseCommand}" />
                         </Border.GestureRecognizers>
-                        <Label Text="+ Add exercise"
+                        <Label Text="{x:Static constants:UiText.ButtonAddExerciseInline}"
                                TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                HorizontalOptions="Center" />
                     </Border>
@@ -145,11 +145,11 @@
 
         <VerticalStackLayout Grid.Row="3" Padding="20,12,20,16" Spacing="8">
             <controls:TappableButton Style="{StaticResource PrimaryButton}"
-                                     Text="Save workout"
+                                     Text="{x:Static constants:UiText.ButtonSaveWorkout}"
                                      Command="{Binding SaveWorkoutCommand}"
                                      IsEnabled="{Binding CanSave}" />
             <Label Style="{StaticResource CaptionLabel}"
-                   Text="Add a name and at least one exercise"
+                   Text="{x:Static constants:UiText.HintSaveWorkout}"
                    HorizontalOptions="Center"
                    IsVisible="{Binding CanSave, Converter={StaticResource InvertedBoolConverter}}" />
         </VerticalStackLayout>
@@ -166,11 +166,11 @@
                 <controls:SheetItemHeader Title="{Binding ExerciseConfiguration.ExerciseName}" />
 
                 <VerticalStackLayout Spacing="10">
-                    <controls:ValueStepper Title="Sets"
+                    <controls:ValueStepper Title="{x:Static constants:UiText.LabelSets}"
                                            Value="{Binding ExerciseConfiguration.Sets}"
                                            Minimum="{x:Static constants:DomainDefaults.MinSets}"
                                            Maximum="{x:Static constants:DomainDefaults.MaxSets}" />
-                    <controls:ValueStepper Title="Reps"
+                    <controls:ValueStepper Title="{x:Static constants:UiText.LabelReps}"
                                            Value="{Binding ExerciseConfiguration.Reps}"
                                            Minimum="{x:Static constants:DomainDefaults.MinReps}"
                                            Maximum="{x:Static constants:DomainDefaults.MaxReps}" />
@@ -178,9 +178,9 @@
                     <Border Style="{StaticResource InsetPanel}">
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*, Auto">
-                                <Label Text="Rest" />
+                                <Label Text="{x:Static constants:UiText.LabelRest}" />
                                 <Label Grid.Column="1"
-                                       Text="{Binding ExerciseConfiguration.BreakTimeInSeconds, StringFormat='{0} sec'}"
+                                       Text="{Binding ExerciseConfiguration.BreakTimeInSeconds, StringFormat={x:Static constants:UiText.RestDurationFormat}}"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             </Grid>
                             <FlexLayout RadioButtonGroup.GroupName="RestPresets"
@@ -197,20 +197,20 @@
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </FlexLayout>
-                            <controls:ValueStepper Title="Custom"
+                            <controls:ValueStepper Title="{x:Static constants:UiText.LabelCustom}"
                                                    IsVisible="{Binding ExerciseConfiguration.IsCustomRest}"
                                                    Value="{Binding ExerciseConfiguration.BreakTimeInSeconds}"
                                                    Minimum="{x:Static constants:DomainDefaults.MinBreakTimeInSeconds}"
                                                    Maximum="{x:Static constants:DomainDefaults.MaxBreakTimeInSeconds}"
                                                    Step="{x:Static constants:DomainDefaults.BreakTimeStepInSeconds}"
-                                                   ValueFormat="{}{0} s" />
+                                                   ValueFormat="{x:Static constants:UiText.RestDurationFormat}" />
                         </VerticalStackLayout>
                     </Border>
 
                     <Border Style="{StaticResource InsetPanel}">
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*, Auto">
-                                <Label Text="Target RPE" />
+                                <Label Text="{x:Static constants:UiText.LabelTargetRpe}" />
                                 <Label Grid.Column="1"
                                        Text="{Binding ExerciseConfiguration.TargetRPE}"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -242,15 +242,15 @@
                                 </BindableLayout.ItemTemplate>
                             </FlexLayout>
                             <Grid ColumnDefinitions="*, Auto">
-                                <Label Style="{StaticResource CaptionLabel}" Text="easy" />
-                                <Label Grid.Column="1" Style="{StaticResource CaptionLabel}" Text="max" />
+                                <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.LabelRpeEasy}" />
+                                <Label Grid.Column="1" Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.LabelRpeMax}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>
 
                 <controls:TappableButton Style="{StaticResource TextButton}"
-                                         Text="Remove from workout"
+                                         Text="{x:Static constants:UiText.ButtonRemoveFromWorkout}"
                                          FontSize="15"
                                          HorizontalOptions="Center"
                                          IsVisible="{Binding ExerciseConfiguration.IsEditing}"
