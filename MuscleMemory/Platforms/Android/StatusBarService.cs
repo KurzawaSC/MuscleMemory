@@ -4,9 +4,10 @@ using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Services;
 using View = Android.Views.View;
 
-namespace MuscleMemory.Services;
+namespace MuscleMemory;
 
 public sealed class StatusBarService : IStatusBarService
 {
