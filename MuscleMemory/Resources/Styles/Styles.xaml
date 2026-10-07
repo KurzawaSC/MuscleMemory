@@ -119,7 +119,7 @@
 
     <Style x:Key="Divider" TargetType="BoxView">
         <Setter Property="HeightRequest" Value="1" />
-        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource LineDark}}" />
+        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource DividerLineLight}, Dark={StaticResource DividerLineDark}}" />
     </Style>
 
     <Style x:Key="OverflowDot" TargetType="BoxView">
@@ -283,7 +283,7 @@
         <Border x:DataType="RadioButton"
                 Padding="0,8"
                 StrokeThickness="0"
-                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource LineStrongDark}}">
+                BackgroundColor="{AppThemeBinding Light={StaticResource RaisedFillLight}, Dark={StaticResource RaisedFillDark}}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
             </Border.StrokeShape>
@@ -320,7 +320,7 @@
         <Border x:DataType="RadioButton"
                 Padding="12"
                 StrokeThickness="2"
-                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="18" />
@@ -348,7 +348,7 @@
     <Style x:Key="ThemePreview" TargetType="Border">
         <Setter Property="HeightRequest" Value="56" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}" />
         <Setter Property="StrokeShape">
             <Setter.Value>
                 <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
@@ -404,8 +404,8 @@
 
     <Style x:Key="StepperGlyphButton" TargetType="controls:GlyphButton">
         <Setter Property="SurfaceSize" Value="34" />
-        <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkDark}}" />
-        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="GlyphColor" Value="{AppThemeBinding Light={StaticResource StepperGlyphLight}, Dark={StaticResource StepperGlyphDark}}" />
+        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource RaisedFillLight}, Dark={StaticResource RaisedFillDark}}" />
     </Style>
 
     <Style x:Key="DashedOutline" TargetType="Border">
@@ -448,7 +448,7 @@
 
     <Style x:Key="InsetPanel" TargetType="Border">
         <Setter Property="StrokeThickness" Value="0" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InsetFillLight}, Dark={StaticResource InsetFillDark}}" />
         <Setter Property="Padding" Value="16,14" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -458,9 +458,9 @@
     </Style>
 
     <Style x:Key="FormField" TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource FillDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource FieldFillLight}, Dark={StaticResource FieldFillDark}}" />
         <Setter Property="Padding" Value="16,4" />
         <Setter Property="StrokeShape">
             <Setter.Value>

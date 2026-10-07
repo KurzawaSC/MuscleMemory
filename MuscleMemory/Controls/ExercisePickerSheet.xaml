@@ -52,7 +52,7 @@
                 <DataTemplate x:DataType="models:Exercise">
                     <Border Padding="14,12"
                             StrokeThickness="1"
-                            Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}">
+                            Stroke="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
                         </Border.StrokeShape>

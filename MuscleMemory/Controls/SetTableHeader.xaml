@@ -6,7 +6,7 @@
 
     <Grid Style="{StaticResource SetTableRow}"
           Padding="12,8"
-          BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource FillDark}}">
+          BackgroundColor="{AppThemeBinding Light={StaticResource InsetFillLight}, Dark={StaticResource InsetFillDark}}">
         <Label Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelSet}" />
         <Label Grid.Column="1" Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelWeight}" HorizontalTextAlignment="Center" />
         <Label Grid.Column="2" Style="{StaticResource OverlineLabel}" FontSize="11" Text="{x:Static constants:UiText.LabelReps}" HorizontalTextAlignment="End" />
