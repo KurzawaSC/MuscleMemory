@@ -25,7 +25,7 @@ public static class MauiProgram
             .ConfigureMauiHandlers(handlers =>
             {
 #if ANDROID
-                handlers.AddHandler<Shell, InstantTabBarShellRenderer>();
+                handlers.AddHandler<Shell, TabBarShellRenderer>();
                 BorderlessEntryMapping.Register();
                 NumericEntryMapping.Register();
 #endif
