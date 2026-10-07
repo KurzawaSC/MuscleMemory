@@ -149,7 +149,7 @@ public partial class WorkoutHistoryViewModel(
         [.. Sessions.Where(item => item.Session.LocalStartTime.Date == localDate)];
 
     private HistorySessionItem CreateItem(WorkoutHistorySession session, bool sharesDate) =>
-        HistorySessionItem.Create(session, _timer.FormatElapsed(session.Duration), sharesDate);
+        HistorySessionItem.Create(session, _timer.FormatDuration(session.Duration), sharesDate);
 
     private void RestoreSelection(int? sessionId)
     {
