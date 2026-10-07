@@ -10,26 +10,26 @@
                              BackCommand="{Binding CloseSheetsCommand}">
 
     <Grid RowDefinitions="Auto, *">
-        <controls:ScreenHeader Title="Settings" />
+        <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderSettings}" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
-                <Label Style="{StaticResource OverlineLabel}" Text="Appearance" />
+                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelAppearance}" />
                 <Border Style="{StaticResource SettingsGroup}">
-                    <controls:ActionRow Text="App theme"
+                    <controls:ActionRow Text="{x:Static constants:UiText.LabelAppTheme}"
                                         Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
                                         TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                         Command="{Binding OpenThemeSheetCommand}" />
                 </Border>
 
-                <Label Style="{StaticResource OverlineLabel}" Text="Data" Margin="0,10,0,0" />
+                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelData}" Margin="0,10,0,0" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <VerticalStackLayout>
-                        <controls:ActionRow Text="Export data"
+                        <controls:ActionRow Text="{x:Static constants:UiText.ActionExportData}"
                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                             Command="{Binding ExportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
-                        <controls:ActionRow Text="Erase all data"
+                        <controls:ActionRow Text="{x:Static constants:UiText.ActionEraseAllData}"
                                             TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                             Command="{Binding OpenEraseSheetCommand}" />
                     </VerticalStackLayout>
@@ -47,7 +47,7 @@
 
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsThemeSheetOpen}">
             <VerticalStackLayout Spacing="16">
-                <Label Style="{StaticResource TitleLabel}" Text="App theme" />
+                <Label Style="{StaticResource TitleLabel}" Text="{x:Static constants:UiText.LabelAppTheme}" />
                 <Grid ColumnDefinitions="*, *, *"
                       ColumnSpacing="10"
                       RadioButtonGroup.GroupName="AppTheme"
@@ -65,7 +65,7 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
-                                <Label Text="System" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Text="{x:Static constants:UiText.ThemeNameSystem}" FontSize="13" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -76,7 +76,7 @@
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
-                                <Label Text="Light" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Text="{x:Static constants:UiText.ThemeNameLight}" FontSize="13" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -87,7 +87,7 @@
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />
-                                <Label Text="Dark" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Text="{x:Static constants:UiText.ThemeNameDark}" FontSize="13" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -103,19 +103,19 @@
                     <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="Erase all data?" />
+                    <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="{x:Static constants:UiText.TitleEraseAllData}" />
                     <Label Style="{StaticResource CaptionLabel}"
                            FontSize="13"
-                           Text="This erases exercises, workouts and all history from this device. It can't be undone." />
+                           Text="{x:Static constants:UiText.BodyEraseAllData}" />
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
                         <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                                 Text="Cancel"
+                                                 Text="{x:Static constants:UiText.ButtonCancel}"
                                                  HeightRequest="46"
                                                  FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                                                  Command="{Binding CloseSheetsCommand}" />
                         <controls:TappableButton Grid.Column="1"
                                                  Style="{StaticResource PrimaryButton}"
-                                                 Text="Erase"
+                                                 Text="{x:Static constants:UiText.ButtonErase}"
                                                  HeightRequest="46"
                                                  Shadow="{x:Null}"
                                                  Command="{Binding EraseDataCommand}" />
