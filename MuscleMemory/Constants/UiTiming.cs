@@ -8,4 +8,5 @@ public static class UiTiming
     public static readonly TimeSpan SheetClose = TimeSpan.FromMilliseconds(200);
     public static readonly TimeSpan KeyboardInset = TimeSpan.FromMilliseconds(200);
     public static readonly TimeSpan RestEndingPulse = TimeSpan.FromSeconds(5);
+    public static readonly TimeSpan TimerTick = TimeSpan.FromSeconds(1);
 }

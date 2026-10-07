@@ -18,7 +18,7 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
     {
         var dispatcher = Application.Current?.Dispatcher ?? throw new InvalidOperationException(NoDispatcherMessage);
         var timer = dispatcher.CreateTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Interval = UiTiming.TimerTick;
         timer.Tick += (_, _) => Ticked?.Invoke(this, EventArgs.Empty);
         return timer;
     }
