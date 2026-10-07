@@ -52,6 +52,9 @@
                IsVisible="{Binding HasNoMatches}" />
 
         <CollectionView Grid.Row="3" ItemsSource="{Binding Exercises}" Margin="20,12,20,0">
+            <CollectionView.Behaviors>
+                <controls:ScrollToTopOnInsertBehavior />
+            </CollectionView.Behaviors>
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
