@@ -81,8 +81,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial SessionExercise CurrentExercise { get; set; } = new();
 
     public string TargetText => CurrentExercise.PlannedReps > 0
-        ? string.Format(UiText.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
-        : string.Format(UiText.TargetRpeFormat, CurrentExercise.TargetRPE);
+        ? string.Format(CultureInfo.CurrentCulture, UiText.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
+        : string.Format(CultureInfo.CurrentCulture, UiText.TargetRpeFormat, CurrentExercise.TargetRPE);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressCaption))]
@@ -156,7 +156,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial bool IsSetEditorOpen { get; set; }
 
-    public string CurrentVolumeText => string.Format(UiText.VolumeFormat, CurrentSets.TotalVolume());
+    public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.TotalVolume());
 
     [ObservableProperty]
     public partial bool IsSetActionSheetOpen { get; set; }
@@ -166,7 +166,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
     public partial WorkoutSet? ActionSet { get; set; }
 
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(UiText.SetProgressFormat, set.SetNumber) : string.Empty;
+    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
 
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
@@ -376,7 +376,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasPreviousExercise = index > 0;
         HasNextExercise = index < Exercises.Count - 1;
 
-        ExerciseProgressText = string.Format(UiText.ExerciseProgressFormat, index + 1, Exercises.Count);
+        ExerciseProgressText = string.Format(CultureInfo.CurrentCulture, UiText.ExerciseProgressFormat, index + 1, Exercises.Count);
 
         var lastSessionSets = await _setRepository.GetLastSessionSetsAsync(exercise.ExerciseId, _sessionId);
         HasLastSession = lastSessionSets.Count > 0;
@@ -413,8 +413,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         int currentSetNumber = CurrentSets.Count + 1;
 
         SetProgressText = currentSetNumber <= _totalSetsForExercise
-            ? string.Format(UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
-            : string.Format(UiText.SetProgressFormat, currentSetNumber);
+            ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
+            : string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, currentSetNumber);
 
         if (_totalSetsForExercise > 0)
         {
@@ -486,7 +486,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         _restDurationSeconds = durationSeconds;
         _breakEndTimeUtc = breakEndTimeUtc;
-        RestTotalText = string.Format(UiText.RestTotalFormat, durationSeconds);
+        RestTotalText = string.Format(CultureInfo.CurrentCulture, UiText.RestTotalFormat, durationSeconds);
         IsResting = true;
         UpdateRestCountdown();
     }
@@ -548,7 +548,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         _restDurationSeconds += DomainDefaults.RestExtensionInSeconds;
         _breakEndTimeUtc = _breakEndTimeUtc.AddSeconds(DomainDefaults.RestExtensionInSeconds);
-        RestTotalText = string.Format(UiText.RestTotalFormat, _restDurationSeconds);
+        RestTotalText = string.Format(CultureInfo.CurrentCulture, UiText.RestTotalFormat, _restDurationSeconds);
         UpdateRestCountdown();
         await SaveStateAsync();
     });

@@ -18,7 +18,7 @@ public sealed record ExerciseHistoryItem(
         return new ExerciseHistoryItem(
             entry,
             entry.LocalDate.ToString(UiText.SessionDateTimeFormat, CultureInfo.InvariantCulture),
-            string.Format(UiText.CountFormat, setCount, CountCaption.Sets(setCount)),
+            string.Format(CultureInfo.CurrentCulture, UiText.CountFormat, setCount, CountCaption.Sets(setCount)),
             string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, entry.Sets.TotalVolume()));
     }
 }

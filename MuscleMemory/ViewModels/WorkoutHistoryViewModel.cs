@@ -68,7 +68,7 @@ public partial class WorkoutHistoryViewModel(
     [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
     public partial WorkoutSet? ActionSet { get; set; }
 
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(UiText.SetProgressFormat, set.SetNumber) : string.Empty;
+    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
 
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 

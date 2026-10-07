@@ -20,7 +20,7 @@ public sealed record HistorySessionItem(
             session,
             session.LocalStartTime.ToString(sharesDate ? UiText.ShortDateTimeFormat : UiText.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),
-            string.Format(UiText.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
+            string.Format(CultureInfo.CurrentCulture, UiText.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
             string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume));
     }
 }
