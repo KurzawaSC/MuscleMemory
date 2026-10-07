@@ -25,13 +25,11 @@
                                   Style="{StaticResource NavigationGlyphButton}"
                                   Command="{Binding NavigateBackCommand}" />
             <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
-                <Label Style="{StaticResource CaptionLabel}"
-                       FontSize="13"
+                <Label Style="{StaticResource LargeCaptionLabel}"
                        Text="{Binding WorkoutTitle}"
                        LineBreakMode="TailTruncation"
                        HorizontalTextAlignment="Center" />
-                <Label Style="{StaticResource TimerLabel}"
-                       FontSize="40"
+                <Label Style="{StaticResource CompactTimerLabel}"
                        Text="{Binding TimerText}"
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
@@ -162,8 +160,7 @@
                                                    ProgressColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                                                    TrackColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
                                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label Style="{StaticResource TimerLabel}"
-                                           FontSize="40"
+                                    <Label Style="{StaticResource CompactTimerLabel}"
                                            Text="{Binding RestTimerText}"
                                            TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                                            HorizontalTextAlignment="Center" />
@@ -216,10 +213,9 @@
                                                                           CommandParameter="{Binding .}" />
                                                 </VerticalStackLayout.GestureRecognizers>
                                                 <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                                    <Label Style="{StaticResource CaptionLabel}"
-                                                           FontSize="13"
+                                                    <Label Style="{StaticResource LargeCaptionLabel}"
                                                            Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
-                                                    <Label Grid.Column="1" FontSize="14">
+                                                    <Label Grid.Column="1" Style="{StaticResource CompactLabel}">
                                                         <Label.Text>
                                                             <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
                                                                 <Binding Path="Weight" />
@@ -235,8 +231,8 @@
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
                             <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                <Label Style="{StaticResource CaptionLabel}" FontSize="13" Text="{x:Static constants:UiText.LabelVolume}" />
-                                <Label Grid.Column="1" FontSize="14" Text="{Binding CurrentVolumeText}" />
+                                <Label Style="{StaticResource LargeCaptionLabel}" Text="{x:Static constants:UiText.LabelVolume}" />
+                                <Label Grid.Column="1" Style="{StaticResource CompactLabel}" Text="{Binding CurrentVolumeText}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
@@ -271,8 +267,7 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
                 </Border>
-                <Label Style="{StaticResource CaptionLabel}"
-                       FontSize="13"
+                <Label Style="{StaticResource LargeCaptionLabel}"
                        Text="{x:Static constants:UiText.HintFirstTimeExercise}"
                        HorizontalTextAlignment="Center">
                     <Label.Triggers>
@@ -297,7 +292,7 @@
                            Text="{x:Static constants:UiText.LabelWorkoutComplete}"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     <Label Style="{StaticResource DisplayLabel}" Text="{Binding WorkoutTitle}" />
-                    <Label Style="{StaticResource CaptionLabel}" FontSize="13" Text="{Binding SummaryDateText}" />
+                    <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding SummaryDateText}" />
 
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,12,0,0">
                         <Border Style="{StaticResource SurfaceCard}" Padding="14">
@@ -311,12 +306,10 @@
                                 <Label LineBreakMode="NoWrap">
                                     <Label.FormattedText>
                                         <FormattedString>
-                                            <Span Text="{Binding TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
-                                                  FontSize="24"
+                                            <Span Style="{StaticResource ValueSpan}"
+                                                  Text="{Binding TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
                                                   TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                            <Span Text="{x:Static constants:UiText.KilogramSuffix}"
-                                                  FontSize="12"
-                                                  TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                                            <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
@@ -339,12 +332,11 @@
                                 <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
                                     <VerticalStackLayout Spacing="10">
                                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                            <Label Style="{StaticResource TitleLabel}"
-                                                   FontSize="17"
+                                            <Label Style="{StaticResource CardTitleLabel}"
                                                    Text="{Binding ExerciseName}"
                                                    LineBreakMode="TailTruncation" />
                                             <Label Grid.Column="1"
-                                                   FontSize="12"
+                                                   Style="{StaticResource MiniLabel}"
                                                    Text="{Binding VolumeText}"
                                                    TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
                                                    VerticalOptions="Center" />
@@ -353,7 +345,7 @@
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="viewmodels:SummarySetBar">
                                                     <Grid ColumnDefinitions="14, *" ColumnSpacing="10">
-                                                        <Label FontSize="11"
+                                                        <Label Style="{StaticResource SmallCaptionLabel}"
                                                                Text="{Binding SetNumber}"
                                                                TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
                                                                VerticalOptions="Center" />
@@ -374,8 +366,8 @@
                                                             </BoxView>
                                                             <Label AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
                                                                    AbsoluteLayout.LayoutFlags="All"
+                                                                   Style="{StaticResource MiniLabel}"
                                                                    Padding="10,0"
-                                                                   FontSize="12"
                                                                    Text="{Binding Text}"
                                                                    VerticalTextAlignment="Center">
                                                                 <Label.Triggers>

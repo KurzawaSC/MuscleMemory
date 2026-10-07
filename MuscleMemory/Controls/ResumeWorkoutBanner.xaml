@@ -21,10 +21,10 @@
         <Border.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand, Source={x:Reference Root}}" />
         </Border.GestureRecognizers>
-        <Label Text="{x:Static constants:UiText.BannerResumeWorkout}"
+        <Label Style="{StaticResource EmphasisLabel}"
+               Text="{x:Static constants:UiText.BannerResumeWorkout}"
                HorizontalTextAlignment="Center"
                TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
-               FontSize="16"
                VerticalOptions="Center" />
     </Border>
 </ContentView>

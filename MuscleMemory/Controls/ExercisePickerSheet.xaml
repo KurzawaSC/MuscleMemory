@@ -13,9 +13,8 @@
         <Grid ColumnDefinitions="*, Auto">
             <Label Style="{StaticResource TitleLabel}" Text="{x:Static constants:UiText.HeaderSelectExercise}" VerticalOptions="Center" />
             <controls:TappableButton Grid.Column="1"
-                                     Style="{StaticResource NeutralTextButton}"
+                                     Style="{StaticResource SmallNeutralTextButton}"
                                      Text="{x:Static constants:UiText.ButtonClose}"
-                                     FontSize="15"
                                      Command="{Binding CloseCommand, Source={x:Reference Root}}" />
         </Grid>
 
@@ -81,8 +80,8 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
                                 </Border.StrokeShape>
-                                <Label Text="+"
-                                       FontSize="17"
+                                <Label Style="{StaticResource SmallGlyphLabel}"
+                                       Text="+"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center" />

@@ -124,6 +124,75 @@
         <Setter Property="FontSize" Value="12" />
     </Style>
 
+    <Style x:Key="CompactTimerLabel" TargetType="Label" BasedOn="{StaticResource TimerLabel}">
+        <Setter Property="FontSize" Value="40" />
+    </Style>
+
+    <Style x:Key="DialogTitleLabel" TargetType="Label" BasedOn="{StaticResource TitleLabel}">
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+
+    <Style x:Key="MediumTitleLabel" TargetType="Label" BasedOn="{StaticResource TitleLabel}">
+        <Setter Property="FontSize" Value="18" />
+    </Style>
+
+    <Style x:Key="CardTitleLabel" TargetType="Label" BasedOn="{StaticResource TitleLabel}">
+        <Setter Property="FontSize" Value="17" />
+    </Style>
+
+    <Style x:Key="SmallOverlineLabel" TargetType="Label" BasedOn="{StaticResource OverlineLabel}">
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <Style x:Key="LargeCaptionLabel" TargetType="Label" BasedOn="{StaticResource CaptionLabel}">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="SmallCaptionLabel" TargetType="Label" BasedOn="{StaticResource CaptionLabel}">
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <Style x:Key="EmphasisLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style x:Key="CompactLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="SmallLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="MiniLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="LargeGlyphLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="30" />
+    </Style>
+
+    <Style x:Key="GlyphLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+
+    <Style x:Key="SmallGlyphLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
+        <Setter Property="FontSize" Value="17" />
+    </Style>
+
+    <Style x:Key="ValueSpan" TargetType="Span">
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
+    <Style x:Key="TitleSpan" TargetType="Span">
+        <Setter Property="FontSize" Value="21" />
+    </Style>
+
+    <Style x:Key="UnitSpan" TargetType="Span">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+    </Style>
+
     <Style x:Key="Divider" TargetType="BoxView">
         <Setter Property="HeightRequest" Value="1" />
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource DividerLineLight}, Dark={StaticResource DividerLineDark}}" />
@@ -259,8 +328,8 @@
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
             <Label x:Name="ChipLabel"
+                   Style="{StaticResource SmallLabel}"
                    Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
-                   FontSize="13"
                    TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
         </Border>
     </ControlTemplate>
@@ -289,8 +358,8 @@
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
             <Label x:Name="ChipLabel"
-                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
-                   FontSize="13" />
+                   Style="{StaticResource SmallLabel}"
+                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}" />
         </Border>
     </ControlTemplate>
 
@@ -316,8 +385,8 @@
                 </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
             <Label x:Name="ChipLabel"
+                   Style="{StaticResource SmallLabel}"
                    Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
-                   FontSize="13"
                    HorizontalOptions="Center"
                    TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
         </Border>
@@ -461,6 +530,18 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
     </Style>
 
+    <Style x:Key="SmallTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style x:Key="SmallNeutralTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource NeutralTextButton}">
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style x:Key="CaptionTextButton" TargetType="controls:TappableButton" BasedOn="{StaticResource TextButton}">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
     <Style x:Key="InsetPanel" TargetType="Border">
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InsetFillLight}, Dark={StaticResource InsetFillDark}}" />
@@ -484,7 +565,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Entry">
+    <Style x:Key="BaseEntry" TargetType="Entry">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
@@ -492,6 +573,12 @@
         <Setter Property="FontSize" Value="15" />
         <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
         <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
+    </Style>
+
+    <Style TargetType="Entry" BasedOn="{StaticResource BaseEntry}" />
+
+    <Style x:Key="StepperEntry" TargetType="Entry" BasedOn="{StaticResource BaseEntry}">
+        <Setter Property="FontSize" Value="24" />
     </Style>
 
     <Style TargetType="Border">

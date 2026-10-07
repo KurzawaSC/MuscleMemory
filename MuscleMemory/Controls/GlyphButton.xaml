@@ -29,9 +29,9 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
             </Border.StrokeShape>
-            <Label Text="{Binding Glyph, Source={x:Reference Root}}"
+            <Label Style="{StaticResource GlyphLabel}"
+                   Text="{Binding Glyph, Source={x:Reference Root}}"
                    TextColor="{Binding GlyphColor, Source={x:Reference Root}}"
-                   FontSize="20"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
         </Border>
