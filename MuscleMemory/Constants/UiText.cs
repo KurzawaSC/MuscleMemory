@@ -42,6 +42,8 @@ public static class UiText
     public const string ButtonSkipRest = "Skip rest";
     public const string ButtonHistory = "History";
     public const string ButtonDone = "Done";
+    public const string ButtonClose = "Close";
+    public const string ButtonCreateExercise = "Not on the list? Create a new one";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -69,6 +71,7 @@ public static class UiText
     public const string HeaderNewWorkout = "New workout";
     public const string HeaderEditWorkout = "Edit workout";
     public const string HeaderExerciseHistory = "Exercise history";
+    public const string HeaderSelectExercise = "Select exercise";
 
     public const string SubtitleExercises = "Build your movement library";
     public const string SubtitleWorkouts = "Your training plans";
@@ -100,6 +103,7 @@ public static class UiText
     public const string ActionEraseAllData = "Erase all data";
 
     public const string PlaceholderSearchExercises = "Search exercises";
+    public const string PlaceholderSearch = "Search";
 
     public const string EmptyExercisesMessage = "No exercises yet";
     public const string EmptyExercisesDetail = "Add your first exercise, then build a workout from it.";
@@ -147,6 +151,7 @@ public static class UiText
     public const string KilogramSuffix = " kg";
     public const string VolumeSuffix = " " + CaptionVolume;
     public const string WorkoutHistoryTitleFormat = "{0}" + ListSeparator + "history";
+    public const string ListPairFormat = "{0}" + ListSeparator + "{1}";
 
     public const string LoadingText = "Loading...";
     public const string FirstTimePerformingExercise = "First time";
