@@ -14,6 +14,8 @@ public static class UiText
     public const string TitleHoldOn = "Hold on!";
     public const string TitleSuccess = "Success";
     public const string TitleOops = "Oops!";
+    public const string TitleEraseAllData = "Erase all data?";
+    public const string TitleExportData = "Export Muscle Memory data";
 
     public const string ButtonOk = "OK";
     public const string ButtonDelete = "Delete";
@@ -27,6 +29,7 @@ public static class UiText
     public const string ButtonAddExercise = "Add exercise";
     public const string ButtonStart = "Start";
     public const string ButtonCreateWorkout = "Create workout";
+    public const string ButtonErase = "Erase";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -36,6 +39,7 @@ public static class UiText
     public const string BodyNoDataToExport = "There is no data to export yet.";
     public const string BodyOperationFailed = "Something went wrong. Please try again.";
     public const string BodyExportFailed = "Export failed. Please try again.";
+    public const string BodyEraseAllData = "This erases exercises, workouts and all history from this device. It can't be undone.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete “{0}”?";
     public const string DeleteExerciseFromWorkoutsFormat = DeleteConfirmationFormat + " It will be removed from {1} {2}.";
@@ -56,6 +60,13 @@ public static class UiText
     public const string SubtitleExercises = "Build your movement library";
     public const string SubtitleWorkouts = "Your training plans";
 
+    public const string LabelAppearance = "Appearance";
+    public const string LabelData = "Data";
+    public const string LabelAppTheme = "App theme";
+
+    public const string ActionExportData = "Export data";
+    public const string ActionEraseAllData = "Erase all data";
+
     public const string PlaceholderSearchExercises = "Search exercises";
 
     public const string EmptyExercisesMessage = "No exercises yet";
@@ -67,6 +78,9 @@ public static class UiText
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
     public const string ThemeOptionDark = "Dark theme";
+    public const string ThemeNameSystem = "System";
+    public const string ThemeNameLight = "Light";
+    public const string ThemeNameDark = "Dark";
 
     public const string FilterAll = "All";
     public const string RestPresetOther = "Other";
