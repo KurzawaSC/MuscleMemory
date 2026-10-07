@@ -6,7 +6,7 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class AddEditExerciseViewModel(IExerciseRepository exerciseRepository, IExerciseCatalogService exerciseCatalog) : ObservableObject
+public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepository, IExerciseCatalogService exerciseCatalog) : ObservableObject
 {
     private Exercise? _existingExercise;
 

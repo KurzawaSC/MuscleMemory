@@ -27,7 +27,7 @@ public partial class ExerciseListViewModel : ObservableObject
         IWorkoutRepository workoutRepository,
         IExerciseCatalogService exerciseCatalog,
         ActiveWorkoutViewModel activeWorkout,
-        AddEditExerciseViewModel exerciseForm,
+        ExerciseFormViewModel exerciseForm,
         ExerciseFilterViewModel filter,
         IHapticService haptics,
         IDialogService dialogs,
@@ -70,7 +70,7 @@ public partial class ExerciseListViewModel : ObservableObject
 
     public ExerciseFilterViewModel Filter { get; }
 
-    public AddEditExerciseViewModel ExerciseForm { get; }
+    public ExerciseFormViewModel ExerciseForm { get; }
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 

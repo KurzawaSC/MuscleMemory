@@ -13,7 +13,7 @@ public partial class AddEditWorkoutViewModel(
     IWorkoutRepository workoutRepository,
     ExercisePickerViewModel exercisePicker,
     ConfigureExerciseViewModel exerciseConfiguration,
-    AddEditExerciseViewModel exerciseForm,
+    ExerciseFormViewModel exerciseForm,
     IDialogService dialogs,
     INavigationStackService navigationStack,
     INavigationService navigation,
@@ -83,7 +83,7 @@ public partial class AddEditWorkoutViewModel(
 
     public ConfigureExerciseViewModel ExerciseConfiguration { get; } = exerciseConfiguration;
 
-    public AddEditExerciseViewModel ExerciseForm { get; } = exerciseForm;
+    public ExerciseFormViewModel ExerciseForm { get; } = exerciseForm;
 
     public bool CanSave => IsEditable && !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
 
