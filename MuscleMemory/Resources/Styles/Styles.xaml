@@ -280,36 +280,6 @@
         </Border>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="SessionChipTemplate">
-        <Border x:Name="ChipSurface"
-                x:DataType="RadioButton"
-                Padding="14,8"
-                StrokeThickness="1"
-                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
-                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="{StaticResource PillRadius}" />
-            </Border.StrokeShape>
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CheckedStates">
-                        <VisualState x:Name="Checked">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState x:Name="Unchecked" />
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </VisualStateManager.VisualStateGroups>
-            <Label x:Name="ChipLabel"
-                   Text="{Binding Content, Source={RelativeSource TemplatedParent}}"
-                   FontSize="13" />
-        </Border>
-    </ControlTemplate>
-
     <ControlTemplate x:Key="SegmentChipTemplate">
         <Border x:DataType="RadioButton"
                 Padding="0,8"
@@ -392,8 +362,16 @@
         <Setter Property="Padding" Value="12,0" />
     </Style>
 
-    <Style x:Key="SessionChip" TargetType="RadioButton">
-        <Setter Property="ControlTemplate" Value="{StaticResource SessionChipTemplate}" />
+    <Style x:Key="SessionChip" TargetType="Border">
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource PillRadius}" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="FilterChip" TargetType="RadioButton">

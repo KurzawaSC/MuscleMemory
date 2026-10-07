@@ -12,24 +12,48 @@
     <Grid RowDefinitions="Auto, Auto, *, Auto">
         <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat='{0} · history'}" BackCommand="{Binding NavigateBackCommand}" />
 
-        <ScrollView Grid.Row="1"
-                    Orientation="Horizontal"
-                    HorizontalScrollBarVisibility="Never"
-                    Padding="20,14,20,0"
-                    IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
-            <HorizontalStackLayout Spacing="8"
-                                   RadioButtonGroup.GroupName="HistorySessions"
-                                   RadioButtonGroup.SelectedValue="{Binding SelectedSession}"
-                                   BindableLayout.ItemsSource="{Binding Sessions}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:HistorySessionItem">
-                        <RadioButton Style="{StaticResource SessionChip}"
-                                     Content="{Binding ChipText}"
-                                     Value="{Binding .}" />
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </HorizontalStackLayout>
-        </ScrollView>
+        <CollectionView Grid.Row="1"
+                        Margin="0,14,0,0"
+                        ItemsSource="{Binding Sessions}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedSession}"
+                        HorizontalScrollBarVisibility="Never"
+                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.HeaderTemplate>
+                <DataTemplate x:DataType="x:Object">
+                    <BoxView WidthRequest="12" Color="Transparent" />
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
+            <CollectionView.FooterTemplate>
+                <DataTemplate x:DataType="x:Object">
+                    <BoxView WidthRequest="12" Color="Transparent" />
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:HistorySessionItem">
+                    <Border Style="{StaticResource SessionChip}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroupList>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
+                                            <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateGroupList>
+                        </VisualStateManager.VisualStateGroups>
+                        <Label x:Name="ChipLabel" Text="{Binding ChipText}" FontSize="13" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <ScrollView Grid.Row="2" IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
             <VerticalStackLayout Spacing="12" Padding="20,14,20,14">
