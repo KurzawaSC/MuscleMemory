@@ -2,13 +2,13 @@ namespace MuscleMemory.Constants;
 
 public static class UiText
 {
-    public const string TitleDeleteExercise = "Delete Exercise";
-    public const string TitleDeleteSet = "Delete Set";
+    public const string TitleDeleteExercise = "Delete exercise";
+    public const string TitleDeleteSet = "Delete set";
     public const string TitleEditSet = "Edit set";
     public const string TitleAddSet = "Add set";
     public const string TitleError = "Error";
-    public const string TitleFinishWorkout = "Finish Workout";
-    public const string TitleUnsavedChanges = "Unsaved Changes";
+    public const string TitleFinishWorkout = "Finish workout";
+    public const string TitleUnsavedChanges = "Unsaved changes";
     public const string TitleHoldOn = "Hold on!";
     public const string TitleSuccess = "Success";
     public const string TitleOops = "Oops!";

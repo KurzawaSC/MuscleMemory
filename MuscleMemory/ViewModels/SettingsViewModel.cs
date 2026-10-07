@@ -75,7 +75,7 @@ public partial class SettingsViewModel(
         }
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = "Export Muscle Memory Data",
+            Title = "Export Muscle Memory data",
             File = new ShareFile(snapshotPath)
         });
     }, UiText.BodyExportFailed);
