@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Controls.ResumeWorkoutBanner"
              x:Name="Root"
              x:DataType="controls:ResumeWorkoutBanner"
-             Margin="15,0,15,20"
+             Margin="{markup:Gutter Bottom=20}"
              HorizontalOptions="Fill"
              VerticalOptions="End"
              IsVisible="{Binding ActiveWorkout.IsBannerVisible, Source={x:Reference Root}}">
