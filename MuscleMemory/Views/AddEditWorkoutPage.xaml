@@ -64,36 +64,40 @@
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding Exercises}"
                         Margin="20,16,20,0"
+                        Header="{Binding .}"
+                        Footer="{Binding .}"
                         IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
-            <CollectionView.Header>
-                <VerticalStackLayout Spacing="8">
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
-                        <Border Style="{StaticResource SurfaceCard}" Padding="14,10">
-                            <VerticalStackLayout>
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding ExerciseCount}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding ExerciseCountCaption}" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14,10">
-                            <VerticalStackLayout>
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalSets}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding TotalSetsCaption}" />
-                            </VerticalStackLayout>
-                        </Border>
-                    </Grid>
-                    <Grid ColumnDefinitions="*, Auto">
-                        <Label Style="{StaticResource OverlineLabel}" Text="Exercises" VerticalOptions="Center" />
-                        <controls:TappableButton Grid.Column="1"
-                                                 Style="{StaticResource TextButton}"
-                                                 Text="+ Add"
-                                                 FontSize="15"
-                                                 Command="{Binding AddExerciseCommand}" />
-                    </Grid>
-                </VerticalStackLayout>
-            </CollectionView.Header>
+            <CollectionView.HeaderTemplate>
+                <DataTemplate x:DataType="viewmodels:AddEditWorkoutViewModel">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Border Style="{StaticResource SurfaceCard}" Padding="14,10">
+                                <VerticalStackLayout>
+                                    <Label Style="{StaticResource ValueLabel}" Text="{Binding ExerciseCount}" />
+                                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding ExerciseCountCaption}" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14,10">
+                                <VerticalStackLayout>
+                                    <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalSets}" />
+                                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding TotalSetsCaption}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Style="{StaticResource OverlineLabel}" Text="Exercises" VerticalOptions="Center" />
+                            <controls:TappableButton Grid.Column="1"
+                                                     Style="{StaticResource TextButton}"
+                                                     Text="+ Add"
+                                                     FontSize="15"
+                                                     Command="{Binding AddExerciseCommand}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:WorkoutExercise">
                     <Border Style="{StaticResource SurfaceCard}">
@@ -125,16 +129,18 @@
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-            <CollectionView.Footer>
-                <Border Style="{StaticResource DashedOutline}" Margin="0,12,0,16">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding AddExerciseCommand}" />
-                    </Border.GestureRecognizers>
-                    <Label Text="+ Add exercise"
-                           TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                           HorizontalOptions="Center" />
-                </Border>
-            </CollectionView.Footer>
+            <CollectionView.FooterTemplate>
+                <DataTemplate x:DataType="viewmodels:AddEditWorkoutViewModel">
+                    <Border Style="{StaticResource DashedOutline}" Margin="0,12,0,16">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AddExerciseCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="+ Add exercise"
+                               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                               HorizontalOptions="Center" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
         </CollectionView>
 
         <VerticalStackLayout Grid.Row="3" Padding="20,12,20,16" Spacing="8">
