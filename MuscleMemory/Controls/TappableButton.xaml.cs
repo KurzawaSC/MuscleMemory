@@ -147,7 +147,10 @@ public partial class TappableButton : ContentView
         }
     }
 
-    private async void OnTapped(object? sender, TappedEventArgs e)
+    private async void OnTapped(object? sender, TappedEventArgs e) =>
+        await AppLog.LogFailuresAsync(PressAsync());
+
+    private async Task PressAsync()
     {
         if (!CanRunCommand())
         {
