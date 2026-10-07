@@ -6,8 +6,8 @@
              x:Name="Root"
              x:DataType="controls:TappableButton"
              BackgroundColor="Transparent"
-             MinimumHeightRequest="44"
-             MinimumWidthRequest="44">
+             MinimumHeightRequest="{StaticResource TouchTarget}"
+             MinimumWidthRequest="{StaticResource TouchTarget}">
 
     <ContentView.GestureRecognizers>
         <TapGestureRecognizer Tapped="OnTapped" />
