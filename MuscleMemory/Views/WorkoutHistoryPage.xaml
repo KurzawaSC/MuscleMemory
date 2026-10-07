@@ -91,13 +91,8 @@
                                                LineBreakMode="TailTruncation"
                                                VerticalOptions="Center" />
                                         <controls:TappableButton Grid.Column="1"
-                                                                 Style="{StaticResource SoftPrimaryButton}"
+                                                                 Style="{StaticResource CompactSoftButton}"
                                                                  Text="{x:Static constants:UiText.ButtonDelete}"
-                                                                 FontSize="12"
-                                                                 HeightRequest="30"
-                                                                 CornerRadius="{StaticResource PillRadius}"
-                                                                 ContentPadding="12,0"
-                                                                 VerticalOptions="Center"
                                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=DeleteExerciseCommand}"
                                                                  CommandParameter="{Binding .}" />
                                     </Grid>
@@ -119,7 +114,7 @@
                                             <BoxView Style="{StaticResource Divider}" />
                                             <controls:TappableButton Style="{StaticResource CaptionTextButton}"
                                                                      Text="{x:Static constants:UiText.ButtonAddSetInline}"
-                                                                     HeightRequest="44"
+                                                                     HeightRequest="{StaticResource MediumButtonHeight}"
                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=AddSetCommand}"
                                                                      CommandParameter="{Binding .}" />
                                         </VerticalStackLayout>

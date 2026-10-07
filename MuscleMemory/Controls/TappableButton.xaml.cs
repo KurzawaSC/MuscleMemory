@@ -7,6 +7,7 @@ namespace MuscleMemory.Controls;
 public partial class TappableButton : ContentView
 {
     private const double DefaultPressedScale = 0.98;
+    private const double FillingSurfaceHeight = -1;
     private const uint PressPhaseMilliseconds = 45;
 
     private bool _isPressed;
@@ -48,6 +49,10 @@ public partial class TappableButton : ContentView
 
     public static readonly BindableProperty ContentPaddingProperty =
         BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(14, 10));
+
+    public static readonly BindableProperty SurfaceHeightProperty =
+        BindableProperty.Create(nameof(SurfaceHeight), typeof(double), typeof(TappableButton), FillingSurfaceHeight,
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceVerticalOptions)));
 
     public static readonly BindableProperty DisabledOpacityProperty =
         BindableProperty.Create(nameof(DisabledOpacity), typeof(double), typeof(TappableButton), 0.4d,
@@ -127,11 +132,19 @@ public partial class TappableButton : ContentView
         set => SetValue(ContentPaddingProperty, value);
     }
 
+    public double SurfaceHeight
+    {
+        get => (double)GetValue(SurfaceHeightProperty);
+        set => SetValue(SurfaceHeightProperty, value);
+    }
+
     public double DisabledOpacity
     {
         get => (double)GetValue(DisabledOpacityProperty);
         set => SetValue(DisabledOpacityProperty, value);
     }
+
+    public LayoutOptions SurfaceVerticalOptions => SurfaceHeight > 0 ? LayoutOptions.Center : LayoutOptions.Fill;
 
     public double SurfaceOpacity => IsEnabled ? 1 : DisabledOpacity;
 

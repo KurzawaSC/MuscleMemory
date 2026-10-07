@@ -34,13 +34,8 @@
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
             <controls:TappableButton Grid.Column="2"
-                                     Style="{StaticResource SoftPrimaryButton}"
+                                     Style="{StaticResource CompactSoftButton}"
                                      Text="{x:Static constants:UiText.ButtonFinish}"
-                                     FontSize="13"
-                                     HeightRequest="36"
-                                     CornerRadius="{StaticResource SmallControlRadius}"
-                                     ContentPadding="12,0"
-                                     VerticalOptions="Center"
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
@@ -172,20 +167,12 @@
                             </Grid>
                         </controls:PulseView>
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,14,0,0">
-                            <controls:TappableButton Text="{Binding RestExtensionText}"
-                                                     FontSize="15"
-                                                     HeightRequest="46"
-                                                     CornerRadius="{StaticResource ControlRadius}"
-                                                     FillColor="{AppThemeBinding Light={StaticResource OnRestPanelSubtleLight}, Dark={StaticResource OnRestPanelSubtleDark}}"
-                                                     TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
+                            <controls:TappableButton Style="{StaticResource RestPanelSubtleButton}"
+                                                     Text="{Binding RestExtensionText}"
                                                      Command="{Binding ExtendRestCommand}" />
                             <controls:TappableButton Grid.Column="1"
+                                                     Style="{StaticResource RestPanelButton}"
                                                      Text="{x:Static constants:UiText.ButtonSkipRest}"
-                                                     FontSize="15"
-                                                     HeightRequest="46"
-                                                     CornerRadius="{StaticResource ControlRadius}"
-                                                     FillColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
-                                                     TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                                      Command="{Binding SkipRestCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -281,7 +268,7 @@
             <controls:TappableButton Grid.Row="3"
                                      Style="{Binding IsPlanComplete, Converter={StaticResource FinishButtonStyleConverter}}"
                                      Text="{x:Static constants:UiText.TitleFinishWorkout}"
-                                     HeightRequest="52"
+                                     HeightRequest="{StaticResource LargeButtonHeight}"
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
@@ -392,12 +379,10 @@
             <Grid Grid.Row="1" ColumnDefinitions="*, 1.4*" ColumnSpacing="10" Padding="20,14,20,16">
                 <controls:TappableButton Style="{StaticResource SecondaryButton}"
                                          Text="{x:Static constants:UiText.ButtonHistory}"
-                                         HeightRequest="52"
                                          Command="{Binding ViewCompletedHistoryCommand}" />
                 <controls:TappableButton Grid.Column="1"
                                          Style="{StaticResource PrimaryButton}"
                                          Text="{x:Static constants:UiText.ButtonDone}"
-                                         HeightRequest="52"
                                          Command="{Binding ExitWorkoutCommand}" />
             </Grid>
         </Grid>
