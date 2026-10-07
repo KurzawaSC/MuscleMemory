@@ -178,7 +178,7 @@ public partial class WorkoutListViewModel : ObservableObject
             return;
         }
 
-        var answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteWorkout, string.Format(UiText.DeleteWorkoutConfirmationFormat, item.Workout.Name), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _workoutRepository.DeleteAsync(item.Workout.Id);
