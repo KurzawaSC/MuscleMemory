@@ -6,7 +6,6 @@ using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -216,7 +215,7 @@ public partial class AddEditWorkoutViewModel(
         e.Source is ShellNavigationSource.Push;
 
     private static bool IsEditorLocation(ShellNavigationState? state) =>
-        state?.Location.OriginalString.Contains(nameof(AddEditWorkoutPage), StringComparison.Ordinal) == true;
+        state?.Location.OriginalString.Contains(NavigationRoutes.AddEditWorkout, StringComparison.Ordinal) == true;
 
     [RelayCommand(CanExecute = nameof(IsEditable))]
     private Task AddExerciseAsync() => _errors.RunAsync(async () =>

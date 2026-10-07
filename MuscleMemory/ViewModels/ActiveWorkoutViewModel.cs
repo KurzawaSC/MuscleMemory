@@ -739,7 +739,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             { QueryKeys.WorkoutId, _workoutId },
             { QueryKeys.WorkoutName, WorkoutTitle }
         };
-        await _navigation.GoToAsync($"{NavigationRoutes.GoBack}/{nameof(WorkoutHistoryPage)}", navigationParameter);
+        await _navigation.GoToAsync($"{NavigationRoutes.GoBack}/{NavigationRoutes.WorkoutHistory}", navigationParameter);
         ClearCompletedSummary();
     }));
 

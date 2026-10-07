@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
 using MuscleMemory.Services;
 using MuscleMemory.Views;
@@ -11,10 +12,10 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        Routing.RegisterRoute(nameof(AddEditWorkoutPage), typeof(AddEditWorkoutPage));
-        Routing.RegisterRoute(nameof(ActiveWorkoutPage), typeof(ActiveWorkoutPage));
-        Routing.RegisterRoute(nameof(ExerciseHistoryPage), typeof(ExerciseHistoryPage));
-        Routing.RegisterRoute(nameof(WorkoutHistoryPage), typeof(WorkoutHistoryPage));
+        Routing.RegisterRoute(NavigationRoutes.AddEditWorkout, typeof(AddEditWorkoutPage));
+        Routing.RegisterRoute(NavigationRoutes.ActiveWorkout, typeof(ActiveWorkoutPage));
+        Routing.RegisterRoute(NavigationRoutes.ExerciseHistory, typeof(ExerciseHistoryPage));
+        Routing.RegisterRoute(NavigationRoutes.WorkoutHistory, typeof(WorkoutHistoryPage));
 
         activeWorkoutViewModel.TrackCurrentPage(this);
         statusBarService.TrackNavigation(this);
