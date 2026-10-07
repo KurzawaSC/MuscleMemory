@@ -264,7 +264,7 @@ Everything is stored in `MuscleMemory.db3` inside the app's private data directo
 account, no network call and no telemetry. Two things in the build make that structural rather than
 a promise:
 
-- **The Release manifest declares no Android permissions at all** — not even `INTERNET`. (Debug
+- **The only permission the Release manifest declares is `VIBRATE`** — there is no `INTERNET`. (Debug
   builds gain `INTERNET` because the .NET Android debugger needs it; it is absent from the shipping
   manifest.) Without it the process cannot open a socket.
 - `android:allowBackup="false"`, so the database is not swept into Android's Auto Backup and copied

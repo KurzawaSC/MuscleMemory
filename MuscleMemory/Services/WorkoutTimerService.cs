@@ -18,20 +18,16 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
     {
         var dispatcher = Application.Current?.Dispatcher ?? throw new InvalidOperationException(NoDispatcherMessage);
         var timer = dispatcher.CreateTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
+        timer.Interval = UiTiming.TimerTick;
         timer.Tick += (_, _) => Ticked?.Invoke(this, EventArgs.Empty);
         return timer;
     }
 
-    public string ElapsedSince(DateTime startTimeUtc) => FormatElapsed(DateTime.UtcNow - startTimeUtc);
-
-    public string FormatElapsed(TimeSpan elapsed) => Format(elapsed);
+    public string ElapsedSince(DateTime startTimeUtc) => FormatDuration(DateTime.UtcNow - startTimeUtc);
 
     public TimeSpan RemainingUntil(DateTime endTimeUtc) => endTimeUtc - DateTime.UtcNow;
 
-    public string FormatCountdown(TimeSpan remaining) => Format(remaining);
-
-    private static string Format(TimeSpan duration)
+    public string FormatDuration(TimeSpan duration)
     {
         var displayed = duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
         return displayed.ToString(displayed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);

@@ -1,4 +1,5 @@
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
@@ -25,7 +26,7 @@ public sealed class WorkoutSummaryService(IWorkoutSetRepository setRepository) :
                 continue;
             }
 
-            totalVolume += sets.Sum(set => set.Weight * set.Reps);
+            totalVolume += sets.TotalVolume();
             completedExercises.Add(new CompletedExerciseSummary(performedExercise.ExerciseName, sets));
         }
 

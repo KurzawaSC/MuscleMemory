@@ -1,5 +1,6 @@
 using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
+using MuscleMemory.Extensions;
 
 namespace MuscleMemory.Controls;
 
@@ -70,7 +71,7 @@ public partial class BottomSheet : ContentView
         }
         else
         {
-            AnimateTo(ClosedTranslation(), UiTiming.SheetCloseMilliseconds, Easing.CubicIn, hideWhenFinished: true);
+            AnimateTo(ClosedTranslation(), UiTiming.SheetClose, Easing.CubicIn, hideWhenFinished: true);
         }
     }
 
@@ -149,7 +150,7 @@ public partial class BottomSheet : ContentView
         LimitBodyHeight();
 
         new Animation(ApplyBottomInset, Sheet.Padding.Bottom - _sheetPadding.Bottom, inset)
-            .Commit(this, InsetAnimationName, length: UiTiming.KeyboardInsetMilliseconds, easing: Easing.CubicOut);
+            .Commit(this, InsetAnimationName, length: UiTiming.KeyboardInset.ToAnimationLength(), easing: Easing.CubicOut);
     }
 
     private void ApplyBottomInset(double inset) => Sheet.Padding = _sheetPadding with { Bottom = _sheetPadding.Bottom + inset };
@@ -227,11 +228,11 @@ public partial class BottomSheet : ContentView
     {
         if (IsOpen)
         {
-            AnimateTo(0, UiTiming.SheetOpenMilliseconds, Easing.CubicOut, hideWhenFinished: false);
+            AnimateTo(0, UiTiming.SheetOpen, Easing.CubicOut, hideWhenFinished: false);
         }
     }
 
-    private void AnimateTo(double translation, uint length, Easing easing, bool hideWhenFinished)
+    private void AnimateTo(double translation, TimeSpan duration, Easing easing, bool hideWhenFinished)
     {
         this.AbortAnimation(AnimationName);
 
@@ -241,7 +242,7 @@ public partial class BottomSheet : ContentView
             { 0, 1, new Animation(value => Scrim.Opacity = value, Scrim.Opacity, hideWhenFinished ? 0 : 1) }
         };
 
-        animation.Commit(this, AnimationName, length: length, easing: easing,
+        animation.Commit(this, AnimationName, length: duration.ToAnimationLength(), easing: easing,
             finished: (_, cancelled) =>
             {
                 if (!cancelled && hideWhenFinished)
@@ -281,6 +282,6 @@ public partial class BottomSheet : ContentView
             return;
         }
 
-        AnimateTo(0, UiTiming.SheetOpenMilliseconds, Easing.CubicOut, hideWhenFinished: false);
+        AnimateTo(0, UiTiming.SheetOpen, Easing.CubicOut, hideWhenFinished: false);
     }
 }

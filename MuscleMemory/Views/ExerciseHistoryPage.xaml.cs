@@ -1,10 +1,11 @@
 using MuscleMemory.Controls;
+using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Views;
 
 public partial class ExerciseHistoryPage : BackNavigationPage
 {
-    public ExerciseHistoryPage(ViewModels.ExerciseHistoryViewModel viewModel)
+    public ExerciseHistoryPage(ExerciseHistoryViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

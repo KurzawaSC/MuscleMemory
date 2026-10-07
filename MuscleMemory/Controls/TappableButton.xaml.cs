@@ -1,8 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
 using MuscleMemory.Diagnostics;
-using MuscleMemory.Services;
 
 namespace MuscleMemory.Controls;
 
@@ -47,9 +45,6 @@ public partial class TappableButton : ContentView
 
     public static readonly BindableProperty FontSizeProperty =
         BindableProperty.Create(nameof(FontSize), typeof(double), typeof(TappableButton), 18d);
-
-    public static readonly BindableProperty FontAttributesProperty =
-        BindableProperty.Create(nameof(FontAttributes), typeof(FontAttributes), typeof(TappableButton), FontAttributes.None);
 
     public static readonly BindableProperty ContentPaddingProperty =
         BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(14, 10));
@@ -126,12 +121,6 @@ public partial class TappableButton : ContentView
         set => SetValue(FontSizeProperty, value);
     }
 
-    public FontAttributes FontAttributes
-    {
-        get => (FontAttributes)GetValue(FontAttributesProperty);
-        set => SetValue(FontAttributesProperty, value);
-    }
-
     public Thickness ContentPadding
     {
         get => (Thickness)GetValue(ContentPaddingProperty);
@@ -159,14 +148,6 @@ public partial class TappableButton : ContentView
     }
 
     private async void OnTapped(object? sender, TappedEventArgs e)
-    {
-        if (Handler?.MauiContext?.Services.GetService<IErrorHandler>() is { } errors)
-        {
-            await errors.RunAsync(PressAsync);
-        }
-    }
-
-    private async Task PressAsync()
     {
         if (!CanRunCommand())
         {

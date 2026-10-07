@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows.Input;
 
 namespace MuscleMemory.Controls;
@@ -77,7 +78,7 @@ public partial class ValueStepper : ContentView
 
     public bool CanIncrement => Value < Maximum;
 
-    public string DisplayValue => string.Format(ValueFormat, Value);
+    public string DisplayValue => string.Format(CultureInfo.CurrentCulture, ValueFormat, Value);
 
     private void OnValueStateChanged()
     {

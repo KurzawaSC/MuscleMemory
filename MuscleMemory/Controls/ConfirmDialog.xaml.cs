@@ -6,7 +6,11 @@ public partial class ConfirmDialog : ContentView
     private const uint ShowMilliseconds = 180;
     private const uint HideMilliseconds = 150;
 
-    public ConfirmDialog() => InitializeComponent();
+    public ConfirmDialog()
+    {
+        InitializeComponent();
+        Card.Scale = HiddenScale;
+    }
 
     public Task AnimateInAsync() =>
         Task.WhenAll(

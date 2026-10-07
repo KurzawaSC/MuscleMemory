@@ -6,7 +6,6 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
                              x:DataType="viewmodels:ExerciseHistoryViewModel"
-                             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
                              BackCommand="{Binding GoBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *">

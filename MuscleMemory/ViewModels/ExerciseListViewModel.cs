@@ -1,12 +1,12 @@
+using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -15,7 +15,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IExerciseRepository _exerciseRepository;
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IExerciseCatalogService _exerciseCatalog;
-    private readonly IHapticService _hapticService;
+    private readonly IHapticService _haptics;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
@@ -29,7 +29,7 @@ public partial class ExerciseListViewModel : ObservableObject
         ActiveWorkoutViewModel activeWorkout,
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
-        IHapticService hapticService,
+        IHapticService haptics,
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
@@ -38,7 +38,7 @@ public partial class ExerciseListViewModel : ObservableObject
         _exerciseRepository = exerciseRepository;
         _workoutRepository = workoutRepository;
         _exerciseCatalog = exerciseCatalog;
-        _hapticService = hapticService;
+        _haptics = haptics;
         _dialogs = dialogs;
         _navigation = navigation;
         _errors = errors;
@@ -156,7 +156,7 @@ public partial class ExerciseListViewModel : ObservableObject
     [RelayCommand]
     private void LongPressExercise(Exercise exercise)
     {
-        _hapticService.Click();
+        _haptics.Click();
         ShowExerciseActions(exercise);
     }
 
@@ -193,7 +193,7 @@ public partial class ExerciseListViewModel : ObservableObject
             { QueryKeys.ExerciseId, exercise.Id },
             { QueryKeys.ExerciseName, exercise.Name }
         };
-        await _navigation.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
+        await _navigation.GoToAsync(NavigationRoutes.ExerciseHistory, navigationParameter);
     });
 
     [RelayCommand]
@@ -205,7 +205,7 @@ public partial class ExerciseListViewModel : ObservableObject
         }
 
         var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
-        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _exerciseCatalog.DeleteAsync(exercise.Id);
@@ -213,14 +213,14 @@ public partial class ExerciseListViewModel : ObservableObject
     });
 
     private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
-        ? string.Format(UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, workoutCount == 1 ? UiText.CaptionWorkout : UiText.CaptionWorkouts)
+        ? string.Format(CultureInfo.CurrentCulture, UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, CountCaption.Workouts(workoutCount))
         : string.Format(UiText.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {
         var exercise = ActionExercise;
         IsActionSheetOpen = false;
-        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        await Task.Delay(UiTiming.SheetClose);
         return exercise;
     }
 
