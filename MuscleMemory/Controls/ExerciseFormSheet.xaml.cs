@@ -5,13 +5,13 @@ namespace MuscleMemory.Controls;
 public partial class ExerciseFormSheet : ContentView
 {
     public static readonly BindableProperty FormProperty =
-        BindableProperty.Create(nameof(Form), typeof(AddEditExerciseViewModel), typeof(ExerciseFormSheet));
+        BindableProperty.Create(nameof(Form), typeof(ExerciseFormViewModel), typeof(ExerciseFormSheet));
 
     public ExerciseFormSheet() => InitializeComponent();
 
-    public AddEditExerciseViewModel? Form
+    public ExerciseFormViewModel? Form
     {
-        get => (AddEditExerciseViewModel?)GetValue(FormProperty);
+        get => (ExerciseFormViewModel?)GetValue(FormProperty);
         set => SetValue(FormProperty, value);
     }
 }
