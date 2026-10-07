@@ -12,7 +12,7 @@ using MuscleMemory.Threading;
 namespace MuscleMemory.ViewModels;
 
 public partial class WorkoutHistoryViewModel(
-    IWorkoutHistoryQueryService historyQueryService,
+    IHistoryQueryService historyQueryService,
     ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
     IDialogService dialogs,
