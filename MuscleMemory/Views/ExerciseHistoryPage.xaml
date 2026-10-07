@@ -48,8 +48,7 @@
                         </Border.Resources>
                         <VerticalStackLayout Spacing="6">
                             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                                <Label Style="{StaticResource TitleLabel}"
-                                       FontSize="17"
+                                <Label Style="{StaticResource CardTitleLabel}"
                                        Text="{Binding Entry.WorkoutName}"
                                        LineBreakMode="TailTruncation"
                                        VerticalOptions="Center" />
@@ -72,8 +71,7 @@
                                                     <Border.StrokeShape>
                                                         <RoundRectangle CornerRadius="{StaticResource ChipRadius}" />
                                                     </Border.StrokeShape>
-                                                    <Label Style="{StaticResource CaptionLabel}"
-                                                           FontSize="11"
+                                                    <Label Style="{StaticResource SmallCaptionLabel}"
                                                            Text="{Binding SetNumber}"
                                                            HorizontalOptions="Center"
                                                            VerticalOptions="Center" />
@@ -82,9 +80,7 @@
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="{Binding Weight}" />
-                                                            <Span Text="{x:Static constants:UiText.KilogramSuffix}"
-                                                                  FontSize="12"
-                                                                  TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                                                            <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
                                                             <Span Text="{x:Static constants:UiText.WeightRepsSeparator}"
                                                                   TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
                                                             <Span Text="{Binding Reps}" />

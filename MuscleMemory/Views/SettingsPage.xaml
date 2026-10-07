@@ -65,7 +65,7 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
-                                <Label Text="{x:Static constants:UiText.ThemeNameSystem}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameSystem}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -76,7 +76,7 @@
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
-                                <Label Text="{x:Static constants:UiText.ThemeNameLight}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameLight}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -87,7 +87,7 @@
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />
-                                <Label Text="{x:Static constants:UiText.ThemeNameDark}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameDark}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -103,9 +103,8 @@
                     <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="{x:Static constants:UiText.TitleEraseAllData}" />
-                    <Label Style="{StaticResource CaptionLabel}"
-                           FontSize="13"
+                    <Label Style="{StaticResource MediumTitleLabel}" Text="{x:Static constants:UiText.TitleEraseAllData}" />
+                    <Label Style="{StaticResource LargeCaptionLabel}"
                            Text="{x:Static constants:UiText.BodyEraseAllData}" />
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
                         <controls:TappableButton Style="{StaticResource SecondaryButton}"

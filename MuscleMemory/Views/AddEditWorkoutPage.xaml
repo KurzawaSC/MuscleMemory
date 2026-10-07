@@ -42,8 +42,8 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="{StaticResource TileRadius}" />
                 </Border.StrokeShape>
-                <Label Text="+"
-                       FontSize="30"
+                <Label Style="{StaticResource LargeGlyphLabel}"
+                       Text="+"
                        TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
                        HorizontalOptions="Center"
                        VerticalOptions="Center" />
@@ -90,9 +90,8 @@
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" VerticalOptions="Center" />
                             <controls:TappableButton Grid.Column="1"
-                                                     Style="{StaticResource TextButton}"
+                                                     Style="{StaticResource SmallTextButton}"
                                                      Text="{x:Static constants:UiText.ButtonAddInline}"
-                                                     FontSize="15"
                                                      Command="{Binding AddExerciseCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -249,9 +248,8 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <controls:TappableButton Style="{StaticResource TextButton}"
+                <controls:TappableButton Style="{StaticResource SmallTextButton}"
                                          Text="{x:Static constants:UiText.ButtonRemoveFromWorkout}"
-                                         FontSize="15"
                                          HorizontalOptions="Center"
                                          IsVisible="{Binding ExerciseConfiguration.IsEditing}"
                                          Command="{Binding RemoveEditedExerciseCommand}" />
