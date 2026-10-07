@@ -26,7 +26,6 @@
             <Label Text="{Binding Text, Source={x:Reference Root}}"
                    TextColor="{Binding TextColor, Source={x:Reference Root}}"
                    FontSize="{Binding FontSize, Source={x:Reference Root}}"
-                   FontAttributes="{Binding FontAttributes, Source={x:Reference Root}}"
                    HorizontalOptions="Center"
                    VerticalOptions="Center"
                    HorizontalTextAlignment="Center" />

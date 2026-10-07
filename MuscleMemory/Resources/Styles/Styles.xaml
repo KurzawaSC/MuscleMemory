@@ -223,8 +223,7 @@
     </Style>
 
     <ControlTemplate x:Key="ChoiceChipTemplate">
-        <Border x:Name="ChipSurface"
-                x:DataType="RadioButton"
+        <Border x:DataType="RadioButton"
                 Padding="14,10"
                 StrokeThickness="0"
                 BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
@@ -252,8 +251,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="FilterChipTemplate">
-        <Border x:Name="ChipSurface"
-                x:DataType="RadioButton"
+        <Border x:DataType="RadioButton"
                 Padding="14,8"
                 StrokeThickness="1"
                 Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
@@ -319,8 +317,7 @@
     </Style>
 
     <ControlTemplate x:Key="ThemeCardTemplate">
-        <Border x:Name="CardSurface"
-                x:DataType="RadioButton"
+        <Border x:DataType="RadioButton"
                 Padding="12"
                 StrokeThickness="2"
                 Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}"
@@ -480,40 +477,6 @@
         <Setter Property="FontSize" Value="15" />
         <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
         <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
-    </Style>
-
-    <Style TargetType="Picker">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-        <Setter Property="TitleColor" Value="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
-        <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
-    </Style>
-
-    <Style TargetType="Button">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-        <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
-        <Setter Property="FontSize" Value="17" />
-        <Setter Property="BorderWidth" Value="0" />
-        <Setter Property="CornerRadius" Value="16" />
-        <Setter Property="Padding" Value="16,12" />
-        <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
-        <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />
-        <Setter Property="VisualStateManager.VisualStateGroups">
-            <VisualStateGroupList>
-                <VisualStateGroup x:Name="CommonStates">
-                    <VisualState x:Name="Normal" />
-                    <VisualState x:Name="Disabled">
-                        <VisualState.Setters>
-                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DisabledTextLight}, Dark={StaticResource DisabledTextDark}}" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateGroupList>
-        </Setter>
     </Style>
 
     <Style TargetType="Border">

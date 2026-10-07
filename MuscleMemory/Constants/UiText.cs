@@ -2,7 +2,6 @@ namespace MuscleMemory.Constants;
 
 public static class UiText
 {
-    public const string TitleDeleteWorkout = "Delete Workout";
     public const string TitleDeleteExercise = "Delete Exercise";
     public const string TitleDeleteSet = "Delete Set";
     public const string TitleEditSet = "Edit set";
