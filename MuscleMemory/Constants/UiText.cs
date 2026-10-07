@@ -95,6 +95,8 @@ public static class UiText
     public const string LabelName = "Name";
     public const string LabelMuscleGroup = "Muscle group";
     public const string LabelEquipment = "Equipment";
+    public const string LabelSet = "Set";
+    public const string LabelWeight = "Weight";
 
     public const string PlaceholderWorkoutName = "e.g. Monday Eve";
     public const string PlaceholderExerciseName = "e.g. Incline Bench Press";
