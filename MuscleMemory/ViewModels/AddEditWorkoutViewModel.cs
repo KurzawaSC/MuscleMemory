@@ -58,9 +58,9 @@ public partial class AddEditWorkoutViewModel(
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
     public partial int TotalSets { get; set; }
 
-    public string ExerciseCountCaption => ExerciseCount == 1 ? UiText.CaptionExercise : UiText.CaptionExercises;
+    public string ExerciseCountCaption => CountCaption.Exercises(ExerciseCount);
 
-    public string TotalSetsCaption => TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets;
+    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
