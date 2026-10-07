@@ -4,7 +4,7 @@ public sealed class HapticService(IHapticFeedback hapticFeedback) : IHapticServi
 {
     public void Click() => Perform(HapticFeedbackType.Click);
 
-    public void LongPress() => Perform(HapticFeedbackType.LongPress);
+    public void RestFinished() => Perform(HapticFeedbackType.LongPress);
 
     private void Perform(HapticFeedbackType type)
     {
