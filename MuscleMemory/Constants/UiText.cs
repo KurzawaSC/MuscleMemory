@@ -37,6 +37,11 @@ public static class UiText
     public const string ButtonEdit = "Edit";
     public const string ButtonSaveWorkout = "Save workout";
     public const string ButtonRemoveFromWorkout = "Remove from workout";
+    public const string ButtonUndo = "Undo";
+    public const string ButtonSaveSet = "Save set";
+    public const string ButtonSkipRest = "Skip rest";
+    public const string ButtonHistory = "History";
+    public const string ButtonDone = "Done";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -79,6 +84,11 @@ public static class UiText
     public const string LabelTargetRpe = "Target RPE";
     public const string LabelRpeEasy = "easy";
     public const string LabelRpeMax = "max";
+    public const string LabelWeightInKg = "Weight (kg)";
+    public const string LabelThisSession = "This session";
+    public const string LabelLoggedSets = "Logged sets";
+    public const string LabelVolume = "Volume";
+    public const string LabelWorkoutComplete = "Workout complete";
 
     public const string PlaceholderWorkoutName = "e.g. Monday Eve";
 
@@ -99,6 +109,8 @@ public static class UiText
 
     public const string HintEditableSession = "This session is editable — you can add missing sets";
     public const string HintSaveWorkout = "Add a name and at least one exercise";
+    public const string HintFirstTimeExercise = "First time doing this exercise. Enter weight and reps — next time we will prefill your last session.";
+    public const string HintPrefilledFromLastSession = "Weight and reps are prefilled from your last session.";
 
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
@@ -123,6 +135,7 @@ public static class UiText
     public const string CaptionSession = "session";
     public const string CaptionSessions = "sessions";
     public const string CaptionVolume = "volume";
+    public const string CaptionTime = "time";
     public const string SessionCountFormat = "{0} {1} · newest first";
     public const string ListSeparator = " · ";
     public const string WeightRepsSeparator = " × ";
