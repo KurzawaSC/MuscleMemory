@@ -337,5 +337,5 @@ public partial class WorkoutHistoryViewModel(
     });
 
     private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        Task.Delay(UiTiming.SheetClose);
 }

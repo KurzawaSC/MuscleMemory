@@ -328,7 +328,7 @@ public partial class AddEditWorkoutViewModel(
     }
 
     private static Task WaitForSheetToCloseAsync() =>
-        Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        Task.Delay(UiTiming.SheetClose);
 
     private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {

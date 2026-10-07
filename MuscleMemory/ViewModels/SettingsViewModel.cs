@@ -65,7 +65,7 @@ public partial class SettingsViewModel(
     private Task EraseDataAsync() => _errors.RunAsync(async () =>
     {
         IsEraseSheetOpen = false;
-        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        await Task.Delay(UiTiming.SheetClose);
 
         await _maintenanceService.ClearAllDataAsync();
         _navigationStack.PopAllTabsToRoot();
