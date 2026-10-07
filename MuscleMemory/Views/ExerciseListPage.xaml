@@ -5,6 +5,7 @@
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:platform="clr-namespace:MuscleMemory"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.ExerciseListPage"
@@ -16,12 +17,12 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
-        <controls:ScreenHeader Title="Exercises" Subtitle="Build your movement library" />
+        <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderExercises}" Subtitle="{x:Static constants:UiText.SubtitleExercises}" />
 
         <controls:TextField Grid.Row="1"
                             Margin="20,8,20,0"
                             Text="{Binding Filter.SearchText}"
-                            Placeholder="Search exercises"
+                            Placeholder="{x:Static constants:UiText.PlaceholderSearchExercises}"
                             ClearButtonVisibility="WhileEditing"
                             IsVisible="{Binding ListState.HasItems}" />
 
@@ -48,7 +49,7 @@
         <VerticalStackLayout Grid.Row="3"
                              Margin="20,24,20,0"
                              IsVisible="{Binding HasNoMatches}">
-            <Label Text="No exercises match your search"
+            <Label Text="{x:Static constants:UiText.EmptyNoMatchingExercises}"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalOptions="Center" />
         </VerticalStackLayout>
@@ -102,9 +103,9 @@
 
         <controls:EmptyState Grid.Row="1"
                              Grid.RowSpan="3"
-                             Message="No exercises yet"
-                             Detail="Add your first exercise, then build a workout from it."
-                             ActionText="Add exercise"
+                             Message="{x:Static constants:UiText.EmptyExercisesMessage}"
+                             Detail="{x:Static constants:UiText.EmptyExercisesDetail}"
+                             ActionText="{x:Static constants:UiText.ButtonAddExercise}"
                              ActionCommand="{Binding AddExerciseCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
                              IsVisible="{Binding ListState.IsEmpty}" />
@@ -122,8 +123,8 @@
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding ActionExercise.Name, FallbackValue=''}"
                                        Subtitle="{Binding ActionExerciseSubtitle}"
-                                       EditText="Edit exercise"
-                                       DeleteText="Delete exercise"
+                                       EditText="{x:Static constants:UiText.HeaderEditExercise}"
+                                       DeleteText="{x:Static constants:UiText.TitleDeleteExercise}"
                                        EditCommand="{Binding EditActionExerciseCommand}"
                                        HistoryCommand="{Binding ViewActionExerciseHistoryCommand}"
                                        DeleteCommand="{Binding DeleteActionExerciseCommand}"
