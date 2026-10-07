@@ -50,7 +50,8 @@ public static class UiText
 
     public const string FilterAll = "All";
     public const string RestPresetOther = "Other";
-    public const string RestPresetFormat = "{0} s";
+    public const string RestDurationFormat = "{0} s";
+    public const string RestPresetFormat = RestDurationFormat;
     public const string CountFormat = "{0} {1}";
     public const string CaptionExercise = "exercise";
     public const string CaptionExercises = "exercises";
@@ -83,7 +84,7 @@ public static class UiText
     public const string SummaryDateFormat = "MMM dd, yyyy · HH:mm";
     public const string SessionDateTimeFormat = "ddd, MMM d · HH:mm";
     public const string SessionStatsFormat = "Time {0} · {1} {2}";
-    public const string RestTotalFormat = "of {0} s";
+    public const string RestTotalFormat = "of " + RestDurationFormat;
     public const string ResultSeparator = ", ";
     public const string WeightRangeErrorFormat = "Enter {0}–{1} kg";
     public const string WeightPrecisionErrorFormat = "Use {0} kg steps";
