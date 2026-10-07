@@ -17,8 +17,7 @@
 
         <Border x:Name="Card"
                 Style="{StaticResource DialogCard}"
-                Opacity="0"
-                Scale="0.94">
+                Opacity="0">
             <VerticalStackLayout Spacing="8">
                 <Label Style="{StaticResource TitleLabel}" FontSize="20" Text="{Binding Title}" />
                 <Label Text="{Binding Message}"
