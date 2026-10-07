@@ -39,11 +39,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
     [NotifyPropertyChangedFor(nameof(CanAddItems))]
-    public partial bool IsWorkoutActive { get; set; } = false;
+    public partial bool IsWorkoutActive { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
-    public partial bool IsOnActiveWorkoutPage { get; set; } = false;
+    public partial bool IsOnActiveWorkoutPage { get; set; }
 
     public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
 
@@ -93,18 +93,18 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial string SetProgressText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool HasSavedSets { get; set; } = false;
+    public partial bool HasSavedSets { get; set; }
     [ObservableProperty]
-    public partial bool IsExercisesEmpty { get; set; } = false;
+    public partial bool IsExercisesEmpty { get; set; }
 
     [ObservableProperty]
-    public partial bool HasPreviousExercise { get; set; } = false;
+    public partial bool HasPreviousExercise { get; set; }
 
     [ObservableProperty]
-    public partial bool HasNextExercise { get; set; } = false;
+    public partial bool HasNextExercise { get; set; }
 
     [ObservableProperty]
-    public partial bool IsPlanComplete { get; set; } = false;
+    public partial bool IsPlanComplete { get; set; }
 
     public string ProgressCaption => IsResting
         ? string.Join(UiText.ListSeparator, SetProgressText, TargetText)
@@ -112,13 +112,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressCaption))]
-    public partial bool IsResting { get; set; } = false;
+    public partial bool IsResting { get; set; }
 
     [ObservableProperty]
-    public partial bool IsWorkoutCompleted { get; set; } = false;
+    public partial bool IsWorkoutCompleted { get; set; }
 
     [ObservableProperty]
-    public partial double TotalVolume { get; set; } = 0;
+    public partial double TotalVolume { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
