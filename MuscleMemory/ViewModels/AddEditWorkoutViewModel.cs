@@ -379,14 +379,16 @@ public partial class AddEditWorkoutViewModel(
             return;
         }
 
+        var name = WorkoutName.Trim();
+
         if (_workoutToEdit != null)
         {
-            _workoutToEdit.Name = WorkoutName.Trim();
-            await _workoutRepository.UpdateWithExercisesAsync(_workoutToEdit, [.. Exercises]);
+            await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, [.. Exercises]);
+            _workoutToEdit.Name = name;
         }
         else
         {
-            var workout = new Workout { Name = WorkoutName.Trim() };
+            var workout = new Workout { Name = name };
             await _workoutRepository.SaveWithExercisesAsync(workout, [.. Exercises]);
             _workoutToEdit = workout;
         }
