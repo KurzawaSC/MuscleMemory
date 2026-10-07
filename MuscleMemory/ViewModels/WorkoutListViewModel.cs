@@ -36,8 +36,7 @@ public partial class WorkoutListViewModel : ObservableObject
         dataChanges.Changed += OnDataChanged;
     }
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
@@ -81,7 +80,7 @@ public partial class WorkoutListViewModel : ObservableObject
 
         Workouts.ReplaceAll(workouts.Select((workout, index) =>
             WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id], isFeatured: index == 0)));
-        IsEmpty = Workouts.Count == 0;
+        ListState.Complete(Workouts.Count);
     }
 
     [RelayCommand]

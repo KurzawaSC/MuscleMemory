@@ -18,7 +18,7 @@
                         SelectionMode="Single"
                         SelectedItem="{Binding SelectedSession}"
                         HorizontalScrollBarVisibility="Never"
-                        IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                        IsVisible="{Binding ListState.HasItems}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
             </CollectionView.ItemsLayout>
@@ -55,7 +55,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <ScrollView Grid.Row="2" IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+        <ScrollView Grid.Row="2" IsVisible="{Binding ListState.HasItems}">
             <VerticalStackLayout Spacing="12" Padding="20,14,20,14">
                 <Border Style="{StaticResource SurfaceCard}">
                     <Grid ColumnDefinitions="*, Auto">
@@ -147,13 +147,13 @@
                                  Text="Add exercise to session"
                                  Margin="20,0,20,14"
                                  Command="{Binding AddExerciseCommand}"
-                                 IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
+                                 IsVisible="{Binding ListState.HasItems}" />
 
         <controls:EmptyState Grid.Row="1"
                              Grid.RowSpan="3"
                              Message="No history yet"
                              Detail="Finish a session of this workout to see it here."
-                             IsVisible="{Binding IsEmpty}" />
+                             IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExercisePickerOpen}">
             <controls:ExercisePickerSheet Picker="{Binding ExercisePicker}"

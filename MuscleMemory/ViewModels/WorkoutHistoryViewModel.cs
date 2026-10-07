@@ -36,8 +36,7 @@ public partial class WorkoutHistoryViewModel(
     [ObservableProperty]
     public partial string WorkoutName { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     public ObservableCollection<HistorySessionItem> Sessions { get; } = [];
 
@@ -154,7 +153,7 @@ public partial class WorkoutHistoryViewModel(
     private void RestoreSelection(int? sessionId)
     {
         SelectedSession = Sessions.FirstOrDefault(item => item.Session.SessionId == sessionId) ?? Sessions.FirstOrDefault();
-        IsEmpty = Sessions.Count == 0;
+        ListState.Complete(Sessions.Count);
     }
 
     private int SessionIdOf(int sessionExerciseId) =>

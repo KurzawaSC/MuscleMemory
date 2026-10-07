@@ -49,8 +49,7 @@ public partial class ExerciseListViewModel : ObservableObject
         dataChanges.Changed += OnDataChanged;
     }
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     [ObservableProperty]
     public partial bool HasNoMatches { get; set; }
@@ -110,7 +109,7 @@ public partial class ExerciseListViewModel : ObservableObject
         }
 
         _allExercises = exercises;
-        IsEmpty = _allExercises.Count == 0;
+        ListState.Complete(_allExercises.Count);
         Filter.UpdateFilters(_allExercises);
         ApplyFilter();
     }
@@ -118,7 +117,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private void ApplyFilter()
     {
         Exercises.ReplaceAll(Filter.Apply(_allExercises));
-        HasNoMatches = !IsEmpty && Exercises.Count == 0;
+        HasNoMatches = ListState.HasItems && Exercises.Count == 0;
     }
 
     [RelayCommand]

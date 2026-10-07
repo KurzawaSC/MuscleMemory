@@ -84,13 +84,13 @@
                              ActionText="Create workout"
                              ActionCommand="{Binding NavigateToAddWorkoutCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
-                             IsVisible="{Binding IsEmpty}" />
+                             IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:FloatingActionButton Grid.Row="1" Command="{Binding NavigateToAddWorkoutCommand}">
             <controls:FloatingActionButton.IsVisible>
                 <MultiBinding Converter="{StaticResource AllTrueConverter}">
                     <Binding Path="ActiveWorkout.CanAddItems" />
-                    <Binding Path="IsEmpty" Converter="{StaticResource InvertedBoolConverter}" />
+                    <Binding Path="ListState.HasItems" />
                 </MultiBinding>
             </controls:FloatingActionButton.IsVisible>
         </controls:FloatingActionButton>
