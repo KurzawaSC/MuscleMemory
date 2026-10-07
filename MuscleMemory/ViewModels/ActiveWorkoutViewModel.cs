@@ -46,9 +46,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
     public partial bool IsOnActiveWorkoutPage { get; set; }
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanAddItems))]
+    public partial bool IsStateRestored { get; private set; }
+
     public bool IsBannerVisible => IsWorkoutActive && !IsOnActiveWorkoutPage;
 
-    public bool CanAddItems => !IsWorkoutActive;
+    public bool CanAddItems => IsStateRestored && !IsWorkoutActive;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveSetCommand))]
@@ -294,7 +298,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _activeStateRepository.SaveAsync(state);
     }
 
-    public Task LoadStateAsync() => RunExclusiveAsync(RestoreStateAsync);
+    public async Task LoadStateAsync()
+    {
+        try
+        {
+            await RunExclusiveAsync(RestoreStateAsync);
+        }
+        finally
+        {
+            IsStateRestored = true;
+        }
+    }
 
     private async Task RestoreStateAsync()
     {
