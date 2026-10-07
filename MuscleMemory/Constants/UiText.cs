@@ -25,6 +25,8 @@ public static class UiText
     public const string ButtonResume = "Resume";
     public const string ButtonAddToWorkout = "Add to workout";
     public const string ButtonAddExercise = "Add exercise";
+    public const string ButtonStart = "Start";
+    public const string ButtonCreateWorkout = "Create workout";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -52,12 +54,15 @@ public static class UiText
     public const string HeaderEditWorkout = "Edit workout";
 
     public const string SubtitleExercises = "Build your movement library";
+    public const string SubtitleWorkouts = "Your training plans";
 
     public const string PlaceholderSearchExercises = "Search exercises";
 
     public const string EmptyExercisesMessage = "No exercises yet";
     public const string EmptyExercisesDetail = "Add your first exercise, then build a workout from it.";
     public const string EmptyNoMatchingExercises = "No exercises match your search";
+    public const string EmptyWorkoutsMessage = "No workouts yet";
+    public const string EmptyWorkoutsDetail = "Build a workout from your exercises, set sets and rest — starting takes one tap.";
 
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
