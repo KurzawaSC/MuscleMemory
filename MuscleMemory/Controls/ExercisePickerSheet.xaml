@@ -38,63 +38,67 @@
             </HorizontalStackLayout>
         </ScrollView>
 
-        <Grid>
-            <CollectionView HeightRequest="{StaticResource ExercisePickerListHeight}"
-                            ItemSizingStrategy="MeasureFirstItem"
-                            ItemsSource="{Binding Picker.Exercises, Source={x:Reference Root}}">
-                <CollectionView.Behaviors>
-                    <controls:ScrollToTopOnInsertBehavior />
-                </CollectionView.Behaviors>
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Exercise">
-                        <Border Padding="14,12"
-                                StrokeThickness="1"
-                                Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
-                            </Border.StrokeShape>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding PickCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}"
-                                                      CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
-                                    <Label Style="{StaticResource CaptionLabel}">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} · {1}">
-                                                <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                                <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                            </MultiBinding>
-                                        </Label.Text>
-                                    </Label>
-                                </VerticalStackLayout>
-                                <Border Grid.Column="1"
-                                        WidthRequest="28"
-                                        HeightRequest="28"
-                                        StrokeThickness="0"
-                                        VerticalOptions="Center"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="10" />
-                                    </Border.StrokeShape>
-                                    <Label Text="+"
-                                           FontSize="17"
-                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center" />
-                                </Border>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-                <CollectionView.FooterTemplate>
-                    <DataTemplate x:DataType="x:Object">
+        <CollectionView HeightRequest="{StaticResource ExercisePickerListHeight}"
+                        ItemSizingStrategy="MeasureFirstItem"
+                        ItemsSource="{Binding Picker.Exercises, Source={x:Reference Root}}">
+            <CollectionView.Behaviors>
+                <controls:ScrollToTopOnInsertBehavior />
+            </CollectionView.Behaviors>
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Exercise">
+                    <Border Padding="14,12"
+                            StrokeThickness="1"
+                            Stroke="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineStrongDark}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding PickCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
+                                <Label Style="{StaticResource CaptionLabel}">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} · {1}">
+                                            <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                            <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+                                <Label Text="+"
+                                       FontSize="17"
+                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.FooterTemplate>
+                <DataTemplate x:DataType="x:Object">
+                    <VerticalStackLayout Margin="0,8,0,0" Spacing="16">
+                        <Label Text="No exercises match your search"
+                               TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                               HorizontalOptions="Center"
+                               Margin="0,16,0,0"
+                               IsVisible="{Binding Picker.HasNoMatches, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}" />
                         <Border Style="{StaticResource DashedOutline}"
-                                Margin="0,8,0,0"
                                 IsVisible="{Binding CanCreate, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CreateCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}" />
@@ -103,16 +107,9 @@
                                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                    HorizontalOptions="Center" />
                         </Border>
-                    </DataTemplate>
-                </CollectionView.FooterTemplate>
-            </CollectionView>
-
-            <Label Text="No exercises match your search"
-                   TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center"
-                   InputTransparent="True"
-                   IsVisible="{Binding Picker.HasNoMatches, Source={x:Reference Root}}" />
-        </Grid>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.FooterTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentView>
