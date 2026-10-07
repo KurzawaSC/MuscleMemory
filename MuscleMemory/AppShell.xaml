@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:MuscleMemory.Views"
+    xmlns:constants="clr-namespace:MuscleMemory.Constants"
     Shell.FlyoutBehavior="Disabled"
     Title="Muscle Memory">
 
@@ -12,19 +13,19 @@
         <Tab Title="Exercises" Icon="exercise_list_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:ExerciseListPage}"
-                Route="ExerciseListPage" />
+                Route="{x:Static constants:NavigationRoutes.ExerciseTab}" />
         </Tab>
 
         <Tab Title="Workouts" Icon="workout_list_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:WorkoutListPage}"
-                Route="WorkoutListPage" />
+                Route="{x:Static constants:NavigationRoutes.WorkoutTab}" />
         </Tab>
 
         <Tab Title="Settings" Icon="settings_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:SettingsPage}"
-                Route="SettingsPage" />
+                Route="{x:Static constants:NavigationRoutes.SettingsTab}" />
         </Tab>
 
     </TabBar>

@@ -5,7 +5,6 @@ using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
@@ -87,7 +86,7 @@ public partial class WorkoutListViewModel : ObservableObject
 
     [RelayCommand]
     private Task NavigateToAddWorkout() =>
-        _errors.RunAsync(() => _navigation.GoToAsync(nameof(AddEditWorkoutPage)));
+        _errors.RunAsync(() => _navigation.GoToAsync(NavigationRoutes.AddEditWorkout));
 
     private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true && !ActiveWorkout.IsBusy;
 
@@ -104,7 +103,7 @@ public partial class WorkoutListViewModel : ObservableObject
         {
             { QueryKeys.Workout, item.Workout }
         };
-        await _navigation.GoToAsync(nameof(ActiveWorkoutPage), navigationParameter);
+        await _navigation.GoToAsync(NavigationRoutes.ActiveWorkout, navigationParameter);
     });
 
     private async Task OfferToResumeActiveWorkoutAsync()
@@ -155,7 +154,7 @@ public partial class WorkoutListViewModel : ObservableObject
         {
             { QueryKeys.WorkoutToEdit, item.Workout }
         };
-        await _navigation.GoToAsync(nameof(AddEditWorkoutPage), navigationParameter);
+        await _navigation.GoToAsync(NavigationRoutes.AddEditWorkout, navigationParameter);
     });
 
     [RelayCommand]
@@ -173,7 +172,7 @@ public partial class WorkoutListViewModel : ObservableObject
             { QueryKeys.WorkoutId, item.Workout.Id },
             { QueryKeys.WorkoutName, item.Workout.Name }
         };
-        await _navigation.GoToAsync(nameof(WorkoutHistoryPage), navigationParameter);
+        await _navigation.GoToAsync(NavigationRoutes.WorkoutHistory, navigationParameter);
     });
 
     [RelayCommand]

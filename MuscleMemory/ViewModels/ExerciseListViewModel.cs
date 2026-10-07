@@ -7,7 +7,6 @@ using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
@@ -194,7 +193,7 @@ public partial class ExerciseListViewModel : ObservableObject
             { QueryKeys.ExerciseId, exercise.Id },
             { QueryKeys.ExerciseName, exercise.Name }
         };
-        await _navigation.GoToAsync(nameof(ExerciseHistoryPage), navigationParameter);
+        await _navigation.GoToAsync(NavigationRoutes.ExerciseHistory, navigationParameter);
     });
 
     [RelayCommand]
