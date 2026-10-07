@@ -1,5 +1,6 @@
 using System.Globalization;
 using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -18,6 +19,6 @@ public sealed record ExerciseHistoryItem(
             entry,
             entry.LocalDate.ToString(UiText.SessionDateTimeFormat, CultureInfo.InvariantCulture),
             string.Format(UiText.CountFormat, setCount, setCount == 1 ? UiText.CaptionSet : UiText.CaptionSets),
-            string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, entry.Sets.Sum(set => set.Weight * set.Reps)));
+            string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, entry.Sets.TotalVolume()));
     }
 }
