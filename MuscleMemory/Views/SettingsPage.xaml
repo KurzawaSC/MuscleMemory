@@ -2,7 +2,7 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              x:Class="MuscleMemory.Views.SettingsPage"
@@ -53,7 +53,7 @@
                       RadioButtonGroup.GroupName="AppTheme"
                       RadioButtonGroup.SelectedValue="{Binding SelectedTheme}">
                     <RadioButton Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.System}"
+                                 Value="{x:Static services:ThemePreference.System}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionSystem}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
@@ -71,7 +71,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.Light}"
+                                 Value="{x:Static services:ThemePreference.Light}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionLight}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
@@ -82,7 +82,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="2"
                                  Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.Dark}"
+                                 Value="{x:Static services:ThemePreference.Dark}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
