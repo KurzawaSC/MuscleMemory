@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
@@ -6,8 +8,6 @@ using MuscleMemory.Diagnostics;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
@@ -276,7 +276,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task SaveStateAsync()
     {
-        if (!IsWorkoutActive) return;
+        if (!IsWorkoutActive)
+        {
+            return;
+        }
+
         var state = new ActiveWorkoutState
         {
             SessionId = _sessionId,
@@ -371,7 +375,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task AdvanceToExerciseAsync(int index)
     {
         if (index < 0 || index >= Exercises.Count)
+        {
             return;
+        }
 
         _currentExerciseIndex = index;
         var exercise = Exercises[index];
@@ -415,7 +421,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private void UpdateSetProgress()
     {
-        int currentSetNumber = CurrentSets.Count + 1;
+        var currentSetNumber = CurrentSets.Count + 1;
 
         SetProgressText = currentSetNumber <= _totalSetsForExercise
             ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
@@ -549,7 +555,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private Task ExtendRestAsync() => _errors.RunAsync(async () =>
     {
-        if (!IsResting) return;
+        if (!IsResting)
+        {
+            return;
+        }
 
         _restDurationSeconds += DomainDefaults.RestExtensionInSeconds;
         _breakEndTimeUtc = _breakEndTimeUtc.AddSeconds(DomainDefaults.RestExtensionInSeconds);
@@ -622,7 +631,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
+        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel))
+        {
+            return;
+        }
 
         await RemoveSetAsync(set);
     });
@@ -648,7 +660,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private Task UndoLastSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (!CurrentSets.Any())
+        {
             return;
+        }
 
         await RemoveSetAsync(CurrentSets[^1]);
     }));
@@ -676,14 +690,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         var summary = await _summaryService.BuildAsync([.. Exercises]);
 
-        bool isConfirmed = await _dialogs.ConfirmAsync(
+        var isConfirmed = await _dialogs.ConfirmAsync(
             UiText.TitleFinishWorkout,
             summary.HasLoggedSets ? UiText.BodyFinishWorkoutConfirmation : UiText.BodyFinishUnsavedWorkoutConfirmation,
             UiText.ButtonFinish,
             UiText.ButtonCancel);
 
         if (!isConfirmed)
+        {
             return;
+        }
 
         await CompleteWorkoutAsync(summary);
     }));

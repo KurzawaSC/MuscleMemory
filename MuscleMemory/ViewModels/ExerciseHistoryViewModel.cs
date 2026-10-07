@@ -1,7 +1,7 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Services;

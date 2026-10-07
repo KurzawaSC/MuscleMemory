@@ -1,6 +1,6 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
@@ -169,7 +169,7 @@ public partial class AddEditWorkoutViewModel(
             return true;
         }
 
-        bool discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        var discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
         if (discard)
         {
             HasUnsavedChanges = false;
@@ -187,7 +187,7 @@ public partial class AddEditWorkoutViewModel(
 
         await _navigation.GoToAsync(NavigationRoutes.GoBack);
 
-        if (destination != null && Shell.Current.CurrentState.Location != destination.Location)
+        if (destination is not null && Shell.Current.CurrentState.Location != destination.Location)
         {
             await _navigation.GoToAsync(destination);
         }
@@ -380,7 +380,7 @@ public partial class AddEditWorkoutViewModel(
 
         var name = WorkoutName.Trim();
 
-        if (_workoutToEdit != null)
+        if (_workoutToEdit is not null)
         {
             await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, [.. Exercises]);
             _workoutToEdit.Name = name;

@@ -1,12 +1,12 @@
-using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using Plugin.Maui.Audio;
 using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 using MuscleMemory.ViewModels;
+using MuscleMemory.Views;
 
 namespace MuscleMemory;
 

@@ -1,7 +1,7 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
@@ -15,7 +15,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IExerciseRepository _exerciseRepository;
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IExerciseCatalogService _exerciseCatalog;
-    private readonly IHapticService _hapticService;
+    private readonly IHapticService _haptics;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
@@ -29,7 +29,7 @@ public partial class ExerciseListViewModel : ObservableObject
         ActiveWorkoutViewModel activeWorkout,
         AddEditExerciseViewModel exerciseForm,
         ExerciseFilterViewModel filter,
-        IHapticService hapticService,
+        IHapticService haptics,
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
@@ -38,7 +38,7 @@ public partial class ExerciseListViewModel : ObservableObject
         _exerciseRepository = exerciseRepository;
         _workoutRepository = workoutRepository;
         _exerciseCatalog = exerciseCatalog;
-        _hapticService = hapticService;
+        _haptics = haptics;
         _dialogs = dialogs;
         _navigation = navigation;
         _errors = errors;
@@ -156,7 +156,7 @@ public partial class ExerciseListViewModel : ObservableObject
     [RelayCommand]
     private void LongPressExercise(Exercise exercise)
     {
-        _hapticService.Click();
+        _haptics.Click();
         ShowExerciseActions(exercise);
     }
 
@@ -205,7 +205,7 @@ public partial class ExerciseListViewModel : ObservableObject
         }
 
         var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
-        bool answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _exerciseCatalog.DeleteAsync(exercise.Id);
