@@ -85,6 +85,7 @@ public static class UiText
     public const string SessionDateTimeFormat = "ddd, MMM d · HH:mm";
     public const string SessionStatsFormat = "Time {0} · {1} {2}";
     public const string RestTotalFormat = "of " + RestDurationFormat;
+    public const string RestExtensionFormat = "+" + RestDurationFormat;
     public const string ResultSeparator = ", ";
     public const string WeightRangeErrorFormat = "Enter {0}–{1} kg";
     public const string WeightPrecisionErrorFormat = "Use {0} kg steps";

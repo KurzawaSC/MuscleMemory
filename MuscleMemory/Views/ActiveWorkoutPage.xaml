@@ -175,7 +175,7 @@
                             </Grid>
                         </controls:PulseView>
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,14,0,0">
-                            <controls:TappableButton Text="+30 s"
+                            <controls:TappableButton Text="{Binding RestExtensionText}"
                                                      FontSize="15"
                                                      HeightRequest="46"
                                                      CornerRadius="{StaticResource ControlRadius}"
