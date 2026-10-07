@@ -1,8 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
 using MuscleMemory.Diagnostics;
-using MuscleMemory.Services;
 
 namespace MuscleMemory.Controls;
 
@@ -150,14 +148,6 @@ public partial class TappableButton : ContentView
     }
 
     private async void OnTapped(object? sender, TappedEventArgs e)
-    {
-        if (Handler?.MauiContext?.Services.GetService<IErrorHandler>() is { } errors)
-        {
-            await errors.RunAsync(PressAsync);
-        }
-    }
-
-    private async Task PressAsync()
     {
         if (!CanRunCommand())
         {
