@@ -180,7 +180,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Text="Rest" />
                                 <Label Grid.Column="1"
-                                       Text="{Binding ExerciseConfiguration.BreakTimeInSeconds, StringFormat='{0} sec'}"
+                                       Text="{Binding ExerciseConfiguration.BreakTimeInSeconds, StringFormat={x:Static constants:UiText.RestDurationFormat}}"
                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             </Grid>
                             <FlexLayout RadioButtonGroup.GroupName="RestPresets"
