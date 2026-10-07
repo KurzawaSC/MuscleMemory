@@ -19,6 +19,7 @@ public static class UiText
 
     public const string ButtonOk = "OK";
     public const string ButtonDelete = "Delete";
+    public const string ButtonRemove = "Remove";
     public const string ButtonCancel = "Cancel";
     public const string ButtonDiscard = "Discard";
     public const string ButtonFinish = "Finish";
