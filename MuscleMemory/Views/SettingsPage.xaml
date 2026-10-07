@@ -16,22 +16,22 @@
             <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
                 <Label Style="{StaticResource OverlineLabel}" Text="Appearance" />
                 <Border Style="{StaticResource SettingsGroup}">
-                    <controls:ActionSheetRow Text="App theme"
-                                             Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
-                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                             Command="{Binding OpenThemeSheetCommand}" />
+                    <controls:ActionRow Text="App theme"
+                                        Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
+                                        TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                        Command="{Binding OpenThemeSheetCommand}" />
                 </Border>
 
                 <Label Style="{StaticResource OverlineLabel}" Text="Data" Margin="0,10,0,0" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <VerticalStackLayout>
-                        <controls:ActionSheetRow Text="Export data"
-                                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                                 Command="{Binding ExportDataCommand}" />
+                        <controls:ActionRow Text="Export data"
+                                            TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                            Command="{Binding ExportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
-                        <controls:ActionSheetRow Text="Erase all data"
-                                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                                 Command="{Binding OpenEraseSheetCommand}" />
+                        <controls:ActionRow Text="Erase all data"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                            Command="{Binding OpenEraseSheetCommand}" />
                     </VerticalStackLayout>
                 </Border>
 
