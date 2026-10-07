@@ -48,9 +48,6 @@ public partial class TappableButton : ContentView
     public static readonly BindableProperty FontSizeProperty =
         BindableProperty.Create(nameof(FontSize), typeof(double), typeof(TappableButton), 18d);
 
-    public static readonly BindableProperty FontAttributesProperty =
-        BindableProperty.Create(nameof(FontAttributes), typeof(FontAttributes), typeof(TappableButton), FontAttributes.None);
-
     public static readonly BindableProperty ContentPaddingProperty =
         BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(14, 10));
 
@@ -124,12 +121,6 @@ public partial class TappableButton : ContentView
     {
         get => (double)GetValue(FontSizeProperty);
         set => SetValue(FontSizeProperty, value);
-    }
-
-    public FontAttributes FontAttributes
-    {
-        get => (FontAttributes)GetValue(FontAttributesProperty);
-        set => SetValue(FontAttributesProperty, value);
     }
 
     public Thickness ContentPadding
