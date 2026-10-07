@@ -1,6 +1,7 @@
 using SQLite;
 using MuscleMemory.Constants;
 using MuscleMemory.Models;
+using MuscleMemory.Threading;
 
 namespace MuscleMemory.Data.Repositories;
 
@@ -8,7 +9,7 @@ public sealed class ActiveWorkoutStateRepository(DatabaseContext context) : IAct
 {
     private const string CountOpenSession = "SELECT COUNT(*) FROM WorkoutSession WHERE Id = ? AND EndTimeUtc IS NULL";
 
-    private readonly SequentialWriter _writes = new();
+    private readonly SequentialTaskQueue _writes = new();
 
     public Task SaveAsync(ActiveWorkoutState state) => _writes.EnqueueAsync(() => SaveForOpenSessionAsync(state));
 
