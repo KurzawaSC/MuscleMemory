@@ -19,7 +19,7 @@ public partial class AddEditWorkoutViewModel(
     INavigationService navigation,
     IErrorHandler errors) : ObservableObject, IQueryAttributable, IUnsavedChangesGuard
 {
-    private Shell? _guardedShell;
+    private bool _isGuardingUnsavedChanges;
     private Workout? _workoutToEdit;
     private Exercise? _exerciseToAdd;
     private WorkoutExercise? _exerciseBeingEdited;
@@ -114,27 +114,27 @@ public partial class AddEditWorkoutViewModel(
     [RelayCommand]
     private void StartGuardingUnsavedChanges()
     {
-        if (_guardedShell is not null)
+        if (_isGuardingUnsavedChanges)
         {
             return;
         }
 
-        _guardedShell = Shell.Current;
-        _guardedShell.Navigating += OnShellNavigating;
-        _guardedShell.Navigated += OnShellNavigated;
+        _isGuardingUnsavedChanges = true;
+        navigation.Navigating += OnShellNavigating;
+        navigation.Navigated += OnShellNavigated;
     }
 
     [RelayCommand]
     private void StopGuardingUnsavedChanges()
     {
-        if (_guardedShell is null)
+        if (!_isGuardingUnsavedChanges)
         {
             return;
         }
 
-        _guardedShell.Navigating -= OnShellNavigating;
-        _guardedShell.Navigated -= OnShellNavigated;
-        _guardedShell = null;
+        navigation.Navigating -= OnShellNavigating;
+        navigation.Navigated -= OnShellNavigated;
+        _isGuardingUnsavedChanges = false;
     }
 
     private void OnShellNavigated(object? sender, ShellNavigatedEventArgs e)
@@ -182,7 +182,7 @@ public partial class AddEditWorkoutViewModel(
 
         await navigation.GoToAsync(NavigationRoutes.GoBack);
 
-        if (destination is not null && Shell.Current.CurrentState.Location != destination.Location)
+        if (destination is not null && navigation.CurrentState.Location != destination.Location)
         {
             await navigation.GoToAsync(destination);
         }

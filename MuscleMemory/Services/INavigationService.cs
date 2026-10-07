@@ -4,7 +4,13 @@ public interface INavigationService
 {
     event EventHandler? IsNavigatingChanged;
 
+    event EventHandler<ShellNavigatingEventArgs>? Navigating;
+
+    event EventHandler<ShellNavigatedEventArgs>? Navigated;
+
     bool IsNavigating { get; }
+
+    ShellNavigationState CurrentState { get; }
 
     Task GoToAsync(ShellNavigationState state);
 

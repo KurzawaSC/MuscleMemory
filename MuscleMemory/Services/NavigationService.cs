@@ -7,7 +7,21 @@ public sealed class NavigationService : INavigationService
 
     public event EventHandler? IsNavigatingChanged;
 
+    public event EventHandler<ShellNavigatingEventArgs>? Navigating
+    {
+        add => Shell.Current.Navigating += value;
+        remove => Shell.Current.Navigating -= value;
+    }
+
+    public event EventHandler<ShellNavigatedEventArgs>? Navigated
+    {
+        add => Shell.Current.Navigated += value;
+        remove => Shell.Current.Navigated -= value;
+    }
+
     public bool IsNavigating => _inFlight > 0;
+
+    public ShellNavigationState CurrentState => Shell.Current.CurrentState;
 
     public Task GoToAsync(ShellNavigationState state) =>
         TrackAsync(() => Shell.Current.GoToAsync(state));
