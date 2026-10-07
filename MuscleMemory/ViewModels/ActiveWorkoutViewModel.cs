@@ -124,7 +124,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
     public partial int TotalSets { get; set; }
 
-    public string TotalSetsCaption => TotalSets == 1 ? UiText.CaptionSet : UiText.CaptionSets;
+    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
 
     [ObservableProperty]
     public partial string SummaryDateText { get; set; } = string.Empty;

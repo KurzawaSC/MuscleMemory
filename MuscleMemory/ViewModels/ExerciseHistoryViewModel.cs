@@ -51,7 +51,7 @@ public partial class ExerciseHistoryViewModel(
     }
 
     private static string FormatSessionCount(int count) =>
-        string.Format(UiText.SessionCountFormat, count, count == 1 ? UiText.CaptionSession : UiText.CaptionSessions);
+        string.Format(UiText.SessionCountFormat, count, CountCaption.Sessions(count));
 
     [RelayCommand]
     private Task GoBackAsync() =>

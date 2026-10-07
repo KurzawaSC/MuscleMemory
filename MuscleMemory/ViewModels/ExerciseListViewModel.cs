@@ -213,7 +213,7 @@ public partial class ExerciseListViewModel : ObservableObject
     });
 
     private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
-        ? string.Format(UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, workoutCount == 1 ? UiText.CaptionWorkout : UiText.CaptionWorkouts)
+        ? string.Format(UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, CountCaption.Workouts(workoutCount))
         : string.Format(UiText.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()
