@@ -150,6 +150,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string RestTotalText { get; set; } = string.Empty;
 
+    public string RestExtensionText { get; } = string.Format(CultureInfo.CurrentCulture, UiText.RestExtensionFormat, DomainDefaults.RestExtensionInSeconds);
+
     [ObservableProperty]
     public partial double RestProgress { get; set; }
 
