@@ -12,7 +12,7 @@ namespace MuscleMemory.ViewModels;
 public partial class AddEditWorkoutViewModel(
     IWorkoutRepository workoutRepository,
     ExercisePickerViewModel exercisePicker,
-    ConfigureExerciseViewModel exerciseConfiguration,
+    ExerciseConfigurationViewModel exerciseConfiguration,
     ExerciseFormViewModel exerciseForm,
     IDialogService dialogs,
     INavigationStackService navigationStack,
@@ -81,7 +81,7 @@ public partial class AddEditWorkoutViewModel(
 
     public ExercisePickerViewModel ExercisePicker { get; } = exercisePicker;
 
-    public ConfigureExerciseViewModel ExerciseConfiguration { get; } = exerciseConfiguration;
+    public ExerciseConfigurationViewModel ExerciseConfiguration { get; } = exerciseConfiguration;
 
     public ExerciseFormViewModel ExerciseForm { get; } = exerciseForm;
 
