@@ -58,7 +58,7 @@
         </VerticalStackLayout>
 
         <controls:EmptyState Grid.Row="2"
-                             Message="{x:Static constants:UiText.LoadingWorkoutTitle}"
+                             Message="{x:Static constants:UiText.LoadingText}"
                              IsVisible="{Binding IsLoading}" />
 
         <CollectionView Grid.Row="2"

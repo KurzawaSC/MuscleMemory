@@ -63,7 +63,7 @@ public static class UiText
     public const string SessionCountFormat = "{0} {1} · newest first";
     public const string ListSeparator = " · ";
 
-    public const string LoadingWorkoutTitle = "Loading...";
+    public const string LoadingText = "Loading...";
     public const string FirstTimePerformingExercise = "First time";
     public const string LastSessionPrefix = "Last: ";
     public const string ExerciseProgressFormat = "Exercise {0} of {1}";
