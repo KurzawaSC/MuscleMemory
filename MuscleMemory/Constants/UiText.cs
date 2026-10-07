@@ -153,6 +153,7 @@ public static class UiText
     public const string VolumeSuffix = " " + CaptionVolume;
     public const string WorkoutHistoryTitleFormat = "{0}" + ListSeparator + "history";
     public const string ListPairFormat = "{0}" + ListSeparator + "{1}";
+    public const string BannerResumeWorkout = "Workout in progress" + ListSeparator + "tap to resume";
 
     public const string LoadingText = "Loading...";
     public const string FirstTimePerformingExercise = "First time";
