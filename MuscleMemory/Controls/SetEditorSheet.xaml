@@ -9,13 +9,13 @@
 
     <VerticalStackLayout Spacing="16">
         <Label Style="{StaticResource TitleLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
-        <controls:InputStepper Title="Weight (kg)"
+        <controls:InputStepper Title="{x:Static constants:UiText.LabelWeightInKg}"
                                Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
                                MaxLength="{x:Static constants:InputLimits.MaxWeightInputLength}"
                                ErrorText="{Binding Editor.WeightError, Source={x:Reference Root}, FallbackValue=''}"
                                DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
                                IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
-        <controls:InputStepper Title="Reps"
+        <controls:InputStepper Title="{x:Static constants:UiText.LabelReps}"
                                Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
                                MaxLength="{x:Static constants:InputLimits.MaxRepsInputLength}"
                                ErrorText="{Binding Editor.RepsError, Source={x:Reference Root}, FallbackValue=''}"
