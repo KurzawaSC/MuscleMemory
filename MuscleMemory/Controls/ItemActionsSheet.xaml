@@ -11,19 +11,19 @@
                                   Subtitle="{Binding Subtitle, Source={x:Reference Root}}" />
 
         <VerticalStackLayout>
-            <controls:ActionSheetRow Text="{Binding EditText, Source={x:Reference Root}}"
-                                     TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                     Command="{Binding EditCommand, Source={x:Reference Root}}" />
+            <controls:ActionRow Text="{Binding EditText, Source={x:Reference Root}}"
+                                TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                Command="{Binding EditCommand, Source={x:Reference Root}}" />
             <BoxView Style="{StaticResource Divider}" IsVisible="{Binding HasHistory, Source={x:Reference Root}}" />
-            <controls:ActionSheetRow Text="View history"
-                                     TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                     IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
-                                     Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
+            <controls:ActionRow Text="View history"
+                                TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
+                                Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
             <BoxView Style="{StaticResource Divider}" />
-            <controls:ActionSheetRow Text="{Binding DeleteText, Source={x:Reference Root}}"
-                                     TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                     ShowsChevron="False"
-                                     Command="{Binding DeleteCommand, Source={x:Reference Root}}" />
+            <controls:ActionRow Text="{Binding DeleteText, Source={x:Reference Root}}"
+                                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                ShowsChevron="False"
+                                Command="{Binding DeleteCommand, Source={x:Reference Root}}" />
         </VerticalStackLayout>
 
         <controls:TappableButton Style="{StaticResource SecondaryButton}"

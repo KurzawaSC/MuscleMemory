@@ -1,5 +1,5 @@
-using SQLite;
 using MuscleMemory.Constants;
+using SQLite;
 
 namespace MuscleMemory.Models;
 

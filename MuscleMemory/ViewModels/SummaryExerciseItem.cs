@@ -1,7 +1,7 @@
 using System.Globalization;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
-using MuscleMemory.Models;
+using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 

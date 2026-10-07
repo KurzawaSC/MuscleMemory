@@ -1,5 +1,4 @@
 using MuscleMemory.Constants;
-using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
 

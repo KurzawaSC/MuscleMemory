@@ -2,9 +2,9 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             x:Class="MuscleMemory.Controls.ActionSheetRow"
+             x:Class="MuscleMemory.Controls.ActionRow"
              x:Name="Root"
-             x:DataType="controls:ActionSheetRow">
+             x:DataType="controls:ActionRow">
 
     <Grid ColumnDefinitions="*, Auto, Auto"
           ColumnSpacing="6"

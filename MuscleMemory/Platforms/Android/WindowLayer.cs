@@ -1,4 +1,3 @@
-#if ANDROID
 using Android.Content;
 using Android.Views;
 using Android.Views.InputMethods;
@@ -6,13 +5,11 @@ using AndroidX.Activity;
 using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
 using PlatformView = Android.Views.View;
-#endif
 
-namespace MuscleMemory.Controls;
+namespace MuscleMemory;
 
 public static class WindowLayer
 {
-#if ANDROID
     public static bool TryShow(Microsoft.Maui.Controls.View layer)
     {
         if (Platform.CurrentActivity?.Window?.DecorView is not ViewGroup decorView
@@ -124,5 +121,4 @@ public static class WindowLayer
     {
         public void Dispose() => callback?.Remove();
     }
-#endif
 }

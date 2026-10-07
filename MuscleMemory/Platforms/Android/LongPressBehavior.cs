@@ -1,8 +1,7 @@
-#if ANDROID
 using System.Windows.Input;
 using PlatformView = Android.Views.View;
 
-namespace MuscleMemory.Controls;
+namespace MuscleMemory;
 
 public class LongPressBehavior : PlatformBehavior<View, PlatformView>
 {
@@ -48,4 +47,3 @@ public class LongPressBehavior : PlatformBehavior<View, PlatformView>
         }
     }
 }
-#endif

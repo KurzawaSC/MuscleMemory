@@ -4,10 +4,10 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
 
-public sealed class WorkoutHistoryQueryService(
+public sealed class HistoryQueryService(
     IWorkoutSessionRepository sessionRepository,
     ISessionExerciseRepository sessionExerciseRepository,
-    IWorkoutSetRepository setRepository) : IWorkoutHistoryQueryService
+    IWorkoutSetRepository setRepository) : IHistoryQueryService
 {
     public async Task<IReadOnlyList<ExerciseHistoryEntry>> GetExerciseHistoryAsync(int exerciseId)
     {

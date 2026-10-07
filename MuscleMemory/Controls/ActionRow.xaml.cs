@@ -2,24 +2,24 @@ using System.Windows.Input;
 
 namespace MuscleMemory.Controls;
 
-public partial class ActionSheetRow : ContentView
+public partial class ActionRow : ContentView
 {
     public static readonly BindableProperty TextProperty =
-        BindableProperty.Create(nameof(Text), typeof(string), typeof(ActionSheetRow), string.Empty);
+        BindableProperty.Create(nameof(Text), typeof(string), typeof(ActionRow), string.Empty);
 
     public static readonly BindableProperty TextColorProperty =
-        BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(ActionSheetRow), Colors.Transparent);
+        BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(ActionRow), Colors.Transparent);
 
     public static readonly BindableProperty ValueProperty =
-        BindableProperty.Create(nameof(Value), typeof(string), typeof(ActionSheetRow), string.Empty);
+        BindableProperty.Create(nameof(Value), typeof(string), typeof(ActionRow), string.Empty);
 
     public static readonly BindableProperty ShowsChevronProperty =
-        BindableProperty.Create(nameof(ShowsChevron), typeof(bool), typeof(ActionSheetRow), true);
+        BindableProperty.Create(nameof(ShowsChevron), typeof(bool), typeof(ActionRow), true);
 
     public static readonly BindableProperty CommandProperty =
-        BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(ActionSheetRow));
+        BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(ActionRow));
 
-    public ActionSheetRow() => InitializeComponent();
+    public ActionRow() => InitializeComponent();
 
     public string Text
     {

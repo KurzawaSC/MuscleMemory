@@ -5,6 +5,7 @@
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+                             xmlns:platform="clr-namespace:MuscleMemory"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.ExerciseListPage"
                              x:DataType="viewmodels:ExerciseListViewModel"
@@ -22,13 +23,13 @@
                             Text="{Binding Filter.SearchText}"
                             Placeholder="Search exercises"
                             ClearButtonVisibility="WhileEditing"
-                            IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}" />
+                            IsVisible="{Binding ListState.HasItems}" />
 
         <ScrollView Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalScrollBarVisibility="Never"
                     Margin="0,12,0,0"
-                    IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
+                    IsVisible="{Binding ListState.HasItems}">
             <HorizontalStackLayout Padding="20,0"
                                    Spacing="8"
                                    RadioButtonGroup.GroupName="ExerciseListFilters"
@@ -81,7 +82,7 @@
                         <Grid ColumnDefinitions="*, Auto">
                             <VerticalStackLayout x:Name="CardContent" Spacing="8" BackgroundColor="Transparent">
                                 <VerticalStackLayout.Behaviors>
-                                    <controls:LongPressBehavior Command="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
+                                    <platform:LongPressBehavior Command="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
                                                                 CommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
                                 </VerticalStackLayout.Behaviors>
                                 <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" LineBreakMode="TailTruncation" />
@@ -106,13 +107,13 @@
                              ActionText="Add exercise"
                              ActionCommand="{Binding AddExerciseCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
-                             IsVisible="{Binding IsEmpty}" />
+                             IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:FloatingActionButton Grid.Row="3" Command="{Binding AddExerciseCommand}">
             <controls:FloatingActionButton.IsVisible>
                 <MultiBinding Converter="{StaticResource AllTrueConverter}">
                     <Binding Path="ActiveWorkout.CanAddItems" />
-                    <Binding Path="IsEmpty" Converter="{StaticResource InvertedBoolConverter}" />
+                    <Binding Path="ListState.HasItems" />
                 </MultiBinding>
             </controls:FloatingActionButton.IsVisible>
         </controls:FloatingActionButton>

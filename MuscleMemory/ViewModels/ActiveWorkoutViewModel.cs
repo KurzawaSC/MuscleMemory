@@ -8,12 +8,13 @@ using MuscleMemory.Diagnostics;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
+    private const char RouteSeparator = '/';
+
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IWorkoutSessionRepository _sessionRepository;
     private readonly ISessionExerciseRepository _sessionExerciseRepository;
@@ -65,7 +66,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
 
     [ObservableProperty]
-    public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
+    public partial string WorkoutTitle { get; set; } = UiText.LoadingText;
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = string.Empty;
@@ -227,7 +228,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         ClearRestState();
-        _haptics.LongPress();
+        _haptics.RestFinished();
         AppLog.LogFailures(_audioCues.PlayBreakEndAsync());
         _errors.ReportFailures(SaveStateAsync());
     }
@@ -642,8 +643,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task<WorkoutSet?> DismissSetActionsAsync()
     {
         var set = ActionSet;
-        CancelSetActions();
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(CancelSetActions);
         return set;
     }
 
@@ -789,7 +789,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsPlanComplete = false;
         Exercises.Clear();
 
-        WorkoutTitle = UiText.LoadingWorkoutTitle;
+        WorkoutTitle = UiText.LoadingText;
         TimerText = ZeroTimeText;
         RestTotalText = string.Empty;
     }
@@ -810,6 +810,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public void TrackCurrentPage(Shell shell)
     {
-        shell.Navigated += (_, _) => IsOnActiveWorkoutPage = shell.CurrentPage is ActiveWorkoutPage;
+        shell.Navigated += (_, e) => IsOnActiveWorkoutPage = IsActiveWorkoutLocation(e.Current);
     }
+
+    private static bool IsActiveWorkoutLocation(ShellNavigationState? state) =>
+        state?.Location.OriginalString.Split(RouteSeparator)[^1] == NavigationRoutes.ActiveWorkout;
 }

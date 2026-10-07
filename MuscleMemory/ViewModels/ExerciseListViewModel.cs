@@ -27,7 +27,7 @@ public partial class ExerciseListViewModel : ObservableObject
         IWorkoutRepository workoutRepository,
         IExerciseCatalogService exerciseCatalog,
         ActiveWorkoutViewModel activeWorkout,
-        AddEditExerciseViewModel exerciseForm,
+        ExerciseFormViewModel exerciseForm,
         ExerciseFilterViewModel filter,
         IHapticService haptics,
         IDialogService dialogs,
@@ -49,8 +49,7 @@ public partial class ExerciseListViewModel : ObservableObject
         dataChanges.Changed += OnDataChanged;
     }
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     [ObservableProperty]
     public partial bool HasNoMatches { get; set; }
@@ -71,7 +70,7 @@ public partial class ExerciseListViewModel : ObservableObject
 
     public ExerciseFilterViewModel Filter { get; }
 
-    public AddEditExerciseViewModel ExerciseForm { get; }
+    public ExerciseFormViewModel ExerciseForm { get; }
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
@@ -110,7 +109,7 @@ public partial class ExerciseListViewModel : ObservableObject
         }
 
         _allExercises = exercises;
-        IsEmpty = _allExercises.Count == 0;
+        ListState.Complete(_allExercises.Count);
         Filter.UpdateFilters(_allExercises);
         ApplyFilter();
     }
@@ -118,7 +117,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private void ApplyFilter()
     {
         Exercises.ReplaceAll(Filter.Apply(_allExercises));
-        HasNoMatches = !IsEmpty && Exercises.Count == 0;
+        HasNoMatches = ListState.HasItems && Exercises.Count == 0;
     }
 
     [RelayCommand]
@@ -181,12 +180,10 @@ public partial class ExerciseListViewModel : ObservableObject
     [RelayCommand]
     private Task ViewActionExerciseHistoryAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionExercise is not { } exercise)
+        if (await DismissActionSheetAsync() is not { } exercise)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {
@@ -219,8 +216,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private async Task<Exercise?> DismissActionSheetAsync()
     {
         var exercise = ActionExercise;
-        IsActionSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(CancelExerciseActions);
         return exercise;
     }
 

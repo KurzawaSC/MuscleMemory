@@ -2,7 +2,7 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
+                             xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              x:Class="MuscleMemory.Views.SettingsPage"
@@ -16,22 +16,22 @@
             <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
                 <Label Style="{StaticResource OverlineLabel}" Text="Appearance" />
                 <Border Style="{StaticResource SettingsGroup}">
-                    <controls:ActionSheetRow Text="App theme"
-                                             Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
-                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                             Command="{Binding OpenThemeSheetCommand}" />
+                    <controls:ActionRow Text="App theme"
+                                        Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
+                                        TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                        Command="{Binding OpenThemeSheetCommand}" />
                 </Border>
 
                 <Label Style="{StaticResource OverlineLabel}" Text="Data" Margin="0,10,0,0" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <VerticalStackLayout>
-                        <controls:ActionSheetRow Text="Export data"
-                                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
-                                                 Command="{Binding ExportDataCommand}" />
+                        <controls:ActionRow Text="Export data"
+                                            TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                            Command="{Binding ExportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
-                        <controls:ActionSheetRow Text="Erase all data"
-                                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
-                                                 Command="{Binding OpenEraseSheetCommand}" />
+                        <controls:ActionRow Text="Erase all data"
+                                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
+                                            Command="{Binding OpenEraseSheetCommand}" />
                     </VerticalStackLayout>
                 </Border>
 
@@ -53,7 +53,7 @@
                       RadioButtonGroup.GroupName="AppTheme"
                       RadioButtonGroup.SelectedValue="{Binding SelectedTheme}">
                     <RadioButton Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.System}"
+                                 Value="{x:Static services:ThemePreference.System}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionSystem}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
@@ -71,7 +71,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.Light}"
+                                 Value="{x:Static services:ThemePreference.Light}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionLight}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
@@ -82,7 +82,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="2"
                                  Style="{StaticResource ThemeCard}"
-                                 Value="{x:Static models:ThemePreference.Dark}"
+                                 Value="{x:Static services:ThemePreference.Dark}"
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">

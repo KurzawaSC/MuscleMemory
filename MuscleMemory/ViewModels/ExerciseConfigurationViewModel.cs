@@ -7,7 +7,7 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ConfigureExerciseViewModel : ObservableObject
+public partial class ExerciseConfigurationViewModel : ObservableObject
 {
     [ObservableProperty]
     public partial string ExerciseName { get; set; } = string.Empty;

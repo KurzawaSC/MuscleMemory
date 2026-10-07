@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Models;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -14,12 +13,6 @@ public partial class SettingsViewModel(
     IErrorHandler errors,
     ActiveWorkoutViewModel activeWorkout) : ObservableObject
 {
-    private readonly IDatabaseMaintenanceService _maintenanceService = maintenanceService;
-    private readonly IThemeService _themeService = themeService;
-    private readonly IDialogService _dialogs = dialogs;
-    private readonly INavigationStackService _navigationStack = navigationStack;
-    private readonly IErrorHandler _errors = errors;
-
     [ObservableProperty]
     public partial ThemePreference SelectedTheme { get; set; } = themeService.SavedPreference;
 
@@ -39,7 +32,7 @@ public partial class SettingsViewModel(
 
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
-        _themeService.ChangeTheme(value);
+        themeService.ChangeTheme(value);
     }
 
     [RelayCommand]
@@ -62,23 +55,22 @@ public partial class SettingsViewModel(
     }
 
     [RelayCommand]
-    private Task EraseDataAsync() => _errors.RunAsync(async () =>
+    private Task EraseDataAsync() => errors.RunAsync(async () =>
     {
-        IsEraseSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(() => IsEraseSheetOpen = false);
 
-        await _maintenanceService.ClearAllDataAsync();
-        _navigationStack.PopAllTabsToRoot();
+        await maintenanceService.ClearAllDataAsync();
+        navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
-        await _dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
+        await dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
     });
 
     [RelayCommand]
-    private Task ExportDataAsync() => _errors.RunAsync(async () =>
+    private Task ExportDataAsync() => errors.RunAsync(async () =>
     {
-        if (await _maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
+        if (await maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
         {
-            await _dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
+            await dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
             return;
         }
         await Share.Default.RequestAsync(new ShareFileRequest

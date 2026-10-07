@@ -1,12 +1,12 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using Plugin.Maui.Audio;
 using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Services;
 using MuscleMemory.ViewModels;
 using MuscleMemory.Views;
+using Plugin.Maui.Audio;
 
 namespace MuscleMemory;
 
@@ -24,11 +24,9 @@ public static class MauiProgram
             })
             .ConfigureMauiHandlers(handlers =>
             {
-#if ANDROID
-                handlers.AddHandler<Shell, InstantTabBarShellRenderer>();
+                handlers.AddHandler<Shell, TabBarShellRenderer>();
                 BorderlessEntryMapping.Register();
                 NumericEntryMapping.Register();
-#endif
             });
 
 #if DEBUG
@@ -42,7 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISessionExerciseRepository, SessionExerciseRepository>();
         builder.Services.AddSingleton<IWorkoutSetRepository, WorkoutSetRepository>();
         builder.Services.AddSingleton<IActiveWorkoutStateRepository, ActiveWorkoutStateRepository>();
-        builder.Services.AddSingleton<IWorkoutHistoryQueryService, WorkoutHistoryQueryService>();
+        builder.Services.AddSingleton<IHistoryQueryService, HistoryQueryService>();
         builder.Services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         builder.Services.AddSingleton<IExerciseCatalogService, ExerciseCatalogService>();
         builder.Services.AddSingleton<IStatusBarService, StatusBarService>();
@@ -62,10 +60,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<WorkoutListPage>();
         builder.Services.AddSingleton<SettingsPage>();
         builder.Services.AddSingleton<ExerciseListViewModel>();
-        builder.Services.AddTransient<AddEditExerciseViewModel>();
+        builder.Services.AddTransient<ExerciseFormViewModel>();
         builder.Services.AddTransient<ExerciseFilterViewModel>();
-        builder.Services.AddTransient<SelectExerciseViewModel>();
-        builder.Services.AddTransient<ConfigureExerciseViewModel>();
+        builder.Services.AddTransient<ExercisePickerViewModel>();
+        builder.Services.AddTransient<ExerciseConfigurationViewModel>();
         builder.Services.AddSingleton<WorkoutListViewModel>();
         builder.Services.AddSingleton<SettingsViewModel>();
         builder.Services.AddTransient<AddEditWorkoutPage>();

@@ -121,13 +121,13 @@
 
                         <controls:InputStepper Title="Weight (kg)"
                                                Text="{Binding SetInput.WeightInput}"
-                                               MaxLength="{x:Static constants:DomainDefaults.MaxWeightInputLength}"
+                                               MaxLength="{x:Static constants:InputLimits.MaxWeightInputLength}"
                                                ErrorText="{Binding SetInput.WeightError}"
                                                DecrementCommand="{Binding SetInput.DecreaseWeightCommand}"
                                                IncrementCommand="{Binding SetInput.IncreaseWeightCommand}" />
                         <controls:InputStepper Title="Reps"
                                                Text="{Binding SetInput.RepsInput}"
-                                               MaxLength="{x:Static constants:DomainDefaults.MaxRepsInputLength}"
+                                               MaxLength="{x:Static constants:InputLimits.MaxRepsInputLength}"
                                                ErrorText="{Binding SetInput.RepsError}"
                                                DecrementCommand="{Binding SetInput.DecreaseRepsCommand}"
                                                IncrementCommand="{Binding SetInput.IncreaseRepsCommand}" />
