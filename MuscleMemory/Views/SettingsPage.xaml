@@ -109,13 +109,13 @@
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
                         <controls:TappableButton Style="{StaticResource SecondaryButton}"
                                                  Text="{x:Static constants:UiText.ButtonCancel}"
-                                                 HeightRequest="46"
+                                                 HeightRequest="{StaticResource MediumButtonHeight}"
                                                  FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                                                  Command="{Binding CloseSheetsCommand}" />
                         <controls:TappableButton Grid.Column="1"
                                                  Style="{StaticResource PrimaryButton}"
                                                  Text="{x:Static constants:UiText.ButtonErase}"
-                                                 HeightRequest="46"
+                                                 HeightRequest="{StaticResource MediumButtonHeight}"
                                                  Shadow="{x:Null}"
                                                  Command="{Binding EraseDataCommand}" />
                     </Grid>
