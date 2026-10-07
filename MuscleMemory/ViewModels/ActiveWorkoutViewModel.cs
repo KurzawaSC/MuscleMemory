@@ -228,7 +228,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         ClearRestState();
-        _haptics.LongPress();
+        _haptics.RestFinished();
         AppLog.LogFailures(_audioCues.PlayBreakEndAsync());
         _errors.ReportFailures(SaveStateAsync());
     }
