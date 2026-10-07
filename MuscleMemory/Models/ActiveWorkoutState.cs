@@ -6,7 +6,7 @@ namespace MuscleMemory.Models;
 public class ActiveWorkoutState
 {
     [PrimaryKey]
-    public int Id { get; set; } = DomainDefaults.ActiveWorkoutStateId;
+    public int Id { get; set; } = DatabaseNames.ActiveWorkoutStateId;
 
     public int SessionId { get; set; }
     public DateTime StartTimeUtc { get; set; }

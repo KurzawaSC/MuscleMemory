@@ -16,7 +16,7 @@ public sealed class ActiveWorkoutStateRepository(DatabaseContext context) : IAct
     private async Task SaveForOpenSessionAsync(ActiveWorkoutState state)
     {
         var connection = await context.GetConnectionAsync();
-        state.Id = DomainDefaults.ActiveWorkoutStateId;
+        state.Id = DatabaseNames.ActiveWorkoutStateId;
         await connection.RunInTransactionAsync(transaction =>
         {
             if (transaction.ExecuteScalar<int>(CountOpenSession, state.SessionId) > 0)
