@@ -85,7 +85,7 @@ public partial class WorkoutListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private Task NavigateToAddWorkout() =>
+    private Task NavigateToAddWorkoutAsync() =>
         _errors.RunAsync(() => _navigation.GoToAsync(NavigationRoutes.AddEditWorkout));
 
     private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true && !ActiveWorkout.IsBusy;
