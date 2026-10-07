@@ -1,4 +1,3 @@
-#if ANDROID
 using System.Windows.Input;
 using PlatformView = Android.Views.View;
 
@@ -48,4 +47,3 @@ public class LongPressBehavior : PlatformBehavior<View, PlatformView>
         }
     }
 }
-#endif
