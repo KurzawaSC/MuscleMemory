@@ -32,6 +32,11 @@ public static class UiText
     public const string ButtonErase = "Erase";
     public const string ButtonAddSetInline = "+ Add set";
     public const string ButtonAddExerciseToSession = "Add exercise to session";
+    public const string ButtonAddInline = "+ Add";
+    public const string ButtonAddExerciseInline = "+ Add exercise";
+    public const string ButtonEdit = "Edit";
+    public const string ButtonSaveWorkout = "Save workout";
+    public const string ButtonRemoveFromWorkout = "Remove from workout";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -66,6 +71,16 @@ public static class UiText
     public const string LabelAppearance = "Appearance";
     public const string LabelData = "Data";
     public const string LabelAppTheme = "App theme";
+    public const string LabelWorkoutName = "Workout name";
+    public const string LabelSets = "Sets";
+    public const string LabelReps = "Reps";
+    public const string LabelRest = "Rest";
+    public const string LabelCustom = "Custom";
+    public const string LabelTargetRpe = "Target RPE";
+    public const string LabelRpeEasy = "easy";
+    public const string LabelRpeMax = "max";
+
+    public const string PlaceholderWorkoutName = "e.g. Monday Eve";
 
     public const string ActionExportData = "Export data";
     public const string ActionEraseAllData = "Erase all data";
@@ -80,8 +95,10 @@ public static class UiText
     public const string EmptyHistoryMessage = "No history yet";
     public const string EmptyExerciseHistory = EmptyHistoryMessage + ". Complete this exercise in a workout to see it here.";
     public const string EmptyWorkoutHistoryDetail = "Finish a session of this workout to see it here.";
+    public const string EmptyWorkoutEditor = "This workout is empty.\nAdd exercises and set their sets.";
 
     public const string HintEditableSession = "This session is editable — you can add missing sets";
+    public const string HintSaveWorkout = "Add a name and at least one exercise";
 
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
@@ -94,6 +111,8 @@ public static class UiText
     public const string RestPresetOther = "Other";
     public const string RestDurationFormat = "{0} s";
     public const string RestPresetFormat = RestDurationFormat;
+    public const string RestChipFormat = RestDurationFormat + " rest";
+    public const string SetsByRepsFormat = "{0}" + WeightRepsSeparator + "{1}";
     public const string CountFormat = "{0} {1}";
     public const string CaptionExercise = "exercise";
     public const string CaptionExercises = "exercises";
