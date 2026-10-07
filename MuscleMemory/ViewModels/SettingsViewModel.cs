@@ -58,8 +58,7 @@ public partial class SettingsViewModel(
     [RelayCommand]
     private Task EraseDataAsync() => errors.RunAsync(async () =>
     {
-        IsEraseSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
+        await SheetTransition.CloseAsync(() => IsEraseSheetOpen = false);
 
         await maintenanceService.ClearAllDataAsync();
         navigationStack.PopAllTabsToRoot();
