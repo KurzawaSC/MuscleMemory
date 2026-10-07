@@ -19,6 +19,7 @@ public static class UiText
 
     public const string ButtonOk = "OK";
     public const string ButtonDelete = "Delete";
+    public const string ButtonRemove = "Remove";
     public const string ButtonCancel = "Cancel";
     public const string ButtonDiscard = "Discard";
     public const string ButtonFinish = "Finish";
@@ -59,7 +60,7 @@ public static class UiText
     public const string DeleteExerciseFromWorkoutsFormat = DeleteConfirmationFormat + " It will be removed from {1} {2}.";
     public const string DeleteWorkoutConfirmationFormat = DeleteConfirmationFormat + " Session history is kept. The plan itself can't be restored.";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove “{0}”?";
-    public const string WorkoutAlreadyActiveFormat = "'{0}' is still in progress. Finish it before starting another workout.";
+    public const string WorkoutAlreadyActiveFormat = "“{0}” is still in progress. Finish it before starting another workout.";
 
     public const string AppName = "Muscle Memory";
 
