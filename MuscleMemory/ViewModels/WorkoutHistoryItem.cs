@@ -5,18 +5,18 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public sealed record HistorySessionItem(
+public sealed record WorkoutHistoryItem(
     WorkoutHistorySession Session,
     string ChipText,
     string DateText,
     string StatsText,
     string VolumeText)
 {
-    public static HistorySessionItem Create(WorkoutHistorySession session, string durationText, bool sharesDate)
+    public static WorkoutHistoryItem Create(WorkoutHistorySession session, string durationText, bool sharesDate)
     {
         var setCount = session.Exercises.Sum(exercise => exercise.Sets.Count);
 
-        return new HistorySessionItem(
+        return new WorkoutHistoryItem(
             session,
             session.LocalStartTime.ToString(sharesDate ? UiText.ShortDateTimeFormat : UiText.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),

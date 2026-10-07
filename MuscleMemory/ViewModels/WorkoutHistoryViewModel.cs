@@ -31,10 +31,10 @@ public partial class WorkoutHistoryViewModel(
 
     public ListLoadState ListState { get; } = new();
 
-    public ObservableCollection<HistorySessionItem> Sessions { get; } = [];
+    public ObservableCollection<WorkoutHistoryItem> Sessions { get; } = [];
 
     [ObservableProperty]
-    public partial HistorySessionItem? SelectedSession { get; set; }
+    public partial WorkoutHistoryItem? SelectedSession { get; set; }
 
     public ExercisePickerViewModel ExercisePicker { get; } = exercisePicker;
 
@@ -127,7 +127,7 @@ public partial class WorkoutHistoryViewModel(
         RestoreSelection(selectedSessionId);
     }
 
-    private void RemoveSession(HistorySessionItem removed)
+    private void RemoveSession(WorkoutHistoryItem removed)
     {
         Sessions.Remove(removed);
 
@@ -137,11 +137,11 @@ public partial class WorkoutHistoryViewModel(
         }
     }
 
-    private List<HistorySessionItem> SessionsOn(DateTime localDate) =>
+    private List<WorkoutHistoryItem> SessionsOn(DateTime localDate) =>
         [.. Sessions.Where(item => item.Session.LocalStartTime.Date == localDate)];
 
-    private HistorySessionItem CreateItem(WorkoutHistorySession session, bool sharesDate) =>
-        HistorySessionItem.Create(session, timer.FormatDuration(session.Duration), sharesDate);
+    private WorkoutHistoryItem CreateItem(WorkoutHistorySession session, bool sharesDate) =>
+        WorkoutHistoryItem.Create(session, timer.FormatDuration(session.Duration), sharesDate);
 
     private void RestoreSelection(int? sessionId)
     {
