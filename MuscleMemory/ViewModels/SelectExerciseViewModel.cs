@@ -22,6 +22,9 @@ public partial class SelectExerciseViewModel : ObservableObject
 
     public ObservableCollection<Exercise> Exercises { get; } = [];
 
+    [ObservableProperty]
+    public partial bool HasNoMatches { get; set; }
+
     public async Task LoadAsync()
     {
         _allExercises = await _exerciseRepository.GetAllAsync();
@@ -30,5 +33,9 @@ public partial class SelectExerciseViewModel : ObservableObject
         ApplyFilter();
     }
 
-    private void ApplyFilter() => Exercises.ReplaceAll(Filter.Apply(_allExercises));
+    private void ApplyFilter()
+    {
+        Exercises.ReplaceAll(Filter.Apply(_allExercises));
+        HasNoMatches = _allExercises.Count > 0 && Exercises.Count == 0;
+    }
 }
