@@ -101,6 +101,7 @@ public static class UiText
 
     public const string ActionExportData = "Export data";
     public const string ActionEraseAllData = "Erase all data";
+    public const string ActionViewHistory = "View history";
 
     public const string PlaceholderSearchExercises = "Search exercises";
     public const string PlaceholderSearch = "Search";
