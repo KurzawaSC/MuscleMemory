@@ -37,9 +37,14 @@ public sealed class WorkoutHistoryQueryService(
         return [.. history.OrderByDescending(entry => entry.DateUtc)];
     }
 
-    public async Task<IReadOnlyList<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId)
+    public async Task<IReadOnlyList<WorkoutHistorySession>> GetWorkoutHistoryAsync(int workoutId) =>
+        await BuildWorkoutHistoryAsync(await sessionRepository.GetCompletedForWorkoutAsync(workoutId));
+
+    public async Task<WorkoutHistorySession?> GetWorkoutHistorySessionAsync(int sessionId) =>
+        (await BuildWorkoutHistoryAsync(await sessionRepository.GetCompletedByIdsAsync([sessionId]))).SingleOrDefault();
+
+    private async Task<List<WorkoutHistorySession>> BuildWorkoutHistoryAsync(List<WorkoutSession> sessions)
     {
-        var sessions = await sessionRepository.GetCompletedForWorkoutAsync(workoutId);
         var performances = await sessionExerciseRepository.GetForSessionsAsync([.. sessions.Select(session => session.Id)]);
         var setsByPerformance = await GetSetsByPerformanceAsync(performances);
 
