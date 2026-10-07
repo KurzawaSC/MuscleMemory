@@ -89,8 +89,12 @@ public static class UiText
     public const string LabelLoggedSets = "Logged sets";
     public const string LabelVolume = "Volume";
     public const string LabelWorkoutComplete = "Workout complete";
+    public const string LabelName = "Name";
+    public const string LabelMuscleGroup = "Muscle group";
+    public const string LabelEquipment = "Equipment";
 
     public const string PlaceholderWorkoutName = "e.g. Monday Eve";
+    public const string PlaceholderExerciseName = "e.g. Incline Bench Press";
 
     public const string ActionExportData = "Export data";
     public const string ActionEraseAllData = "Erase all data";
@@ -109,6 +113,7 @@ public static class UiText
 
     public const string HintEditableSession = "This session is editable — you can add missing sets";
     public const string HintSaveWorkout = "Add a name and at least one exercise";
+    public const string HintExerciseForm = "Name is required, everything else is optional";
     public const string HintFirstTimeExercise = "First time doing this exercise. Enter weight and reps — next time we will prefill your last session.";
     public const string HintPrefilledFromLastSession = "Weight and reps are prefilled from your last session.";
 
