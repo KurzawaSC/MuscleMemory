@@ -1,8 +1,8 @@
 using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 using MuscleMemory.ViewModels;
+using MuscleMemory.Views;
 
 namespace MuscleMemory;
 

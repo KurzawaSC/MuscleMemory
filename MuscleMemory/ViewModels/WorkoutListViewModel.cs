@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
@@ -5,14 +6,13 @@ using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using System.Collections.ObjectModel;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class WorkoutListViewModel : ObservableObject
 {
     private readonly IWorkoutRepository _workoutRepository;
-    private readonly IHapticService _hapticService;
+    private readonly IHapticService _haptics;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
@@ -21,14 +21,14 @@ public partial class WorkoutListViewModel : ObservableObject
     public WorkoutListViewModel(
         IWorkoutRepository workoutRepository,
         ActiveWorkoutViewModel activeWorkout,
-        IHapticService hapticService,
+        IHapticService haptics,
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
         IErrorHandler errors)
     {
         _workoutRepository = workoutRepository;
-        _hapticService = hapticService;
+        _haptics = haptics;
         _dialogs = dialogs;
         _navigation = navigation;
         _errors = errors;
@@ -108,7 +108,7 @@ public partial class WorkoutListViewModel : ObservableObject
 
     private async Task OfferToResumeActiveWorkoutAsync()
     {
-        bool resume = await _dialogs.ConfirmAsync(
+        var resume = await _dialogs.ConfirmAsync(
             UiText.TitleHoldOn,
             string.Format(UiText.WorkoutAlreadyActiveFormat, ActiveWorkout.WorkoutTitle),
             UiText.ButtonResume,
@@ -130,7 +130,7 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private void LongPressWorkout(WorkoutListItem item)
     {
-        _hapticService.Click();
+        _haptics.Click();
         ShowWorkoutActions(item);
     }
 
@@ -186,7 +186,7 @@ public partial class WorkoutListViewModel : ObservableObject
         IsActionSheetOpen = false;
         await Task.Delay(UiTiming.SheetClose);
 
-        bool answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
         {
             await _workoutRepository.DeleteAsync(item.Workout.Id);

@@ -38,7 +38,7 @@ public sealed partial class SetInputViewModel : ObservableObject
 
     public bool TryRead([NotNullWhen(true)] out SetValues? values)
     {
-        if (TryReadWeight(out double weight) && TryReadReps(out int reps))
+        if (TryReadWeight(out var weight) && TryReadReps(out var reps))
         {
             values = new SetValues(weight, reps);
             return true;
@@ -78,15 +78,15 @@ public sealed partial class SetInputViewModel : ObservableObject
     private void StepReps(int step) =>
         RepsInput = FormatReps(Math.Clamp(ParseRepsOrZero() + step, DomainDefaults.MinReps, DomainDefaults.MaxReps));
 
-    private double ParseWeightOrZero() => TryParseWeight(out double weight) ? weight : 0;
+    private double ParseWeightOrZero() => TryParseWeight(out var weight) ? weight : 0;
 
-    private int ParseRepsOrZero() => TryParseReps(out int reps) ? reps : 0;
+    private int ParseRepsOrZero() => TryParseReps(out var reps) ? reps : 0;
 
     private bool TryReadWeight(out double weight) =>
         TryParseWeight(out weight) && IsWithinWeightRange(weight) && IsWeightPrecise(weight);
 
     private string DescribeWeightError() =>
-        TryParseWeight(out double weight) && IsWithinWeightRange(weight) ? WeightPrecisionError : WeightRangeError;
+        TryParseWeight(out var weight) && IsWithinWeightRange(weight) ? WeightPrecisionError : WeightRangeError;
 
     private bool TryReadReps(out int reps) =>
         TryParseReps(out reps) && reps is >= DomainDefaults.MinReps and <= DomainDefaults.MaxReps;
