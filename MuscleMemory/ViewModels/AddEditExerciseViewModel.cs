@@ -8,8 +8,6 @@ namespace MuscleMemory.ViewModels;
 
 public partial class AddEditExerciseViewModel(IExerciseRepository exerciseRepository, IExerciseCatalogService exerciseCatalog) : ObservableObject
 {
-    private readonly IExerciseRepository _exerciseRepository = exerciseRepository;
-    private readonly IExerciseCatalogService _exerciseCatalog = exerciseCatalog;
     private Exercise? _existingExercise;
 
     [ObservableProperty]
@@ -73,18 +71,18 @@ public partial class AddEditExerciseViewModel(IExerciseRepository exerciseReposi
         if (_existingExercise is { } existingExercise)
         {
             var updatedExercise = BuildExercise(existingExercise.Id);
-            await _exerciseCatalog.UpdateAsync(updatedExercise);
+            await exerciseCatalog.UpdateAsync(updatedExercise);
             return updatedExercise;
         }
 
         var newExercise = BuildExercise();
-        await _exerciseCatalog.AddAsync(newExercise);
+        await exerciseCatalog.AddAsync(newExercise);
         return newExercise;
     }
 
     private async Task<IReadOnlySet<string>> LoadTakenNamesAsync()
     {
-        var exercises = await _exerciseRepository.GetAllAsync();
+        var exercises = await exerciseRepository.GetAllAsync();
         return exercises
             .Where(exercise => exercise.Id != _existingExercise?.Id)
             .Select(exercise => NormalizeName(exercise.Name))
