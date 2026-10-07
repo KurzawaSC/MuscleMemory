@@ -56,6 +56,7 @@ public static class UiText
     public const string HeaderEditExercise = "Edit exercise";
     public const string HeaderNewWorkout = "New workout";
     public const string HeaderEditWorkout = "Edit workout";
+    public const string HeaderExerciseHistory = "Exercise history";
 
     public const string SubtitleExercises = "Build your movement library";
     public const string SubtitleWorkouts = "Your training plans";
@@ -74,6 +75,8 @@ public static class UiText
     public const string EmptyNoMatchingExercises = "No exercises match your search";
     public const string EmptyWorkoutsMessage = "No workouts yet";
     public const string EmptyWorkoutsDetail = "Build a workout from your exercises, set sets and rest — starting takes one tap.";
+    public const string EmptyHistoryMessage = "No history yet";
+    public const string EmptyExerciseHistory = EmptyHistoryMessage + ". Complete this exercise in a workout to see it here.";
 
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
@@ -97,6 +100,9 @@ public static class UiText
     public const string CaptionSessions = "sessions";
     public const string SessionCountFormat = "{0} {1} · newest first";
     public const string ListSeparator = " · ";
+    public const string WeightRepsSeparator = " × ";
+    public const string KilogramSuffix = " kg";
+    public const string VolumeSuffix = " volume";
 
     public const string LoadingText = "Loading...";
     public const string FirstTimePerformingExercise = "First time";
