@@ -185,7 +185,7 @@ public partial class WorkoutListViewModel : ObservableObject
         }
 
         IsActionSheetOpen = false;
-        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        await Task.Delay(UiTiming.SheetClose);
 
         bool answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)

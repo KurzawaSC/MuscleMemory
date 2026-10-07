@@ -221,7 +221,7 @@ public partial class ExerciseListViewModel : ObservableObject
     {
         var exercise = ActionExercise;
         IsActionSheetOpen = false;
-        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        await Task.Delay(UiTiming.SheetClose);
         return exercise;
     }
 

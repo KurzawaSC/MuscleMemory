@@ -264,7 +264,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         await ShowExercisesAsync(session.Exercises, restoreIndex: false);
 
-        await Task.Delay(UiTiming.NavigationAnimationMilliseconds);
+        await Task.Delay(UiTiming.NavigationAnimation);
         IsWorkoutActive = true;
         await SaveStateAsync();
     }
@@ -472,7 +472,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         if (HasJustMetPlan() && HasNextExercise)
         {
-            await Task.Delay(UiTiming.ExerciseAdvanceDelayMilliseconds);
+            await Task.Delay(UiTiming.ExerciseAdvanceDelay);
             await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
             return;
         }
@@ -495,7 +495,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
         RestTimerText = _timer.FormatDuration(remaining);
-        IsRestEnding = remaining.TotalSeconds <= UiTiming.RestEndingPulseSeconds;
+        IsRestEnding = remaining <= UiTiming.RestEndingPulse;
         RestProgress = _restDurationSeconds > 0
             ? Math.Clamp(remaining.TotalSeconds / _restDurationSeconds, 0, 1)
             : 0;
@@ -626,7 +626,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         var set = ActionSet;
         CancelSetActions();
-        await Task.Delay(TimeSpan.FromMilliseconds(UiTiming.SheetCloseMilliseconds));
+        await Task.Delay(UiTiming.SheetClose);
         return set;
     }
 
