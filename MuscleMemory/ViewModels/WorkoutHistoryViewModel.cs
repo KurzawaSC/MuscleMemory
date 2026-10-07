@@ -7,6 +7,7 @@ using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Services;
 using MuscleMemory.Models;
+using MuscleMemory.Threading;
 
 namespace MuscleMemory.ViewModels;
 
@@ -27,8 +28,8 @@ public partial class WorkoutHistoryViewModel(
     private readonly IWorkoutTimerService _timer = timer;
     private readonly INavigationService _navigation = navigation;
     private readonly IErrorHandler _errors = errors;
+    private readonly SequentialTaskQueue _historyUpdates = new();
     private int _workoutId;
-    private int _latestLoad;
     private WorkoutSet? _setBeingEdited;
     private WorkoutHistoryExercise? _exerciseReceivingSet;
 
@@ -92,30 +93,72 @@ public partial class WorkoutHistoryViewModel(
         if (query.TryGetValue(QueryKeys.WorkoutId, out var id) && id is int workoutId && workoutId > 0)
         {
             _workoutId = workoutId;
-            _errors.ReportFailures(LoadHistoryAsync());
+            _errors.ReportFailures(_historyUpdates.EnqueueAsync(LoadHistoryAsync));
         }
     }
 
     private async Task LoadHistoryAsync()
     {
-        var load = ++_latestLoad;
         var history = await _historyQueryService.GetWorkoutHistoryAsync(_workoutId);
-        if (load != _latestLoad)
+        var selectedSessionId = SelectedSession?.Session.SessionId;
+
+        var sharedDates = FindSharedDates(history);
+        Sessions.ReplaceAll(history.Select(session => CreateItem(session, sharedDates.Contains(session.LocalStartTime.Date))));
+        RestoreSelection(selectedSessionId);
+    }
+
+    private static HashSet<DateTime> FindSharedDates(IEnumerable<WorkoutHistorySession> sessions) =>
+        [.. sessions.CountBy(session => session.LocalStartTime.Date).Where(day => day.Value > 1).Select(day => day.Key)];
+
+    private Task RefreshSessionAsync(int sessionId) =>
+        _historyUpdates.EnqueueAsync(() => ReloadSessionAsync(sessionId));
+
+    private async Task ReloadSessionAsync(int sessionId)
+    {
+        var session = await _historyQueryService.GetWorkoutHistorySessionAsync(sessionId);
+        if (Sessions.FirstOrDefault(item => item.Session.SessionId == sessionId) is not { } current)
         {
             return;
         }
 
         var selectedSessionId = SelectedSession?.Session.SessionId;
 
-        var sharedDates = FindSharedDates(history);
-        Sessions.ReplaceAll(history.Select(session => HistorySessionItem.Create(
-            session, _timer.FormatElapsed(session.Duration), sharedDates.Contains(session.LocalStartTime.Date))));
-        SelectedSession = Sessions.FirstOrDefault(item => item.Session.SessionId == selectedSessionId) ?? Sessions.FirstOrDefault();
+        if (session is null)
+        {
+            RemoveSession(current);
+        }
+        else
+        {
+            Sessions[Sessions.IndexOf(current)] = CreateItem(session, SessionsOn(session.LocalStartTime.Date).Count > 1);
+        }
+
+        RestoreSelection(selectedSessionId);
+    }
+
+    private void RemoveSession(HistorySessionItem removed)
+    {
+        Sessions.Remove(removed);
+
+        if (SessionsOn(removed.Session.LocalStartTime.Date) is [var formerSibling])
+        {
+            Sessions[Sessions.IndexOf(formerSibling)] = CreateItem(formerSibling.Session, sharesDate: false);
+        }
+    }
+
+    private List<HistorySessionItem> SessionsOn(DateTime localDate) =>
+        [.. Sessions.Where(item => item.Session.LocalStartTime.Date == localDate)];
+
+    private HistorySessionItem CreateItem(WorkoutHistorySession session, bool sharesDate) =>
+        HistorySessionItem.Create(session, _timer.FormatElapsed(session.Duration), sharesDate);
+
+    private void RestoreSelection(int? sessionId)
+    {
+        SelectedSession = Sessions.FirstOrDefault(item => item.Session.SessionId == sessionId) ?? Sessions.FirstOrDefault();
         IsEmpty = Sessions.Count == 0;
     }
 
-    private static HashSet<DateTime> FindSharedDates(IEnumerable<WorkoutHistorySession> sessions) =>
-        [.. sessions.CountBy(session => session.LocalStartTime.Date).Where(day => day.Value > 1).Select(day => day.Key)];
+    private int SessionIdOf(int sessionExerciseId) =>
+        Sessions.First(item => item.Session.Exercises.Any(exercise => exercise.SessionExerciseId == sessionExerciseId)).Session.SessionId;
 
     [RelayCommand]
     private Task NavigateBackAsync() => _errors.RunAsync(async () =>
@@ -173,8 +216,9 @@ public partial class WorkoutHistoryViewModel(
 
         if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel)) return;
 
+        var sessionId = SessionIdOf(set.SessionExerciseId);
         await _setRepository.DeleteAsync(set.Id);
-        await LoadHistoryAsync();
+        await RefreshSessionAsync(sessionId);
     });
 
     private async Task<WorkoutSet?> DismissSetActionsAsync()
@@ -221,28 +265,27 @@ public partial class WorkoutHistoryViewModel(
     [RelayCommand]
     private Task SaveSetEditorAsync() => _errors.RunAsync(async () =>
     {
-        if (!SetEditor.TryRead(out var values))
+        if (!SetEditor.TryRead(out var values)
+            || (_setBeingEdited?.SessionExerciseId ?? _exerciseReceivingSet?.SessionExerciseId) is not { } sessionExerciseId)
         {
             return;
         }
 
-        if (_setBeingEdited is { } editedSet)
-        {
-            await _setRepository.UpdateAsync(editedSet.Id, values.Weight, values.Reps);
-        }
-        else if (_exerciseReceivingSet is { } receivingExercise)
-        {
-            await _setRepository.AddAsync(new WorkoutSet
+        var sessionId = SessionIdOf(sessionExerciseId);
+        await SaveEditorSetAsync(sessionExerciseId, values);
+        CloseSetEditor();
+        await RefreshSessionAsync(sessionId);
+    });
+
+    private Task SaveEditorSetAsync(int sessionExerciseId, SetValues values) =>
+        _setBeingEdited is { } editedSet
+            ? _setRepository.UpdateAsync(editedSet.Id, values.Weight, values.Reps)
+            : _setRepository.AddAsync(new WorkoutSet
             {
-                SessionExerciseId = receivingExercise.SessionExerciseId,
+                SessionExerciseId = sessionExerciseId,
                 Weight = values.Weight,
                 Reps = values.Reps
             });
-        }
-
-        CloseSetEditor();
-        await LoadHistoryAsync();
-    });
 
     [RelayCommand]
     private Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise) => _errors.RunAsync(async () =>
@@ -251,8 +294,9 @@ public partial class WorkoutHistoryViewModel(
         bool confirm = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
         if (!confirm) return;
 
+        var sessionId = SessionIdOf(loggedExercise.SessionExerciseId);
         await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
-        await LoadHistoryAsync();
+        await RefreshSessionAsync(sessionId);
     });
 
     [RelayCommand]
@@ -289,7 +333,7 @@ public partial class WorkoutHistoryViewModel(
             TargetRPE = DomainDefaults.TargetRPE
         });
 
-        await LoadHistoryAsync();
+        await RefreshSessionAsync(selected.Session.SessionId);
     });
 
     private static Task WaitForSheetToCloseAsync() =>
