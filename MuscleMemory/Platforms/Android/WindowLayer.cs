@@ -6,7 +6,7 @@ using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
 using PlatformView = Android.Views.View;
 
-namespace MuscleMemory.Controls;
+namespace MuscleMemory;
 
 public static class WindowLayer
 {
