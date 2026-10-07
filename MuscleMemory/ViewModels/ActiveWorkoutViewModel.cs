@@ -156,7 +156,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial bool IsSetEditorOpen { get; set; }
 
-    public string CurrentVolumeText => string.Format(UiText.VolumeFormat, CurrentSets.Sum(set => set.Weight * set.Reps));
+    public string CurrentVolumeText => string.Format(UiText.VolumeFormat, CurrentSets.TotalVolume());
 
     [ObservableProperty]
     public partial bool IsSetActionSheetOpen { get; set; }

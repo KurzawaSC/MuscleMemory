@@ -1,4 +1,5 @@
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
@@ -67,7 +68,7 @@ public sealed class WorkoutHistoryQueryService(
                 session.Id,
                 session.StartTimeUtc,
                 endTimeUtc,
-                loggedExercises.Sum(exercise => exercise.Sets.Sum(set => set.Weight * set.Reps)),
+                loggedExercises.Sum(exercise => exercise.Sets.TotalVolume()),
                 loggedExercises));
         }
 
