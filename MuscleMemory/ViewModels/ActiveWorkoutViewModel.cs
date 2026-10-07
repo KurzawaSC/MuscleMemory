@@ -8,12 +8,13 @@ using MuscleMemory.Diagnostics;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Services;
-using MuscleMemory.Views;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
 {
+    private const char RouteSeparator = '/';
+
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IWorkoutSessionRepository _sessionRepository;
     private readonly ISessionExerciseRepository _sessionExerciseRepository;
@@ -809,6 +810,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public void TrackCurrentPage(Shell shell)
     {
-        shell.Navigated += (_, _) => IsOnActiveWorkoutPage = shell.CurrentPage is ActiveWorkoutPage;
+        shell.Navigated += (_, e) => IsOnActiveWorkoutPage = IsActiveWorkoutLocation(e.Current);
     }
+
+    private static bool IsActiveWorkoutLocation(ShellNavigationState? state) =>
+        state?.Location.OriginalString.Split(RouteSeparator)[^1] == NavigationRoutes.ActiveWorkout;
 }
