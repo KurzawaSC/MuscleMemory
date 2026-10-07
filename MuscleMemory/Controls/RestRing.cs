@@ -1,10 +1,12 @@
+using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
+
 namespace MuscleMemory.Controls;
 
 public class RestRing : GraphicsView
 {
     private const float DefaultThickness = 12f;
     private const string AnimationName = nameof(RestRing);
-    private const uint TickMilliseconds = 1000;
     private const uint JumpMilliseconds = 250;
     private const double TickStepLimit = 0.2;
 
@@ -64,7 +66,7 @@ public class RestRing : GraphicsView
         }, DisplayProgress, to);
 
         animation.Commit(this, AnimationName,
-            length: isTick ? TickMilliseconds : JumpMilliseconds,
+            length: isTick ? UiTiming.TimerTick.ToAnimationLength() : JumpMilliseconds,
             easing: isTick ? Easing.Linear : Easing.CubicOut);
     }
 }
