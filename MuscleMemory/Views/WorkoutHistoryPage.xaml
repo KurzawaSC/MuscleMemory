@@ -6,6 +6,7 @@
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
                              x:DataType="viewmodels:WorkoutHistoryViewModel"
                              BackCommand="{Binding NavigateBackCommand}">
@@ -57,7 +58,7 @@
         </CollectionView>
 
         <ScrollView Grid.Row="2" IsVisible="{Binding ListState.HasItems}">
-            <VerticalStackLayout Spacing="12" Padding="20,14,20,14">
+            <VerticalStackLayout Spacing="12" Padding="{markup:Gutter Top=14, Bottom=14}">
                 <Border Style="{StaticResource SurfaceCard}">
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Spacing="3" VerticalOptions="Center">
@@ -137,7 +138,7 @@
         <controls:TappableButton Grid.Row="3"
                                  Style="{StaticResource PrimaryButton}"
                                  Text="{x:Static constants:UiText.ButtonAddExerciseToSession}"
-                                 Margin="20,0,20,14"
+                                 Margin="{markup:Gutter Bottom=14}"
                                  Command="{Binding AddExerciseCommand}"
                                  IsVisible="{Binding ListState.HasItems}" />
 

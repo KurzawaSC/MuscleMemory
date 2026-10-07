@@ -5,6 +5,7 @@
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Class="MuscleMemory.Views.SettingsPage"
                              x:DataType="viewmodels:SettingsViewModel"
                              BackCommand="{Binding CloseSheetsCommand}">
@@ -13,7 +14,7 @@
         <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderSettings}" />
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
+            <VerticalStackLayout Padding="{markup:Gutter Top=12, Bottom=20}" Spacing="8">
                 <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelAppearance}" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <controls:ActionRow Text="{x:Static constants:UiText.LabelAppTheme}"

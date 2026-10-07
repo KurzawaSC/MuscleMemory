@@ -5,12 +5,13 @@
                              xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
                              x:DataType="viewmodels:ExerciseHistoryViewModel"
                              BackCommand="{Binding GoBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *">
-        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6" Padding="14,4,20,0">
+        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6" Padding="{markup:Gutter Start={x:Static constants:Spacing.GlyphButtonGutter}, Top=4}">
             <controls:GlyphButton Glyph="‹"
                                   Style="{StaticResource NavigationGlyphButton}"
                                   Command="{Binding GoBackCommand}" />
@@ -28,9 +29,9 @@
                              Message="{x:Static constants:UiText.EmptyExerciseHistory}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
-        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Margin="20,8,20,0">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Margin="{markup:Gutter Top=8}">
             <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
             <CollectionView.Footer>
                 <BoxView HeightRequest="20" Color="Transparent" />

@@ -5,8 +5,8 @@
     xmlns:controls="clr-namespace:MuscleMemory.Controls"
     xmlns:constants="clr-namespace:MuscleMemory.Constants">
 
-    <Thickness x:Key="ScreenPadding">20</Thickness>
     <x:Double x:Key="CardSpacing">12</x:Double>
+    <x:Double x:Key="ListFooterSpacing">100</x:Double>
     <x:Double x:Key="TouchTarget">48</x:Double>
     <x:Double x:Key="LargeButtonHeight">54</x:Double>
     <x:Double x:Key="MediumButtonHeight">48</x:Double>

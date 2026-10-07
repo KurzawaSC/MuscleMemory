@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Controls.BottomSheet"
              x:Name="Root"
              x:DataType="controls:BottomSheet"
@@ -19,7 +20,7 @@
 
             <Border x:Name="Sheet"
                     VerticalOptions="End"
-                    Padding="20,12,20,24"
+                    Padding="{markup:Gutter Top=12, Bottom=24}"
                     StrokeThickness="0"
                     BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                     Shadow="{StaticResource SheetShadow}">
