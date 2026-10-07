@@ -180,12 +180,10 @@ public partial class ExerciseListViewModel : ObservableObject
     [RelayCommand]
     private Task ViewActionExerciseHistoryAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionExercise is not { } exercise)
+        if (await DismissActionSheetAsync() is not { } exercise)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {

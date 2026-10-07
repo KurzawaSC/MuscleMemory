@@ -142,12 +142,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task EditActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {
@@ -159,12 +157,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task ViewActionWorkoutHistoryAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {
