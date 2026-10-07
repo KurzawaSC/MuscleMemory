@@ -30,6 +30,8 @@ public static class UiText
     public const string ButtonStart = "Start";
     public const string ButtonCreateWorkout = "Create workout";
     public const string ButtonErase = "Erase";
+    public const string ButtonAddSetInline = "+ Add set";
+    public const string ButtonAddExerciseToSession = "Add exercise to session";
 
     public const string BodyDeleteSetConfirmation = "Are you sure you want to delete this set?";
     public const string BodyFinishWorkoutConfirmation = "Are you sure you want to finish and save this workout?";
@@ -77,6 +79,9 @@ public static class UiText
     public const string EmptyWorkoutsDetail = "Build a workout from your exercises, set sets and rest — starting takes one tap.";
     public const string EmptyHistoryMessage = "No history yet";
     public const string EmptyExerciseHistory = EmptyHistoryMessage + ". Complete this exercise in a workout to see it here.";
+    public const string EmptyWorkoutHistoryDetail = "Finish a session of this workout to see it here.";
+
+    public const string HintEditableSession = "This session is editable — you can add missing sets";
 
     public const string ThemeOptionSystem = "System theme";
     public const string ThemeOptionLight = "Light theme";
@@ -98,11 +103,13 @@ public static class UiText
     public const string CaptionWorkouts = "workouts";
     public const string CaptionSession = "session";
     public const string CaptionSessions = "sessions";
+    public const string CaptionVolume = "volume";
     public const string SessionCountFormat = "{0} {1} · newest first";
     public const string ListSeparator = " · ";
     public const string WeightRepsSeparator = " × ";
     public const string KilogramSuffix = " kg";
-    public const string VolumeSuffix = " volume";
+    public const string VolumeSuffix = " " + CaptionVolume;
+    public const string WorkoutHistoryTitleFormat = "{0}" + ListSeparator + "history";
 
     public const string LoadingText = "Loading...";
     public const string FirstTimePerformingExercise = "First time";
