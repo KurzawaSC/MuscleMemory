@@ -13,9 +13,6 @@ public partial class ExerciseHistoryViewModel(
     INavigationService navigation,
     IErrorHandler errors) : ObservableObject, IQueryAttributable
 {
-    private readonly IWorkoutHistoryQueryService _historyQueryService = historyQueryService;
-    private readonly INavigationService _navigation = navigation;
-    private readonly IErrorHandler _errors = errors;
     private int _exerciseId;
 
     [ObservableProperty]
@@ -38,13 +35,13 @@ public partial class ExerciseHistoryViewModel(
         if (query.TryGetValue(QueryKeys.ExerciseId, out var id) && id is int exerciseId && exerciseId > 0)
         {
             _exerciseId = exerciseId;
-            _errors.ReportFailures(LoadHistoryAsync());
+            errors.ReportFailures(LoadHistoryAsync());
         }
     }
 
     private async Task LoadHistoryAsync()
     {
-        var entries = await _historyQueryService.GetExerciseHistoryAsync(_exerciseId);
+        var entries = await historyQueryService.GetExerciseHistoryAsync(_exerciseId);
         History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
         ListState.Complete(History.Count);
         SessionCountText = ListState.IsEmpty ? string.Empty : FormatSessionCount(History.Count);
@@ -55,5 +52,5 @@ public partial class ExerciseHistoryViewModel(
 
     [RelayCommand]
     private Task GoBackAsync() =>
-        _errors.RunAsync(() => _navigation.GoToAsync(NavigationRoutes.GoBack));
+        errors.RunAsync(() => navigation.GoToAsync(NavigationRoutes.GoBack));
 }
