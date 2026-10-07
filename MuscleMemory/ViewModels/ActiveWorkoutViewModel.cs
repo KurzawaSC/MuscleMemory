@@ -62,14 +62,16 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private bool IsIdle => !IsBusy;
 
+    private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
+
     [ObservableProperty]
     public partial string WorkoutTitle { get; set; } = UiText.LoadingWorkoutTitle;
 
     [ObservableProperty]
-    public partial string TimerText { get; set; } = "00:00";
+    public partial string TimerText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string TotalTimeText { get; set; } = "00:00";
+    public partial string TotalTimeText { get; set; } = string.Empty;
 
     public ObservableCollection<SessionExercise> Exercises { get; } = [];
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
@@ -138,7 +140,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool HasLastSession { get; set; }
 
     [ObservableProperty]
-    public partial string RestTimerText { get; set; } = "00:00";
+    public partial string RestTimerText { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string RestTotalText { get; set; } = string.Empty;
@@ -199,6 +201,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _haptics = haptics;
         _errors = errors;
 
+        TimerText = ZeroTimeText;
+        TotalTimeText = ZeroTimeText;
+        RestTimerText = ZeroTimeText;
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
     }
@@ -538,7 +543,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _restDurationSeconds = 0;
         RestProgress = 0;
         IsRestEnding = false;
-        RestTimerText = _timer.FormatDuration(TimeSpan.Zero);
+        RestTimerText = ZeroTimeText;
     }
 
     [RelayCommand]
@@ -753,7 +758,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalVolume = 0;
         TotalSets = 0;
         SummaryDateText = string.Empty;
-        TotalTimeText = _timer.FormatDuration(TimeSpan.Zero);
+        TotalTimeText = ZeroTimeText;
     }
 
     private void ResetDisplayState()
@@ -769,7 +774,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         Exercises.Clear();
 
         WorkoutTitle = UiText.LoadingWorkoutTitle;
-        TimerText = _timer.FormatDuration(TimeSpan.Zero);
+        TimerText = ZeroTimeText;
         RestTotalText = string.Empty;
     }
 
