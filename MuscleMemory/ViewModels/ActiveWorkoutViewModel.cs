@@ -494,7 +494,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private void UpdateRestCountdown()
     {
         var remaining = _timer.RemainingUntil(_breakEndTimeUtc);
-        RestTimerText = _timer.FormatCountdown(remaining);
+        RestTimerText = _timer.FormatDuration(remaining);
         IsRestEnding = remaining.TotalSeconds <= UiTiming.RestEndingPulseSeconds;
         RestProgress = _restDurationSeconds > 0
             ? Math.Clamp(remaining.TotalSeconds / _restDurationSeconds, 0, 1)
@@ -538,7 +538,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _restDurationSeconds = 0;
         RestProgress = 0;
         IsRestEnding = false;
-        RestTimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        RestTimerText = _timer.FormatDuration(TimeSpan.Zero);
     }
 
     [RelayCommand]
@@ -753,7 +753,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         TotalVolume = 0;
         TotalSets = 0;
         SummaryDateText = string.Empty;
-        TotalTimeText = _timer.FormatElapsed(TimeSpan.Zero);
+        TotalTimeText = _timer.FormatDuration(TimeSpan.Zero);
     }
 
     private void ResetDisplayState()
@@ -769,7 +769,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         Exercises.Clear();
 
         WorkoutTitle = UiText.LoadingWorkoutTitle;
-        TimerText = _timer.FormatElapsed(TimeSpan.Zero);
+        TimerText = _timer.FormatDuration(TimeSpan.Zero);
         RestTotalText = string.Empty;
     }
 
