@@ -1,4 +1,4 @@
-namespace MuscleMemory.Models;
+namespace MuscleMemory.Services;
 
 public enum ThemePreference
 {

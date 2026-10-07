@@ -4,5 +4,5 @@ public interface IHapticService
 {
     void Click();
 
-    void LongPress();
+    void RestFinished();
 }

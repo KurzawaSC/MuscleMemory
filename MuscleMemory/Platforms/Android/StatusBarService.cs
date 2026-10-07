@@ -1,19 +1,18 @@
-#if ANDROID
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
-#endif
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
-#if ANDROID
+using MuscleMemory.Services;
 using View = Android.Views.View;
-#endif
 
-namespace MuscleMemory.Services;
+namespace MuscleMemory;
 
 public sealed class StatusBarService : IStatusBarService
 {
+    private const string ScrimTag = "MuscleMemoryStatusBarScrim";
+
     public void ApplyTheme()
     {
         if (ResolveStatusBarBackground() is not { } background)
@@ -42,9 +41,6 @@ public sealed class StatusBarService : IStatusBarService
 
         return application.Resources.TryGetValue(role, out var color) ? color as Color : null;
     }
-
-#if ANDROID
-    private const string ScrimTag = "MuscleMemoryStatusBarScrim";
 
     private static void Paint(Color background, bool useDarkIcons)
     {
@@ -103,5 +99,4 @@ public sealed class StatusBarService : IStatusBarService
             return insets ?? WindowInsetsCompat.Consumed!;
         }
     }
-#endif
 }

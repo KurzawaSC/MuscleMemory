@@ -11,8 +11,6 @@ public static class DomainDefaults
     public const int MinReps = 1;
     public const int MaxReps = 100;
     public const int MaxNameLength = 50;
-    public const int MaxWeightInputLength = 6;
-    public const int MaxRepsInputLength = 3;
     public const int MinBreakTimeInSeconds = 0;
     public const int MaxBreakTimeInSeconds = 600;
     public const int BreakTimeStepInSeconds = 15;
@@ -25,5 +23,4 @@ public static class DomainDefaults
     public static readonly int[] BreakTimePresetsInSeconds = [60, 90, 120];
     public const int MinTargetRPE = 1;
     public const int MaxTargetRPE = 10;
-    public const int ActiveWorkoutStateId = 1;
 }

@@ -36,8 +36,7 @@ public partial class WorkoutListViewModel : ObservableObject
         dataChanges.Changed += OnDataChanged;
     }
 
-    [ObservableProperty]
-    public partial bool IsEmpty { get; set; } = true;
+    public ListLoadState ListState { get; } = new();
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
@@ -81,7 +80,7 @@ public partial class WorkoutListViewModel : ObservableObject
 
         Workouts.ReplaceAll(workouts.Select((workout, index) =>
             WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id], isFeatured: index == 0)));
-        IsEmpty = Workouts.Count == 0;
+        ListState.Complete(Workouts.Count);
     }
 
     [RelayCommand]
@@ -143,12 +142,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task EditActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {
@@ -160,12 +157,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task ViewActionWorkoutHistoryAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
 
         var navigationParameter = new Dictionary<string, object>
         {
@@ -178,13 +173,10 @@ public partial class WorkoutListViewModel : ObservableObject
     [RelayCommand]
     private Task DeleteActionWorkoutAsync() => _errors.RunAsync(async () =>
     {
-        if (ActionWorkout is not { } item)
+        if (await DismissActionSheetAsync() is not { } item)
         {
             return;
         }
-
-        IsActionSheetOpen = false;
-        await Task.Delay(UiTiming.SheetClose);
 
         var answer = await _dialogs.ConfirmAsync(string.Format(UiText.DeleteWorkoutTitleFormat, item.Workout.Name), UiText.BodyDeleteWorkout, UiText.ButtonDelete, UiText.ButtonCancel);
         if (answer)
@@ -193,6 +185,13 @@ public partial class WorkoutListViewModel : ObservableObject
             await ReloadAsync();
         }
     });
+
+    private async Task<WorkoutListItem?> DismissActionSheetAsync()
+    {
+        var item = ActionWorkout;
+        await SheetTransition.CloseAsync(CancelWorkoutActions);
+        return item;
+    }
 
     [RelayCommand(CanExecute = nameof(IsActionSheetOpen))]
     private void CloseSheets()

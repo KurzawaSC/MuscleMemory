@@ -8,7 +8,7 @@ using MuscleMemory.Constants;
 
 namespace MuscleMemory;
 
-internal sealed class InstantTabBarAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
+internal sealed class TabBarAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
     : ShellBottomNavViewAppearanceTracker(shellContext, shellItem)
 {
     private const float LabelTextSizeSp = 13;
