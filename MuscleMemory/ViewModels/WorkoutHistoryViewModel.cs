@@ -282,7 +282,7 @@ public partial class WorkoutHistoryViewModel(
     [RelayCommand]
     private Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise) => errors.RunAsync(async () =>
     {
-        var confirm = await dialogs.ConfirmAsync(UiText.TitleRemoveExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonDelete, UiText.ButtonCancel);
+        var confirm = await dialogs.ConfirmAsync(UiText.TitleRemoveExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonRemove, UiText.ButtonCancel);
         if (!confirm)
         {
             return;
