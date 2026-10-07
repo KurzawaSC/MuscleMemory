@@ -16,7 +16,7 @@
             BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
             Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="12" />
+            <RoundRectangle CornerRadius="{StaticResource BannerRadius}" />
         </Border.StrokeShape>
         <Border.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand, Source={x:Reference Root}}" />

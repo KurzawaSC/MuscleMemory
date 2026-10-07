@@ -40,7 +40,7 @@
                     Padding="0"
                     HorizontalOptions="Center">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="28" />
+                    <RoundRectangle CornerRadius="{StaticResource TileRadius}" />
                 </Border.StrokeShape>
                 <Label Text="+"
                        FontSize="30"
@@ -228,7 +228,7 @@
                                                                       CommandParameter="{Binding Value}" />
                                             </Grid.GestureRecognizers>
                                             <BoxView HeightRequest="8"
-                                                     CornerRadius="4"
+                                                     CornerRadius="{StaticResource LevelBarRadius}"
                                                      VerticalOptions="Center"
                                                      Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}">
                                                 <BoxView.Triggers>

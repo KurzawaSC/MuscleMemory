@@ -11,13 +11,20 @@
     <x:Double x:Key="PrimaryButtonHeight">54</x:Double>
     <x:Double x:Key="ExercisePickerListHeight">320</x:Double>
 
+    <CornerRadius x:Key="DotRadius">1.5</CornerRadius>
+    <CornerRadius x:Key="IndicatorRadius">2</CornerRadius>
+    <CornerRadius x:Key="LevelBarRadius">4</CornerRadius>
+    <CornerRadius x:Key="BarRadius">7</CornerRadius>
     <CornerRadius x:Key="ChipRadius">8</CornerRadius>
+    <CornerRadius x:Key="BannerRadius">12</CornerRadius>
     <CornerRadius x:Key="SmallControlRadius">12</CornerRadius>
     <CornerRadius x:Key="ControlRadius">16</CornerRadius>
     <CornerRadius x:Key="CardRadius">20</CornerRadius>
     <CornerRadius x:Key="PillRadius">20</CornerRadius>
     <CornerRadius x:Key="FabRadius">20</CornerRadius>
     <CornerRadius x:Key="DialogRadius">24</CornerRadius>
+    <CornerRadius x:Key="RestPanelRadius">26</CornerRadius>
+    <CornerRadius x:Key="TileRadius">28</CornerRadius>
     <CornerRadius x:Key="SheetRadius">28,28,0,0</CornerRadius>
 
     <x:Single x:Key="CardShadowOpacityLight">0.05</x:Single>
@@ -125,7 +132,7 @@
     <Style x:Key="OverflowDot" TargetType="BoxView">
         <Setter Property="WidthRequest" Value="3" />
         <Setter Property="HeightRequest" Value="3" />
-        <Setter Property="CornerRadius" Value="1.5" />
+        <Setter Property="CornerRadius" Value="{StaticResource DotRadius}" />
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}" />
     </Style>
 
@@ -137,6 +144,14 @@
         <Setter Property="StrokeShape">
             <Setter.Value>
                 <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CompactCard" TargetType="Border" BasedOn="{StaticResource SurfaceCard}">
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -172,7 +187,7 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="14" />
+                <RoundRectangle CornerRadius="{StaticResource ControlRadius}" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -209,7 +224,7 @@
         <Setter Property="Shadow" Value="{StaticResource RestPanelShadow}" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="26" />
+                <RoundRectangle CornerRadius="{StaticResource RestPanelRadius}" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -323,7 +338,7 @@
                 Stroke="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}"
                 BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
             </Border.StrokeShape>
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroupList>
