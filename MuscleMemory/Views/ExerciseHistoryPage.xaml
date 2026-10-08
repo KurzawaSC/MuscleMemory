@@ -89,15 +89,11 @@
 
                             <Grid ColumnDefinitions="*, Auto" Padding="0,3,0,0">
                                 <Label Style="{StaticResource CaptionLabel}" Text="{Binding SetCountText}" />
-                                <Label Grid.Column="1" Style="{StaticResource CaptionLabel}">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="{Binding VolumeText}"
-                                                  TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                            <Span Text="{x:Static constants:UiText.VolumeSuffix}" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
+                                <controls:UnitLabel Grid.Column="1"
+                                                    Style="{StaticResource CaptionLabel}"
+                                                    Value="{Binding VolumeText}"
+                                                    Unit="{x:Static constants:UiText.VolumeSuffix}"
+                                                    ValueColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>

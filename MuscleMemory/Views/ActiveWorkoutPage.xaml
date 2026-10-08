@@ -276,16 +276,12 @@
                         </Border>
                         <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14">
                             <VerticalStackLayout Spacing="2">
-                                <Label LineBreakMode="NoWrap">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Style="{StaticResource ValueSpan}"
-                                                  Text="{Binding Summary.TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
-                                                  TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                            <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
+                                <controls:UnitLabel LineBreakMode="NoWrap"
+                                                    Value="{Binding Summary.TotalVolume}"
+                                                    ValueFormat="{x:Static constants:UiText.VolumeNumberFormat}"
+                                                    Unit="{x:Static constants:UiText.KilogramSuffix}"
+                                                    ValueSpanStyle="{StaticResource ValueSpan}"
+                                                    ValueColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
                                 <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" />
                             </VerticalStackLayout>
                         </Border>
