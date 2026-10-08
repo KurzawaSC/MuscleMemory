@@ -21,7 +21,7 @@
     </controls:BackNavigationPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
-        <Grid ColumnDefinitions="Auto, *, Auto" Padding="{markup:Gutter Top=10}" IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid ColumnDefinitions="Auto, *, Auto" Padding="{markup:Gutter Top=10}" IsVisible="{Binding Summary.IsVisible, Converter={StaticResource InvertedBoolConverter}}">
             <controls:GlyphButton Glyph="‹"
                                   Style="{StaticResource NavigationGlyphButton}"
                                   Command="{Binding NavigateBackCommand}" />
@@ -44,7 +44,7 @@
               RowDefinitions="Auto, Auto, *, Auto"
               RowSpacing="14"
               Padding="{markup:Gutter Top=16, Bottom=12}"
-              IsVisible="{Binding IsWorkoutCompleted, Converter={StaticResource InvertedBoolConverter}}">
+              IsVisible="{Binding Summary.IsVisible, Converter={StaticResource InvertedBoolConverter}}">
 
             <VerticalStackLayout Spacing="12" IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
                 <FlexLayout BindableLayout.ItemsSource="{Binding SetSegments}"
@@ -272,19 +272,19 @@
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
-        <Grid Grid.RowSpan="2" RowDefinitions="*, Auto" IsVisible="{Binding IsWorkoutCompleted}">
+        <Grid Grid.RowSpan="2" RowDefinitions="*, Auto" IsVisible="{Binding Summary.IsVisible}">
             <ScrollView>
                 <VerticalStackLayout Padding="{markup:Gutter Top=16}" Spacing="4">
                     <Label Style="{StaticResource OverlineLabel}"
                            Text="{x:Static constants:UiText.LabelWorkoutComplete}"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     <Label Style="{StaticResource DisplayLabel}" Text="{Binding WorkoutTitle}" />
-                    <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding SummaryDateText}" />
+                    <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding Summary.DateText}" />
 
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,12,0,0">
                         <Border Style="{StaticResource SurfaceCard}" Padding="14">
                             <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalTimeText}" />
+                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalTimeText}" />
                                 <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionTime}" />
                             </VerticalStackLayout>
                         </Border>
@@ -294,7 +294,7 @@
                                     <Label.FormattedText>
                                         <FormattedString>
                                             <Span Style="{StaticResource ValueSpan}"
-                                                  Text="{Binding TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
+                                                  Text="{Binding Summary.TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
                                                   TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
                                             <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
                                         </FormattedString>
@@ -305,15 +305,15 @@
                         </Border>
                         <Border Grid.Column="2" Style="{StaticResource SurfaceCard}" Padding="14">
                             <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalSets}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding TotalSetsCaption}" />
+                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalSets}" />
+                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding Summary.TotalSetsCaption}" />
                             </VerticalStackLayout>
                         </Border>
                     </Grid>
 
                     <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" Margin="0,18,0,6" />
 
-                    <VerticalStackLayout Spacing="10" Margin="0,0,0,14" BindableLayout.ItemsSource="{Binding CompletedExercises}">
+                    <VerticalStackLayout Spacing="10" Margin="0,0,0,14" BindableLayout.ItemsSource="{Binding Summary.Exercises}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:SummaryExerciseItem">
                                 <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
