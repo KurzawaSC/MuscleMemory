@@ -137,8 +137,7 @@
                                                      Style="{Binding IsPlanComplete, Converter={StaticResource SaveSetButtonStyleConverter}}"
                                                      Text="{x:Static constants:UiText.ButtonSaveSet}"
                                                      PressedScale="0.97"
-                                                     Command="{Binding SaveSetCommand}"
-                                                     IsEnabled="{Binding SetInput.IsValid}" />
+                                                     Command="{Binding SaveSetCommand}" />
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
@@ -402,7 +401,6 @@
             <controls:SetEditorSheet Title="{x:Static constants:UiText.TitleEditSet}" Editor="{Binding SetEditor}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{x:Static constants:UiText.ButtonSave}"
-                                         IsConfirmEnabled="{Binding SetEditor.IsValid, FallbackValue=False}"
                                          ConfirmCommand="{Binding SaveEditedSetCommand}"
                                          CancelCommand="{Binding CloseSetEditorCommand}" />
             </controls:BottomSheet.Footer>

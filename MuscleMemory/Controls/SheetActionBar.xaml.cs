@@ -13,16 +13,7 @@ public partial class SheetActionBar : ContentView
     public static readonly BindableProperty ConfirmCommandProperty =
         BindableProperty.Create(nameof(ConfirmCommand), typeof(ICommand), typeof(SheetActionBar));
 
-    public static readonly BindableProperty IsConfirmEnabledProperty =
-        BindableProperty.Create(nameof(IsConfirmEnabled), typeof(bool), typeof(SheetActionBar), true);
-
     public SheetActionBar() => InitializeComponent();
-
-    public bool IsConfirmEnabled
-    {
-        get => (bool)GetValue(IsConfirmEnabledProperty);
-        set => SetValue(IsConfirmEnabledProperty, value);
-    }
 
     public string ConfirmText
     {

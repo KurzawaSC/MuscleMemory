@@ -16,7 +16,6 @@
                                  Style="{StaticResource PrimaryButton}"
                                  Text="{Binding ConfirmText, Source={x:Reference Root}}"
                                  Shadow="{x:Null}"
-                                 Command="{Binding ConfirmCommand, Source={x:Reference Root}}"
-                                 IsEnabled="{Binding IsConfirmEnabled, Source={x:Reference Root}}" />
+                                 Command="{Binding ConfirmCommand, Source={x:Reference Root}}" />
     </Grid>
 </ContentView>

@@ -112,7 +112,7 @@
                                                  Text="{x:Static constants:UiText.ButtonCancel}"
                                                  HeightRequest="{StaticResource MediumButtonHeight}"
                                                  FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                                                 Command="{Binding CloseSheetsCommand}" />
+                                                 Command="{Binding CloseEraseSheetCommand}" />
                         <controls:TappableButton Grid.Column="1"
                                                  Style="{StaticResource PrimaryButton}"
                                                  Text="{x:Static constants:UiText.ButtonErase}"
