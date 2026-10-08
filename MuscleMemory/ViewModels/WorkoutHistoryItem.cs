@@ -10,7 +10,8 @@ public sealed record WorkoutHistoryItem(
     string ChipText,
     string DateText,
     string StatsText,
-    string VolumeText)
+    string VolumeText,
+    IReadOnlyList<WorkoutHistoryExerciseItem> Exercises)
 {
     public static WorkoutHistoryItem Create(WorkoutHistorySession session, string durationText, bool sharesDate)
     {
@@ -21,6 +22,7 @@ public sealed record WorkoutHistoryItem(
             session.LocalStartTime.ToString(sharesDate ? UiText.ShortDateTimeFormat : UiText.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),
             string.Format(CultureInfo.CurrentCulture, UiText.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
-            string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume));
+            string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume),
+            [.. session.Exercises.Select(WorkoutHistoryExerciseItem.Create)]);
     }
 }

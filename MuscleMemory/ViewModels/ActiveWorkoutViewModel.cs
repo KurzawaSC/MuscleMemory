@@ -11,7 +11,7 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable
+public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributable, ISetActionsHost
 {
     private const char RouteSeparator = '/';
 
@@ -35,7 +35,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private int _restDurationSeconds;
     private DateTime _workoutStartTimeUtc;
     private DateTime _breakEndTimeUtc;
-    private WorkoutSet? _setBeingEdited;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
@@ -55,14 +54,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public bool CanAddItems => IsStateRestored && !IsWorkoutActive;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ShowSetActionsCommand))]
     public partial bool IsBusy { get; private set; }
 
-    private bool IsIdle => !IsBusy;
-
     private bool CanSaveSet => SetInput.IsValid;
-
-    private bool CanSaveEditedSet => SetEditor.IsValid;
 
     private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
 
@@ -157,24 +151,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public SetInputViewModel SetInput { get; } = new();
 
-    public SetInputViewModel SetEditor { get; } = new();
-
-    [ObservableProperty]
-    public partial bool IsSetEditorOpen { get; set; }
+    public SetActionsViewModel SetActions { get; }
 
     public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.TotalVolume());
-
-    [ObservableProperty]
-    public partial bool IsSetActionSheetOpen { get; set; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActionSetTitle))]
-    [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
-    public partial WorkoutSet? ActionSet { get; set; }
-
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
-
-    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
     public ActiveWorkoutViewModel(
         IWorkoutRepository workoutRepository,
@@ -204,6 +183,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _navigation = navigation;
         _haptics = haptics;
         _errors = errors;
+        SetActions = new SetActionsViewModel(this, dialogs, errors);
 
         TimerText = ZeroTimeText;
         TotalTimeText = ZeroTimeText;
@@ -211,8 +191,17 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
         SaveSetCommand.NotifyCanExecuteChangedWhen(SetInput, nameof(SetInputViewModel.IsValid));
-        SaveEditedSetCommand.NotifyCanExecuteChangedWhen(SetEditor, nameof(SetInputViewModel.IsValid));
+        SetActions.ShowCommand.NotifyCanExecuteChangedWhen(this, nameof(IsBusy));
     }
+
+    bool ISetActionsHost.CanShowSetActions => !IsBusy;
+
+    Task ISetActionsHost.UpdateSetAsync(WorkoutSet set, SetValues values) =>
+        _setRepository.UpdateAsync(set.Id, values.Weight, values.Reps);
+
+    Task ISetActionsHost.DeleteSetAsync(WorkoutSet set) => RemoveSetAsync(set);
+
+    Task ISetActionsHost.RefreshSetsAsync(int sessionExerciseId) => LoadSetsForCurrentExerciseAsync();
 
     private void OnTimerTicked(object? sender, EventArgs e)
     {
@@ -597,76 +586,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await SaveStateAsync();
     });
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
-    private void ShowSetActions(WorkoutSet set)
-    {
-        ActionSet = set;
-        IsSetActionSheetOpen = true;
-    }
-
-    [RelayCommand]
-    private void CancelSetActions()
-    {
-        IsSetActionSheetOpen = false;
-        ActionSet = null;
-    }
-
-    [RelayCommand]
-    private Task EditActionSetAsync() => _errors.RunAsync(async () =>
-    {
-        if (await DismissSetActionsAsync() is not { } set)
-        {
-            return;
-        }
-
-        _setBeingEdited = set;
-        SetEditor.Fill(set.Weight, set.Reps);
-        IsSetEditorOpen = true;
-    });
-
-    [RelayCommand(CanExecute = nameof(CanSaveEditedSet))]
-    private Task SaveEditedSetAsync() => _errors.RunAsync(async () =>
-    {
-        if (_setBeingEdited is not { } set || !SetEditor.TryRead(out var values))
-        {
-            return;
-        }
-
-        await _setRepository.UpdateAsync(set.Id, values.Weight, values.Reps);
-        CloseSetEditor();
-        await LoadSetsForCurrentExerciseAsync();
-    });
-
-    [RelayCommand]
-    private void CloseSetEditor()
-    {
-        IsSetEditorOpen = false;
-        _setBeingEdited = null;
-    }
-
-    [RelayCommand]
-    private Task DeleteActionSetAsync() => _errors.RunAsync(async () =>
-    {
-        if (await DismissSetActionsAsync() is not { } set)
-        {
-            return;
-        }
-
-        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel))
-        {
-            return;
-        }
-
-        await RemoveSetAsync(set);
-    });
-
-    private async Task<WorkoutSet?> DismissSetActionsAsync()
-    {
-        var set = ActionSet;
-        await SheetTransition.CloseAsync(CancelSetActions);
-        return set;
-    }
-
     private async Task RemoveSetAsync(WorkoutSet set)
     {
         await _setRepository.DeleteAsync(set.Id);
@@ -736,15 +655,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [RelayCommand]
     private Task NavigateBackAsync() => _errors.RunAsync(async () =>
     {
-        if (IsSetEditorOpen)
+        if (SetActions.IsAnySheetOpen)
         {
-            CloseSetEditor();
-            return;
-        }
-
-        if (IsSetActionSheetOpen)
-        {
-            CancelSetActions();
+            SetActions.CloseSheets();
             return;
         }
 
@@ -800,8 +713,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private void ResetDisplayState()
     {
         ClearRestState();
-        CancelSetActions();
-        CloseSetEditor();
+        SetActions.CloseSheets();
         ResetCurrentExercise();
         ClearSummary();
 

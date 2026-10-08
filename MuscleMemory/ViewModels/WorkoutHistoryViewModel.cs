@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
@@ -11,7 +10,7 @@ using MuscleMemory.Threading;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributable
+public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributable, ISetActionsHost
 {
     private readonly IHistoryQueryService _historyQueryService;
     private readonly ISessionExerciseRepository _sessionExerciseRepository;
@@ -23,8 +22,6 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private readonly IErrorHandler _errors;
     private readonly SequentialTaskQueue _historyUpdates = new();
     private int _workoutId;
-    private WorkoutSet? _setBeingEdited;
-    private WorkoutHistoryExercise? _exerciseReceivingSet;
 
     public WorkoutHistoryViewModel(
         IHistoryQueryService historyQueryService,
@@ -46,7 +43,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         _navigation = navigation;
         _errors = errors;
         ExercisePicker = exercisePicker;
-        SaveSetEditorCommand.NotifyCanExecuteChangedWhen(SetEditor, nameof(SetInputViewModel.IsValid));
+        SetActions = new SetActionsViewModel(this, dialogs, errors);
     }
 
     [ObservableProperty]
@@ -65,46 +62,28 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     public partial bool IsExercisePickerOpen { get; set; }
 
     [ObservableProperty]
-    public partial bool IsSetActionSheetOpen { get; set; }
-
-    [ObservableProperty]
     public partial bool IsExerciseActionSheetOpen { get; set; }
 
     [ObservableProperty]
     public partial WorkoutHistoryExercise? ActionExercise { get; set; }
 
-    [ObservableProperty]
-    public partial bool IsSetEditorOpen { get; set; }
+    public SetActionsViewModel SetActions { get; }
 
-    [ObservableProperty]
-    public partial string SetEditorTitle { get; set; } = string.Empty;
+    private bool IsAnySheetOpen => IsExercisePickerOpen || SetActions.IsAnySheetOpen || IsExerciseActionSheetOpen;
 
-    [ObservableProperty]
-    public partial string SetEditorConfirmText { get; set; } = string.Empty;
+    bool ISetActionsHost.CanShowSetActions => true;
 
-    public SetInputViewModel SetEditor { get; } = new();
+    Task ISetActionsHost.UpdateSetAsync(WorkoutSet set, SetValues values) =>
+        _setRepository.UpdateAsync(set.Id, values.Weight, values.Reps);
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActionSetTitle))]
-    [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
-    public partial WorkoutSet? ActionSet { get; set; }
-
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
-
-    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
-
-    private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsExerciseActionSheetOpen || IsSetEditorOpen;
-
-    private bool CanSaveSetEditor => SetEditor.IsValid;
-
-    partial void OnIsSetEditorOpenChanged(bool value)
+    async Task ISetActionsHost.DeleteSetAsync(WorkoutSet set)
     {
-        if (!value)
-        {
-            _setBeingEdited = null;
-            _exerciseReceivingSet = null;
-        }
+        var sessionId = SessionIdOf(set.SessionExerciseId);
+        await _setRepository.DeleteAsync(set.Id);
+        await RefreshSessionAsync(sessionId);
     }
+
+    Task ISetActionsHost.RefreshSetsAsync(int sessionExerciseId) => RefreshSessionAsync(SessionIdOf(sessionExerciseId));
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -198,131 +177,39 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private void CloseSheets()
     {
         IsExercisePickerOpen = false;
-        CancelSetActions();
+        SetActions.CloseSheets();
         CancelExerciseActions();
-        CloseSetEditor();
     }
 
     [RelayCommand]
-    private void ShowSetActions(WorkoutSet set)
-    {
-        ActionSet = set;
-        IsSetActionSheetOpen = true;
-    }
+    private void AddSet(WorkoutHistoryExerciseItem item) =>
+        SetActions.OpenEditor(
+            UiText.TitleAddSet,
+            UiText.ButtonAdd,
+            item.Exercise.Sets.LastOrDefault(),
+            item.Exercise.SessionExerciseId,
+            values => AddSetAsync(item.Exercise.SessionExerciseId, values));
 
-    [RelayCommand]
-    private void CancelSetActions()
-    {
-        IsSetActionSheetOpen = false;
-        ActionSet = null;
-    }
-
-    [RelayCommand]
-    private Task EditActionSetAsync() => _errors.RunAsync(async () =>
-    {
-        if (await DismissSetActionsAsync() is not { } set)
+    private Task AddSetAsync(int sessionExerciseId, SetValues values) =>
+        _setRepository.AddAsync(new WorkoutSet
         {
-            return;
-        }
-
-        _setBeingEdited = set;
-        SetEditor.Fill(set.Weight, set.Reps);
-        OpenSetEditor(UiText.TitleEditSet, UiText.ButtonSave);
-    });
+            SessionExerciseId = sessionExerciseId,
+            Weight = values.Weight,
+            Reps = values.Reps
+        });
 
     [RelayCommand]
-    private Task DeleteActionSetAsync() => _errors.RunAsync(async () =>
+    private void ShowExerciseActions(WorkoutHistoryExerciseItem item)
     {
-        if (await DismissSetActionsAsync() is not { } set)
-        {
-            return;
-        }
-
-        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel))
-        {
-            return;
-        }
-
-        var sessionId = SessionIdOf(set.SessionExerciseId);
-        await _setRepository.DeleteAsync(set.Id);
-        await RefreshSessionAsync(sessionId);
-    });
-
-    private async Task<WorkoutSet?> DismissSetActionsAsync()
-    {
-        var set = ActionSet;
-        await SheetTransition.CloseAsync(CancelSetActions);
-        return set;
-    }
-
-    [RelayCommand]
-    private void AddSet(WorkoutHistoryExercise loggedExercise)
-    {
-        _setBeingEdited = null;
-        _exerciseReceivingSet = loggedExercise;
-
-        if (loggedExercise.Sets.LastOrDefault() is { } lastSet)
-        {
-            SetEditor.Fill(lastSet.Weight, lastSet.Reps);
-        }
-        else
-        {
-            SetEditor.Clear();
-        }
-
-        OpenSetEditor(UiText.TitleAddSet, UiText.ButtonAdd);
-    }
-
-    private void OpenSetEditor(string title, string confirmText)
-    {
-        SetEditorTitle = title;
-        SetEditorConfirmText = confirmText;
-        IsSetEditorOpen = true;
-    }
-
-    [RelayCommand]
-    private void CloseSetEditor()
-    {
-        IsSetEditorOpen = false;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanSaveSetEditor))]
-    private Task SaveSetEditorAsync() => _errors.RunAsync(async () =>
-    {
-        if (!SetEditor.TryRead(out var values)
-            || (_setBeingEdited?.SessionExerciseId ?? _exerciseReceivingSet?.SessionExerciseId) is not { } sessionExerciseId)
-        {
-            return;
-        }
-
-        var sessionId = SessionIdOf(sessionExerciseId);
-        await SaveEditorSetAsync(sessionExerciseId, values);
-        CloseSetEditor();
-        await RefreshSessionAsync(sessionId);
-    });
-
-    private Task SaveEditorSetAsync(int sessionExerciseId, SetValues values) =>
-        _setBeingEdited is { } editedSet
-            ? _setRepository.UpdateAsync(editedSet.Id, values.Weight, values.Reps)
-            : _setRepository.AddAsync(new WorkoutSet
-            {
-                SessionExerciseId = sessionExerciseId,
-                Weight = values.Weight,
-                Reps = values.Reps
-            });
-
-    [RelayCommand]
-    private void ShowExerciseActions(WorkoutHistoryExercise loggedExercise)
-    {
-        ActionExercise = loggedExercise;
+        ActionExercise = item.Exercise;
         IsExerciseActionSheetOpen = true;
     }
 
     [RelayCommand]
-    private void LongPressExercise(WorkoutHistoryExercise loggedExercise)
+    private void LongPressExercise(WorkoutHistoryExerciseItem item)
     {
         _haptics.Click();
-        ShowExerciseActions(loggedExercise);
+        ShowExerciseActions(item);
     }
 
     [RelayCommand]
