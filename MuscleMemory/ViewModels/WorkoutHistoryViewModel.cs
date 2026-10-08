@@ -43,6 +43,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         _navigation = navigation;
         _errors = errors;
         ExercisePicker = exercisePicker;
+        SaveSetEditorCommand.NotifyCanExecuteChangedWhen(SetEditor, nameof(SetInputViewModel.IsValid));
     }
 
     [ObservableProperty]
@@ -84,6 +85,8 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
     private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsSetEditorOpen;
+
+    private bool CanSaveSetEditor => SetEditor.IsValid;
 
     partial void OnIsSetEditorOpenChanged(bool value)
     {
@@ -273,7 +276,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         IsSetEditorOpen = false;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSaveSetEditor))]
     private Task SaveSetEditorAsync() => _errors.RunAsync(async () =>
     {
         if (!SetEditor.TryRead(out var values)

@@ -55,17 +55,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public bool CanAddItems => IsStateRestored && !IsWorkoutActive;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SaveSetCommand))]
-    [NotifyCanExecuteChangedFor(nameof(UndoLastSetCommand))]
-    [NotifyCanExecuteChangedFor(nameof(PreviousExerciseCommand))]
-    [NotifyCanExecuteChangedFor(nameof(NextExerciseCommand))]
-    [NotifyCanExecuteChangedFor(nameof(FinishWorkoutCommand))]
     [NotifyCanExecuteChangedFor(nameof(ShowSetActionsCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ExitWorkoutCommand))]
-    [NotifyCanExecuteChangedFor(nameof(ViewCompletedHistoryCommand))]
     public partial bool IsBusy { get; private set; }
 
     private bool IsIdle => !IsBusy;
+
+    private bool CanSaveSet => SetInput.IsValid;
+
+    private bool CanSaveEditedSet => SetEditor.IsValid;
 
     private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
 
@@ -213,6 +210,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         RestTimerText = ZeroTimeText;
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
+        SaveSetCommand.NotifyCanExecuteChangedWhen(SetInput, nameof(SetInputViewModel.IsValid));
+        SaveEditedSetCommand.NotifyCanExecuteChangedWhen(SetEditor, nameof(SetInputViewModel.IsValid));
     }
 
     private void OnTimerTicked(object? sender, EventArgs e)
@@ -241,7 +240,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive && IsIdle)
+        if (query.TryGetValue(QueryKeys.Workout, out var value) && value is Workout workout && !IsWorkoutActive)
         {
             _errors.ReportFailures(RunExclusiveAsync(() => StartWorkoutAsync(workout)));
         }
@@ -249,6 +248,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task RunExclusiveAsync(Func<Task> operation)
     {
+        if (IsBusy)
+        {
+            return;
+        }
+
         IsBusy = true;
         try
         {
@@ -471,7 +475,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsPlanComplete = plannedExercises.All(exercise => loggedCounts.GetValueOrDefault(exercise.Id) >= exercise.PlannedSets);
     }
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand(CanExecute = nameof(CanSaveSet))]
     private Task SaveSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (IsExercisesEmpty || !SetInput.TryRead(out var values))
@@ -620,7 +624,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsSetEditorOpen = true;
     });
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSaveEditedSet))]
     private Task SaveEditedSetAsync() => _errors.RunAsync(async () =>
     {
         if (_setBeingEdited is not { } set || !SetEditor.TryRead(out var values))
@@ -672,7 +676,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await UpdatePlanCompletionAsync();
     }
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task UndoLastSetAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (!CurrentSets.Any())
@@ -683,7 +687,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await RemoveSetAsync(CurrentSets[^1]);
     }));
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task PreviousExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasPreviousExercise)
@@ -692,7 +696,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
     }));
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task NextExerciseAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         if (HasNextExercise)
@@ -701,7 +705,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
     }));
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task FinishWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         var summary = await _summaryService.BuildAsync([.. Exercises]);
@@ -756,14 +760,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
     });
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task ExitWorkoutAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         await _navigation.GoToAsync(NavigationRoutes.GoBack);
         ClearCompletedSummary();
     }));
 
-    [RelayCommand(CanExecute = nameof(IsIdle))]
+    [RelayCommand]
     private Task ViewCompletedHistoryAsync() => _errors.RunAsync(() => RunExclusiveAsync(async () =>
     {
         var navigationParameter = new Dictionary<string, object>

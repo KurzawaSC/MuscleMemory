@@ -87,11 +87,16 @@ public partial class WorkoutListViewModel : ObservableObject
     private Task NavigateToAddWorkoutAsync() =>
         _errors.RunAsync(() => _navigation.GoToAsync(NavigationRoutes.AddEditWorkout));
 
-    private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true && !ActiveWorkout.IsBusy;
+    private bool CanStartWorkout(WorkoutListItem item) => item?.HasExercises == true;
 
     [RelayCommand(CanExecute = nameof(CanStartWorkout))]
     private Task StartWorkoutAsync(WorkoutListItem item) => _errors.RunAsync(async () =>
     {
+        if (ActiveWorkout.IsBusy)
+        {
+            return;
+        }
+
         if (ActiveWorkout.IsWorkoutActive)
         {
             await OfferToResumeActiveWorkoutAsync();

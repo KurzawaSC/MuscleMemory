@@ -168,7 +168,6 @@
             <controls:SetEditorSheet Title="{Binding SetEditorTitle}" Editor="{Binding SetEditor}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{Binding SetEditorConfirmText}"
-                                         IsConfirmEnabled="{Binding SetEditor.IsValid, FallbackValue=False}"
                                          ConfirmCommand="{Binding SaveSetEditorCommand}"
                                          CancelCommand="{Binding CloseSetEditorCommand}" />
             </controls:BottomSheet.Footer>

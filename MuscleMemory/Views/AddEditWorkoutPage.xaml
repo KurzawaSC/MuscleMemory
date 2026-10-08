@@ -146,8 +146,7 @@
         <VerticalStackLayout Grid.Row="3" Padding="{markup:Gutter Top=12, Bottom=16}" Spacing="8">
             <controls:TappableButton Style="{StaticResource PrimaryButton}"
                                      Text="{x:Static constants:UiText.ButtonSaveWorkout}"
-                                     Command="{Binding SaveWorkoutCommand}"
-                                     IsEnabled="{Binding CanSave}" />
+                                     Command="{Binding SaveWorkoutCommand}" />
             <Label Style="{StaticResource CaptionLabel}"
                    Text="{x:Static constants:UiText.HintSaveWorkout}"
                    HorizontalOptions="Center"
@@ -266,7 +265,6 @@
             <controls:ExerciseFormSheet Form="{Binding ExerciseForm}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{Binding ExerciseForm.ConfirmText}"
-                                         IsConfirmEnabled="{Binding ExerciseForm.CanSave}"
                                          CancelCommand="{Binding CancelExerciseFormCommand}"
                                          ConfirmCommand="{Binding SaveNewExerciseCommand}" />
             </controls:BottomSheet.Footer>

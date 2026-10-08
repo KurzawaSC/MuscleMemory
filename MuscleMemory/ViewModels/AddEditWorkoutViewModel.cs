@@ -39,6 +39,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         ExercisePicker = exercisePicker;
         ExerciseConfiguration = exerciseConfiguration;
         ExerciseForm = exerciseForm;
+        SaveNewExerciseCommand.NotifyCanExecuteChangedWhen(ExerciseForm, nameof(ExerciseFormViewModel.CanSave));
     }
 
     [ObservableProperty]
@@ -47,6 +48,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
     [NotifyPropertyChangedFor(nameof(IsEmptyHintVisible))]
+    [NotifyCanExecuteChangedFor(nameof(SaveWorkoutCommand))]
     public partial bool IsEmpty { get; set; } = true;
 
     [ObservableProperty]
@@ -55,6 +57,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [NotifyPropertyChangedFor(nameof(IsEmptyHintVisible))]
     [NotifyCanExecuteChangedFor(nameof(AddExerciseCommand))]
     [NotifyCanExecuteChangedFor(nameof(EditExerciseCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveWorkoutCommand))]
     public partial bool IsLoading { get; set; }
 
     public bool IsEditable => !IsLoading;
@@ -75,6 +78,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyCanExecuteChangedFor(nameof(SaveWorkoutCommand))]
     public partial string WorkoutName { get; set; } = string.Empty;
 
     partial void OnWorkoutNameChanged(string value)
@@ -103,6 +107,8 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     public ExerciseFormViewModel ExerciseForm { get; }
 
     public bool CanSave => IsEditable && !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
+
+    private bool CanSaveNewExercise => ExerciseForm.CanSave;
 
     private bool IsAnySheetOpen => IsExercisePickerOpen || IsExerciseFormOpen || IsConfigurationOpen;
 
@@ -263,14 +269,9 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         IsExerciseFormOpen = false;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSaveNewExercise))]
     private Task SaveNewExerciseAsync() => _errors.RunAsync(async () =>
     {
-        if (!ExerciseForm.CanSave)
-        {
-            return;
-        }
-
         var exercise = await ExerciseForm.SaveAsync();
         await SheetTransition.CloseAsync(CancelExerciseForm);
         OpenConfigurationForNewExercise(exercise);
@@ -376,14 +377,9 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         TotalSets = Exercises.Sum(exercise => exercise.Sets);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private Task SaveWorkoutAsync() => _errors.RunAsync(async () =>
     {
-        if (!CanSave)
-        {
-            return;
-        }
-
         var name = WorkoutName.Trim();
 
         if (_workoutToEdit is not null)
