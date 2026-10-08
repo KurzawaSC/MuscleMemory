@@ -251,6 +251,10 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="EmptyStateButton" TargetType="controls:TappableButton" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="ContentPadding" Value="24,0" />
+    </Style>
+
     <Style x:Key="SetTable" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
         <Setter Property="StrokeThickness" Value="1" />

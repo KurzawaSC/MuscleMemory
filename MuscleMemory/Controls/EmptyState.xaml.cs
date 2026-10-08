@@ -4,8 +4,15 @@ namespace MuscleMemory.Controls;
 
 public partial class EmptyState : ContentView
 {
+    private const double DefaultSpacing = 16;
+
+    public static readonly BindableProperty IconProperty =
+        BindableProperty.Create(nameof(Icon), typeof(View), typeof(EmptyState),
+            propertyChanged: (bindable, _, _) => ((EmptyState)bindable).OnPropertyChanged(nameof(HasIcon)));
+
     public static readonly BindableProperty MessageProperty =
-        BindableProperty.Create(nameof(Message), typeof(string), typeof(EmptyState), string.Empty);
+        BindableProperty.Create(nameof(Message), typeof(string), typeof(EmptyState), string.Empty,
+            propertyChanged: (bindable, _, _) => ((EmptyState)bindable).OnPropertyChanged(nameof(HasMessage)));
 
     public static readonly BindableProperty DetailProperty =
         BindableProperty.Create(nameof(Detail), typeof(string), typeof(EmptyState), string.Empty,
@@ -22,7 +29,19 @@ public partial class EmptyState : ContentView
         BindableProperty.Create(nameof(ShowsAction), typeof(bool), typeof(EmptyState), true,
             propertyChanged: (bindable, _, _) => ((EmptyState)bindable).OnPropertyChanged(nameof(HasAction)));
 
+    public static readonly BindableProperty ActionStyleProperty =
+        BindableProperty.Create(nameof(ActionStyle), typeof(Style), typeof(EmptyState));
+
+    public static readonly BindableProperty SpacingProperty =
+        BindableProperty.Create(nameof(Spacing), typeof(double), typeof(EmptyState), DefaultSpacing);
+
     public EmptyState() => InitializeComponent();
+
+    public View? Icon
+    {
+        get => (View?)GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
+    }
 
     public string Message
     {
@@ -53,6 +72,22 @@ public partial class EmptyState : ContentView
         get => (bool)GetValue(ShowsActionProperty);
         set => SetValue(ShowsActionProperty, value);
     }
+
+    public Style? ActionStyle
+    {
+        get => (Style?)GetValue(ActionStyleProperty);
+        set => SetValue(ActionStyleProperty, value);
+    }
+
+    public double Spacing
+    {
+        get => (double)GetValue(SpacingProperty);
+        set => SetValue(SpacingProperty, value);
+    }
+
+    public bool HasIcon => Icon is not null;
+
+    public bool HasMessage => !string.IsNullOrEmpty(Message);
 
     public bool HasDetail => !string.IsNullOrEmpty(Detail);
 
