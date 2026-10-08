@@ -485,7 +485,7 @@
 
     <Style x:Key="RestPanelButton" TargetType="controls:TappableButton">
         <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RestPanelStartLight}, Dark={StaticResource RestPanelStartDark}}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="HeightRequest" Value="{StaticResource MediumButtonHeight}" />
