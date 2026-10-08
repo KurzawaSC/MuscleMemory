@@ -182,13 +182,13 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     }
 
     [RelayCommand]
-    private void AddSet(WorkoutHistoryExercise loggedExercise) =>
+    private void AddSet(WorkoutHistoryExerciseItem item) =>
         SetActions.OpenEditor(
             UiText.TitleAddSet,
             UiText.ButtonAdd,
-            loggedExercise.Sets.LastOrDefault(),
-            loggedExercise.SessionExerciseId,
-            values => AddSetAsync(loggedExercise.SessionExerciseId, values));
+            item.Exercise.Sets.LastOrDefault(),
+            item.Exercise.SessionExerciseId,
+            values => AddSetAsync(item.Exercise.SessionExerciseId, values));
 
     private Task AddSetAsync(int sessionExerciseId, SetValues values) =>
         _setRepository.AddAsync(new WorkoutSet
@@ -199,17 +199,17 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         });
 
     [RelayCommand]
-    private void ShowExerciseActions(WorkoutHistoryExercise loggedExercise)
+    private void ShowExerciseActions(WorkoutHistoryExerciseItem item)
     {
-        ActionExercise = loggedExercise;
+        ActionExercise = item.Exercise;
         IsExerciseActionSheetOpen = true;
     }
 
     [RelayCommand]
-    private void LongPressExercise(WorkoutHistoryExercise loggedExercise)
+    private void LongPressExercise(WorkoutHistoryExerciseItem item)
     {
         _haptics.Click();
-        ShowExerciseActions(loggedExercise);
+        ShowExerciseActions(item);
     }
 
     [RelayCommand]

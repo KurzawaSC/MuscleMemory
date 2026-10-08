@@ -1,17 +1,17 @@
-using MuscleMemory.Models;
+using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Controls;
 
 public partial class SetTableRow : ContentView
 {
     public static readonly BindableProperty SetProperty =
-        BindableProperty.Create(nameof(Set), typeof(WorkoutSet), typeof(SetTableRow));
+        BindableProperty.Create(nameof(Set), typeof(LoggedSetItem), typeof(SetTableRow));
 
     public SetTableRow() => InitializeComponent();
 
-    public WorkoutSet? Set
+    public LoggedSetItem? Set
     {
-        get => (WorkoutSet?)GetValue(SetProperty);
+        get => (LoggedSetItem?)GetValue(SetProperty);
         set => SetValue(SetProperty, value);
     }
 }
