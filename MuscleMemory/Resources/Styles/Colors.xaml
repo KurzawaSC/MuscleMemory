@@ -72,17 +72,17 @@
     <Color x:Key="DisabledTextLight">#B4B4BC</Color>
     <Color x:Key="DisabledTextDark">#5A5A64</Color>
 
-    <Color x:Key="RestPanelStartLight">#FF4040</Color>
-    <Color x:Key="RestPanelStartDark">#FF4040</Color>
+    <Color x:Key="RestPanelStartLight">#C82828</Color>
+    <Color x:Key="RestPanelStartDark">#C82828</Color>
 
-    <Color x:Key="RestPanelEndLight">#DE2C2C</Color>
-    <Color x:Key="RestPanelEndDark">#DE2C2C</Color>
+    <Color x:Key="RestPanelEndLight">#A92222</Color>
+    <Color x:Key="RestPanelEndDark">#A92222</Color>
 
     <Color x:Key="OnRestPanelSubtleLight">#1FFFFFFF</Color>
     <Color x:Key="OnRestPanelSubtleDark">#1FFFFFFF</Color>
 
-    <Color x:Key="OnRestPanelMutedLight">#99FFFFFF</Color>
-    <Color x:Key="OnRestPanelMutedDark">#99FFFFFF</Color>
+    <Color x:Key="OnRestPanelMutedLight">#E0FFFFFF</Color>
+    <Color x:Key="OnRestPanelMutedDark">#E0FFFFFF</Color>
 
     <Color x:Key="OverlayLight">#6B0F0F16</Color>
     <Color x:Key="OverlayDark">#99000000</Color>

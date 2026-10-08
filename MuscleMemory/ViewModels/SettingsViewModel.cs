@@ -55,9 +55,15 @@ public partial class SettingsViewModel(
     }
 
     [RelayCommand]
+    private void CloseEraseSheet()
+    {
+        IsEraseSheetOpen = false;
+    }
+
+    [RelayCommand]
     private Task EraseDataAsync() => errors.RunAsync(async () =>
     {
-        await SheetTransition.CloseAsync(() => IsEraseSheetOpen = false);
+        await SheetTransition.CloseAsync(CloseEraseSheet);
 
         await maintenanceService.ClearAllDataAsync();
         navigationStack.PopAllTabsToRoot();
@@ -76,7 +82,7 @@ public partial class SettingsViewModel(
         await Share.Default.RequestAsync(new ShareFileRequest
         {
             Title = UiText.TitleExportData,
-            File = new ShareFile(snapshotPath)
+            File = new ShareFile(snapshotPath, DatabaseNames.ExportContentType)
         });
     }, UiText.BodyExportFailed);
 }

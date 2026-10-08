@@ -7,6 +7,8 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
+                             xmlns:platform="clr-namespace:MuscleMemory"
+                             x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
                              x:DataType="viewmodels:WorkoutHistoryViewModel"
                              BackCommand="{Binding NavigateBackCommand}">
@@ -85,16 +87,18 @@
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="services:WorkoutHistoryExercise">
                             <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
-                                <VerticalStackLayout Spacing="10">
+                                <VerticalStackLayout x:Name="ExerciseCard" Spacing="10" BackgroundColor="Transparent">
+                                    <VerticalStackLayout.Behaviors>
+                                        <platform:LongPressBehavior Command="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
+                                                                    CommandParameter="{Binding BindingContext, Source={x:Reference ExerciseCard}}" />
+                                    </VerticalStackLayout.Behaviors>
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Label Style="{StaticResource CardTitleLabel}"
                                                Text="{Binding ExerciseName}"
                                                LineBreakMode="TailTruncation"
                                                VerticalOptions="Center" />
-                                        <controls:TappableButton Grid.Column="1"
-                                                                 Style="{StaticResource CompactSoftButton}"
-                                                                 Text="{x:Static constants:UiText.ButtonDelete}"
-                                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=DeleteExerciseCommand}"
+                                        <controls:OverflowButton Grid.Column="1"
+                                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=ShowExerciseActionsCommand}"
                                                                  CommandParameter="{Binding .}" />
                                     </Grid>
                                     <Border Style="{StaticResource SetTable}">
@@ -164,11 +168,18 @@
                                        CancelCommand="{Binding CancelSetActionsCommand}" />
         </controls:BottomSheet>
 
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding ActionExercise.ExerciseName, FallbackValue=''}"
+                                       Subtitle="{Binding SelectedSession.DateText, FallbackValue=''}"
+                                       DeleteText="{x:Static constants:UiText.TitleRemoveExercise}"
+                                       DeleteCommand="{Binding DeleteActionExerciseCommand}"
+                                       CancelCommand="{Binding CancelExerciseActionsCommand}" />
+        </controls:BottomSheet>
+
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetEditorOpen}">
             <controls:SetEditorSheet Title="{Binding SetEditorTitle}" Editor="{Binding SetEditor}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{Binding SetEditorConfirmText}"
-                                         IsConfirmEnabled="{Binding SetEditor.IsValid, FallbackValue=False}"
                                          ConfirmCommand="{Binding SaveSetEditorCommand}"
                                          CancelCommand="{Binding CloseSetEditorCommand}" />
             </controls:BottomSheet.Footer>

@@ -65,7 +65,6 @@
                             </Grid>
                             <controls:TappableButton Style="{StaticResource SoftPrimaryButton}"
                                                      Text="{x:Static constants:UiText.ButtonStart}"
-                                                     IsEnabled="{Binding HasExercises}"
                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
                                                      CommandParameter="{Binding .}">
                                 <controls:TappableButton.Triggers>

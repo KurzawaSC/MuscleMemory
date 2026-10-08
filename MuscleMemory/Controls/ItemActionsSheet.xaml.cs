@@ -17,11 +17,12 @@ public partial class ItemActionsSheet : ContentView
         BindableProperty.Create(nameof(DeleteText), typeof(string), typeof(ItemActionsSheet), string.Empty);
 
     public static readonly BindableProperty EditCommandProperty =
-        BindableProperty.Create(nameof(EditCommand), typeof(ICommand), typeof(ItemActionsSheet));
+        BindableProperty.Create(nameof(EditCommand), typeof(ICommand), typeof(ItemActionsSheet),
+            propertyChanged: (bindable, _, _) => ((ItemActionsSheet)bindable).OnActionsChanged());
 
     public static readonly BindableProperty HistoryCommandProperty =
         BindableProperty.Create(nameof(HistoryCommand), typeof(ICommand), typeof(ItemActionsSheet),
-            propertyChanged: (bindable, _, _) => ((ItemActionsSheet)bindable).OnPropertyChanged(nameof(HasHistory)));
+            propertyChanged: (bindable, _, _) => ((ItemActionsSheet)bindable).OnActionsChanged());
 
     public static readonly BindableProperty DeleteCommandProperty =
         BindableProperty.Create(nameof(DeleteCommand), typeof(ICommand), typeof(ItemActionsSheet));
@@ -79,5 +80,19 @@ public partial class ItemActionsSheet : ContentView
         set => SetValue(CancelCommandProperty, value);
     }
 
+    public bool HasEdit => EditCommand is not null;
+
     public bool HasHistory => HistoryCommand is not null;
+
+    public bool SeparatesHistory => HasEdit && HasHistory;
+
+    public bool SeparatesDelete => HasEdit || HasHistory;
+
+    private void OnActionsChanged()
+    {
+        OnPropertyChanged(nameof(HasEdit));
+        OnPropertyChanged(nameof(HasHistory));
+        OnPropertyChanged(nameof(SeparatesHistory));
+        OnPropertyChanged(nameof(SeparatesDelete));
+    }
 }

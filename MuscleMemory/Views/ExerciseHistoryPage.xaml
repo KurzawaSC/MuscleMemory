@@ -11,15 +11,7 @@
                              BackCommand="{Binding GoBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *">
-        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6" Padding="{markup:Gutter Start={x:Static constants:Spacing.GlyphButtonGutter}, Top=4}">
-            <controls:GlyphButton Glyph="‹"
-                                  Style="{StaticResource NavigationGlyphButton}"
-                                  Command="{Binding GoBackCommand}" />
-            <Label Grid.Column="1"
-                   Style="{StaticResource OverlineLabel}"
-                   Text="{x:Static constants:UiText.HeaderExerciseHistory}"
-                   VerticalOptions="Center" />
-        </Grid>
+        <controls:NavigationHeader Title="{x:Static constants:UiText.HeaderExerciseHistory}" BackCommand="{Binding GoBackCommand}" />
 
         <controls:ScreenHeader Grid.Row="1"
                                Title="{Binding ExerciseName}"

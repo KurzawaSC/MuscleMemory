@@ -47,6 +47,7 @@ public partial class ExerciseListViewModel : ObservableObject
         Filter = filter;
         Filter.Changed += (_, _) => ApplyFilter();
         dataChanges.Changed += OnDataChanged;
+        SaveExerciseCommand.NotifyCanExecuteChangedWhen(ExerciseForm, nameof(ExerciseFormViewModel.CanSave));
     }
 
     public ListLoadState ListState { get; } = new();
@@ -127,14 +128,11 @@ public partial class ExerciseListViewModel : ObservableObject
         IsExerciseFormOpen = true;
     });
 
-    [RelayCommand]
+    private bool CanSaveExercise => ExerciseForm.CanSave;
+
+    [RelayCommand(CanExecute = nameof(CanSaveExercise))]
     private Task SaveExerciseAsync() => _errors.RunAsync(async () =>
     {
-        if (!ExerciseForm.CanSave)
-        {
-            return;
-        }
-
         await ExerciseForm.SaveAsync();
         IsExerciseFormOpen = false;
     });

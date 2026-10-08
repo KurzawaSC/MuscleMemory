@@ -136,7 +136,6 @@
             <controls:ExerciseFormSheet Form="{Binding ExerciseForm}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{Binding ExerciseForm.ConfirmText}"
-                                         IsConfirmEnabled="{Binding ExerciseForm.CanSave}"
                                          CancelCommand="{Binding CancelExerciseFormCommand}"
                                          ConfirmCommand="{Binding SaveExerciseCommand}" />
             </controls:BottomSheet.Footer>
