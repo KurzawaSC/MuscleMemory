@@ -19,7 +19,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
-    private List<Exercise> _allExercises = [];
+    private List<ExerciseItem> _allExercises = [];
     private int _latestLoad;
 
     public ExerciseListViewModel(
@@ -64,20 +64,15 @@ public partial class ExerciseListViewModel : ObservableObject
     public partial bool IsActionSheetOpen { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ActionExerciseSubtitle))]
-    public partial Exercise? ActionExercise { get; set; }
+    public partial ExerciseItem? ActionExercise { get; set; }
 
-    public ObservableCollection<Exercise> Exercises { get; } = [];
+    public ObservableCollection<ExerciseItem> Exercises { get; } = [];
 
     public ExerciseFilterViewModel Filter { get; }
 
     public ExerciseFormViewModel ExerciseForm { get; }
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
-
-    public string ActionExerciseSubtitle => ActionExercise is { } exercise
-        ? string.Join(UiText.ListSeparator, exercise.TargetMuscleGroup.ToDisplayName(), exercise.Equipment.ToDisplayName())
-        : string.Empty;
 
     private bool IsAnySheetOpen => IsExerciseFormOpen || IsActionSheetOpen;
 
@@ -109,9 +104,9 @@ public partial class ExerciseListViewModel : ObservableObject
             return;
         }
 
-        _allExercises = exercises;
+        _allExercises = [.. exercises.Select(ExerciseItem.Create)];
         ListState.Complete(_allExercises.Count);
-        Filter.UpdateFilters(_allExercises);
+        Filter.UpdateFilters(exercises);
         ApplyFilter();
     }
 
@@ -144,17 +139,17 @@ public partial class ExerciseListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowExerciseActions(Exercise exercise)
+    private void ShowExerciseActions(ExerciseItem item)
     {
-        ActionExercise = exercise;
+        ActionExercise = item;
         IsActionSheetOpen = true;
     }
 
     [RelayCommand]
-    private void LongPressExercise(Exercise exercise)
+    private void LongPressExercise(ExerciseItem item)
     {
         _haptics.Click();
-        ShowExerciseActions(exercise);
+        ShowExerciseActions(item);
     }
 
     [RelayCommand]
@@ -213,7 +208,7 @@ public partial class ExerciseListViewModel : ObservableObject
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {
-        var exercise = ActionExercise;
+        var exercise = ActionExercise?.Exercise;
         await SheetTransition.CloseAsync(CancelExerciseActions);
         return exercise;
     }
