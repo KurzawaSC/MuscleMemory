@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Controls.ResumeWorkoutBanner"
              x:Name="Root"
              x:DataType="controls:ResumeWorkoutBanner"
-             Margin="15,0,15,20"
+             Margin="{markup:Gutter Bottom=20}"
              HorizontalOptions="Fill"
              VerticalOptions="End"
              IsVisible="{Binding ActiveWorkout.IsBannerVisible, Source={x:Reference Root}}">
@@ -16,15 +17,15 @@
             BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
             Shadow="{StaticResource CardShadow}">
         <Border.StrokeShape>
-            <RoundRectangle CornerRadius="12" />
+            <RoundRectangle CornerRadius="{StaticResource BannerRadius}" />
         </Border.StrokeShape>
         <Border.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand, Source={x:Reference Root}}" />
         </Border.GestureRecognizers>
-        <Label Text="{x:Static constants:UiText.BannerResumeWorkout}"
+        <Label Style="{StaticResource EmphasisLabel}"
+               Text="{x:Static constants:UiText.BannerResumeWorkout}"
                HorizontalTextAlignment="Center"
                TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
-               FontSize="16"
                VerticalOptions="Center" />
     </Border>
 </ContentView>

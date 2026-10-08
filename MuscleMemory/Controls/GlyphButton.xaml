@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Controls.GlyphButton"
              x:Name="Root"
              x:DataType="controls:GlyphButton"
@@ -10,7 +11,7 @@
 
     <ContentView.Triggers>
         <Trigger TargetType="controls:GlyphButton" Property="IsEnabled" Value="False">
-            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Opacity" Value="{x:Static constants:Opacities.Disabled}" />
         </Trigger>
     </ContentView.Triggers>
 
@@ -29,9 +30,9 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
             </Border.StrokeShape>
-            <Label Text="{Binding Glyph, Source={x:Reference Root}}"
+            <Label Style="{StaticResource GlyphLabel}"
+                   Text="{Binding Glyph, Source={x:Reference Root}}"
                    TextColor="{Binding GlyphColor, Source={x:Reference Root}}"
-                   FontSize="20"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
         </Border>

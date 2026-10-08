@@ -19,19 +19,19 @@
                 Style="{StaticResource DialogCard}"
                 Opacity="0">
             <VerticalStackLayout Spacing="8">
-                <Label Style="{StaticResource TitleLabel}" FontSize="20" Text="{Binding Title}" />
+                <Label Style="{StaticResource DialogTitleLabel}" Text="{Binding Title}" />
                 <Label Text="{Binding Message}"
                        TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,12,0,0">
                     <controls:TappableButton Style="{StaticResource SecondaryButton}"
                                              Text="{Binding CancelText}"
-                                             HeightRequest="{StaticResource TouchTarget}"
+                                             HeightRequest="{StaticResource MediumButtonHeight}"
                                              IsVisible="{Binding HasCancel}"
                                              Command="{Binding CancelCommand}" />
                     <controls:TappableButton Grid.Column="1"
                                              Style="{StaticResource PrimaryButton}"
                                              Text="{Binding ConfirmText}"
-                                             HeightRequest="{StaticResource TouchTarget}"
+                                             HeightRequest="{StaticResource MediumButtonHeight}"
                                              Shadow="{x:Null}"
                                              Command="{Binding ConfirmCommand}">
                         <controls:TappableButton.Triggers>

@@ -7,6 +7,7 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:platform="clr-namespace:MuscleMemory"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.ExerciseListPage"
                              x:DataType="viewmodels:ExerciseListViewModel"
@@ -20,7 +21,7 @@
         <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderExercises}" Subtitle="{x:Static constants:UiText.SubtitleExercises}" />
 
         <controls:TextField Grid.Row="1"
-                            Margin="20,8,20,0"
+                            Margin="{markup:Gutter Top=8}"
                             Text="{Binding Filter.SearchText}"
                             Placeholder="{x:Static constants:UiText.PlaceholderSearchExercises}"
                             ClearButtonVisibility="WhileEditing"
@@ -31,7 +32,7 @@
                     HorizontalScrollBarVisibility="Never"
                     Margin="0,12,0,0"
                     IsVisible="{Binding ListState.HasItems}">
-            <HorizontalStackLayout Padding="20,0"
+            <HorizontalStackLayout Padding="{markup:Gutter}"
                                    Spacing="8"
                                    RadioButtonGroup.GroupName="ExerciseListFilters"
                                    RadioButtonGroup.SelectedValue="{Binding Filter.SelectedFilter}"
@@ -47,14 +48,14 @@
         </ScrollView>
 
         <VerticalStackLayout Grid.Row="3"
-                             Margin="20,24,20,0"
+                             Margin="{markup:Gutter Top=24}"
                              IsVisible="{Binding HasNoMatches}">
             <Label Text="{x:Static constants:UiText.EmptyNoMatchingExercises}"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalOptions="Center" />
         </VerticalStackLayout>
 
-        <CollectionView Grid.Row="3" ItemsSource="{Binding Exercises}" Margin="20,12,20,0">
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Exercises}" Margin="{markup:Gutter Top=12}">
             <CollectionView.Behaviors>
                 <controls:ScrollToTopOnInsertBehavior />
             </CollectionView.Behaviors>
@@ -63,7 +64,7 @@
             </CollectionView.ItemsLayout>
             <CollectionView.FooterTemplate>
                 <DataTemplate x:DataType="x:Object">
-                    <BoxView HeightRequest="100" Color="Transparent" />
+                    <BoxView HeightRequest="{StaticResource ListFooterSpacing}" Color="Transparent" />
                 </DataTemplate>
             </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>

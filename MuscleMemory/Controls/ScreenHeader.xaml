@@ -2,10 +2,11 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Controls.ScreenHeader"
              x:Name="Root"
              x:DataType="controls:ScreenHeader"
-             Padding="20,14,20,8">
+             Padding="{markup:Gutter Top=14, Bottom=8}">
 
     <VerticalStackLayout Spacing="4">
         <Label Style="{StaticResource DisplayLabel}"

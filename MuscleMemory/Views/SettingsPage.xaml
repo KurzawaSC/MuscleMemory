@@ -5,6 +5,7 @@
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Class="MuscleMemory.Views.SettingsPage"
                              x:DataType="viewmodels:SettingsViewModel"
                              BackCommand="{Binding CloseSheetsCommand}">
@@ -13,7 +14,7 @@
         <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderSettings}" />
 
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20,12,20,20" Spacing="8">
+            <VerticalStackLayout Padding="{markup:Gutter Top=12, Bottom=20}" Spacing="8">
                 <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelAppearance}" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <controls:ActionRow Text="{x:Static constants:UiText.LabelAppTheme}"
@@ -61,11 +62,11 @@
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                             <GradientStop Color="{StaticResource SurfaceLight}" Offset="0.5" />
-                                            <GradientStop Color="{StaticResource InkLight}" Offset="0.5" />
+                                            <GradientStop Color="{StaticResource SurfaceDark}" Offset="0.5" />
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
-                                <Label Text="{x:Static constants:UiText.ThemeNameSystem}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameSystem}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -76,7 +77,7 @@
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
-                                <Label Text="{x:Static constants:UiText.ThemeNameLight}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameLight}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -86,8 +87,8 @@
                                  SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
-                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource InkLight}" />
-                                <Label Text="{x:Static constants:UiText.ThemeNameDark}" FontSize="13" HorizontalTextAlignment="Center" />
+                                <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceDark}" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameDark}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -103,20 +104,19 @@
                     <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="{x:Static constants:UiText.TitleEraseAllData}" />
-                    <Label Style="{StaticResource CaptionLabel}"
-                           FontSize="13"
+                    <Label Style="{StaticResource MediumTitleLabel}" Text="{x:Static constants:UiText.TitleEraseAllData}" />
+                    <Label Style="{StaticResource LargeCaptionLabel}"
                            Text="{x:Static constants:UiText.BodyEraseAllData}" />
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
                         <controls:TappableButton Style="{StaticResource SecondaryButton}"
                                                  Text="{x:Static constants:UiText.ButtonCancel}"
-                                                 HeightRequest="46"
+                                                 HeightRequest="{StaticResource MediumButtonHeight}"
                                                  FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                                                  Command="{Binding CloseSheetsCommand}" />
                         <controls:TappableButton Grid.Column="1"
                                                  Style="{StaticResource PrimaryButton}"
                                                  Text="{x:Static constants:UiText.ButtonErase}"
-                                                 HeightRequest="46"
+                                                 HeightRequest="{StaticResource MediumButtonHeight}"
                                                  Shadow="{x:Null}"
                                                  Command="{Binding EraseDataCommand}" />
                     </Grid>

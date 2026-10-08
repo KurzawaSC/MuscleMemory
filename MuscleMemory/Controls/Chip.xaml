@@ -17,9 +17,9 @@
         <Border.StrokeShape>
             <RoundRectangle CornerRadius="{StaticResource ChipRadius}" />
         </Border.StrokeShape>
-        <Label Text="{Binding Text, Source={x:Reference Root}}"
-               TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
-               FontSize="12">
+        <Label Style="{StaticResource MiniLabel}"
+               Text="{Binding Text, Source={x:Reference Root}}"
+               TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}">
             <Label.Triggers>
                 <DataTrigger TargetType="Label" Binding="{Binding IsAccent, Source={x:Reference Root}}" Value="True">
                     <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />

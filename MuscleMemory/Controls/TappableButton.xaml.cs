@@ -1,12 +1,18 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
 
 namespace MuscleMemory.Controls;
 
 public partial class TappableButton : ContentView
 {
+    private const double DefaultCornerRadius = 30;
+    private const double DefaultFontSize = 18;
+    private const double DefaultHorizontalPadding = 14;
+    private const double DefaultVerticalPadding = 10;
     private const double DefaultPressedScale = 0.98;
+    private const double FillingSurfaceHeight = -1;
     private const uint PressPhaseMilliseconds = 45;
 
     private bool _isPressed;
@@ -41,16 +47,20 @@ public partial class TappableButton : ContentView
         BindableProperty.Create(nameof(StrokeThickness), typeof(double), typeof(TappableButton), 0d);
 
     public static readonly BindableProperty CornerRadiusProperty =
-        BindableProperty.Create(nameof(CornerRadius), typeof(CornerRadius), typeof(TappableButton), new CornerRadius(30));
+        BindableProperty.Create(nameof(CornerRadius), typeof(CornerRadius), typeof(TappableButton), new CornerRadius(DefaultCornerRadius));
 
     public static readonly BindableProperty FontSizeProperty =
-        BindableProperty.Create(nameof(FontSize), typeof(double), typeof(TappableButton), 18d);
+        BindableProperty.Create(nameof(FontSize), typeof(double), typeof(TappableButton), DefaultFontSize);
 
     public static readonly BindableProperty ContentPaddingProperty =
-        BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(14, 10));
+        BindableProperty.Create(nameof(ContentPadding), typeof(Thickness), typeof(TappableButton), new Thickness(DefaultHorizontalPadding, DefaultVerticalPadding));
+
+    public static readonly BindableProperty SurfaceHeightProperty =
+        BindableProperty.Create(nameof(SurfaceHeight), typeof(double), typeof(TappableButton), FillingSurfaceHeight,
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceVerticalOptions)));
 
     public static readonly BindableProperty DisabledOpacityProperty =
-        BindableProperty.Create(nameof(DisabledOpacity), typeof(double), typeof(TappableButton), 0.4d,
+        BindableProperty.Create(nameof(DisabledOpacity), typeof(double), typeof(TappableButton), Opacities.Disabled,
             propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceOpacity)));
 
     public TappableButton() => InitializeComponent();
@@ -127,11 +137,19 @@ public partial class TappableButton : ContentView
         set => SetValue(ContentPaddingProperty, value);
     }
 
+    public double SurfaceHeight
+    {
+        get => (double)GetValue(SurfaceHeightProperty);
+        set => SetValue(SurfaceHeightProperty, value);
+    }
+
     public double DisabledOpacity
     {
         get => (double)GetValue(DisabledOpacityProperty);
         set => SetValue(DisabledOpacityProperty, value);
     }
+
+    public LayoutOptions SurfaceVerticalOptions => SurfaceHeight > 0 ? LayoutOptions.Center : LayoutOptions.Fill;
 
     public double SurfaceOpacity => IsEnabled ? 1 : DisabledOpacity;
 
