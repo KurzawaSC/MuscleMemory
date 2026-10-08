@@ -107,21 +107,13 @@
                     <Label Style="{StaticResource MediumTitleLabel}" Text="{x:Static constants:UiText.TitleEraseAllData}" />
                     <Label Style="{StaticResource LargeCaptionLabel}"
                            Text="{x:Static constants:UiText.BodyEraseAllData}" />
-                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,8,0,0">
-                        <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                                 Text="{x:Static constants:UiText.ButtonCancel}"
-                                                 HeightRequest="{StaticResource MediumButtonHeight}"
-                                                 FillColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
-                                                 Command="{Binding CloseEraseSheetCommand}" />
-                        <controls:TappableButton Grid.Column="1"
-                                                 Style="{StaticResource PrimaryButton}"
-                                                 Text="{x:Static constants:UiText.ButtonErase}"
-                                                 HeightRequest="{StaticResource MediumButtonHeight}"
-                                                 Shadow="{x:Null}"
-                                                 Command="{Binding EraseDataCommand}" />
-                    </Grid>
                 </VerticalStackLayout>
             </Border>
+            <controls:BottomSheet.Footer>
+                <controls:SheetActionBar ConfirmText="{x:Static constants:UiText.ButtonErase}"
+                                         CancelCommand="{Binding CloseEraseSheetCommand}"
+                                         ConfirmCommand="{Binding EraseDataCommand}" />
+            </controls:BottomSheet.Footer>
         </controls:BottomSheet>
     </Grid>
 
