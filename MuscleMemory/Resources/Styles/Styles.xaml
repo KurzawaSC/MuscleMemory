@@ -269,6 +269,7 @@
 
     <Style x:Key="SetTableRow" TargetType="Grid">
         <Setter Property="ColumnDefinitions" Value="40, *, 60" />
+        <Setter Property="SafeAreaEdges" Value="None" />
     </Style>
 
     <Style x:Key="DialogCard" TargetType="Border">

@@ -10,6 +10,8 @@ public static class CountCaption
 
     public static string Sets(int count) => Choose(count, UiText.CaptionSet, UiText.CaptionSets);
 
+    public static string Reps(int count) => Choose(count, UiText.CaptionRep, UiText.CaptionReps);
+
     public static string Workouts(int count) => Choose(count, UiText.CaptionWorkout, UiText.CaptionWorkouts);
 
     public static string Sessions(int count) => Choose(count, UiText.CaptionSession, UiText.CaptionSessions);
