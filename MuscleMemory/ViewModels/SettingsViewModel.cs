@@ -82,7 +82,7 @@ public partial class SettingsViewModel(
         await Share.Default.RequestAsync(new ShareFileRequest
         {
             Title = UiText.TitleExportData,
-            File = new ShareFile(snapshotPath)
+            File = new ShareFile(snapshotPath, DatabaseNames.ExportContentType)
         });
     }, UiText.BodyExportFailed);
 }
