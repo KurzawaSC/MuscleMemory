@@ -14,13 +14,14 @@
         <VerticalStackLayout>
             <controls:ActionRow Text="{Binding EditText, Source={x:Reference Root}}"
                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                IsVisible="{Binding HasEdit, Source={x:Reference Root}}"
                                 Command="{Binding EditCommand, Source={x:Reference Root}}" />
-            <BoxView Style="{StaticResource Divider}" IsVisible="{Binding HasHistory, Source={x:Reference Root}}" />
+            <BoxView Style="{StaticResource Divider}" IsVisible="{Binding SeparatesHistory, Source={x:Reference Root}}" />
             <controls:ActionRow Text="{x:Static constants:UiText.ActionViewHistory}"
                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                 IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
                                 Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
-            <BoxView Style="{StaticResource Divider}" />
+            <BoxView Style="{StaticResource Divider}" IsVisible="{Binding SeparatesDelete, Source={x:Reference Root}}" />
             <controls:ActionRow Text="{Binding DeleteText, Source={x:Reference Root}}"
                                 TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                 ShowsChevron="False"
