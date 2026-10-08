@@ -19,7 +19,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     private bool _isGuardingUnsavedChanges;
     private Workout? _workoutToEdit;
     private Exercise? _exerciseToAdd;
-    private WorkoutExercise? _exerciseBeingEdited;
+    private WorkoutExerciseItem? _exerciseBeingEdited;
 
     public AddEditWorkoutViewModel(
         IWorkoutRepository workoutRepository,
@@ -98,7 +98,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     public partial bool IsConfigurationOpen { get; set; }
 
-    public ObservableCollection<WorkoutExercise> Exercises { get; } = [];
+    public ObservableCollection<WorkoutExerciseItem> Exercises { get; } = [];
 
     public ExercisePickerViewModel ExercisePicker { get; }
 
@@ -128,7 +128,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         var exercises = await _workoutRepository.GetExercisesAsync(workout.Id);
 
         WorkoutName = workout.Name;
-        Exercises.ReplaceAll(exercises);
+        Exercises.ReplaceAll(exercises.Select(exercise => new WorkoutExerciseItem(exercise)));
         RefreshSummary();
         HasUnsavedChanges = false;
         IsLoading = false;
@@ -278,11 +278,11 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     });
 
     [RelayCommand(CanExecute = nameof(IsEditable))]
-    private void EditExercise(WorkoutExercise exercise)
+    private void EditExercise(WorkoutExerciseItem item)
     {
         _exerciseToAdd = null;
-        _exerciseBeingEdited = exercise;
-        ExerciseConfiguration.BeginEdit(exercise);
+        _exerciseBeingEdited = item;
+        ExerciseConfiguration.BeginEdit(item.Exercise);
         IsConfigurationOpen = true;
     }
 
@@ -312,7 +312,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [RelayCommand]
     private void RemoveEditedExercise()
     {
-        if (_exerciseBeingEdited is { } exercise && Exercises.Remove(exercise))
+        if (_exerciseBeingEdited is { } item && Exercises.Remove(item))
         {
             RefreshSummary();
             HasUnsavedChanges = true;
@@ -338,7 +338,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
 
     private void AddExerciseToWorkout(Exercise selectedExercise, ExerciseConfiguration configuration)
     {
-        Exercises.Add(new WorkoutExercise
+        Exercises.Add(new WorkoutExerciseItem(new WorkoutExercise
         {
             ExerciseId = selectedExercise.Id,
             ExerciseName = selectedExercise.Name,
@@ -346,25 +346,20 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
             Reps = configuration.Reps,
             BreakTimeInSeconds = configuration.BreakTimeInSeconds,
             TargetRPE = configuration.TargetRPE
-        });
+        }));
 
         RefreshSummary();
         HasUnsavedChanges = true;
     }
 
-    private void UpdateExerciseInWorkout(WorkoutExercise exercise, ExerciseConfiguration configuration)
+    private void UpdateExerciseInWorkout(WorkoutExerciseItem item, ExerciseConfiguration configuration)
     {
-        var index = Exercises.IndexOf(exercise);
-        if (index < 0)
+        if (!Exercises.Contains(item))
         {
             return;
         }
 
-        exercise.Sets = configuration.Sets;
-        exercise.Reps = configuration.Reps;
-        exercise.BreakTimeInSeconds = configuration.BreakTimeInSeconds;
-        exercise.TargetRPE = configuration.TargetRPE;
-        Exercises[index] = exercise;
+        item.Apply(configuration);
 
         RefreshSummary();
         HasUnsavedChanges = true;
@@ -374,23 +369,24 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     {
         ExerciseCount = Exercises.Count;
         IsEmpty = ExerciseCount == 0;
-        TotalSets = Exercises.Sum(exercise => exercise.Sets);
+        TotalSets = Exercises.Sum(item => item.Sets);
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private Task SaveWorkoutAsync() => _errors.RunAsync(async () =>
     {
         var name = WorkoutName.Trim();
+        List<WorkoutExercise> exercises = [.. Exercises.Select(item => item.Exercise)];
 
         if (_workoutToEdit is not null)
         {
-            await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, [.. Exercises]);
+            await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, exercises);
             _workoutToEdit.Name = name;
         }
         else
         {
             var workout = new Workout { Name = name };
-            await _workoutRepository.SaveWithExercisesAsync(workout, [.. Exercises]);
+            await _workoutRepository.SaveWithExercisesAsync(workout, exercises);
             _workoutToEdit = workout;
         }
 

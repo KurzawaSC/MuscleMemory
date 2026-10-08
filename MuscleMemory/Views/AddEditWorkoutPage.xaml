@@ -2,7 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -94,7 +93,7 @@
                 </DataTemplate>
             </CollectionView.HeaderTemplate>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:WorkoutExercise">
+                <DataTemplate x:DataType="viewmodels:WorkoutExerciseItem">
                     <Border Style="{StaticResource SurfaceCard}">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:AddEditWorkoutViewModel}}, Path=EditExerciseCommand}"
