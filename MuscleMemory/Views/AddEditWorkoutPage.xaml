@@ -69,18 +69,8 @@
                 <DataTemplate x:DataType="viewmodels:AddEditWorkoutViewModel">
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
-                            <Border Style="{StaticResource SurfaceCard}" Padding="14,10">
-                                <VerticalStackLayout>
-                                    <Label Style="{StaticResource ValueLabel}" Text="{Binding ExerciseCount}" />
-                                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding ExerciseCountCaption}" />
-                                </VerticalStackLayout>
-                            </Border>
-                            <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14,10">
-                                <VerticalStackLayout>
-                                    <Label Style="{StaticResource ValueLabel}" Text="{Binding TotalSets}" />
-                                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding TotalSetsCaption}" />
-                                </VerticalStackLayout>
-                            </Border>
+                            <controls:StatTile Padding="14,10" Value="{Binding ExerciseCount}" Caption="{Binding ExerciseCountCaption}" />
+                            <controls:StatTile Grid.Column="1" Padding="14,10" Value="{Binding TotalSets}" Caption="{Binding TotalSetsCaption}" />
                         </Grid>
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" VerticalOptions="Center" />

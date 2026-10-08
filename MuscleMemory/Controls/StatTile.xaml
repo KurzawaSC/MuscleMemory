@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:controls="clr-namespace:MuscleMemory.Controls"
+        x:Class="MuscleMemory.Controls.StatTile"
+        x:Name="Root"
+        x:DataType="controls:StatTile"
+        Style="{StaticResource SurfaceCard}">
+
+    <Border.Resources>
+        <Style x:Key="PlainStatValue" TargetType="controls:UnitLabel" BasedOn="{StaticResource ValueLabel}" />
+
+        <Style x:Key="UnitStatValue" TargetType="controls:UnitLabel" BasedOn="{StaticResource BaseLabel}">
+            <Setter Property="ValueSpanStyle" Value="{StaticResource ValueSpan}" />
+            <Setter Property="LineBreakMode" Value="NoWrap" />
+        </Style>
+    </Border.Resources>
+
+    <VerticalStackLayout Spacing="{Binding ContentSpacing, Source={x:Reference Root}}">
+        <controls:UnitLabel x:Name="ValueText"
+                            Style="{StaticResource PlainStatValue}"
+                            Value="{Binding Value, Source={x:Reference Root}}"
+                            ValueFormat="{Binding ValueFormat, Source={x:Reference Root}}"
+                            Unit="{Binding Unit, Source={x:Reference Root}}" />
+        <Label Style="{StaticResource CaptionLabel}" Text="{Binding Caption, Source={x:Reference Root}}" />
+    </VerticalStackLayout>
+</Border>

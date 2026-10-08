@@ -268,29 +268,22 @@
                     <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding Summary.DateText}" />
 
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,12,0,0">
-                        <Border Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalTimeText}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionTime}" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <controls:UnitLabel LineBreakMode="NoWrap"
-                                                    Value="{Binding Summary.TotalVolume}"
-                                                    ValueFormat="{x:Static constants:UiText.VolumeNumberFormat}"
-                                                    Unit="{x:Static constants:UiText.KilogramSuffix}"
-                                                    ValueSpanStyle="{StaticResource ValueSpan}"
-                                                    ValueColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="2" Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalSets}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding Summary.TotalSetsCaption}" />
-                            </VerticalStackLayout>
-                        </Border>
+                        <controls:StatTile Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalTimeText}"
+                                           Caption="{x:Static constants:UiText.CaptionTime}" />
+                        <controls:StatTile Grid.Column="1"
+                                           Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalVolume}"
+                                           ValueFormat="{x:Static constants:UiText.VolumeNumberFormat}"
+                                           Unit="{x:Static constants:UiText.KilogramSuffix}"
+                                           Caption="{x:Static constants:UiText.CaptionVolume}" />
+                        <controls:StatTile Grid.Column="2"
+                                           Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalSets}"
+                                           Caption="{Binding Summary.TotalSetsCaption}" />
                     </Grid>
 
                     <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" Margin="0,18,0,6" />
