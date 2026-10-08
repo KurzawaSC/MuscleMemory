@@ -27,6 +27,7 @@ public static class MauiProgram
                 handlers.AddHandler<Shell, TabBarShellRenderer>();
                 BorderlessEntryMapping.Register();
                 NumericEntryMapping.Register();
+                CheckedStateMapping.Register();
             });
 
 #if DEBUG

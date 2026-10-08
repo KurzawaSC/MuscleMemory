@@ -7,21 +7,26 @@
              x:DataType="controls:EmptyState"
              Padding="40,0">
 
-    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+    <VerticalStackLayout HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Spacing="{Binding Spacing, Source={x:Reference Root}}">
+        <ContentView Content="{Binding Icon, Source={x:Reference Root}}"
+                     IsVisible="{Binding HasIcon, Source={x:Reference Root}}"
+                     HorizontalOptions="Center" />
         <VerticalStackLayout Spacing="6">
             <Label Style="{StaticResource TitleLabel}"
                    Text="{Binding Message, Source={x:Reference Root}}"
+                   IsVisible="{Binding HasMessage, Source={x:Reference Root}}"
                    HorizontalTextAlignment="Center" />
             <Label Text="{Binding Detail, Source={x:Reference Root}}"
                    IsVisible="{Binding HasDetail, Source={x:Reference Root}}"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalTextAlignment="Center" />
         </VerticalStackLayout>
-        <controls:TappableButton Style="{StaticResource PrimaryButton}"
+        <controls:TappableButton Style="{Binding ActionStyle, Source={x:Reference Root}, TargetNullValue={StaticResource EmptyStateButton}}"
                                  Text="{Binding ActionText, Source={x:Reference Root}}"
                                  Command="{Binding ActionCommand, Source={x:Reference Root}}"
                                  IsVisible="{Binding HasAction, Source={x:Reference Root}}"
-                                 HorizontalOptions="Center"
-                                 ContentPadding="24,0" />
+                                 HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentView>

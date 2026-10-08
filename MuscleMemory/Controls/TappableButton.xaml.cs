@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
 
@@ -16,15 +17,18 @@ public partial class TappableButton : ContentView
     private const uint PressPhaseMilliseconds = 45;
 
     private bool _isPressed;
+    private ICommand? _trackedCommand;
 
     public static readonly BindableProperty TextProperty =
         BindableProperty.Create(nameof(Text), typeof(string), typeof(TappableButton), string.Empty);
 
     public static readonly BindableProperty CommandProperty =
-        BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(TappableButton));
+        BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(TappableButton),
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).TrackCommand());
 
     public static readonly BindableProperty CommandParameterProperty =
-        BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TappableButton));
+        BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TappableButton),
+            propertyChanged: (bindable, _, _) => ((TappableButton)bindable).RefreshIsEnabledProperty());
 
     public static readonly BindableProperty FillColorProperty =
         BindableProperty.Create(nameof(FillColor), typeof(Color), typeof(TappableButton), Colors.Transparent,
@@ -154,6 +158,43 @@ public partial class TappableButton : ContentView
     public double SurfaceOpacity => IsEnabled ? 1 : DisabledOpacity;
 
     public Color SurfaceFill => _isPressed && PressedFillColor is { } pressedFill ? pressedFill : FillColor;
+
+    protected override bool IsEnabledCore => base.IsEnabledCore && IsCommandAvailable;
+
+    private bool IsCommandAvailable => Command switch
+    {
+        null or IAsyncRelayCommand { IsRunning: true } => true,
+        var command => command.CanExecute(CommandParameter)
+    };
+
+    protected override void OnHandlerChanged()
+    {
+        base.OnHandlerChanged();
+        TrackCommand();
+    }
+
+    private void TrackCommand()
+    {
+        var command = Handler is null ? null : Command;
+        if (!ReferenceEquals(command, _trackedCommand))
+        {
+            if (_trackedCommand is not null)
+            {
+                _trackedCommand.CanExecuteChanged -= OnCanExecuteChanged;
+            }
+
+            _trackedCommand = command;
+
+            if (command is not null)
+            {
+                command.CanExecuteChanged += OnCanExecuteChanged;
+            }
+        }
+
+        RefreshIsEnabledProperty();
+    }
+
+    private void OnCanExecuteChanged(object? sender, EventArgs e) => RefreshIsEnabledProperty();
 
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

@@ -251,6 +251,10 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="EmptyStateButton" TargetType="controls:TappableButton" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="ContentPadding" Value="24,0" />
+    </Style>
+
     <Style x:Key="SetTable" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}" />
         <Setter Property="StrokeThickness" Value="1" />
@@ -481,7 +485,7 @@
 
     <Style x:Key="RestPanelButton" TargetType="controls:TappableButton">
         <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource RestPanelStartLight}, Dark={StaticResource RestPanelStartDark}}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlRadius}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="HeightRequest" Value="{StaticResource MediumButtonHeight}" />
