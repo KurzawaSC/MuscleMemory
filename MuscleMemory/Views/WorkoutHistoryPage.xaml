@@ -2,8 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
-                             xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
@@ -83,9 +81,9 @@
                     </Grid>
                 </Border>
 
-                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding SelectedSession.Session.Exercises, FallbackValue={x:Null}}">
+                <VerticalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding SelectedSession.Exercises, FallbackValue={x:Null}}">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="services:WorkoutHistoryExercise">
+                        <DataTemplate x:DataType="viewmodels:WorkoutHistoryExerciseItem">
                             <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
                                 <VerticalStackLayout x:Name="ExerciseCard" Spacing="10" BackgroundColor="Transparent">
                                     <VerticalStackLayout.Behaviors>
@@ -94,7 +92,7 @@
                                     </VerticalStackLayout.Behaviors>
                                     <Grid ColumnDefinitions="*, Auto">
                                         <Label Style="{StaticResource CardTitleLabel}"
-                                               Text="{Binding ExerciseName}"
+                                               Text="{Binding Exercise.ExerciseName}"
                                                LineBreakMode="TailTruncation"
                                                VerticalOptions="Center" />
                                         <controls:OverflowButton Grid.Column="1"
@@ -106,11 +104,11 @@
                                             <controls:SetTableHeader />
                                             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
                                                 <BindableLayout.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:WorkoutSet">
+                                                    <DataTemplate x:DataType="viewmodels:LoggedSetItem">
                                                         <controls:SetTableRow Set="{Binding .}">
                                                             <controls:SetTableRow.GestureRecognizers>
-                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=ShowSetActionsCommand}"
-                                                                                      CommandParameter="{Binding .}" />
+                                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=SetActions.ShowCommand}"
+                                                                                      CommandParameter="{Binding Set}" />
                                                             </controls:SetTableRow.GestureRecognizers>
                                                         </controls:SetTableRow>
                                                     </DataTemplate>
@@ -158,14 +156,14 @@
                                           CloseCommand="{Binding CloseExercisePickerCommand}" />
         </controls:BottomSheet>
 
-        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetActionSheetOpen}">
-            <controls:ItemActionsSheet Title="{Binding ActionSetTitle}"
-                                       Subtitle="{Binding ActionSetSubtitle}"
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding SetActions.IsActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding SetActions.ActionSetTitle}"
+                                       Subtitle="{Binding SetActions.ActionSetSubtitle}"
                                        EditText="{x:Static constants:UiText.TitleEditSet}"
                                        DeleteText="{x:Static constants:UiText.TitleDeleteSet}"
-                                       EditCommand="{Binding EditActionSetCommand}"
-                                       DeleteCommand="{Binding DeleteActionSetCommand}"
-                                       CancelCommand="{Binding CancelSetActionsCommand}" />
+                                       EditCommand="{Binding SetActions.EditCommand}"
+                                       DeleteCommand="{Binding SetActions.DeleteCommand}"
+                                       CancelCommand="{Binding SetActions.CancelCommand}" />
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseActionSheetOpen}">
@@ -176,12 +174,12 @@
                                        CancelCommand="{Binding CancelExerciseActionsCommand}" />
         </controls:BottomSheet>
 
-        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsSetEditorOpen}">
-            <controls:SetEditorSheet Title="{Binding SetEditorTitle}" Editor="{Binding SetEditor}" />
+        <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding SetActions.IsEditorOpen}">
+            <controls:SetEditorSheet Title="{Binding SetActions.EditorTitle}" Editor="{Binding SetActions.Editor}" />
             <controls:BottomSheet.Footer>
-                <controls:SheetActionBar ConfirmText="{Binding SetEditorConfirmText}"
-                                         ConfirmCommand="{Binding SaveSetEditorCommand}"
-                                         CancelCommand="{Binding CloseSetEditorCommand}" />
+                <controls:SheetActionBar ConfirmText="{Binding SetActions.EditorConfirmText}"
+                                         ConfirmCommand="{Binding SetActions.SaveEditorCommand}"
+                                         CancelCommand="{Binding SetActions.CloseEditorCommand}" />
             </controls:BottomSheet.Footer>
         </controls:BottomSheet>
     </Grid>

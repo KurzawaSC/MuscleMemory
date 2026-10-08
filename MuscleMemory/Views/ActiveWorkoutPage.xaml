@@ -196,7 +196,7 @@
                                         <controls:FadeInView>
                                             <VerticalStackLayout BackgroundColor="Transparent">
                                                 <VerticalStackLayout.GestureRecognizers>
-                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=ShowSetActionsCommand}"
+                                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=SetActions.ShowCommand}"
                                                                           CommandParameter="{Binding .}" />
                                                 </VerticalStackLayout.GestureRecognizers>
                                                 <Grid ColumnDefinitions="*, Auto" Padding="0,12">
@@ -387,22 +387,22 @@
             </Grid>
         </Grid>
 
-        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsSetActionSheetOpen}">
-            <controls:ItemActionsSheet Title="{Binding ActionSetTitle}"
-                                       Subtitle="{Binding ActionSetSubtitle}"
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding SetActions.IsActionSheetOpen}">
+            <controls:ItemActionsSheet Title="{Binding SetActions.ActionSetTitle}"
+                                       Subtitle="{Binding SetActions.ActionSetSubtitle}"
                                        EditText="{x:Static constants:UiText.TitleEditSet}"
                                        DeleteText="{x:Static constants:UiText.TitleDeleteSet}"
-                                       EditCommand="{Binding EditActionSetCommand}"
-                                       DeleteCommand="{Binding DeleteActionSetCommand}"
-                                       CancelCommand="{Binding CancelSetActionsCommand}" />
+                                       EditCommand="{Binding SetActions.EditCommand}"
+                                       DeleteCommand="{Binding SetActions.DeleteCommand}"
+                                       CancelCommand="{Binding SetActions.CancelCommand}" />
         </controls:BottomSheet>
 
-        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsSetEditorOpen}">
-            <controls:SetEditorSheet Title="{x:Static constants:UiText.TitleEditSet}" Editor="{Binding SetEditor}" />
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding SetActions.IsEditorOpen}">
+            <controls:SetEditorSheet Title="{x:Static constants:UiText.TitleEditSet}" Editor="{Binding SetActions.Editor}" />
             <controls:BottomSheet.Footer>
                 <controls:SheetActionBar ConfirmText="{x:Static constants:UiText.ButtonSave}"
-                                         ConfirmCommand="{Binding SaveEditedSetCommand}"
-                                         CancelCommand="{Binding CloseSetEditorCommand}" />
+                                         ConfirmCommand="{Binding SetActions.SaveEditorCommand}"
+                                         CancelCommand="{Binding SetActions.CloseEditorCommand}" />
             </controls:BottomSheet.Footer>
         </controls:BottomSheet>
     </Grid>
