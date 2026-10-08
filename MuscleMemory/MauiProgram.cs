@@ -51,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<IErrorHandler, ErrorHandler>();
         builder.Services.AddSingleton<IWorkoutSummaryService, WorkoutSummaryService>();
+        builder.Services.AddSingleton<IActiveWorkoutSessionService, ActiveWorkoutSessionService>();
         builder.Services.AddSingleton<INavigationStackService, NavigationStackService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDataChangeNotifier, DataChangeNotifier>();
