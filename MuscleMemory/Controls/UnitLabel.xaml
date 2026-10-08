@@ -5,13 +5,14 @@
        x:Class="MuscleMemory.Controls.UnitLabel"
        x:Name="Root"
        x:DataType="controls:UnitLabel"
-       Style="{StaticResource BaseLabel}">
-    <Label.FormattedText>
-        <FormattedString>
+       Style="{StaticResource BaseLabel}"
+       Text="{Binding DisplayValue, Source={x:Reference Root}}">
+    <Label.Resources>
+        <FormattedString x:Key="ValueWithUnit">
             <Span Style="{Binding ValueSpanStyle, Source={x:Reference Root}}"
                   Text="{Binding DisplayValue, Source={x:Reference Root}}"
                   TextColor="{Binding ValueColor, Source={x:Reference Root}}" />
             <Span Style="{StaticResource UnitSpan}" Text="{Binding Unit, Source={x:Reference Root}}" />
         </FormattedString>
-    </Label.FormattedText>
+    </Label.Resources>
 </Label>

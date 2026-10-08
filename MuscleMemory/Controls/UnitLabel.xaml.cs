@@ -4,6 +4,8 @@ namespace MuscleMemory.Controls;
 
 public partial class UnitLabel : Label
 {
+    private const string ValueWithUnitKey = "ValueWithUnit";
+
     public static readonly BindableProperty ValueProperty =
         BindableProperty.Create(nameof(Value), typeof(object), typeof(UnitLabel),
             propertyChanged: (bindable, _, _) => ((UnitLabel)bindable).OnPropertyChanged(nameof(DisplayValue)));
@@ -13,7 +15,8 @@ public partial class UnitLabel : Label
             propertyChanged: (bindable, _, _) => ((UnitLabel)bindable).OnPropertyChanged(nameof(DisplayValue)));
 
     public static readonly BindableProperty UnitProperty =
-        BindableProperty.Create(nameof(Unit), typeof(string), typeof(UnitLabel), string.Empty);
+        BindableProperty.Create(nameof(Unit), typeof(string), typeof(UnitLabel), string.Empty,
+            propertyChanged: (bindable, _, _) => ((UnitLabel)bindable).ApplyUnit());
 
     public static readonly BindableProperty ValueSpanStyleProperty =
         BindableProperty.Create(nameof(ValueSpanStyle), typeof(Style), typeof(UnitLabel));
@@ -54,4 +57,7 @@ public partial class UnitLabel : Label
     }
 
     public string DisplayValue => string.Format(CultureInfo.CurrentCulture, ValueFormat, Value);
+
+    private void ApplyUnit() =>
+        FormattedText = string.IsNullOrEmpty(Unit) ? null : (FormattedString)Resources[ValueWithUnitKey];
 }
