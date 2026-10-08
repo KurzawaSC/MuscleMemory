@@ -33,11 +33,11 @@
                 </controls:GlyphButton>
                 <Entry x:Name="ValueEntry"
                        Grid.Column="1"
+                       Style="{StaticResource StepperEntry}"
                        Text="{Binding Text, Source={x:Reference Root}}"
                        MaxLength="{Binding MaxLength, Source={x:Reference Root}}"
                        Placeholder="—"
                        Keyboard="Numeric"
-                       FontSize="24"
                        HorizontalTextAlignment="Center"
                        VerticalOptions="Center" />
                 <controls:GlyphButton Grid.Column="2"

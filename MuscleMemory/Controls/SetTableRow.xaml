@@ -10,15 +10,15 @@
     <VerticalStackLayout BackgroundColor="Transparent">
         <BoxView Style="{StaticResource Divider}" />
         <Grid Style="{StaticResource SetTableRow}" Padding="12,10">
-            <Label FontSize="13"
+            <Label Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.SetNumber, Source={x:Reference Root}, FallbackValue=''}"
                    TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
             <Label Grid.Column="1"
-                   FontSize="13"
+                   Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.Weight, Source={x:Reference Root}, StringFormat={x:Static constants:UiText.WeightFormat}, FallbackValue=''}"
                    HorizontalTextAlignment="Center" />
             <Label Grid.Column="2"
-                   FontSize="13"
+                   Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.Reps, Source={x:Reference Root}, FallbackValue=''}"
                    HorizontalTextAlignment="End" />
         </Grid>

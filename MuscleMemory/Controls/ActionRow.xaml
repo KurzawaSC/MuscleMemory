@@ -18,13 +18,13 @@
                TextColor="{Binding TextColor, Source={x:Reference Root}}"
                VerticalOptions="Center" />
         <Label Grid.Column="1"
+               Style="{StaticResource SmallLabel}"
                Text="{Binding Value, Source={x:Reference Root}}"
-               FontSize="13"
                TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                VerticalOptions="Center" />
         <Label Grid.Column="2"
+               Style="{StaticResource SmallGlyphLabel}"
                Text="›"
-               FontSize="17"
                IsVisible="{Binding ShowsChevron, Source={x:Reference Root}}"
                TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
                VerticalOptions="Center" />

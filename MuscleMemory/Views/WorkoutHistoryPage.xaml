@@ -6,6 +6,7 @@
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Class="MuscleMemory.Views.WorkoutHistoryPage"
                              x:DataType="viewmodels:WorkoutHistoryViewModel"
                              BackCommand="{Binding NavigateBackCommand}">
@@ -50,30 +51,28 @@
                                 </VisualStateGroup>
                             </VisualStateGroupList>
                         </VisualStateManager.VisualStateGroups>
-                        <Label x:Name="ChipLabel" Text="{Binding ChipText}" FontSize="13" />
+                        <Label x:Name="ChipLabel" Style="{StaticResource SmallLabel}" Text="{Binding ChipText}" />
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
         <ScrollView Grid.Row="2" IsVisible="{Binding ListState.HasItems}">
-            <VerticalStackLayout Spacing="12" Padding="20,14,20,14">
+            <VerticalStackLayout Spacing="12" Padding="{markup:Gutter Top=14, Bottom=14}">
                 <Border Style="{StaticResource SurfaceCard}">
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Spacing="3" VerticalOptions="Center">
-                            <Label Style="{StaticResource TitleLabel}" FontSize="18" Text="{Binding SelectedSession.DateText, FallbackValue=''}" />
+                            <Label Style="{StaticResource MediumTitleLabel}" Text="{Binding SelectedSession.DateText, FallbackValue=''}" />
                             <Label Style="{StaticResource CaptionLabel}" Text="{Binding SelectedSession.StatsText, FallbackValue=''}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                             <Label HorizontalTextAlignment="End">
                                 <Label.FormattedText>
                                     <FormattedString>
-                                        <Span Text="{Binding SelectedSession.VolumeText, FallbackValue=''}"
-                                              FontSize="21"
+                                        <Span Style="{StaticResource TitleSpan}"
+                                              Text="{Binding SelectedSession.VolumeText, FallbackValue=''}"
                                               TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                        <Span Text="{x:Static constants:UiText.KilogramSuffix}"
-                                              FontSize="12"
-                                              TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
+                                        <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
@@ -88,19 +87,13 @@
                             <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
                                 <VerticalStackLayout Spacing="10">
                                     <Grid ColumnDefinitions="*, Auto">
-                                        <Label Style="{StaticResource TitleLabel}"
-                                               FontSize="17"
+                                        <Label Style="{StaticResource CardTitleLabel}"
                                                Text="{Binding ExerciseName}"
                                                LineBreakMode="TailTruncation"
                                                VerticalOptions="Center" />
                                         <controls:TappableButton Grid.Column="1"
-                                                                 Style="{StaticResource SoftPrimaryButton}"
+                                                                 Style="{StaticResource CompactSoftButton}"
                                                                  Text="{x:Static constants:UiText.ButtonDelete}"
-                                                                 FontSize="12"
-                                                                 HeightRequest="30"
-                                                                 CornerRadius="{StaticResource PillRadius}"
-                                                                 ContentPadding="12,0"
-                                                                 VerticalOptions="Center"
                                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=DeleteExerciseCommand}"
                                                                  CommandParameter="{Binding .}" />
                                     </Grid>
@@ -120,10 +113,9 @@
                                                 </BindableLayout.ItemTemplate>
                                             </VerticalStackLayout>
                                             <BoxView Style="{StaticResource Divider}" />
-                                            <controls:TappableButton Style="{StaticResource TextButton}"
+                                            <controls:TappableButton Style="{StaticResource CaptionTextButton}"
                                                                      Text="{x:Static constants:UiText.ButtonAddSetInline}"
-                                                                     FontSize="13"
-                                                                     HeightRequest="44"
+                                                                     HeightRequest="{StaticResource MediumButtonHeight}"
                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=AddSetCommand}"
                                                                      CommandParameter="{Binding .}" />
                                         </VerticalStackLayout>
@@ -135,8 +127,8 @@
                 </VerticalStackLayout>
 
                 <Border Style="{StaticResource DashedOutline}" Padding="15">
-                    <Label Text="{x:Static constants:UiText.HintEditableSession}"
-                           FontSize="14"
+                    <Label Style="{StaticResource CompactLabel}"
+                           Text="{x:Static constants:UiText.HintEditableSession}"
                            TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                            HorizontalTextAlignment="Center" />
                 </Border>
@@ -146,7 +138,7 @@
         <controls:TappableButton Grid.Row="3"
                                  Style="{StaticResource PrimaryButton}"
                                  Text="{x:Static constants:UiText.ButtonAddExerciseToSession}"
-                                 Margin="20,0,20,14"
+                                 Margin="{markup:Gutter Bottom=14}"
                                  Command="{Binding AddExerciseCommand}"
                                  IsVisible="{Binding ListState.HasItems}" />
 

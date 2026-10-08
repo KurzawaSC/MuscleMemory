@@ -21,7 +21,7 @@
                 InputTransparent="True"
                 BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="10" />
+                <RoundRectangle CornerRadius="{StaticResource SmallControlRadius}" />
             </Border.StrokeShape>
             <HorizontalStackLayout Spacing="3" HorizontalOptions="Center" VerticalOptions="Center">
                 <BoxView Style="{StaticResource OverflowDot}" />

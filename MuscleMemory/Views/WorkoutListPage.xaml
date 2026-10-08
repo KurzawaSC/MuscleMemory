@@ -6,6 +6,7 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:platform="clr-namespace:MuscleMemory"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.WorkoutListPage"
                              x:DataType="viewmodels:WorkoutListViewModel"
@@ -18,13 +19,13 @@
     <Grid RowDefinitions="Auto, *">
         <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderWorkouts}" Subtitle="{x:Static constants:UiText.SubtitleWorkouts}" />
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="20,12,20,0">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="{markup:Gutter Top=12}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
             <CollectionView.FooterTemplate>
                 <DataTemplate x:DataType="x:Object">
-                    <BoxView HeightRequest="100" Color="Transparent" />
+                    <BoxView HeightRequest="{StaticResource ListFooterSpacing}" Color="Transparent" />
                 </DataTemplate>
             </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>

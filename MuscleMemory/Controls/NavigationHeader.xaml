@@ -2,10 +2,12 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Controls.NavigationHeader"
              x:Name="Root"
              x:DataType="controls:NavigationHeader"
-             Padding="14,4,20,4">
+             Padding="{markup:Gutter Start={x:Static constants:Spacing.GlyphButtonGutter}, Top=4, Bottom=4}">
 
     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="6">
         <controls:GlyphButton Glyph="‹"

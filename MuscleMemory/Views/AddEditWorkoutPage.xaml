@@ -6,6 +6,7 @@
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                             xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
                              x:Class="MuscleMemory.Views.AddEditWorkoutPage"
                              x:DataType="viewmodels:AddEditWorkoutViewModel"
@@ -19,7 +20,7 @@
     <Grid RowDefinitions="Auto, Auto, *, Auto">
         <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding NavigateBackCommand}" />
 
-        <VerticalStackLayout Grid.Row="1" Padding="20,14,20,0" Spacing="6">
+        <VerticalStackLayout Grid.Row="1" Padding="{markup:Gutter Top=14}" Spacing="6">
             <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelWorkoutName}" />
             <controls:TextField FieldHeight="52"
                                 IsEnabled="{Binding IsEditable}"
@@ -40,10 +41,10 @@
                     Padding="0"
                     HorizontalOptions="Center">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="28" />
+                    <RoundRectangle CornerRadius="{StaticResource TileRadius}" />
                 </Border.StrokeShape>
-                <Label Text="+"
-                       FontSize="30"
+                <Label Style="{StaticResource LargeGlyphLabel}"
+                       Text="+"
                        TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
                        HorizontalOptions="Center"
                        VerticalOptions="Center" />
@@ -63,7 +64,7 @@
 
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding Exercises}"
-                        Margin="20,16,20,0"
+                        Margin="{markup:Gutter Top=16}"
                         Header="{Binding .}"
                         Footer="{Binding .}"
                         IsVisible="{Binding IsEmpty, Converter={StaticResource InvertedBoolConverter}}">
@@ -90,9 +91,8 @@
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" VerticalOptions="Center" />
                             <controls:TappableButton Grid.Column="1"
-                                                     Style="{StaticResource TextButton}"
+                                                     Style="{StaticResource SmallTextButton}"
                                                      Text="{x:Static constants:UiText.ButtonAddInline}"
-                                                     FontSize="15"
                                                      Command="{Binding AddExerciseCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -143,7 +143,7 @@
             </CollectionView.FooterTemplate>
         </CollectionView>
 
-        <VerticalStackLayout Grid.Row="3" Padding="20,12,20,16" Spacing="8">
+        <VerticalStackLayout Grid.Row="3" Padding="{markup:Gutter Top=12, Bottom=16}" Spacing="8">
             <controls:TappableButton Style="{StaticResource PrimaryButton}"
                                      Text="{x:Static constants:UiText.ButtonSaveWorkout}"
                                      Command="{Binding SaveWorkoutCommand}"
@@ -228,7 +228,7 @@
                                                                       CommandParameter="{Binding Value}" />
                                             </Grid.GestureRecognizers>
                                             <BoxView HeightRequest="8"
-                                                     CornerRadius="4"
+                                                     CornerRadius="{StaticResource LevelBarRadius}"
                                                      VerticalOptions="Center"
                                                      Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}">
                                                 <BoxView.Triggers>
@@ -249,9 +249,8 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <controls:TappableButton Style="{StaticResource TextButton}"
+                <controls:TappableButton Style="{StaticResource SmallTextButton}"
                                          Text="{x:Static constants:UiText.ButtonRemoveFromWorkout}"
-                                         FontSize="15"
                                          HorizontalOptions="Center"
                                          IsVisible="{Binding ExerciseConfiguration.IsEditing}"
                                          Command="{Binding RemoveEditedExerciseCommand}" />
