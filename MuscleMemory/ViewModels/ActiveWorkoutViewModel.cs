@@ -66,9 +66,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     public partial string TimerText { get; set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial string TotalTimeText { get; set; } = string.Empty;
-
     public ObservableCollection<SessionExercise> Exercises { get; } = [];
     public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
     public ObservableCollection<LevelSegment> SetSegments { get; } = [];
@@ -113,23 +110,6 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool IsResting { get; set; }
 
     [ObservableProperty]
-    public partial bool IsWorkoutCompleted { get; set; }
-
-    [ObservableProperty]
-    public partial double TotalVolume { get; set; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
-    public partial int TotalSets { get; set; }
-
-    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
-
-    [ObservableProperty]
-    public partial string SummaryDateText { get; set; } = string.Empty;
-
-    public ObservableCollection<SummaryExerciseItem> CompletedExercises { get; } = [];
-
-    [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
 
     [ObservableProperty]
@@ -152,6 +132,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public SetInputViewModel SetInput { get; } = new();
 
     public SetActionsViewModel SetActions { get; }
+
+    public WorkoutSummaryViewModel Summary { get; }
 
     public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.TotalVolume());
 
@@ -184,9 +166,9 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _haptics = haptics;
         _errors = errors;
         SetActions = new SetActionsViewModel(this, dialogs, errors);
+        Summary = new WorkoutSummaryViewModel(timer);
 
         TimerText = ZeroTimeText;
-        TotalTimeText = ZeroTimeText;
         RestTimerText = ZeroTimeText;
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
@@ -325,7 +307,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _currentExerciseIndex = state.CurrentExerciseIndex;
         RestoreRest(state);
         IsWorkoutActive = true;
-        IsWorkoutCompleted = false;
+        Summary.Clear();
         WorkoutTitle = session.WorkoutName;
         _workoutId = session.WorkoutId;
 
@@ -538,18 +520,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        TotalTimeText = _timer.ElapsedSince(_workoutStartTimeUtc);
-        ShowSummary(summary);
-        IsWorkoutCompleted = true;
+        Summary.Show(summary, _workoutStartTimeUtc);
         IsWorkoutActive = false;
-    }
-
-    private void ShowSummary(WorkoutSummary summary)
-    {
-        CompletedExercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
-        TotalVolume = summary.TotalVolume;
-        TotalSets = summary.Exercises.Sum(exercise => exercise.Sets.Count);
-        SummaryDateText = _workoutStartTimeUtc.ToLocalTime().ToString(UiText.SummaryDateFormat, CultureInfo.InvariantCulture);
     }
 
     private void ClearRestState()
@@ -661,7 +633,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        if (!IsWorkoutCompleted)
+        if (!Summary.IsVisible)
         {
             await _navigation.GoToAsync(NavigationRoutes.GoBack);
             return;
@@ -694,20 +666,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private void ClearCompletedSummary()
     {
-        if (IsWorkoutCompleted)
+        if (Summary.IsVisible)
         {
-            ClearSummary();
+            Summary.Clear();
         }
-    }
-
-    private void ClearSummary()
-    {
-        IsWorkoutCompleted = false;
-        CompletedExercises.Clear();
-        TotalVolume = 0;
-        TotalSets = 0;
-        SummaryDateText = string.Empty;
-        TotalTimeText = ZeroTimeText;
     }
 
     private void ResetDisplayState()
@@ -715,7 +677,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         ClearRestState();
         SetActions.CloseSheets();
         ResetCurrentExercise();
-        ClearSummary();
+        Summary.Clear();
 
         IsExercisesEmpty = false;
         IsPlanComplete = false;
