@@ -29,34 +29,29 @@
                                 Placeholder="{x:Static constants:UiText.PlaceholderWorkoutName}" />
         </VerticalStackLayout>
 
-        <VerticalStackLayout Grid.Row="2"
-                             Padding="40,0"
+        <controls:EmptyState Grid.Row="2"
                              Spacing="14"
-                             HorizontalOptions="Center"
-                             VerticalOptions="Center"
+                             Detail="{x:Static constants:UiText.EmptyWorkoutEditor}"
+                             ActionText="{x:Static constants:UiText.ButtonAddExercise}"
+                             ActionStyle="{StaticResource AccentOutlineButton}"
+                             ActionCommand="{Binding AddExerciseCommand}"
                              IsVisible="{Binding IsEmptyHintVisible}">
-            <Border Style="{StaticResource DashedOutline}"
-                    WidthRequest="80"
-                    HeightRequest="80"
-                    Padding="0"
-                    HorizontalOptions="Center">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="{StaticResource TileRadius}" />
-                </Border.StrokeShape>
-                <Label Style="{StaticResource LargeGlyphLabel}"
-                       Text="+"
-                       TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center" />
-            </Border>
-            <Label Text="{x:Static constants:UiText.EmptyWorkoutEditor}"
-                   TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
-                   HorizontalTextAlignment="Center" />
-            <controls:TappableButton Style="{StaticResource AccentOutlineButton}"
-                                     Text="{x:Static constants:UiText.ButtonAddExercise}"
-                                     HorizontalOptions="Center"
-                                     Command="{Binding AddExerciseCommand}" />
-        </VerticalStackLayout>
+            <controls:EmptyState.Icon>
+                <Border Style="{StaticResource DashedOutline}"
+                        WidthRequest="80"
+                        HeightRequest="80"
+                        Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="{StaticResource TileRadius}" />
+                    </Border.StrokeShape>
+                    <Label Style="{StaticResource LargeGlyphLabel}"
+                           Text="+"
+                           TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+            </controls:EmptyState.Icon>
+        </controls:EmptyState>
 
         <controls:EmptyState Grid.Row="2"
                              Message="{x:Static constants:UiText.LoadingText}"
