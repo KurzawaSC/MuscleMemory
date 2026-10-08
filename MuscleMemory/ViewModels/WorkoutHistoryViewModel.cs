@@ -18,6 +18,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private readonly IWorkoutSetRepository _setRepository;
     private readonly IDialogService _dialogs;
     private readonly IWorkoutTimerService _timer;
+    private readonly IHapticService _haptics;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
     private readonly SequentialTaskQueue _historyUpdates = new();
@@ -31,6 +32,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         IWorkoutSetRepository setRepository,
         IDialogService dialogs,
         IWorkoutTimerService timer,
+        IHapticService haptics,
         INavigationService navigation,
         IErrorHandler errors,
         ExercisePickerViewModel exercisePicker)
@@ -40,6 +42,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         _setRepository = setRepository;
         _dialogs = dialogs;
         _timer = timer;
+        _haptics = haptics;
         _navigation = navigation;
         _errors = errors;
         ExercisePicker = exercisePicker;
@@ -65,6 +68,12 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     public partial bool IsSetActionSheetOpen { get; set; }
 
     [ObservableProperty]
+    public partial bool IsExerciseActionSheetOpen { get; set; }
+
+    [ObservableProperty]
+    public partial WorkoutHistoryExercise? ActionExercise { get; set; }
+
+    [ObservableProperty]
     public partial bool IsSetEditorOpen { get; set; }
 
     [ObservableProperty]
@@ -84,7 +93,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
 
     public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
-    private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsSetEditorOpen;
+    private bool IsAnySheetOpen => IsExercisePickerOpen || IsSetActionSheetOpen || IsExerciseActionSheetOpen || IsSetEditorOpen;
 
     private bool CanSaveSetEditor => SetEditor.IsValid;
 
@@ -190,6 +199,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     {
         IsExercisePickerOpen = false;
         CancelSetActions();
+        CancelExerciseActions();
         CloseSetEditor();
     }
 
@@ -302,8 +312,41 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
             });
 
     [RelayCommand]
-    private Task DeleteExerciseAsync(WorkoutHistoryExercise loggedExercise) => _errors.RunAsync(async () =>
+    private void ShowExerciseActions(WorkoutHistoryExercise loggedExercise)
     {
+        ActionExercise = loggedExercise;
+        IsExerciseActionSheetOpen = true;
+    }
+
+    [RelayCommand]
+    private void LongPressExercise(WorkoutHistoryExercise loggedExercise)
+    {
+        _haptics.Click();
+        ShowExerciseActions(loggedExercise);
+    }
+
+    [RelayCommand]
+    private void CancelExerciseActions()
+    {
+        IsExerciseActionSheetOpen = false;
+        ActionExercise = null;
+    }
+
+    private async Task<WorkoutHistoryExercise?> DismissExerciseActionsAsync()
+    {
+        var loggedExercise = ActionExercise;
+        await SheetTransition.CloseAsync(CancelExerciseActions);
+        return loggedExercise;
+    }
+
+    [RelayCommand]
+    private Task DeleteActionExerciseAsync() => _errors.RunAsync(async () =>
+    {
+        if (await DismissExerciseActionsAsync() is not { } loggedExercise)
+        {
+            return;
+        }
+
         var confirm = await _dialogs.ConfirmAsync(UiText.TitleRemoveExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonRemove, UiText.ButtonCancel);
         if (!confirm)
         {
