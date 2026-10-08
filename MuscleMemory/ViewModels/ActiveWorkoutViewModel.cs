@@ -60,7 +60,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial string TimerText { get; set; } = string.Empty;
 
     public ObservableCollection<SessionExercise> Exercises { get; } = [];
-    public ObservableCollection<WorkoutSet> CurrentSets { get; } = [];
+    public ObservableCollection<LoggedSetItem> CurrentSets { get; } = [];
     public ObservableCollection<LevelSegment> SetSegments { get; } = [];
 
     [ObservableProperty]
@@ -112,7 +112,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public RestTimerViewModel Rest { get; }
 
-    public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.TotalVolume());
+    public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.Select(item => item.Set).TotalVolume());
 
     public ActiveWorkoutViewModel(
         IActiveWorkoutSessionService sessions,
@@ -335,7 +335,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             : UiText.FirstTimePerformingExercise;
 
         await LoadSetsForCurrentExerciseAsync();
-        PrefillInputs(CurrentSets.LastOrDefault() ?? lastSessionSets.FirstOrDefault());
+        PrefillInputs(CurrentSets.LastOrDefault()?.Set ?? lastSessionSets.FirstOrDefault());
         UpdateSetProgress();
         await SaveStateAsync();
     }
@@ -353,7 +353,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private async Task LoadSetsForCurrentExerciseAsync()
     {
-        CurrentSets.ReplaceAll(await _sessions.GetSetsAsync(CurrentExercise.Id));
+        var sets = await _sessions.GetSetsAsync(CurrentExercise.Id);
+        CurrentSets.ReplaceAll(sets.Select(LoggedSetItem.Create));
 
         HasSavedSets = CurrentSets.Any();
     }
@@ -402,7 +403,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         await _sessions.AddSetAsync(newSet);
         _haptics.Click();
         SetInput.Fill(newSet.Weight, newSet.Reps);
-        CurrentSets.Add(newSet);
+        CurrentSets.Add(LoggedSetItem.Create(newSet));
         HasSavedSets = true;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {
@@ -457,7 +458,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
             return;
         }
 
-        await RemoveSetAsync(CurrentSets[^1]);
+        await RemoveSetAsync(CurrentSets[^1].Set);
     }));
 
     [RelayCommand]

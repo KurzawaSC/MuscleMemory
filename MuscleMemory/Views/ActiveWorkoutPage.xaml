@@ -2,7 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -174,38 +173,27 @@
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
-                    <Border Style="{StaticResource CompactCard}" Padding="14,2">
+                    <Border Style="{StaticResource SetTable}">
                         <VerticalStackLayout>
+                            <controls:SetTableHeader />
                             <VerticalStackLayout BindableLayout.ItemsSource="{Binding CurrentSets}">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:WorkoutSet">
+                                    <DataTemplate x:DataType="viewmodels:LoggedSetItem">
                                         <controls:FadeInView>
-                                            <VerticalStackLayout BackgroundColor="Transparent">
-                                                <VerticalStackLayout.GestureRecognizers>
+                                            <controls:SetTableRow Set="{Binding .}">
+                                                <controls:SetTableRow.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=SetActions.ShowCommand}"
-                                                                          CommandParameter="{Binding .}" />
-                                                </VerticalStackLayout.GestureRecognizers>
-                                                <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                                    <Label Style="{StaticResource LargeCaptionLabel}"
-                                                           Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
-                                                    <Label Grid.Column="1" Style="{StaticResource CompactLabel}">
-                                                        <Label.Text>
-                                                            <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
-                                                                <Binding Path="Weight" />
-                                                                <Binding Path="Reps" />
-                                                            </MultiBinding>
-                                                        </Label.Text>
-                                                    </Label>
-                                                </Grid>
-                                                <BoxView Style="{StaticResource Divider}" />
-                                            </VerticalStackLayout>
+                                                                          CommandParameter="{Binding Set}" />
+                                                </controls:SetTableRow.GestureRecognizers>
+                                            </controls:SetTableRow>
                                         </controls:FadeInView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
-                            <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                <Label Style="{StaticResource LargeCaptionLabel}" Text="{x:Static constants:UiText.LabelVolume}" />
-                                <Label Grid.Column="1" Style="{StaticResource CompactLabel}" Text="{Binding CurrentVolumeText}" />
+                            <BoxView Style="{StaticResource Divider}" />
+                            <Grid ColumnDefinitions="*, Auto" Padding="12,0" MinimumHeightRequest="{StaticResource TouchTarget}">
+                                <Label Style="{StaticResource SmallOverlineLabel}" Text="{x:Static constants:UiText.LabelVolume}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Style="{StaticResource SmallLabel}" Text="{Binding CurrentVolumeText}" VerticalOptions="Center" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
