@@ -243,7 +243,8 @@ Release signing is configured separately and is not part of this repository.
   immediately starting the activity with an explicit intent (for example
   `adb shell am start -n …/crc6419b996a3bf9febbe.MainActivity`) can crash in `OnCreate`. The error is
   an `ObjectDisposedException` for `ShellToolbarTracker`, thrown from MAUI's
-  `ShellFlyoutRenderer.Disconnect`. It reproduced on the second of five attempts on a Release build.
+  `ShellFlyoutRenderer.Disconnect`. It still happens on MAUI 10.0.110: 4 of 10 attempts crashed on a
+  Release build, the same rate as on 10.0.60.
 - **Jank on long chip strips.** Swiping the session-date chips of a workout with a long history
   drops frames: 15 % janky frames and a 90th-percentile frame of 40 ms on an emulator Release build,
   against 18 ms for vertical scrolling on the same page. The exercise filter chips are not
