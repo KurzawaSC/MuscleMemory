@@ -30,14 +30,6 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:ExerciseHistoryItem">
                     <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
-                        <Border.Resources>
-                            <Style TargetType="VerticalStackLayout">
-                                <Setter Property="SafeAreaEdges" Value="None" />
-                            </Style>
-                            <Style TargetType="Grid">
-                                <Setter Property="SafeAreaEdges" Value="None" />
-                            </Style>
-                        </Border.Resources>
                         <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                                 <Label Style="{StaticResource CardTitleLabel}"
