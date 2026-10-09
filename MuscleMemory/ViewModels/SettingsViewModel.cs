@@ -68,7 +68,7 @@ public partial class SettingsViewModel(
         await maintenanceService.ClearAllDataAsync();
         navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
-        await maintenanceService.DeleteExportSnapshotAsync();
+        await maintenanceService.DeleteTemporaryFilesAsync();
         await dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
     });
 
