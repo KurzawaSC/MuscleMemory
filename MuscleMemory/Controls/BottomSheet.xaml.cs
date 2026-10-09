@@ -81,6 +81,7 @@ public partial class BottomSheet : ContentView
     private void Open()
     {
         SupersedeTransition();
+        WindowLayer.DismissKeyboard();
         Sheet.TranslationY = Window?.Height ?? 0;
         ShowLayer();
 
