@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
+             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              x:Class="MuscleMemory.Controls.TextField"
              x:Name="Root"
              x:DataType="controls:TextField">
@@ -22,12 +23,28 @@
                     <Setter Property="StrokeThickness" Value="2" />
                 </DataTrigger>
             </Border.Triggers>
-            <Entry x:Name="Input"
-                   Text="{Binding Text, Source={x:Reference Root}}"
-                   MaxLength="{Binding MaxLength, Source={x:Reference Root}}"
-                   Placeholder="{Binding Placeholder, Source={x:Reference Root}}"
-                   ClearButtonVisibility="{Binding ClearButtonVisibility, Source={x:Reference Root}}"
-                   VerticalOptions="Center" />
+            <Grid ColumnDefinitions="*, Auto">
+                <Entry x:Name="Input"
+                       Text="{Binding Text, Source={x:Reference Root}}"
+                       MaxLength="{Binding MaxLength, Source={x:Reference Root}}"
+                       Placeholder="{Binding Placeholder, Source={x:Reference Root}}"
+                       VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Style="{StaticResource LargeGlyphLabel}"
+                       Text="×"
+                       WidthRequest="{StaticResource TouchTarget}"
+                       HeightRequest="{StaticResource TouchTarget}"
+                       Margin="0,-4,-12,-4"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       VerticalOptions="Center"
+                       SemanticProperties.Description="{x:Static constants:UiText.ActionClearText}"
+                       IsVisible="{Binding ShowsClearButton, Source={x:Reference Root}}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnClearTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </Grid>
         </Border>
         <Label Style="{StaticResource CaptionLabel}"
                Text="{Binding ErrorText, Source={x:Reference Root}}"

@@ -33,6 +33,14 @@ public static class WindowLayer
         }
     }
 
+    public static void DismissKeyboard()
+    {
+        if (Platform.CurrentActivity?.Window?.DecorView is { } decorView)
+        {
+            DismissKeyboard(decorView);
+        }
+    }
+
     private static void DismissKeyboard(PlatformView platformView)
     {
         if (platformView.FindFocus() is not { } focusedView)

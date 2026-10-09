@@ -3,7 +3,8 @@ namespace MuscleMemory.Controls;
 public partial class TextField : ContentView
 {
     public static readonly BindableProperty TextProperty =
-        BindableProperty.Create(nameof(Text), typeof(string), typeof(TextField), string.Empty, BindingMode.TwoWay);
+        BindableProperty.Create(nameof(Text), typeof(string), typeof(TextField), string.Empty, BindingMode.TwoWay,
+            propertyChanged: (bindable, _, _) => ((TextField)bindable).OnPropertyChanged(nameof(ShowsClearButton)));
 
     public static readonly BindableProperty MaxLengthProperty =
         BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(TextField), int.MaxValue);
@@ -11,8 +12,9 @@ public partial class TextField : ContentView
     public static readonly BindableProperty PlaceholderProperty =
         BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(TextField), string.Empty);
 
-    public static readonly BindableProperty ClearButtonVisibilityProperty =
-        BindableProperty.Create(nameof(ClearButtonVisibility), typeof(ClearButtonVisibility), typeof(TextField), ClearButtonVisibility.Never);
+    public static readonly BindableProperty IsClearableProperty =
+        BindableProperty.Create(nameof(IsClearable), typeof(bool), typeof(TextField), false,
+            propertyChanged: (bindable, _, _) => ((TextField)bindable).OnPropertyChanged(nameof(ShowsClearButton)));
 
     public static readonly BindableProperty IsFilledProperty =
         BindableProperty.Create(nameof(IsFilled), typeof(bool), typeof(TextField), false);
@@ -44,10 +46,10 @@ public partial class TextField : ContentView
         set => SetValue(PlaceholderProperty, value);
     }
 
-    public ClearButtonVisibility ClearButtonVisibility
+    public bool IsClearable
     {
-        get => (ClearButtonVisibility)GetValue(ClearButtonVisibilityProperty);
-        set => SetValue(ClearButtonVisibilityProperty, value);
+        get => (bool)GetValue(IsClearableProperty);
+        set => SetValue(IsClearableProperty, value);
     }
 
     public bool IsFilled
@@ -69,4 +71,8 @@ public partial class TextField : ContentView
     }
 
     public bool HasError => !string.IsNullOrEmpty(ErrorText);
+
+    public bool ShowsClearButton => IsClearable && !string.IsNullOrEmpty(Text);
+
+    private void OnClearTapped(object? sender, TappedEventArgs e) => Text = string.Empty;
 }
