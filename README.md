@@ -81,9 +81,9 @@ leaves the page.
 | Area | Choice |
 | --- | --- |
 | Runtime | .NET 10, `net10.0-android`; minimum Android API 21, target API 36 |
-| UI | .NET MAUI (`Microsoft.Maui.Controls` 10.0.60), XAML compiled by the source generator (`MauiXamlInflator=SourceGen`), compiled bindings |
+| UI | .NET MAUI (`Microsoft.Maui.Controls` 10.0.110), XAML compiled by the source generator (`MauiXamlInflator=SourceGen`), compiled bindings |
 | MVVM | `CommunityToolkit.Mvvm` 8.4.2: `[ObservableProperty]` partial properties and `[RelayCommand]` |
-| Toolkit | `CommunityToolkit.Maui` 14.1.1, used only for `EventToCommandBehavior`, `IconTintColorBehavior` and three converters (`InvertedBoolConverter`, `VariableMultiValueConverter`, `BoolToObjectConverter`) |
+| Toolkit | `CommunityToolkit.Maui` 15.0.1, used only for `EventToCommandBehavior`, `IconTintColorBehavior` and three converters (`InvertedBoolConverter`, `VariableMultiValueConverter`, `BoolToObjectConverter`) |
 | Database | `sqlite-net-e` 1.11.285 on `SourceGear.sqlite3` 3.53.4, with `SQLitePCLRaw.core`, `SQLitePCLRaw.config.e_sqlite3` and `SQLitePCLRaw.provider.e_sqlite3` 3.0.5 |
 | Audio | `Plugin.Maui.Audio` 4.0.0, for the rest-timer sound |
 | Logging | `Microsoft.Extensions.Logging.Debug` 10.0.0, Debug builds only |
