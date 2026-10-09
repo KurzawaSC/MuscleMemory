@@ -66,16 +66,11 @@
                             <Label Style="{StaticResource CaptionLabel}" Text="{Binding SelectedSession.StatsText, FallbackValue=''}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                            <Label HorizontalTextAlignment="End">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <Span Style="{StaticResource TitleSpan}"
-                                              Text="{Binding SelectedSession.VolumeText, FallbackValue=''}"
-                                              TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                                        <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
+                            <controls:UnitLabel HorizontalTextAlignment="End"
+                                                Value="{Binding SelectedSession.VolumeText, FallbackValue=''}"
+                                                Unit="{x:Static constants:UiText.KilogramSuffix}"
+                                                ValueSpanStyle="{StaticResource TitleSpan}"
+                                                ValueColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                             <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" HorizontalTextAlignment="End" />
                         </VerticalStackLayout>
                     </Grid>

@@ -2,7 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
@@ -30,7 +29,7 @@
             </CollectionView.Footer>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:ExerciseHistoryItem">
-                    <Border Style="{StaticResource SurfaceCard}" Padding="16,14,16,10">
+                    <Border Style="{StaticResource SurfaceCard}" Padding="16,14">
                         <Border.Resources>
                             <Style TargetType="VerticalStackLayout">
                                 <Setter Property="SafeAreaEdges" Value="None" />
@@ -39,7 +38,7 @@
                                 <Setter Property="SafeAreaEdges" Value="None" />
                             </Style>
                         </Border.Resources>
-                        <VerticalStackLayout Spacing="6">
+                        <VerticalStackLayout Spacing="10">
                             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                                 <Label Style="{StaticResource CardTitleLabel}"
                                        Text="{Binding Entry.WorkoutName}"
@@ -51,53 +50,26 @@
                                        VerticalOptions="Center" />
                             </Grid>
 
-                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Entry.Sets}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:WorkoutSet">
-                                        <VerticalStackLayout>
-                                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" Padding="0,9">
-                                                <Border WidthRequest="22"
-                                                        HeightRequest="22"
-                                                        StrokeThickness="0"
-                                                        VerticalOptions="Center"
-                                                        BackgroundColor="{AppThemeBinding Light={StaticResource FillLight}, Dark={StaticResource FillDark}}">
-                                                    <Border.StrokeShape>
-                                                        <RoundRectangle CornerRadius="{StaticResource ChipRadius}" />
-                                                    </Border.StrokeShape>
-                                                    <Label Style="{StaticResource SmallCaptionLabel}"
-                                                           Text="{Binding SetNumber}"
-                                                           HorizontalOptions="Center"
-                                                           VerticalOptions="Center" />
-                                                </Border>
-                                                <Label Grid.Column="1" VerticalOptions="Center">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="{Binding Weight}" />
-                                                            <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
-                                                            <Span Text="{x:Static constants:UiText.WeightRepsSeparator}"
-                                                                  TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
-                                                            <Span Text="{Binding Reps}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                            </Grid>
-                                            <BoxView Style="{StaticResource Divider}" />
-                                        </VerticalStackLayout>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
+                            <Border Style="{StaticResource SetTable}">
+                                <VerticalStackLayout>
+                                    <controls:SetTableHeader />
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sets}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodels:LoggedSetItem">
+                                                <controls:SetTableRow Set="{Binding .}" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
 
-                            <Grid ColumnDefinitions="*, Auto" Padding="0,3,0,0">
+                            <Grid ColumnDefinitions="*, Auto">
                                 <Label Style="{StaticResource CaptionLabel}" Text="{Binding SetCountText}" />
-                                <Label Grid.Column="1" Style="{StaticResource CaptionLabel}">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="{Binding VolumeText}"
-                                                  TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                            <Span Text="{x:Static constants:UiText.VolumeSuffix}" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
+                                <controls:UnitLabel Grid.Column="1"
+                                                    Style="{StaticResource CaptionLabel}"
+                                                    Value="{Binding VolumeText}"
+                                                    Unit="{x:Static constants:UiText.VolumeSuffix}"
+                                                    ValueColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>

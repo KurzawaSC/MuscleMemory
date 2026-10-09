@@ -2,7 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -47,25 +46,11 @@
               IsVisible="{Binding Summary.IsVisible, Converter={StaticResource InvertedBoolConverter}}">
 
             <VerticalStackLayout Spacing="12" IsVisible="{Binding IsExercisesEmpty, Converter={StaticResource InvertedBoolConverter}}">
-                <FlexLayout BindableLayout.ItemsSource="{Binding SetSegments}"
-                            IsVisible="{Binding Rest.IsResting, Converter={StaticResource InvertedBoolConverter}}">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:LevelSegment">
-                            <BoxView FlexLayout.Grow="1"
-                                     FlexLayout.Basis="0"
-                                     Margin="3,0"
-                                     HeightRequest="4"
-                                     CornerRadius="{StaticResource IndicatorRadius}"
-                                     Color="{AppThemeBinding Light={StaticResource LineStrongLight}, Dark={StaticResource LineStrongDark}}">
-                                <BoxView.Triggers>
-                                    <DataTrigger TargetType="BoxView" Binding="{Binding IsFilled}" Value="True">
-                                        <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                                    </DataTrigger>
-                                </BoxView.Triggers>
-                            </BoxView>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </FlexLayout>
+                <controls:LevelBar Segments="{Binding SetSegments}"
+                                   SegmentHeight="4"
+                                   SegmentRadius="{StaticResource IndicatorRadius}"
+                                   SegmentInset="3,0"
+                                   IsVisible="{Binding Rest.IsResting, Converter={StaticResource InvertedBoolConverter}}" />
 
                 <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
                     <VerticalStackLayout Spacing="2" VerticalOptions="Center">
@@ -188,38 +173,27 @@
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
-                    <Border Style="{StaticResource CompactCard}" Padding="14,2">
+                    <Border Style="{StaticResource SetTable}">
                         <VerticalStackLayout>
+                            <controls:SetTableHeader />
                             <VerticalStackLayout BindableLayout.ItemsSource="{Binding CurrentSets}">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:WorkoutSet">
+                                    <DataTemplate x:DataType="viewmodels:LoggedSetItem">
                                         <controls:FadeInView>
-                                            <VerticalStackLayout BackgroundColor="Transparent">
-                                                <VerticalStackLayout.GestureRecognizers>
+                                            <controls:SetTableRow Set="{Binding .}">
+                                                <controls:SetTableRow.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ActiveWorkoutViewModel}}, Path=SetActions.ShowCommand}"
-                                                                          CommandParameter="{Binding .}" />
-                                                </VerticalStackLayout.GestureRecognizers>
-                                                <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                                    <Label Style="{StaticResource LargeCaptionLabel}"
-                                                           Text="{Binding SetNumber, StringFormat={x:Static constants:UiText.SetProgressFormat}}" />
-                                                    <Label Grid.Column="1" Style="{StaticResource CompactLabel}">
-                                                        <Label.Text>
-                                                            <MultiBinding StringFormat="{x:Static constants:UiText.LoggedSetFormat}">
-                                                                <Binding Path="Weight" />
-                                                                <Binding Path="Reps" />
-                                                            </MultiBinding>
-                                                        </Label.Text>
-                                                    </Label>
-                                                </Grid>
-                                                <BoxView Style="{StaticResource Divider}" />
-                                            </VerticalStackLayout>
+                                                                          CommandParameter="{Binding Set}" />
+                                                </controls:SetTableRow.GestureRecognizers>
+                                            </controls:SetTableRow>
                                         </controls:FadeInView>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
                             </VerticalStackLayout>
-                            <Grid ColumnDefinitions="*, Auto" Padding="0,12">
-                                <Label Style="{StaticResource LargeCaptionLabel}" Text="{x:Static constants:UiText.LabelVolume}" />
-                                <Label Grid.Column="1" Style="{StaticResource CompactLabel}" Text="{Binding CurrentVolumeText}" />
+                            <BoxView Style="{StaticResource Divider}" />
+                            <Grid ColumnDefinitions="*, Auto" Padding="12,0" MinimumHeightRequest="{StaticResource TouchTarget}">
+                                <Label Style="{StaticResource SmallOverlineLabel}" Text="{x:Static constants:UiText.LabelVolume}" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Style="{StaticResource SmallLabel}" Text="{Binding CurrentVolumeText}" VerticalOptions="Center" />
                             </Grid>
                         </VerticalStackLayout>
                     </Border>
@@ -282,33 +256,22 @@
                     <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding Summary.DateText}" />
 
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="0,12,0,0">
-                        <Border Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalTimeText}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionTime}" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <Label LineBreakMode="NoWrap">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Style="{StaticResource ValueSpan}"
-                                                  Text="{Binding Summary.TotalVolume, StringFormat={x:Static constants:UiText.VolumeNumberFormat}}"
-                                                  TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
-                                            <Span Style="{StaticResource UnitSpan}" Text="{x:Static constants:UiText.KilogramSuffix}" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                                <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" />
-                            </VerticalStackLayout>
-                        </Border>
-                        <Border Grid.Column="2" Style="{StaticResource SurfaceCard}" Padding="14">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Style="{StaticResource ValueLabel}" Text="{Binding Summary.TotalSets}" />
-                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding Summary.TotalSetsCaption}" />
-                            </VerticalStackLayout>
-                        </Border>
+                        <controls:StatTile Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalTimeText}"
+                                           Caption="{x:Static constants:UiText.CaptionTime}" />
+                        <controls:StatTile Grid.Column="1"
+                                           Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalVolume}"
+                                           ValueFormat="{x:Static constants:UiText.VolumeNumberFormat}"
+                                           Unit="{x:Static constants:UiText.KilogramSuffix}"
+                                           Caption="{x:Static constants:UiText.CaptionVolume}" />
+                        <controls:StatTile Grid.Column="2"
+                                           Padding="14"
+                                           ContentSpacing="2"
+                                           Value="{Binding Summary.TotalSets}"
+                                           Caption="{Binding Summary.TotalSetsCaption}" />
                     </Grid>
 
                     <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" Margin="0,18,0,6" />

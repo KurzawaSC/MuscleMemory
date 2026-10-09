@@ -4,7 +4,6 @@
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
              x:Class="MuscleMemory.Controls.ExercisePickerSheet"
              x:Name="Root"
              x:DataType="controls:ExercisePickerSheet">
@@ -48,7 +47,7 @@
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
             </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Exercise">
+                <DataTemplate x:DataType="viewmodels:ExerciseItem">
                     <Border Padding="14,12"
                             StrokeThickness="1"
                             Stroke="{AppThemeBinding Light={StaticResource ControlStrokeLight}, Dark={StaticResource ControlStrokeDark}}">
@@ -57,19 +56,12 @@
                         </Border.StrokeShape>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding PickCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}"
-                                                  CommandParameter="{Binding .}" />
+                                                  CommandParameter="{Binding Exercise}" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                             <VerticalStackLayout Spacing="2">
-                                <Label Text="{Binding Name}" LineBreakMode="TailTruncation" />
-                                <Label Style="{StaticResource CaptionLabel}">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="{x:Static constants:UiText.ListPairFormat}">
-                                            <Binding Path="TargetMuscleGroup" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                            <Binding Path="Equipment" Converter="{StaticResource EnumDisplayNameConverter}" />
-                                        </MultiBinding>
-                                    </Label.Text>
-                                </Label>
+                                <Label Text="{Binding Exercise.Name}" LineBreakMode="TailTruncation" />
+                                <Label Style="{StaticResource CaptionLabel}" Text="{Binding DetailText}" />
                             </VerticalStackLayout>
                             <Border Grid.Column="1"
                                     WidthRequest="28"

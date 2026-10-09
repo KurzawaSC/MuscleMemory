@@ -143,6 +143,8 @@ public static class UiText
     public const string CaptionExercises = "exercises";
     public const string CaptionSet = "set";
     public const string CaptionSets = "sets";
+    public const string CaptionRep = "rep";
+    public const string CaptionReps = "reps";
     public const string CaptionWorkout = "workout";
     public const string CaptionWorkouts = "workouts";
     public const string CaptionSession = "session";
@@ -164,6 +166,7 @@ public static class UiText
     public const string ExerciseProgressFormat = "Exercise {0} of {1}";
     public const string SetProgressWithTotalFormat = "Set {0} of {1}";
     public const string SetProgressFormat = "Set {0}";
+    public const string SetDescriptionFormat = SetProgressFormat + ResultSeparator + "{1}" + ResultSeparator + "{2} {3}";
     public const string TargetRepsFormat = "Target {0} reps · RPE {1}";
     public const string TargetRpeFormat = "RPE {0}";
     public const string SetResultFormat = "{0}×{1}";

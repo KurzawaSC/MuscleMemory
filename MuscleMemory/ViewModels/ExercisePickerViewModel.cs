@@ -2,14 +2,13 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
-using MuscleMemory.Models;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class ExercisePickerViewModel : ObservableObject
 {
     private readonly IExerciseRepository _exerciseRepository;
-    private List<Exercise> _allExercises = [];
+    private List<ExerciseItem> _allExercises = [];
 
     public ExercisePickerViewModel(IExerciseRepository exerciseRepository, ExerciseFilterViewModel filter)
     {
@@ -20,16 +19,17 @@ public partial class ExercisePickerViewModel : ObservableObject
 
     public ExerciseFilterViewModel Filter { get; }
 
-    public ObservableCollection<Exercise> Exercises { get; } = [];
+    public ObservableCollection<ExerciseItem> Exercises { get; } = [];
 
     [ObservableProperty]
     public partial bool HasNoMatches { get; set; }
 
     public async Task LoadAsync()
     {
-        _allExercises = await _exerciseRepository.GetAllAsync();
+        var exercises = await _exerciseRepository.GetAllAsync();
+        _allExercises = [.. exercises.Select(ExerciseItem.Create)];
         Filter.Reset();
-        Filter.UpdateFilters(_allExercises);
+        Filter.UpdateFilters(exercises);
         ApplyFilter();
     }
 
