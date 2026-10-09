@@ -67,6 +67,9 @@ public partial class TappableButton : ContentView
         BindableProperty.Create(nameof(DisabledOpacity), typeof(double), typeof(TappableButton), Opacities.Disabled,
             propertyChanged: (bindable, _, _) => ((TappableButton)bindable).OnPropertyChanged(nameof(SurfaceOpacity)));
 
+    public static readonly BindableProperty DismissesKeyboardProperty =
+        BindableProperty.Create(nameof(DismissesKeyboard), typeof(bool), typeof(TappableButton), false);
+
     public TappableButton() => InitializeComponent();
 
     public string Text
@@ -153,6 +156,12 @@ public partial class TappableButton : ContentView
         set => SetValue(DisabledOpacityProperty, value);
     }
 
+    public bool DismissesKeyboard
+    {
+        get => (bool)GetValue(DismissesKeyboardProperty);
+        set => SetValue(DismissesKeyboardProperty, value);
+    }
+
     public LayoutOptions SurfaceVerticalOptions => SurfaceHeight > 0 ? LayoutOptions.Center : LayoutOptions.Fill;
 
     public double SurfaceOpacity => IsEnabled ? 1 : DisabledOpacity;
@@ -222,7 +231,16 @@ public partial class TappableButton : ContentView
 
         if (CanRunCommand())
         {
+            DismissKeyboardIfRequested();
             Command?.Execute(CommandParameter);
+        }
+    }
+
+    private void DismissKeyboardIfRequested()
+    {
+        if (DismissesKeyboard)
+        {
+            WindowLayer.DismissKeyboard();
         }
     }
 

@@ -122,6 +122,7 @@
                                                      Style="{Binding IsPlanComplete, Converter={StaticResource SaveSetButtonStyleConverter}}"
                                                      Text="{x:Static constants:UiText.ButtonSaveSet}"
                                                      PressedScale="0.97"
+                                                     DismissesKeyboard="True"
                                                      Command="{Binding SaveSetCommand}" />
                         </Grid>
                     </VerticalStackLayout>
