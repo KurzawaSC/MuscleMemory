@@ -114,6 +114,10 @@
         <Setter Property="CharacterSpacing" Value="-0.33" />
     </Style>
 
+    <Style x:Key="StatValueLabel" TargetType="Label" BasedOn="{StaticResource ValueLabel}">
+        <Setter Property="FontSize" Value="20" />
+    </Style>
+
     <Style x:Key="OverlineLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}" />
         <Setter Property="FontSize" Value="12" />
@@ -180,10 +184,6 @@
 
     <Style x:Key="SmallGlyphLabel" TargetType="Label" BasedOn="{StaticResource BaseLabel}">
         <Setter Property="FontSize" Value="17" />
-    </Style>
-
-    <Style x:Key="ValueSpan" TargetType="Span">
-        <Setter Property="FontSize" Value="24" />
     </Style>
 
     <Style x:Key="TitleSpan" TargetType="Span">

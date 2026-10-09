@@ -2,9 +2,6 @@ namespace MuscleMemory.Controls;
 
 public partial class StatTile : Border
 {
-    private const string PlainValueStyleKey = "PlainStatValue";
-    private const string UnitValueStyleKey = "UnitStatValue";
-
     public static readonly BindableProperty ValueProperty =
         BindableProperty.Create(nameof(Value), typeof(object), typeof(StatTile));
 
@@ -12,8 +9,7 @@ public partial class StatTile : Border
         BindableProperty.Create(nameof(ValueFormat), typeof(string), typeof(StatTile), "{0}");
 
     public static readonly BindableProperty UnitProperty =
-        BindableProperty.Create(nameof(Unit), typeof(string), typeof(StatTile), string.Empty,
-            propertyChanged: (bindable, _, _) => ((StatTile)bindable).ApplyValueStyle());
+        BindableProperty.Create(nameof(Unit), typeof(string), typeof(StatTile), string.Empty);
 
     public static readonly BindableProperty CaptionProperty =
         BindableProperty.Create(nameof(Caption), typeof(string), typeof(StatTile), string.Empty);
@@ -51,11 +47,5 @@ public partial class StatTile : Border
     {
         get => (double)GetValue(ContentSpacingProperty);
         set => SetValue(ContentSpacingProperty, value);
-    }
-
-    private void ApplyValueStyle()
-    {
-        var key = string.IsNullOrEmpty(Unit) ? PlainValueStyleKey : UnitValueStyleKey;
-        ValueText.Style = (Style)Resources[key];
     }
 }
