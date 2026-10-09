@@ -66,14 +66,7 @@
                             <controls:TappableButton Style="{StaticResource SoftPrimaryButton}"
                                                      Text="{x:Static constants:UiText.ButtonStart}"
                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
-                                                     CommandParameter="{Binding .}">
-                                <controls:TappableButton.Triggers>
-                                    <DataTrigger TargetType="controls:TappableButton" Binding="{Binding IsFeatured}" Value="True">
-                                        <Setter Property="FillColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                                        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
-                                    </DataTrigger>
-                                </controls:TappableButton.Triggers>
-                            </controls:TappableButton>
+                                                     CommandParameter="{Binding .}" />
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>

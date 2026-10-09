@@ -78,8 +78,7 @@ public partial class WorkoutListViewModel : ObservableObject
             return;
         }
 
-        Workouts.ReplaceAll(workouts.Select((workout, index) =>
-            WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id], isFeatured: index == 0)));
+        Workouts.ReplaceAll(workouts.Select(workout => WorkoutListItem.Create(workout, exercisesByWorkout[workout.Id])));
         ListState.Complete(Workouts.Count);
     }
 
