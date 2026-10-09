@@ -16,6 +16,8 @@ public sealed class DatabaseMaintenanceService(
 {
     private const string VacuumIntoSql = "VACUUM INTO ?";
 
+    private static string ExportSnapshotPath => Path.Combine(FileSystem.CacheDirectory, DatabaseNames.ExportFileName);
+
     public async Task<string?> CreateExportSnapshotAsync()
     {
         if (!File.Exists(context.DatabasePath))
@@ -23,12 +25,18 @@ public sealed class DatabaseMaintenanceService(
             return null;
         }
 
-        var snapshotPath = Path.Combine(FileSystem.CacheDirectory, DatabaseNames.ExportFileName);
+        var snapshotPath = ExportSnapshotPath;
         File.Delete(snapshotPath);
 
         var connection = await context.GetConnectionAsync();
         await connection.ExecuteAsync(VacuumIntoSql, snapshotPath);
         return snapshotPath;
+    }
+
+    public Task DeleteExportSnapshotAsync()
+    {
+        var snapshotPath = ExportSnapshotPath;
+        return Task.Run(() => File.Delete(snapshotPath));
     }
 
     public async Task ClearAllDataAsync()
