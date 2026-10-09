@@ -30,6 +30,10 @@
                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                             Command="{Binding ExportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
+                        <controls:ActionRow Text="{x:Static constants:UiText.ActionImportData}"
+                                            TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                            Command="{Binding ImportDataCommand}" />
+                        <BoxView Style="{StaticResource Divider}" />
                         <controls:ActionRow Text="{x:Static constants:UiText.ActionEraseAllData}"
                                             TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                             Command="{Binding OpenEraseSheetCommand}" />

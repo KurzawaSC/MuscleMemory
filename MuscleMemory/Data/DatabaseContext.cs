@@ -14,7 +14,24 @@ public sealed class DatabaseContext
         DatabasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
     }
 
+    public static IReadOnlyList<Type> Tables { get; } =
+    [
+        typeof(Exercise),
+        typeof(Workout),
+        typeof(WorkoutExercise),
+        typeof(WorkoutSession),
+        typeof(SessionExercise),
+        typeof(WorkoutSet),
+        typeof(ActiveWorkoutState)
+    ];
+
     public string DatabasePath { get; }
+
+    public static SQLiteConnection OpenReadOnly(string path)
+    {
+        SQLitePCL.Batteries_V2.Init();
+        return new SQLiteConnection(path, SQLiteOpenFlags.ReadOnly);
+    }
 
     public Task<SQLiteAsyncConnection> GetConnectionAsync()
     {
@@ -35,13 +52,7 @@ public sealed class DatabaseContext
 
         var connection = new SQLiteAsyncConnection(DatabasePath);
 
-        await connection.CreateTableAsync<Exercise>();
-        await connection.CreateTableAsync<Workout>();
-        await connection.CreateTableAsync<WorkoutExercise>();
-        await connection.CreateTableAsync<WorkoutSession>();
-        await connection.CreateTableAsync<SessionExercise>();
-        await connection.CreateTableAsync<WorkoutSet>();
-        await connection.CreateTableAsync<ActiveWorkoutState>();
+        await connection.CreateTablesAsync(CreateFlags.None, [.. Tables]);
 
         return connection;
     }
