@@ -7,10 +7,11 @@ public partial class App : Application
 {
     private Window? _window;
 
-    public App(IThemeService themeService)
+    public App(IThemeService themeService, IDatabaseMaintenanceService maintenanceService, IErrorHandler errors)
     {
         InitializeComponent();
         themeService.RestoreSavedTheme();
+        errors.ReportFailures(maintenanceService.DeleteExportSnapshotAsync());
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
