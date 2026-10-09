@@ -72,10 +72,9 @@ leaves the page.
   `INTERNET`, which the .NET Android debugger needs. `android:allowBackup` is `false`.
 - **Export data** writes a copy of the database (`VACUUM INTO`) to the app's cache as
   `MuscleMemory-export.db3`, then hands it to the system share sheet. The file leaves the device
-  only if you pick a target.
+  only if you pick a target. The copy is deleted the next time the app starts.
 - **Erase all data** deletes every row from every table in one transaction, including an active
-  session, and returns each tab to its root page. It does not delete the last export copy; see
-  [Known limitations](#known-limitations).
+  session, and returns each tab to its root page. It then deletes the export copy as well.
 
 ## Tech stack
 
@@ -130,7 +129,7 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IWorkoutSetRepository` | Logged sets; owns set numbering |
 | `IActiveWorkoutStateRepository` | The single active-session row, written through a serial queue |
 | `IHistoryQueryService` | Builds workout and exercise history from batched reads |
-| `IDatabaseMaintenanceService` | Export snapshot and erase-all in one transaction |
+| `IDatabaseMaintenanceService` | Export snapshot and its deletion; erase-all in one transaction |
 | `IExerciseCatalogService` | Exercise create, edit and delete, and the data-changed notification for them |
 | `IStatusBarService` | Paints the status bar after each navigation and picks light or dark icons |
 | `IThemeService` | Saves the theme preference and applies it to `UserAppTheme` |
@@ -249,14 +248,7 @@ Release signing is configured separately and is not part of this repository.
   drops frames: 15 % janky frames and a 90th-percentile frame of 40 ms on an emulator Release build,
   against 18 ms for vertical scrolling on the same page. The exercise filter chips are not
   affected.
-- **Erase keeps the last export.** **Erase all data** empties the database but leaves
-  `MuscleMemory-export.db3` from the last export in the app's cache directory. The file stays
-  private to the app, but it still holds the erased data until the next export replaces it or
-  Android clears the cache.
 - **Locale changes need a restart.** Changing the app language in Android settings while the app
   is running does not change number formatting, such as the decimal separator or digit grouping,
   until the process restarts.
-- **Rounding mismatch in the summary.** Per-exercise volumes and the total are rounded to whole
-  kilograms separately. Their sum can differ from the shown total by 1 kg, for example 4,993 against
-  4,992 for an exact total of 4,992.5 kg.
 - **No reordering.** Exercises in a workout cannot be reordered.
