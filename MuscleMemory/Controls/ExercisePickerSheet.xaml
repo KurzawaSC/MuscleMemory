@@ -20,7 +20,7 @@
         <controls:TextField IsFilled="True"
                             Text="{Binding Picker.Filter.SearchText, Source={x:Reference Root}}"
                             Placeholder="{x:Static constants:UiText.PlaceholderSearch}"
-                            ClearButtonVisibility="WhileEditing" />
+                            IsClearable="True" />
 
         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
             <HorizontalStackLayout Spacing="8"

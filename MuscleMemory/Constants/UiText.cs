@@ -108,6 +108,7 @@ public static class UiText
 
     public const string PlaceholderSearchExercises = "Search exercises";
     public const string PlaceholderSearch = "Search";
+    public const string ActionClearText = "Clear text";
 
     public const string EmptyExercisesMessage = "No exercises yet";
     public const string EmptyExercisesDetail = "Add your first exercise, then build a workout from it.";
