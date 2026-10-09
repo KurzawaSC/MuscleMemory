@@ -50,8 +50,8 @@ public partial class ExerciseFilterViewModel : ObservableObject
         }
     }
 
-    public IEnumerable<Exercise> Apply(IEnumerable<Exercise> exercises) =>
-        exercises
-            .Where(SelectedFilter.Matches)
-            .Where(exercise => exercise.Name.Contains(SearchText.Trim(), StringComparison.CurrentCultureIgnoreCase));
+    public IEnumerable<ExerciseItem> Apply(IEnumerable<ExerciseItem> items) =>
+        items
+            .Where(item => SelectedFilter.Matches(item.Exercise))
+            .Where(item => item.Exercise.Name.Contains(SearchText.Trim(), StringComparison.CurrentCultureIgnoreCase));
 }

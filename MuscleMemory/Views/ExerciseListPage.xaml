@@ -2,7 +2,6 @@
 <controls:BackNavigationPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
-                             xmlns:models="clr-namespace:MuscleMemory.Models"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
@@ -68,7 +67,7 @@
                 </DataTemplate>
             </CollectionView.FooterTemplate>
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Exercise">
+                <DataTemplate x:DataType="viewmodels:ExerciseItem">
                     <Border Style="{StaticResource SelectableCard}">
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Value="True">
@@ -87,10 +86,10 @@
                                     <platform:LongPressBehavior Command="{Binding BindingContext.LongPressExerciseCommand, Source={x:Reference PageRoot}}"
                                                                 CommandParameter="{Binding BindingContext, Source={x:Reference CardContent}}" />
                                 </VerticalStackLayout.Behaviors>
-                                <Label Style="{StaticResource TitleLabel}" Text="{Binding Name}" LineBreakMode="TailTruncation" />
+                                <Label Style="{StaticResource TitleLabel}" Text="{Binding Exercise.Name}" LineBreakMode="TailTruncation" />
                                 <HorizontalStackLayout Spacing="6">
-                                    <controls:Chip Text="{Binding TargetMuscleGroup, Converter={StaticResource EnumDisplayNameConverter}}" />
-                                    <controls:Chip Text="{Binding Equipment, Converter={StaticResource EnumDisplayNameConverter}}" />
+                                    <controls:Chip Text="{Binding MuscleGroupText}" />
+                                    <controls:Chip Text="{Binding EquipmentText}" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                             <controls:OverflowButton Grid.Column="1"
@@ -122,8 +121,8 @@
         <controls:ResumeWorkoutBanner Grid.Row="3" ActiveWorkout="{Binding ActiveWorkout}" />
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsActionSheetOpen}">
-            <controls:ItemActionsSheet Title="{Binding ActionExercise.Name, FallbackValue=''}"
-                                       Subtitle="{Binding ActionExerciseSubtitle}"
+            <controls:ItemActionsSheet Title="{Binding ActionExercise.Exercise.Name, FallbackValue=''}"
+                                       Subtitle="{Binding ActionExercise.DetailText, FallbackValue=''}"
                                        EditText="{x:Static constants:UiText.HeaderEditExercise}"
                                        DeleteText="{x:Static constants:UiText.TitleDeleteExercise}"
                                        EditCommand="{Binding EditActionExerciseCommand}"

@@ -4,22 +4,29 @@
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              x:Class="MuscleMemory.Controls.SetTableRow"
              x:Name="Root"
-             x:DataType="controls:SetTableRow">
+             x:DataType="controls:SetTableRow"
+             SemanticProperties.Description="{Binding Set.Description, Source={x:Reference Root}, FallbackValue=''}">
 
-    <VerticalStackLayout BackgroundColor="Transparent">
+    <VerticalStackLayout BackgroundColor="Transparent" SafeAreaEdges="None">
         <BoxView Style="{StaticResource Divider}" />
-        <Grid Style="{StaticResource SetTableRow}" Padding="12,10">
+        <Grid Style="{StaticResource SetTableRow}"
+              Padding="12,10"
+              MinimumHeightRequest="{StaticResource TouchTarget}"
+              AutomationProperties.ExcludedWithChildren="True">
             <Label Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.SetNumberText, Source={x:Reference Root}, FallbackValue=''}"
-                   TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
+                   TextColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}"
+                   VerticalOptions="Center" />
             <Label Grid.Column="1"
                    Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.WeightText, Source={x:Reference Root}, FallbackValue=''}"
-                   HorizontalTextAlignment="Center" />
+                   HorizontalTextAlignment="Center"
+                   VerticalOptions="Center" />
             <Label Grid.Column="2"
                    Style="{StaticResource SmallLabel}"
                    Text="{Binding Set.RepsText, Source={x:Reference Root}, FallbackValue=''}"
-                   HorizontalTextAlignment="End" />
+                   HorizontalTextAlignment="End"
+                   VerticalOptions="Center" />
         </Grid>
     </VerticalStackLayout>
 </ContentView>
