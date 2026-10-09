@@ -3,6 +3,9 @@ namespace MuscleMemory.Services;
 public interface IDatabaseMaintenanceService
 {
     Task<string?> CreateExportSnapshotAsync();
-    Task DeleteExportSnapshotAsync();
+    Task<ImportPreview> PrepareImportAsync(Stream source);
+    Task ImportAsync();
+    Task DeleteImportCopiesAsync(string pickedFilePath);
+    Task DeleteTemporaryFilesAsync();
     Task ClearAllDataAsync();
 }

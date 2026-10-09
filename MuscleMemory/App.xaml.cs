@@ -11,7 +11,7 @@ public partial class App : Application
     {
         InitializeComponent();
         themeService.RestoreSavedTheme();
-        errors.ReportFailures(maintenanceService.DeleteExportSnapshotAsync());
+        errors.ReportFailures(maintenanceService.DeleteTemporaryFilesAsync());
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

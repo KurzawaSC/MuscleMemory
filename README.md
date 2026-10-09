@@ -61,6 +61,9 @@ leaves the page.
 
 - Theme: System, Light or Dark.
 - Export data, through the system share sheet.
+- Import data from a file made by Export data. It replaces all current data after a confirmation
+  that shows the file's exercise, workout and session counts, and it is blocked while a workout is
+  active.
 - Erase all data, behind a confirmation panel.
 
 ## Privacy and data
@@ -73,6 +76,14 @@ leaves the page.
 - **Export data** writes a copy of the database (`VACUUM INTO`) to the app's cache as
   `MuscleMemory-export.db3`, then hands it to the system share sheet. The file leaves the device
   only if you pick a target. The copy is deleted the next time the app starts.
+- **Import data** reads the file you choose in the system file picker, so it needs no permission.
+  The file is copied to the app's cache as `MuscleMemory-import.db3` and checked before anything
+  changes: the SQLite header, `PRAGMA quick_check`, and every table and column the app uses. A file
+  that is not a backup, is damaged, or comes from an incompatible version is rejected with a
+  message. After you confirm, all current data is replaced in one transaction; an active-session
+  row in the file is not imported. The temporary copy, and the copy the file picker makes in the
+  cache, are deleted when the import ends, and any leftover temporary copy is deleted the next time
+  the app starts.
 - **Erase all data** deletes every row from every table in one transaction, including an active
   session, and returns each tab to its root page. It then deletes the export copy as well.
 
@@ -129,7 +140,7 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IWorkoutSetRepository` | Logged sets; owns set numbering |
 | `IActiveWorkoutStateRepository` | The single active-session row, written through a serial queue |
 | `IHistoryQueryService` | Builds workout and exercise history from batched reads |
-| `IDatabaseMaintenanceService` | Export snapshot and its deletion; erase-all in one transaction |
+| `IDatabaseMaintenanceService` | Export snapshot; import with validation, replacing all data in one transaction; deletion of temporary copies; erase-all in one transaction |
 | `IExerciseCatalogService` | Exercise create, edit and delete, and the data-changed notification for them |
 | `IStatusBarService` | Paints the status bar after each navigation and picks light or dark icons |
 | `IThemeService` | Saves the theme preference and applies it to `UserAppTheme` |
