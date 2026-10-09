@@ -16,6 +16,8 @@ public static class UiText
     public const string TitleOops = "Oops!";
     public const string TitleEraseAllData = "Erase all data?";
     public const string TitleExportData = "Export Muscle Memory data";
+    public const string TitleImportData = "Import data?";
+    public const string TitlePickBackup = "Choose a Muscle Memory backup";
 
     public const string ButtonOk = "OK";
     public const string ButtonDelete = "Delete";
@@ -31,6 +33,7 @@ public static class UiText
     public const string ButtonStart = "Start";
     public const string ButtonCreateWorkout = "Create workout";
     public const string ButtonErase = "Erase";
+    public const string ButtonImport = "Import";
     public const string ButtonAddSetInline = "+ Add set";
     public const string ButtonAddExerciseToSession = "Add exercise to session";
     public const string ButtonAddInline = "+ Add";
@@ -54,12 +57,20 @@ public static class UiText
     public const string BodyNoDataToExport = "There is no data to export yet.";
     public const string BodyOperationFailed = "Something went wrong. Please try again.";
     public const string BodyExportFailed = "Export failed. Please try again.";
+    public const string BodyImportFailed = "Import failed. Please try again.";
+    public const string BodyImportBlockedByWorkout = "Finish or discard the current workout before importing.";
+    public const string BodyImportNotBackup = "This file isn't a Muscle Memory backup.";
+    public const string BodyImportDamaged = "This backup file is damaged and can't be imported.";
+    public const string BodyImportIncompatible = "This backup was made by an incompatible version of Muscle Memory.";
     public const string BodyEraseAllData = "This erases exercises, workouts and all history from this device. It can't be undone.";
 
     public const string DeleteConfirmationFormat = "Are you sure you want to delete “{0}”?";
     public const string DeleteExerciseFromWorkoutsFormat = DeleteConfirmationFormat + " It will be removed from {1} {2}.";
     public const string DeleteWorkoutConfirmationFormat = DeleteConfirmationFormat + " Session history is kept. The plan itself can't be restored.";
     public const string RemoveExerciseConfirmationFormat = "Are you sure you want to remove “{0}”?";
+    public const string ImportCountsFormat = "{0:N0} {1}, {2:N0} {3} and {4:N0} {5}";
+    public const string ImportConfirmationFormat = "This replaces all current data with " + ImportCountsFormat + " from the file. It can't be undone.";
+    public const string DataImportedFormat = "Imported " + ImportCountsFormat + ".";
     public const string WorkoutAlreadyActiveFormat = "“{0}” is still in progress. Finish it before starting another workout.";
 
     public const string AppName = "Muscle Memory";
@@ -103,6 +114,7 @@ public static class UiText
     public const string PlaceholderExerciseName = "e.g. Incline Bench Press";
 
     public const string ActionExportData = "Export data";
+    public const string ActionImportData = "Import data";
     public const string ActionEraseAllData = "Erase all data";
     public const string ActionViewHistory = "View history";
 
