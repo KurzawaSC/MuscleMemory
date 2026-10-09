@@ -7,18 +7,8 @@
         x:DataType="controls:StatTile"
         Style="{StaticResource SurfaceCard}">
 
-    <Border.Resources>
-        <Style x:Key="PlainStatValue" TargetType="controls:UnitLabel" BasedOn="{StaticResource ValueLabel}" />
-
-        <Style x:Key="UnitStatValue" TargetType="controls:UnitLabel" BasedOn="{StaticResource BaseLabel}">
-            <Setter Property="ValueSpanStyle" Value="{StaticResource ValueSpan}" />
-            <Setter Property="LineBreakMode" Value="NoWrap" />
-        </Style>
-    </Border.Resources>
-
     <VerticalStackLayout Spacing="{Binding ContentSpacing, Source={x:Reference Root}}">
-        <controls:UnitLabel x:Name="ValueText"
-                            Style="{StaticResource PlainStatValue}"
+        <controls:UnitLabel Style="{StaticResource StatValueLabel}"
                             Value="{Binding Value, Source={x:Reference Root}}"
                             ValueFormat="{Binding ValueFormat, Source={x:Reference Root}}"
                             Unit="{Binding Unit, Source={x:Reference Root}}" />
