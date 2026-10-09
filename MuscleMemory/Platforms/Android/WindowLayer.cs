@@ -4,16 +4,21 @@ using Android.Views.InputMethods;
 using AndroidX.Activity;
 using AndroidX.Core.View;
 using Microsoft.Maui.Platform;
+using AndroidActivity = Android.App.Activity;
 using PlatformView = Android.Views.View;
 
 namespace MuscleMemory;
 
 public static class WindowLayer
 {
+    private static IElementHandler? WindowHandler => Application.Current?.Windows.FirstOrDefault()?.Handler;
+
+    private static AndroidActivity? HostActivity => WindowHandler?.PlatformView as AndroidActivity;
+
     public static bool TryShow(Microsoft.Maui.Controls.View layer)
     {
-        if (Platform.CurrentActivity?.Window?.DecorView is not ViewGroup decorView
-            || Application.Current?.Windows.FirstOrDefault()?.Handler?.MauiContext is not { } mauiContext)
+        if (HostActivity?.Window?.DecorView is not ViewGroup decorView
+            || WindowHandler?.MauiContext is not { } mauiContext)
         {
             return false;
         }
@@ -35,7 +40,7 @@ public static class WindowLayer
 
     public static void DismissKeyboard()
     {
-        if (Platform.CurrentActivity?.Window?.DecorView is { } decorView)
+        if (HostActivity?.Window?.DecorView is { } decorView)
         {
             DismissKeyboard(decorView);
         }
@@ -71,7 +76,7 @@ public static class WindowLayer
 
     private static double ReadRootInsets(Func<WindowInsetsCompat, int> selectPixels)
     {
-        if (Platform.CurrentActivity?.Window?.DecorView is not { } decorView
+        if (HostActivity?.Window?.DecorView is not { } decorView
             || ViewCompat.GetRootWindowInsets(decorView) is not { } insets)
         {
             return 0;
@@ -86,7 +91,7 @@ public static class WindowLayer
 
     public static IDisposable InterceptBack(Action onBack)
     {
-        if (Platform.CurrentActivity is not ComponentActivity activity)
+        if (HostActivity is not ComponentActivity activity)
         {
             return new BackRegistration(null);
         }
