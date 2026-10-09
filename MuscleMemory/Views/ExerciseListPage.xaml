@@ -23,7 +23,7 @@
                             Margin="{markup:Gutter Top=8}"
                             Text="{Binding Filter.SearchText}"
                             Placeholder="{x:Static constants:UiText.PlaceholderSearchExercises}"
-                            ClearButtonVisibility="WhileEditing"
+                            IsClearable="True"
                             IsVisible="{Binding ListState.HasItems}" />
 
         <ScrollView Grid.Row="2"

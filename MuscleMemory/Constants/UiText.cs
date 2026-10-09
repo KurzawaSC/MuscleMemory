@@ -108,6 +108,7 @@ public static class UiText
 
     public const string PlaceholderSearchExercises = "Search exercises";
     public const string PlaceholderSearch = "Search";
+    public const string ActionClearText = "Clear text";
 
     public const string EmptyExercisesMessage = "No exercises yet";
     public const string EmptyExercisesDetail = "Add your first exercise, then build a workout from it.";
@@ -171,10 +172,10 @@ public static class UiText
     public const string TargetRpeFormat = "RPE {0}";
     public const string SetResultFormat = "{0}×{1}";
     public const string LoggedSetFormat = "{0} kg × {1}";
-    public const string VolumeFormat = "{0:N0} kg";
+    public const string VolumeFormat = VolumeNumberFormat + KilogramSuffix;
     public const string WeightFormat = "{0} kg";
     public const string VersionFormat = "Version {0}";
-    public const string VolumeNumberFormat = "{0:N0}";
+    public const string VolumeNumberFormat = "{0:#,##0.#}";
     public const string ShortDateFormat = "MMM dd";
     public const string ShortDateTimeFormat = "MMM dd · HH:mm";
     public const string LongDateFormat = "MMM dd, yyyy";
