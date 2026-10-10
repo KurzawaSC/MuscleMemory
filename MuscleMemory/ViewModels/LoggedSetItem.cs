@@ -1,5 +1,5 @@
 using System.Globalization;
-using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 
@@ -21,6 +21,6 @@ public sealed record LoggedSetItem(
             set.SetNumber.ToString(CultureInfo.CurrentCulture),
             weightText,
             set.Reps.ToString(CultureInfo.CurrentCulture),
-            string.Format(CultureInfo.CurrentCulture, AppResources.SetDescriptionFormat, set.SetNumber, weightText, set.Reps, CountCaption.Reps(set.Reps)));
+            string.Format(CultureInfo.CurrentCulture, AppResources.SetDescriptionFormat, set.SetNumber, weightText, Plurals.Format(nameof(AppResources.RepCount_Other), set.Reps)));
     }
 }

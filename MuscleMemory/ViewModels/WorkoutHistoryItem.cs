@@ -1,6 +1,6 @@
 using System.Globalization;
 using MuscleMemory.Constants;
-using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -22,7 +22,7 @@ public sealed record WorkoutHistoryItem(
             session,
             session.LocalStartTime.ToString(sharesDate ? AppResources.ShortDateTimeFormat : AppResources.ShortDateFormat, CultureInfo.InvariantCulture),
             session.LocalStartTime.ToString(AppResources.LongDateFormat, CultureInfo.InvariantCulture),
-            string.Format(CultureInfo.CurrentCulture, AppResources.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
+            string.Format(CultureInfo.CurrentCulture, AppResources.SessionStatsFormat, durationText, Plurals.Format(nameof(AppResources.SetCount_Other), setCount)),
             string.Format(CultureInfo.CurrentCulture, DisplayFormats.VolumeNumber, session.TotalVolume),
             [.. session.Exercises.Select(WorkoutHistoryExerciseItem.Create)]);
     }
