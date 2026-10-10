@@ -1,6 +1,7 @@
 using System.Globalization;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -19,10 +20,10 @@ public sealed record WorkoutHistoryItem(
 
         return new WorkoutHistoryItem(
             session,
-            session.LocalStartTime.ToString(sharesDate ? UiText.ShortDateTimeFormat : UiText.ShortDateFormat, CultureInfo.InvariantCulture),
-            session.LocalStartTime.ToString(UiText.LongDateFormat, CultureInfo.InvariantCulture),
-            string.Format(CultureInfo.CurrentCulture, UiText.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
-            string.Format(CultureInfo.CurrentCulture, UiText.VolumeNumberFormat, session.TotalVolume),
+            session.LocalStartTime.ToString(sharesDate ? AppResources.ShortDateTimeFormat : AppResources.ShortDateFormat, CultureInfo.InvariantCulture),
+            session.LocalStartTime.ToString(AppResources.LongDateFormat, CultureInfo.InvariantCulture),
+            string.Format(CultureInfo.CurrentCulture, AppResources.SessionStatsFormat, durationText, setCount, CountCaption.Sets(setCount)),
+            string.Format(CultureInfo.CurrentCulture, DisplayFormats.VolumeNumber, session.TotalVolume),
             [.. session.Exercises.Select(WorkoutHistoryExerciseItem.Create)]);
     }
 }

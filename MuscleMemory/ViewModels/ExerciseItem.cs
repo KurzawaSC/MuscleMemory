@@ -1,7 +1,7 @@
 using System.Globalization;
-using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.ViewModels;
 
@@ -16,6 +16,6 @@ public sealed record ExerciseItem(
         var muscleGroupText = exercise.TargetMuscleGroup.ToDisplayName();
         var equipmentText = exercise.Equipment.ToDisplayName();
 
-        return new ExerciseItem(exercise, muscleGroupText, equipmentText, string.Format(CultureInfo.CurrentCulture, UiText.ListPairFormat, muscleGroupText, equipmentText));
+        return new ExerciseItem(exercise, muscleGroupText, equipmentText, string.Format(CultureInfo.CurrentCulture, AppResources.ListPairFormat, muscleGroupText, equipmentText));
     }
 }

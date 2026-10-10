@@ -1,15 +1,44 @@
-using System.Text.RegularExpressions;
+using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
+using MuscleMemory.Services;
 
 namespace MuscleMemory.Extensions;
 
-public static partial class EnumDisplay
+public static class EnumDisplay
 {
-    public static string ToDisplayName(this Enum value) =>
-        WordBoundary().Replace(value.ToString(), " $1");
+    public static string ToDisplayName(this MuscleGroup muscleGroup) => muscleGroup switch
+    {
+        MuscleGroup.Chest => AppResources.MuscleGroupChest,
+        MuscleGroup.Back => AppResources.MuscleGroupBack,
+        MuscleGroup.Shoulders => AppResources.MuscleGroupShoulders,
+        MuscleGroup.Biceps => AppResources.MuscleGroupBiceps,
+        MuscleGroup.Triceps => AppResources.MuscleGroupTriceps,
+        MuscleGroup.Legs => AppResources.MuscleGroupLegs,
+        MuscleGroup.Calves => AppResources.MuscleGroupCalves,
+        MuscleGroup.Abs => AppResources.MuscleGroupAbs,
+        MuscleGroup.FullBody => AppResources.MuscleGroupFullBody,
+        MuscleGroup.Other => AppResources.MuscleGroupOther,
+        _ => throw new ArgumentOutOfRangeException(nameof(muscleGroup), muscleGroup, null)
+    };
 
-    public static TEnum Parse<TEnum>(string displayName) where TEnum : struct, Enum =>
-        Enum.Parse<TEnum>(displayName.Replace(" ", string.Empty));
+    public static string ToDisplayName(this EquipmentType equipment) => equipment switch
+    {
+        EquipmentType.Barbell => AppResources.EquipmentBarbell,
+        EquipmentType.Dumbbell => AppResources.EquipmentDumbbell,
+        EquipmentType.Machine => AppResources.EquipmentMachine,
+        EquipmentType.Cable => AppResources.EquipmentCable,
+        EquipmentType.Kettlebell => AppResources.EquipmentKettlebell,
+        EquipmentType.Band => AppResources.EquipmentBand,
+        EquipmentType.None => AppResources.EquipmentNone,
+        EquipmentType.Other => AppResources.EquipmentOther,
+        _ => throw new ArgumentOutOfRangeException(nameof(equipment), equipment, null)
+    };
 
-    [GeneratedRegex("(?<!^)([A-Z])")]
-    private static partial Regex WordBoundary();
+    public static string ToDisplayName(this ThemePreference theme) => theme switch
+    {
+        ThemePreference.System => AppResources.ThemeNameSystem,
+        ThemePreference.Light => AppResources.ThemeNameLight,
+        ThemePreference.Dark => AppResources.ThemeNameDark,
+        _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null)
+    };
 }

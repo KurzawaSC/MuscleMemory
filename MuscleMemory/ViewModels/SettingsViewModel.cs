@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -26,7 +27,7 @@ public partial class SettingsViewModel(
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsEraseSheetOpen { get; set; }
 
-    public string VersionText { get; } = string.Format(UiText.VersionFormat, AppInfo.Current.VersionString);
+    public string VersionText { get; } = string.Format(AppResources.VersionFormat, AppInfo.Current.VersionString);
 
     public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
 
@@ -71,7 +72,7 @@ public partial class SettingsViewModel(
         navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
         await maintenanceService.DeleteTemporaryFilesAsync();
-        await dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
+        await dialogs.ShowMessageAsync(AppResources.TitleSuccess, AppResources.BodyDataErased);
     });
 
     [RelayCommand]
@@ -79,30 +80,30 @@ public partial class SettingsViewModel(
     {
         if (await maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
+            await dialogs.ShowMessageAsync(AppResources.TitleOops, AppResources.BodyNoDataToExport);
             return;
         }
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = UiText.TitleExportData,
+            Title = AppResources.TitleExportData,
             File = new ShareFile(snapshotPath, DatabaseNames.ExportContentType)
         });
-    }, UiText.BodyExportFailed);
+    }, AppResources.BodyExportFailed);
 
     [RelayCommand]
     private Task ImportDataAsync() => errors.RunAsync(async () =>
     {
         if (ActiveWorkout.IsWorkoutActive)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleHoldOn, UiText.BodyImportBlockedByWorkout);
+            await dialogs.ShowMessageAsync(AppResources.TitleHoldOn, AppResources.BodyImportBlockedByWorkout);
             return;
         }
 
-        if (await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = UiText.TitlePickBackup }) is { } file)
+        if (await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppResources.TitlePickBackup }) is { } file)
         {
             await ImportFromAsync(file);
         }
-    }, UiText.BodyImportFailed);
+    }, AppResources.BodyImportFailed);
 
     private async Task ImportFromAsync(FileResult file)
     {
@@ -124,7 +125,7 @@ public partial class SettingsViewModel(
 
         navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
-        await dialogs.ShowMessageAsync(UiText.TitleSuccess, DescribeCounts(UiText.DataImportedFormat, counts));
+        await dialogs.ShowMessageAsync(AppResources.TitleSuccess, DescribeCounts(AppResources.DataImportedFormat, counts));
     }
 
     private async Task<ImportCounts?> ConfirmImportAsync(FileResult file)
@@ -137,23 +138,23 @@ public partial class SettingsViewModel(
 
         if (preview.Status != ImportFileStatus.Valid)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleOops, RejectionMessage(preview.Status));
+            await dialogs.ShowMessageAsync(AppResources.TitleOops, RejectionMessage(preview.Status));
             return null;
         }
 
         var confirmed = await dialogs.ConfirmAsync(
-            UiText.TitleImportData,
-            DescribeCounts(UiText.ImportConfirmationFormat, preview.Counts),
-            UiText.ButtonImport,
-            UiText.ButtonCancel);
+            AppResources.TitleImportData,
+            DescribeCounts(AppResources.ImportConfirmationFormat, preview.Counts),
+            AppResources.ButtonImport,
+            AppResources.ButtonCancel);
         return confirmed ? preview.Counts : null;
     }
 
     private static string RejectionMessage(ImportFileStatus status) => status switch
     {
-        ImportFileStatus.Damaged => UiText.BodyImportDamaged,
-        ImportFileStatus.Incompatible => UiText.BodyImportIncompatible,
-        _ => UiText.BodyImportNotBackup
+        ImportFileStatus.Damaged => AppResources.BodyImportDamaged,
+        ImportFileStatus.Incompatible => AppResources.BodyImportIncompatible,
+        _ => AppResources.BodyImportNotBackup
     };
 
     private static string DescribeCounts(string format, ImportCounts counts) => string.Format(

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
              xmlns:models="clr-namespace:MuscleMemory.Models"
              x:Class="MuscleMemory.Controls.ExerciseFormSheet"
              x:Name="Root"
@@ -11,20 +12,20 @@
     <VerticalStackLayout Spacing="16">
         <VerticalStackLayout Spacing="4">
             <Label Style="{StaticResource TitleLabel}" Text="{Binding Form.Title, Source={x:Reference Root}}" />
-            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.HintExerciseForm}" />
+            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static strings:AppResources.HintExerciseForm}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelName}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelName}" />
             <controls:TextField FieldHeight="52"
                                 Text="{Binding Form.Name, Source={x:Reference Root}}"
                                 ErrorText="{Binding Form.NameError, Source={x:Reference Root}, FallbackValue=''}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
-                                Placeholder="{x:Static constants:UiText.PlaceholderExerciseName}" />
+                                Placeholder="{x:Static strings:AppResources.PlaceholderExerciseName}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelMuscleGroup}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelMuscleGroup}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"
@@ -43,7 +44,7 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelEquipment}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelEquipment}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"

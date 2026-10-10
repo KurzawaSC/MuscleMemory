@@ -4,6 +4,7 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
                              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
@@ -20,18 +21,18 @@
         <controls:NavigationHeader Title="{Binding HeaderTitle}" BackCommand="{Binding NavigateBackCommand}" />
 
         <VerticalStackLayout Grid.Row="1" Padding="{markup:Gutter Top=14}" Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelWorkoutName}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelWorkoutName}" />
             <controls:TextField FieldHeight="52"
                                 IsEnabled="{Binding IsEditable}"
                                 Text="{Binding WorkoutName}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
-                                Placeholder="{x:Static constants:UiText.PlaceholderWorkoutName}" />
+                                Placeholder="{x:Static strings:AppResources.PlaceholderWorkoutName}" />
         </VerticalStackLayout>
 
         <controls:EmptyState Grid.Row="2"
                              Spacing="14"
-                             Detail="{x:Static constants:UiText.EmptyWorkoutEditor}"
-                             ActionText="{x:Static constants:UiText.ButtonAddExercise}"
+                             Detail="{x:Static strings:AppResources.EmptyWorkoutEditor}"
+                             ActionText="{x:Static strings:AppResources.ButtonAddExercise}"
                              ActionStyle="{StaticResource AccentOutlineButton}"
                              ActionCommand="{Binding AddExerciseCommand}"
                              IsVisible="{Binding IsEmptyHintVisible}">
@@ -53,7 +54,7 @@
         </controls:EmptyState>
 
         <controls:EmptyState Grid.Row="2"
-                             Message="{x:Static constants:UiText.LoadingText}"
+                             Message="{x:Static strings:AppResources.LoadingText}"
                              IsVisible="{Binding IsLoading}" />
 
         <CollectionView Grid.Row="2"
@@ -73,10 +74,10 @@
                             <controls:StatTile Grid.Column="1" Padding="14,10" Value="{Binding TotalSets}" Caption="{Binding TotalSetsCaption}" />
                         </Grid>
                         <Grid ColumnDefinitions="*, Auto">
-                            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" VerticalOptions="Center" />
+                            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.HeaderExercises}" VerticalOptions="Center" />
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{StaticResource SmallTextButton}"
-                                                     Text="{x:Static constants:UiText.ButtonAddInline}"
+                                                     Text="{x:Static strings:AppResources.ButtonAddInline}"
                                                      Command="{Binding AddExerciseCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -95,19 +96,19 @@
                                        Text="{Binding ExerciseName}"
                                        LineBreakMode="TailTruncation"
                                        VerticalOptions="Center" />
-                                <controls:Chip Grid.Column="1" Text="{x:Static constants:UiText.ButtonEdit}" VerticalOptions="Center" />
+                                <controls:Chip Grid.Column="1" Text="{x:Static strings:AppResources.ButtonEdit}" VerticalOptions="Center" />
                             </Grid>
                             <HorizontalStackLayout Spacing="6">
                                 <controls:Chip>
                                     <controls:Chip.Text>
-                                        <MultiBinding StringFormat="{x:Static constants:UiText.SetsByRepsFormat}">
+                                        <MultiBinding StringFormat="{x:Static strings:AppResources.SetsByRepsFormat}">
                                             <Binding Path="Sets" />
                                             <Binding Path="Reps" />
                                         </MultiBinding>
                                     </controls:Chip.Text>
                                 </controls:Chip>
-                                <controls:Chip Text="{Binding BreakTimeInSeconds, StringFormat={x:Static constants:UiText.RestChipFormat}}" />
-                                <controls:Chip Text="{Binding TargetRPE, StringFormat={x:Static constants:UiText.TargetRpeFormat}}" IsAccent="True" />
+                                <controls:Chip Text="{Binding BreakTimeInSeconds, StringFormat={x:Static strings:AppResources.RestChipFormat}}" />
+                                <controls:Chip Text="{Binding TargetRPE, StringFormat={x:Static strings:AppResources.TargetRpeFormat}}" IsAccent="True" />
                             </HorizontalStackLayout>
                         </VerticalStackLayout>
                     </Border>
@@ -119,7 +120,7 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding AddExerciseCommand}" />
                         </Border.GestureRecognizers>
-                        <Label Text="{x:Static constants:UiText.ButtonAddExerciseInline}"
+                        <Label Text="{x:Static strings:AppResources.ButtonAddExerciseInline}"
                                TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                HorizontalOptions="Center" />
                     </Border>
@@ -129,10 +130,10 @@
 
         <VerticalStackLayout Grid.Row="3" Padding="{markup:Gutter Top=12, Bottom=16}" Spacing="8">
             <controls:TappableButton Style="{StaticResource PrimaryButton}"
-                                     Text="{x:Static constants:UiText.ButtonSaveWorkout}"
+                                     Text="{x:Static strings:AppResources.ButtonSaveWorkout}"
                                      Command="{Binding SaveWorkoutCommand}" />
             <Label Style="{StaticResource CaptionLabel}"
-                   Text="{x:Static constants:UiText.HintSaveWorkout}"
+                   Text="{x:Static strings:AppResources.HintSaveWorkout}"
                    HorizontalOptions="Center"
                    IsVisible="{Binding CanSave, Converter={StaticResource InvertedBoolConverter}}" />
         </VerticalStackLayout>

@@ -3,7 +3,7 @@
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              xmlns:platform="clr-namespace:MuscleMemory"
                              x:Name="PageRoot"
@@ -12,7 +12,7 @@
                              BackCommand="{Binding NavigateBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto">
-        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat={x:Static constants:UiText.WorkoutHistoryTitleFormat}}" BackCommand="{Binding NavigateBackCommand}" />
+        <controls:NavigationHeader Title="{Binding WorkoutName, StringFormat={x:Static strings:AppResources.WorkoutHistoryTitleFormat}}" BackCommand="{Binding NavigateBackCommand}" />
 
         <CollectionView Grid.Row="1"
                         Margin="0,14,0,0"
@@ -68,10 +68,10 @@
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                             <controls:UnitLabel HorizontalTextAlignment="End"
                                                 Value="{Binding SelectedSession.VolumeText, FallbackValue=''}"
-                                                Unit="{x:Static constants:UiText.KilogramSuffix}"
+                                                Unit="{x:Static strings:AppResources.KilogramSuffix}"
                                                 ValueSpanStyle="{StaticResource TitleSpan}"
                                                 ValueColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
-                            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.CaptionVolume}" HorizontalTextAlignment="End" />
+                            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static strings:AppResources.CaptionVolume}" HorizontalTextAlignment="End" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
@@ -111,7 +111,7 @@
                                             </VerticalStackLayout>
                                             <BoxView Style="{StaticResource Divider}" />
                                             <controls:TappableButton Style="{StaticResource CaptionTextButton}"
-                                                                     Text="{x:Static constants:UiText.ButtonAddSetInline}"
+                                                                     Text="{x:Static strings:AppResources.ButtonAddSetInline}"
                                                                      HeightRequest="{StaticResource MediumButtonHeight}"
                                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutHistoryViewModel}}, Path=AddSetCommand}"
                                                                      CommandParameter="{Binding .}" />
@@ -125,7 +125,7 @@
 
                 <Border Style="{StaticResource DashedOutline}" Padding="15">
                     <Label Style="{StaticResource CompactLabel}"
-                           Text="{x:Static constants:UiText.HintEditableSession}"
+                           Text="{x:Static strings:AppResources.HintEditableSession}"
                            TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                            HorizontalTextAlignment="Center" />
                 </Border>
@@ -134,15 +134,15 @@
 
         <controls:TappableButton Grid.Row="3"
                                  Style="{StaticResource PrimaryButton}"
-                                 Text="{x:Static constants:UiText.ButtonAddExerciseToSession}"
+                                 Text="{x:Static strings:AppResources.ButtonAddExerciseToSession}"
                                  Margin="{markup:Gutter Bottom=14}"
                                  Command="{Binding AddExerciseCommand}"
                                  IsVisible="{Binding ListState.HasItems}" />
 
         <controls:EmptyState Grid.Row="1"
                              Grid.RowSpan="3"
-                             Message="{x:Static constants:UiText.EmptyHistoryMessage}"
-                             Detail="{x:Static constants:UiText.EmptyWorkoutHistoryDetail}"
+                             Message="{x:Static strings:AppResources.EmptyHistoryMessage}"
+                             Detail="{x:Static strings:AppResources.EmptyWorkoutHistoryDetail}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExercisePickerOpen}">
@@ -154,8 +154,8 @@
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding SetActions.IsActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding SetActions.ActionSetTitle}"
                                        Subtitle="{Binding SetActions.ActionSetSubtitle}"
-                                       EditText="{x:Static constants:UiText.TitleEditSet}"
-                                       DeleteText="{x:Static constants:UiText.TitleDeleteSet}"
+                                       EditText="{x:Static strings:AppResources.TitleEditSet}"
+                                       DeleteText="{x:Static strings:AppResources.TitleDeleteSet}"
                                        EditCommand="{Binding SetActions.EditCommand}"
                                        DeleteCommand="{Binding SetActions.DeleteCommand}"
                                        CancelCommand="{Binding SetActions.CancelCommand}" />
@@ -164,7 +164,7 @@
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsExerciseActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding ActionExercise.ExerciseName, FallbackValue=''}"
                                        Subtitle="{Binding SelectedSession.DateText, FallbackValue=''}"
-                                       DeleteText="{x:Static constants:UiText.TitleRemoveExercise}"
+                                       DeleteText="{x:Static strings:AppResources.TitleRemoveExercise}"
                                        DeleteCommand="{Binding DeleteActionExerciseCommand}"
                                        CancelCommand="{Binding CancelExerciseActionsCommand}" />
         </controls:BottomSheet>

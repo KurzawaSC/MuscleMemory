@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
-using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
+using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.Services;
 
@@ -8,7 +8,7 @@ public sealed class ErrorHandler(IDialogService dialogs) : IErrorHandler
 {
     private bool _isShowingError;
 
-    public async Task RunAsync(Func<Task> operation, string message = UiText.BodyOperationFailed, [CallerMemberName] string context = "")
+    public async Task RunAsync(Func<Task> operation, string? message = null, [CallerMemberName] string context = "")
     {
         try
         {
@@ -17,11 +17,11 @@ public sealed class ErrorHandler(IDialogService dialogs) : IErrorHandler
         catch (Exception exception)
         {
             AppLog.Error(exception, context);
-            await TellUserAsync(message, context);
+            await TellUserAsync(message ?? AppResources.BodyOperationFailed, context);
         }
     }
 
-    public void ReportFailures(Task task, string message = UiText.BodyOperationFailed, [CallerMemberName] string context = "") =>
+    public void ReportFailures(Task task, string? message = null, [CallerMemberName] string context = "") =>
         _ = RunAsync(() => task, message, context);
 
     private async Task TellUserAsync(string message, string context)
@@ -34,7 +34,7 @@ public sealed class ErrorHandler(IDialogService dialogs) : IErrorHandler
         _isShowingError = true;
         try
         {
-            await dialogs.ShowMessageAsync(UiText.TitleError, message);
+            await dialogs.ShowMessageAsync(AppResources.TitleError, message);
         }
         catch (Exception exception)
         {

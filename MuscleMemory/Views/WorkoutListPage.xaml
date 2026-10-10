@@ -4,7 +4,7 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+                             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
                              xmlns:platform="clr-namespace:MuscleMemory"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
@@ -17,7 +17,7 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, *">
-        <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderWorkouts}" Subtitle="{x:Static constants:UiText.SubtitleWorkouts}" />
+        <controls:ScreenHeader Title="{x:Static strings:AppResources.HeaderWorkouts}" Subtitle="{x:Static strings:AppResources.SubtitleWorkouts}" />
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Workouts}" Margin="{markup:Gutter Top=12}">
             <CollectionView.ItemsLayout>
@@ -64,7 +64,7 @@
                                                          CommandParameter="{Binding .}" />
                             </Grid>
                             <controls:TappableButton Style="{StaticResource SoftPrimaryButton}"
-                                                     Text="{x:Static constants:UiText.ButtonStart}"
+                                                     Text="{x:Static strings:AppResources.ButtonStart}"
                                                      Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:WorkoutListViewModel}}, Path=StartWorkoutCommand}"
                                                      CommandParameter="{Binding .}" />
                         </VerticalStackLayout>
@@ -74,9 +74,9 @@
         </CollectionView>
 
         <controls:EmptyState Grid.Row="1"
-                             Message="{x:Static constants:UiText.EmptyWorkoutsMessage}"
-                             Detail="{x:Static constants:UiText.EmptyWorkoutsDetail}"
-                             ActionText="{x:Static constants:UiText.ButtonCreateWorkout}"
+                             Message="{x:Static strings:AppResources.EmptyWorkoutsMessage}"
+                             Detail="{x:Static strings:AppResources.EmptyWorkoutsDetail}"
+                             ActionText="{x:Static strings:AppResources.ButtonCreateWorkout}"
                              ActionCommand="{Binding NavigateToAddWorkoutCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
                              IsVisible="{Binding ListState.IsEmpty}" />
@@ -94,8 +94,8 @@
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding ActionWorkout.Workout.Name, FallbackValue=''}"
                                        Subtitle="{Binding ActionWorkout.ExerciseSummary, FallbackValue=''}"
-                                       EditText="{x:Static constants:UiText.HeaderEditWorkout}"
-                                       DeleteText="{x:Static constants:UiText.TitleDeleteWorkout}"
+                                       EditText="{x:Static strings:AppResources.HeaderEditWorkout}"
+                                       DeleteText="{x:Static strings:AppResources.TitleDeleteWorkout}"
                                        EditCommand="{Binding EditActionWorkoutCommand}"
                                        HistoryCommand="{Binding ViewActionWorkoutHistoryCommand}"
                                        DeleteCommand="{Binding DeleteActionWorkoutCommand}"

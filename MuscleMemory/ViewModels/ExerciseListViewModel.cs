@@ -6,6 +6,7 @@ using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -195,7 +196,7 @@ public partial class ExerciseListViewModel : ObservableObject
         }
 
         var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
-        var answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(AppResources.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), AppResources.ButtonDelete, AppResources.ButtonCancel);
         if (answer)
         {
             await _exerciseCatalog.DeleteAsync(exercise.Id);
@@ -203,8 +204,8 @@ public partial class ExerciseListViewModel : ObservableObject
     });
 
     private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
-        ? string.Format(CultureInfo.CurrentCulture, UiText.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, CountCaption.Workouts(workoutCount))
-        : string.Format(UiText.DeleteConfirmationFormat, exerciseName);
+        ? string.Format(CultureInfo.CurrentCulture, AppResources.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, CountCaption.Workouts(workoutCount))
+        : string.Format(AppResources.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()
     {

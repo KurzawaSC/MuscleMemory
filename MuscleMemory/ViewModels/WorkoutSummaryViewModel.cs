@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -45,7 +45,7 @@ public sealed partial class WorkoutSummaryViewModel : ObservableObject
         Exercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
         TotalVolume = summary.TotalVolume;
         TotalSets = summary.Exercises.Sum(exercise => exercise.Sets.Count);
-        DateText = startTimeUtc.ToLocalTime().ToString(UiText.SummaryDateFormat, CultureInfo.InvariantCulture);
+        DateText = startTimeUtc.ToLocalTime().ToString(AppResources.SummaryDateFormat, CultureInfo.InvariantCulture);
         IsVisible = true;
     }
 

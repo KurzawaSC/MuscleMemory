@@ -13,6 +13,8 @@
 
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
+		<NeutralLanguage>en</NeutralLanguage>
+
 		<ApplicationTitle>Muscle Memory</ApplicationTitle>
 
 		<ApplicationId>io.github.kurzawasc.musclememory</ApplicationId>
@@ -37,6 +39,12 @@
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<EmbeddedResource Update="Resources\Strings\AppResources.resx"
+		                  StronglyTypedLanguage="CSharp"
+		                  StronglyTypedNamespace="MuscleMemory.Resources.Strings"
+		                  StronglyTypedClassName="AppResources"
+		                  StronglyTypedFileName="$(IntermediateOutputPath)AppResources.g.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -51,5 +59,10 @@
 		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.5" />
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
 	</ItemGroup>
+
+	<Target Name="GenerateResourceAccessorAtDesignTime"
+	        BeforeTargets="CoreCompile"
+	        DependsOnTargets="PrepareResourceNames;CoreResGen"
+	        Condition="'$(DesignTimeBuild)' == 'true'" />
 
 </Project>
