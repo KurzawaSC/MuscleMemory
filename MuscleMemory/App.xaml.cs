@@ -7,8 +7,9 @@ public partial class App : Application
 {
     private Window? _window;
 
-    public App(IThemeService themeService, IDatabaseMaintenanceService maintenanceService, IErrorHandler errors)
+    public App(ILocalizationService localization, IThemeService themeService, IDatabaseMaintenanceService maintenanceService, IErrorHandler errors)
     {
+        localization.RestoreSavedLanguage();
         InitializeComponent();
         themeService.RestoreSavedTheme();
         errors.ReportFailures(maintenanceService.DeleteTemporaryFilesAsync());
