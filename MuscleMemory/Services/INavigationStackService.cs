@@ -7,4 +7,6 @@ public interface INavigationStackService
     bool ContainsPageBoundTo(object bindingContext);
 
     Task<bool> ConfirmDiscardingChangesOnTabAsync(string tabRoute);
+
+    Task<bool> ConfirmDiscardingAllChangesAsync();
 }

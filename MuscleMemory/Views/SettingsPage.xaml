@@ -23,6 +23,14 @@
                                         Command="{Binding OpenThemeSheetCommand}" />
                 </Border>
 
+                <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelLanguage}" Margin="0,10,0,0" />
+                <Border Style="{StaticResource SettingsGroup}">
+                    <controls:ActionRow Text="{loc:Text LabelLanguage}"
+                                        Value="{Binding LanguageText}"
+                                        TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
+                                        Command="{Binding OpenLanguageSheetCommand}" />
+                </Border>
+
                 <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelData}" Margin="0,10,0,0" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <VerticalStackLayout>
@@ -97,6 +105,28 @@
                         </RadioButton.Content>
                     </RadioButton>
                 </Grid>
+            </VerticalStackLayout>
+        </controls:BottomSheet>
+
+        <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsLanguageSheetOpen}">
+            <VerticalStackLayout Spacing="16">
+                <Label Style="{StaticResource TitleLabel}" Text="{loc:Text LabelLanguage}" />
+                <VerticalStackLayout Spacing="10"
+                                     RadioButtonGroup.GroupName="AppLanguage"
+                                     RadioButtonGroup.SelectedValue="{Binding SelectedLanguage}"
+                                     BindableLayout.ItemsSource="{Binding Languages}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:LanguageOption">
+                            <RadioButton Style="{StaticResource ThemeCard}"
+                                         Value="{Binding .}"
+                                         SemanticProperties.Description="{Binding Label}">
+                                <RadioButton.Content>
+                                    <Label Text="{Binding Label, Source={RelativeSource AncestorType={x:Type viewmodels:LanguageOption}}}" />
+                                </RadioButton.Content>
+                            </RadioButton>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
             </VerticalStackLayout>
         </controls:BottomSheet>
 

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -16,6 +17,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private readonly INavigationStackService _navigationStack;
     private readonly IErrorHandler _errors;
+    private readonly ILocalizationService _localization;
+    private readonly IDataChangeNotifier _dataChanges;
 
     public SettingsViewModel(
         IDatabaseMaintenanceService maintenanceService,
@@ -24,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
         INavigationStackService navigationStack,
         IErrorHandler errors,
         ILocalizationService localization,
+        IDataChangeNotifier dataChanges,
         ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
@@ -31,8 +35,11 @@ public partial class SettingsViewModel : ObservableObject
         _dialogs = dialogs;
         _navigationStack = navigationStack;
         _errors = errors;
+        _localization = localization;
+        _dataChanges = dataChanges;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
+        ShowLanguages();
         localization.LanguageChanged += OnLanguageChanged;
     }
 
@@ -41,20 +48,32 @@ public partial class SettingsViewModel : ObservableObject
     public partial ThemePreference SelectedTheme { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LanguageText))]
+    public partial LanguageOption SelectedLanguage { get; set; } = null!;
+
+    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsThemeSheetOpen { get; set; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsLanguageSheetOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsEraseSheetOpen { get; set; }
 
+    public ObservableCollection<LanguageOption> Languages { get; } = [];
+
     public string ThemeText => SelectedTheme.ToDisplayName();
+
+    public string LanguageText => SelectedLanguage.ShortLabel;
 
     public string VersionText => string.Format(AppResources.VersionFormat, AppInfo.Current.VersionString);
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
-    private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
+    private bool IsAnySheetOpen => IsThemeSheetOpen || IsLanguageSheetOpen || IsEraseSheetOpen;
 
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
@@ -64,16 +83,63 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
+    partial void OnSelectedLanguageChanged(LanguageOption value)
+    {
+        if (!value.Represents(_localization.SavedLanguage))
+        {
+            _errors.ReportFailures(SwitchLanguageAsync(value));
+        }
+    }
+
+    private async Task SwitchLanguageAsync(LanguageOption option)
+    {
+        await SheetTransition.CloseAsync(CloseLanguageSheet);
+
+        if (!await _navigationStack.ConfirmDiscardingAllChangesAsync())
+        {
+            SelectedLanguage = OptionFor(_localization.SavedLanguage);
+            return;
+        }
+
+        _localization.ChangeLanguage(option.Language);
+        _navigationStack.PopAllTabsToRoot();
+        _dataChanges.Notify(DataArea.All);
+    }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
+        ShowLanguages();
         OnPropertyChanged(nameof(ThemeText));
         OnPropertyChanged(nameof(VersionText));
     }
+
+    private void ShowLanguages()
+    {
+        Languages.ReplaceAll(
+        [
+            LanguageOption.SystemDefault(_localization.SystemLanguage),
+            .. _localization.AvailableLanguages.Select(LanguageOption.For)
+        ]);
+        SelectedLanguage = OptionFor(_localization.SavedLanguage);
+    }
+
+    private LanguageOption OptionFor(CultureInfo? language) => Languages.First(option => option.Represents(language));
 
     [RelayCommand]
     private void OpenThemeSheet()
     {
         IsThemeSheetOpen = true;
+    }
+
+    [RelayCommand]
+    private void OpenLanguageSheet()
+    {
+        IsLanguageSheetOpen = true;
+    }
+
+    private void CloseLanguageSheet()
+    {
+        IsLanguageSheetOpen = false;
     }
 
     [RelayCommand]
@@ -86,6 +152,7 @@ public partial class SettingsViewModel : ObservableObject
     private void CloseSheets()
     {
         IsThemeSheetOpen = false;
+        IsLanguageSheetOpen = false;
         IsEraseSheetOpen = false;
     }
 

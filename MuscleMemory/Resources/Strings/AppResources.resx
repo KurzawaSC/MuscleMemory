@@ -255,6 +255,15 @@
   <data name="LabelAppTheme" xml:space="preserve">
     <value>App theme</value>
   </data>
+  <data name="LabelLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageSystemDefault" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="LanguageSystemDefaultFormat" xml:space="preserve">
+    <value>System default ({0})</value>
+  </data>
   <data name="LabelWorkoutName" xml:space="preserve">
     <value>Workout name</value>
   </data>
