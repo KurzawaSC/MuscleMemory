@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -191,10 +192,7 @@ public partial class SettingsViewModel : ObservableObject
     private static string DescribeCounts(string format, ImportCounts counts) => string.Format(
         CultureInfo.CurrentCulture,
         format,
-        counts.Exercises,
-        CountCaption.Exercises(counts.Exercises),
-        counts.Workouts,
-        CountCaption.Workouts(counts.Workouts),
-        counts.Sessions,
-        CountCaption.Sessions(counts.Sessions));
+        Plurals.Format(nameof(AppResources.ExerciseCount_Other), counts.Exercises),
+        Plurals.Format(nameof(AppResources.WorkoutCount_Other), counts.Workouts),
+        Plurals.Format(nameof(AppResources.SessionCount_Other), counts.Sessions));
 }

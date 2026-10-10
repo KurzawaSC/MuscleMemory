@@ -1,5 +1,4 @@
-using System.Globalization;
-using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 
@@ -7,7 +6,7 @@ namespace MuscleMemory.ViewModels;
 
 public sealed record WorkoutListItem(Workout Workout, string ExerciseSummary, int TotalSets, bool HasExercises)
 {
-    public string SetsText => string.Format(CultureInfo.CurrentCulture, AppResources.CountFormat, TotalSets, CountCaption.Sets(TotalSets));
+    public string SetsText => Plurals.Format(nameof(AppResources.SetCount_Other), TotalSets);
 
     public static WorkoutListItem Create(Workout workout, IEnumerable<WorkoutExercise> exercises)
     {

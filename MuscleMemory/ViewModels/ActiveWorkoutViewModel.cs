@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
@@ -74,7 +75,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial SessionExercise CurrentExercise { get; set; } = new();
 
     public string TargetText => CurrentExercise.PlannedReps > 0
-        ? string.Format(CultureInfo.CurrentCulture, AppResources.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
+        ? string.Format(CultureInfo.CurrentCulture, AppResources.TargetRepsFormat, Plurals.Format(nameof(AppResources.RepCount_Other), CurrentExercise.PlannedReps), CurrentExercise.TargetRPE)
         : string.Format(CultureInfo.CurrentCulture, AppResources.TargetRpeFormat, CurrentExercise.TargetRPE);
 
     [ObservableProperty]

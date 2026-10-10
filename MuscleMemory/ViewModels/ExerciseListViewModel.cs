@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
@@ -206,7 +207,7 @@ public partial class ExerciseListViewModel : ObservableObject
     });
 
     private static string DeleteConfirmationText(string exerciseName, int workoutCount) => workoutCount > 0
-        ? string.Format(CultureInfo.CurrentCulture, AppResources.DeleteExerciseFromWorkoutsFormat, exerciseName, workoutCount, CountCaption.Workouts(workoutCount))
+        ? string.Format(CultureInfo.CurrentCulture, AppResources.DeleteExerciseFromWorkoutsFormat, exerciseName, Plurals.Format(nameof(AppResources.WorkoutCount_Other), workoutCount))
         : string.Format(AppResources.DeleteConfirmationFormat, exerciseName);
 
     private async Task<Exercise?> DismissActionSheetAsync()

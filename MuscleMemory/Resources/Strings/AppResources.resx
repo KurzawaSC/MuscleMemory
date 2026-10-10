@@ -193,7 +193,7 @@
     <value>Are you sure you want to delete “{0}”?</value>
   </data>
   <data name="DeleteExerciseFromWorkoutsFormat" xml:space="preserve">
-    <value>Are you sure you want to delete “{0}”? It will be removed from {1} {2}.</value>
+    <value>Are you sure you want to delete “{0}”? It will be removed from {1}.</value>
   </data>
   <data name="DeleteWorkoutConfirmationFormat" xml:space="preserve">
     <value>Are you sure you want to delete “{0}”? Session history is kept. The plan itself can't be restored.</value>
@@ -202,10 +202,10 @@
     <value>Are you sure you want to remove “{0}”?</value>
   </data>
   <data name="ImportConfirmationFormat" xml:space="preserve">
-    <value>This replaces all current data with {0:N0} {1}, {2:N0} {3} and {4:N0} {5} from the file. It can't be undone.</value>
+    <value>This replaces all current data with {0}, {1} and {2} from the file. It can't be undone.</value>
   </data>
   <data name="DataImportedFormat" xml:space="preserve">
-    <value>Imported {0:N0} {1}, {2:N0} {3} and {4:N0} {5}.</value>
+    <value>Imported {0}, {1} and {2}.</value>
   </data>
   <data name="WorkoutAlreadyActiveFormat" xml:space="preserve">
     <value>“{0}” is still in progress. Finish it before starting another workout.</value>
@@ -414,38 +414,47 @@
   <data name="SetsByRepsFormat" xml:space="preserve">
     <value>{0} × {1}</value>
   </data>
-  <data name="CountFormat" xml:space="preserve">
-    <value>{0} {1}</value>
-  </data>
-  <data name="CaptionExercise" xml:space="preserve">
+  <data name="ExercisesCaption_One" xml:space="preserve">
     <value>exercise</value>
   </data>
-  <data name="CaptionExercises" xml:space="preserve">
+  <data name="ExercisesCaption_Other" xml:space="preserve">
     <value>exercises</value>
   </data>
-  <data name="CaptionSet" xml:space="preserve">
+  <data name="SetsCaption_One" xml:space="preserve">
     <value>set</value>
   </data>
-  <data name="CaptionSets" xml:space="preserve">
+  <data name="SetsCaption_Other" xml:space="preserve">
     <value>sets</value>
   </data>
-  <data name="CaptionRep" xml:space="preserve">
-    <value>rep</value>
+  <data name="ExerciseCount_One" xml:space="preserve">
+    <value>{0:N0} exercise</value>
   </data>
-  <data name="CaptionReps" xml:space="preserve">
-    <value>reps</value>
+  <data name="ExerciseCount_Other" xml:space="preserve">
+    <value>{0:N0} exercises</value>
   </data>
-  <data name="CaptionWorkout" xml:space="preserve">
-    <value>workout</value>
+  <data name="SetCount_One" xml:space="preserve">
+    <value>{0:N0} set</value>
   </data>
-  <data name="CaptionWorkouts" xml:space="preserve">
-    <value>workouts</value>
+  <data name="SetCount_Other" xml:space="preserve">
+    <value>{0:N0} sets</value>
   </data>
-  <data name="CaptionSession" xml:space="preserve">
-    <value>session</value>
+  <data name="RepCount_One" xml:space="preserve">
+    <value>{0:N0} rep</value>
   </data>
-  <data name="CaptionSessions" xml:space="preserve">
-    <value>sessions</value>
+  <data name="RepCount_Other" xml:space="preserve">
+    <value>{0:N0} reps</value>
+  </data>
+  <data name="WorkoutCount_One" xml:space="preserve">
+    <value>{0:N0} workout</value>
+  </data>
+  <data name="WorkoutCount_Other" xml:space="preserve">
+    <value>{0:N0} workouts</value>
+  </data>
+  <data name="SessionCount_One" xml:space="preserve">
+    <value>{0:N0} session</value>
+  </data>
+  <data name="SessionCount_Other" xml:space="preserve">
+    <value>{0:N0} sessions</value>
   </data>
   <data name="CaptionVolume" xml:space="preserve">
     <value>volume</value>
@@ -454,7 +463,7 @@
     <value>time</value>
   </data>
   <data name="SessionCountFormat" xml:space="preserve">
-    <value>{0} {1} · newest first</value>
+    <value>{0} · newest first</value>
   </data>
   <data name="ListSeparator" xml:space="preserve">
     <value> · </value>
@@ -493,10 +502,10 @@
     <value>Set {0}</value>
   </data>
   <data name="SetDescriptionFormat" xml:space="preserve">
-    <value>Set {0}, {1}, {2} {3}</value>
+    <value>Set {0}, {1}, {2}</value>
   </data>
   <data name="TargetRepsFormat" xml:space="preserve">
-    <value>Target {0} reps · RPE {1}</value>
+    <value>Target {0} · RPE {1}</value>
   </data>
   <data name="TargetRpeFormat" xml:space="preserve">
     <value>RPE {0}</value>
@@ -532,7 +541,7 @@
     <value>ddd, MMM d · HH:mm</value>
   </data>
   <data name="SessionStatsFormat" xml:space="preserve">
-    <value>Time {0} · {1} {2}</value>
+    <value>Time {0} · {1}</value>
   </data>
   <data name="RestTotalFormat" xml:space="preserve">
     <value>of {0} s</value>

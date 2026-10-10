@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -34,7 +35,7 @@ public sealed partial class WorkoutSummaryViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
     public partial int TotalSets { get; private set; }
 
-    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
+    public string TotalSetsCaption => Plurals.Format(nameof(AppResources.SetsCaption_Other), TotalSets);
 
     [ObservableProperty]
     public partial string DateText { get; private set; } = string.Empty;
