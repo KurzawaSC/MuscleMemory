@@ -42,7 +42,7 @@ public sealed partial class RestTimerViewModel : ObservableObject
     [ObservableProperty]
     public partial string TotalText { get; private set; } = string.Empty;
 
-    public string ExtensionText { get; } = string.Format(CultureInfo.CurrentCulture, AppResources.RestExtensionFormat, DomainDefaults.RestExtensionInSeconds);
+    public string ExtensionText => string.Format(CultureInfo.CurrentCulture, AppResources.RestExtensionFormat, DomainDefaults.RestExtensionInSeconds);
 
     [ObservableProperty]
     public partial double Progress { get; private set; }
@@ -80,6 +80,16 @@ public sealed partial class RestTimerViewModel : ObservableObject
         _haptics.RestFinished();
         AppLog.LogFailures(_audioCues.PlayBreakEndAsync());
         _errors.ReportFailures(_host.SaveStateAsync());
+    }
+
+    public void RefreshText()
+    {
+        if (IsResting)
+        {
+            TotalText = FormatTotal(DurationSeconds);
+        }
+
+        OnPropertyChanged(nameof(ExtensionText));
     }
 
     public void Clear()

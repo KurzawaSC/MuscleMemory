@@ -2,7 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              x:Class="MuscleMemory.Controls.TextField"
              x:Name="Root"
              x:DataType="controls:TextField">
@@ -38,7 +38,7 @@
                        HorizontalTextAlignment="Center"
                        VerticalTextAlignment="Center"
                        VerticalOptions="Center"
-                       SemanticProperties.Description="{x:Static strings:AppResources.ActionClearText}"
+                       SemanticProperties.Description="{loc:Text ActionClearText}"
                        IsVisible="{Binding ShowsClearButton, Source={x:Reference Root}}">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnClearTapped" />

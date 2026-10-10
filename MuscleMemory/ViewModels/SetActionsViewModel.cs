@@ -78,6 +78,13 @@ public sealed partial class SetActionsViewModel : ObservableObject
         IsEditorOpen = true;
     }
 
+    public void RefreshText()
+    {
+        OnPropertyChanged(nameof(ActionSetTitle));
+        OnPropertyChanged(nameof(ActionSetSubtitle));
+        Editor.RefreshText();
+    }
+
     public void CloseSheets()
     {
         Cancel();

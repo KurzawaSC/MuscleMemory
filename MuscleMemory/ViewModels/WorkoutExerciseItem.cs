@@ -1,5 +1,7 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.ViewModels;
 
@@ -19,16 +21,26 @@ public sealed partial class WorkoutExerciseItem : ObservableObject
     public string ExerciseName => Exercise.ExerciseName;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SetsByRepsText))]
     public partial int Sets { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SetsByRepsText))]
     public partial int Reps { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RestText))]
     public partial int BreakTimeInSeconds { get; private set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RpeText))]
     public partial int TargetRPE { get; private set; }
+
+    public string SetsByRepsText => string.Format(CultureInfo.CurrentCulture, AppResources.SetsByRepsFormat, Sets, Reps);
+
+    public string RestText => string.Format(CultureInfo.CurrentCulture, AppResources.RestChipFormat, BreakTimeInSeconds);
+
+    public string RpeText => string.Format(CultureInfo.CurrentCulture, AppResources.TargetRpeFormat, TargetRPE);
 
     public void Apply(ExerciseConfiguration configuration)
     {
