@@ -1,5 +1,7 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MuscleMemory.Data.Repositories;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
@@ -32,9 +34,9 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
     [NotifyPropertyChangedFor(nameof(NameError))]
     private partial IReadOnlySet<string>? TakenNames { get; set; }
 
-    public MuscleGroup[] MuscleGroups { get; } = Enum.GetValues<MuscleGroup>();
+    public ObservableCollection<EnumOption> MuscleGroups { get; } = [.. MuscleGroupOptions()];
 
-    public EquipmentType[] EquipmentTypes { get; } = Enum.GetValues<EquipmentType>();
+    public ObservableCollection<EnumOption> EquipmentTypes { get; } = [.. EquipmentOptions()];
 
     public bool CanSave => TakenNames is not null && !string.IsNullOrWhiteSpace(Name) && !IsNameTaken;
 
@@ -47,8 +49,7 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
         _existingExercise = null;
         TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
-        Title = AppResources.HeaderNewExercise;
-        ConfirmText = AppResources.ButtonAdd;
+        ShowTitles();
         Name = string.Empty;
         SelectedMuscleGroup = MuscleGroup.Other;
         SelectedEquipment = EquipmentType.Other;
@@ -59,12 +60,30 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
         _existingExercise = exercise;
         TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
-        Title = AppResources.HeaderEditExercise;
-        ConfirmText = AppResources.ButtonSave;
+        ShowTitles();
         Name = exercise.Name;
         SelectedMuscleGroup = exercise.TargetMuscleGroup;
         SelectedEquipment = exercise.Equipment;
     }
+
+    public void RefreshText()
+    {
+        ShowTitles();
+        MuscleGroups.ReplaceAll(MuscleGroupOptions());
+        EquipmentTypes.ReplaceAll(EquipmentOptions());
+        OnPropertyChanged(nameof(NameError));
+    }
+
+    private void ShowTitles()
+    {
+        var isEditing = _existingExercise is not null;
+        Title = isEditing ? AppResources.HeaderEditExercise : AppResources.HeaderNewExercise;
+        ConfirmText = isEditing ? AppResources.ButtonSave : AppResources.ButtonAdd;
+    }
+
+    private static List<EnumOption> MuscleGroupOptions() => [.. Enum.GetValues<MuscleGroup>().Select(EnumOption.For)];
+
+    private static List<EnumOption> EquipmentOptions() => [.. Enum.GetValues<EquipmentType>().Select(EnumOption.For)];
 
     public async Task<Exercise> SaveAsync()
     {

@@ -34,7 +34,8 @@ public partial class ExerciseListViewModel : ObservableObject
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
-        IErrorHandler errors)
+        IErrorHandler errors,
+        ILocalizationService localization)
     {
         _exerciseRepository = exerciseRepository;
         _workoutRepository = workoutRepository;
@@ -48,6 +49,7 @@ public partial class ExerciseListViewModel : ObservableObject
         Filter = filter;
         Filter.Changed += (_, _) => ApplyFilter();
         dataChanges.Changed += OnDataChanged;
+        localization.LanguageChanged += (_, _) => ExerciseForm.RefreshText();
         SaveExerciseCommand.NotifyCanExecuteChangedWhen(ExerciseForm, nameof(ExerciseFormViewModel.CanSave));
     }
 

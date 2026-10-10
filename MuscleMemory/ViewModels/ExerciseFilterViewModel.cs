@@ -11,7 +11,7 @@ public partial class ExerciseFilterViewModel : ObservableObject
     public partial string SearchText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial MuscleGroupFilter SelectedFilter { get; set; } = MuscleGroupFilter.All;
+    public partial MuscleGroupFilter SelectedFilter { get; set; } = MuscleGroupFilter.All();
 
     public ObservableCollection<MuscleGroupFilter> Filters { get; } = [];
 
@@ -24,14 +24,14 @@ public partial class ExerciseFilterViewModel : ObservableObject
     public void Reset()
     {
         SearchText = string.Empty;
-        SelectedFilter = MuscleGroupFilter.All;
+        SelectedFilter = MuscleGroupFilter.All();
     }
 
     public void UpdateFilters(IEnumerable<Exercise> exercises)
     {
         List<MuscleGroupFilter> filters =
         [
-            MuscleGroupFilter.All,
+            MuscleGroupFilter.All(),
             .. exercises
                 .Select(exercise => exercise.TargetMuscleGroup)
                 .Distinct()
@@ -46,7 +46,7 @@ public partial class ExerciseFilterViewModel : ObservableObject
 
         if (!Filters.Contains(SelectedFilter))
         {
-            SelectedFilter = MuscleGroupFilter.All;
+            SelectedFilter = Filters.FirstOrDefault(filter => filter.MuscleGroup == SelectedFilter.MuscleGroup) ?? Filters[0];
         }
     }
 

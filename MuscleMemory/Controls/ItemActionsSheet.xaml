@@ -2,7 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              x:Class="MuscleMemory.Controls.ItemActionsSheet"
              x:Name="Root"
              x:DataType="controls:ItemActionsSheet">
@@ -17,7 +17,7 @@
                                 IsVisible="{Binding HasEdit, Source={x:Reference Root}}"
                                 Command="{Binding EditCommand, Source={x:Reference Root}}" />
             <BoxView Style="{StaticResource Divider}" IsVisible="{Binding SeparatesHistory, Source={x:Reference Root}}" />
-            <controls:ActionRow Text="{x:Static strings:AppResources.ActionViewHistory}"
+            <controls:ActionRow Text="{loc:Text ActionViewHistory}"
                                 TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                 IsVisible="{Binding HasHistory, Source={x:Reference Root}}"
                                 Command="{Binding HistoryCommand, Source={x:Reference Root}}" />
@@ -29,7 +29,7 @@
         </VerticalStackLayout>
 
         <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                 Text="{x:Static strings:AppResources.ButtonCancel}"
+                                 Text="{loc:Text ButtonCancel}"
                                  Command="{Binding CancelCommand, Source={x:Reference Root}}" />
     </VerticalStackLayout>
 </ContentView>

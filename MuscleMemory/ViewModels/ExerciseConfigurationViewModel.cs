@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
@@ -26,7 +27,10 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     public partial int Reps { get; set; } = DomainDefaults.Reps;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BreakTimeText))]
     public partial int BreakTimeInSeconds { get; set; } = DomainDefaults.BreakTimeInSeconds;
+
+    public string BreakTimeText => string.Format(CultureInfo.CurrentCulture, AppResources.RestDurationFormat, BreakTimeInSeconds);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsCustomRest))]
@@ -36,7 +40,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     public partial int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
 
     public IReadOnlyList<RestPreset> RestPresets { get; } =
-        [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom];
+        [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom()];
 
     public ObservableCollection<LevelSegment> RpeLevels { get; } = [.. BuildRpeLevels(DomainDefaults.TargetRPE)];
 
@@ -77,7 +81,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     {
         Sets = configuration.Sets;
         Reps = configuration.Reps;
-        SelectedRestPreset = RestPresets.FirstOrDefault(preset => preset.Seconds == configuration.BreakTimeInSeconds) ?? RestPreset.Custom;
+        SelectedRestPreset = RestPresets.FirstOrDefault(preset => preset.Seconds == configuration.BreakTimeInSeconds) ?? RestPresets.First(preset => preset.IsCustom);
         BreakTimeInSeconds = configuration.BreakTimeInSeconds;
         TargetRPE = configuration.TargetRPE;
     }

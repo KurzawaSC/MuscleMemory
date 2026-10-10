@@ -4,7 +4,7 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
+                             xmlns:loc="clr-namespace:MuscleMemory.Localization"
                              xmlns:platform="clr-namespace:MuscleMemory"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
                              x:Name="PageRoot"
@@ -17,12 +17,12 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
-        <controls:ScreenHeader Title="{x:Static strings:AppResources.HeaderExercises}" Subtitle="{x:Static strings:AppResources.SubtitleExercises}" />
+        <controls:ScreenHeader Title="{loc:Text HeaderExercises}" Subtitle="{loc:Text SubtitleExercises}" />
 
         <controls:TextField Grid.Row="1"
                             Margin="{markup:Gutter Top=8}"
                             Text="{Binding Filter.SearchText}"
-                            Placeholder="{x:Static strings:AppResources.PlaceholderSearchExercises}"
+                            Placeholder="{loc:Text PlaceholderSearchExercises}"
                             IsClearable="True"
                             IsVisible="{Binding ListState.HasItems}" />
 
@@ -49,7 +49,7 @@
         <VerticalStackLayout Grid.Row="3"
                              Margin="{markup:Gutter Top=24}"
                              IsVisible="{Binding HasNoMatches}">
-            <Label Text="{x:Static strings:AppResources.EmptyNoMatchingExercises}"
+            <Label Text="{loc:Text EmptyNoMatchingExercises}"
                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                    HorizontalOptions="Center" />
         </VerticalStackLayout>
@@ -103,9 +103,9 @@
 
         <controls:EmptyState Grid.Row="1"
                              Grid.RowSpan="3"
-                             Message="{x:Static strings:AppResources.EmptyExercisesMessage}"
-                             Detail="{x:Static strings:AppResources.EmptyExercisesDetail}"
-                             ActionText="{x:Static strings:AppResources.ButtonAddExercise}"
+                             Message="{loc:Text EmptyExercisesMessage}"
+                             Detail="{loc:Text EmptyExercisesDetail}"
+                             ActionText="{loc:Text ButtonAddExercise}"
                              ActionCommand="{Binding AddExerciseCommand}"
                              ShowsAction="{Binding ActiveWorkout.CanAddItems}"
                              IsVisible="{Binding ListState.IsEmpty}" />
@@ -123,8 +123,8 @@
         <controls:BottomSheet Grid.RowSpan="4" IsOpen="{Binding IsActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding ActionExercise.Exercise.Name, FallbackValue=''}"
                                        Subtitle="{Binding ActionExercise.DetailText, FallbackValue=''}"
-                                       EditText="{x:Static strings:AppResources.HeaderEditExercise}"
-                                       DeleteText="{x:Static strings:AppResources.TitleDeleteExercise}"
+                                       EditText="{loc:Text HeaderEditExercise}"
+                                       DeleteText="{loc:Text TitleDeleteExercise}"
                                        EditCommand="{Binding EditActionExerciseCommand}"
                                        HistoryCommand="{Binding ViewActionExerciseHistoryCommand}"
                                        DeleteCommand="{Binding DeleteActionExerciseCommand}"

@@ -10,6 +10,8 @@ namespace MuscleMemory.ViewModels;
 public sealed partial class WorkoutSummaryViewModel : ObservableObject
 {
     private readonly IWorkoutTimerService _timer;
+    private WorkoutSummary? _summary;
+    private DateTime _startTimeUtc;
 
     public WorkoutSummaryViewModel(IWorkoutTimerService timer)
     {
@@ -41,16 +43,33 @@ public sealed partial class WorkoutSummaryViewModel : ObservableObject
 
     public void Show(WorkoutSummary summary, DateTime startTimeUtc)
     {
+        _summary = summary;
+        _startTimeUtc = startTimeUtc;
         TotalTimeText = _timer.ElapsedSince(startTimeUtc);
-        Exercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
         TotalVolume = summary.TotalVolume;
         TotalSets = summary.Exercises.Sum(exercise => exercise.Sets.Count);
-        DateText = startTimeUtc.ToLocalTime().ToString(AppResources.SummaryDateFormat, CultureInfo.InvariantCulture);
+        ShowText(summary);
         IsVisible = true;
+    }
+
+    public void RefreshText()
+    {
+        if (_summary is { } summary)
+        {
+            ShowText(summary);
+        }
+    }
+
+    private void ShowText(WorkoutSummary summary)
+    {
+        Exercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
+        DateText = _startTimeUtc.ToLocalTime().ToString(AppResources.SummaryDateFormat, CultureInfo.InvariantCulture);
+        OnPropertyChanged(nameof(TotalSetsCaption));
     }
 
     public void Clear()
     {
+        _summary = null;
         IsVisible = false;
         Exercises.Clear();
         TotalVolume = 0;

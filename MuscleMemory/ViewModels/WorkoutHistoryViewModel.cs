@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
@@ -48,7 +49,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HeaderTitle))]
     public partial string WorkoutName { get; set; } = string.Empty;
+
+    public string HeaderTitle => string.Format(CultureInfo.CurrentCulture, AppResources.WorkoutHistoryTitleFormat, WorkoutName);
 
     public ListLoadState ListState { get; } = new();
 
