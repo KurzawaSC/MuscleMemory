@@ -16,7 +16,7 @@ public sealed record ExerciseHistoryItem(
     public static ExerciseHistoryItem Create(ExerciseHistoryEntry entry) =>
         new(
             entry,
-            entry.LocalDate.ToString(AppResources.SessionDateTimeFormat, CultureInfo.InvariantCulture),
+            entry.LocalDate.ToString(AppResources.SessionDateTimeFormat, CultureInfo.CurrentCulture),
             Plurals.Format(nameof(AppResources.SetCount_Other), entry.Sets.Count),
             string.Format(CultureInfo.CurrentCulture, AppResources.VolumeFormat, entry.Sets.TotalVolume()),
             [.. entry.Sets.Select(LoggedSetItem.Create)]);

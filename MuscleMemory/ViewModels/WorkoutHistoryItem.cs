@@ -20,8 +20,8 @@ public sealed record WorkoutHistoryItem(
 
         return new WorkoutHistoryItem(
             session,
-            session.LocalStartTime.ToString(sharesDate ? AppResources.ShortDateTimeFormat : AppResources.ShortDateFormat, CultureInfo.InvariantCulture),
-            session.LocalStartTime.ToString(AppResources.LongDateFormat, CultureInfo.InvariantCulture),
+            session.LocalStartTime.ToString(sharesDate ? AppResources.ShortDateTimeFormat : AppResources.ShortDateFormat, CultureInfo.CurrentCulture),
+            session.LocalStartTime.ToString(AppResources.LongDateFormat, CultureInfo.CurrentCulture),
             string.Format(CultureInfo.CurrentCulture, AppResources.SessionStatsFormat, durationText, Plurals.Format(nameof(AppResources.SetCount_Other), setCount)),
             string.Format(CultureInfo.CurrentCulture, DisplayFormats.VolumeNumber, session.TotalVolume),
             [.. session.Exercises.Select(WorkoutHistoryExerciseItem.Create)]);
