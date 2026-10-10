@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -11,10 +11,10 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
     private Exercise? _existingExercise;
 
     [ObservableProperty]
-    public partial string Title { get; set; } = UiText.HeaderNewExercise;
+    public partial string Title { get; set; } = AppResources.HeaderNewExercise;
 
     [ObservableProperty]
-    public partial string ConfirmText { get; set; } = UiText.ButtonAdd;
+    public partial string ConfirmText { get; set; } = AppResources.ButtonAdd;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
@@ -38,7 +38,7 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
 
     public bool CanSave => TakenNames is not null && !string.IsNullOrWhiteSpace(Name) && !IsNameTaken;
 
-    public string NameError => IsNameTaken ? UiText.ExerciseNameTakenError : string.Empty;
+    public string NameError => IsNameTaken ? AppResources.ExerciseNameTakenError : string.Empty;
 
     private bool IsNameTaken => TakenNames?.Contains(NormalizeName(Name)) == true;
 
@@ -47,8 +47,8 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
         _existingExercise = null;
         TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
-        Title = UiText.HeaderNewExercise;
-        ConfirmText = UiText.ButtonAdd;
+        Title = AppResources.HeaderNewExercise;
+        ConfirmText = AppResources.ButtonAdd;
         Name = string.Empty;
         SelectedMuscleGroup = MuscleGroup.Other;
         SelectedEquipment = EquipmentType.Other;
@@ -59,8 +59,8 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
         _existingExercise = exercise;
         TakenNames = null;
         TakenNames = await LoadTakenNamesAsync();
-        Title = UiText.HeaderEditExercise;
-        ConfirmText = UiText.ButtonSave;
+        Title = AppResources.HeaderEditExercise;
+        ConfirmText = AppResources.ButtonSave;
         Name = exercise.Name;
         SelectedMuscleGroup = exercise.TargetMuscleGroup;
         SelectedEquipment = exercise.Equipment;

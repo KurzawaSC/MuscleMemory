@@ -1,9 +1,9 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -31,9 +31,9 @@ public sealed partial class SetActionsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ActionSetSubtitle))]
     public partial WorkoutSet? ActionSet { get; private set; }
 
-    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, set.SetNumber) : string.Empty;
+    public string ActionSetTitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, AppResources.SetProgressFormat, set.SetNumber) : string.Empty;
 
-    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
+    public string ActionSetSubtitle => ActionSet is { } set ? string.Format(CultureInfo.CurrentCulture, AppResources.LoggedSetFormat, set.Weight, set.Reps) : string.Empty;
 
     [ObservableProperty]
     public partial bool IsEditorOpen { get; set; }
@@ -106,7 +106,7 @@ public sealed partial class SetActionsViewModel : ObservableObject
             return;
         }
 
-        OpenEditor(UiText.TitleEditSet, UiText.ButtonSave, set, set.SessionExerciseId, values => _host.UpdateSetAsync(set, values));
+        OpenEditor(AppResources.TitleEditSet, AppResources.ButtonSave, set, set.SessionExerciseId, values => _host.UpdateSetAsync(set, values));
     });
 
     [RelayCommand]
@@ -117,7 +117,7 @@ public sealed partial class SetActionsViewModel : ObservableObject
             return;
         }
 
-        if (!await _dialogs.ConfirmAsync(UiText.TitleDeleteSet, UiText.BodyDeleteSetConfirmation, UiText.ButtonDelete, UiText.ButtonCancel))
+        if (!await _dialogs.ConfirmAsync(AppResources.TitleDeleteSet, AppResources.BodyDeleteSetConfirmation, AppResources.ButtonDelete, AppResources.ButtonCancel))
         {
             return;
         }

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -54,7 +55,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private string ZeroTimeText => _timer.FormatDuration(TimeSpan.Zero);
 
     [ObservableProperty]
-    public partial string WorkoutTitle { get; set; } = UiText.LoadingText;
+    public partial string WorkoutTitle { get; set; } = AppResources.LoadingText;
 
     [ObservableProperty]
     public partial string TimerText { get; set; } = string.Empty;
@@ -69,8 +70,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial SessionExercise CurrentExercise { get; set; } = new();
 
     public string TargetText => CurrentExercise.PlannedReps > 0
-        ? string.Format(CultureInfo.CurrentCulture, UiText.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
-        : string.Format(CultureInfo.CurrentCulture, UiText.TargetRpeFormat, CurrentExercise.TargetRPE);
+        ? string.Format(CultureInfo.CurrentCulture, AppResources.TargetRepsFormat, CurrentExercise.PlannedReps, CurrentExercise.TargetRPE)
+        : string.Format(CultureInfo.CurrentCulture, AppResources.TargetRpeFormat, CurrentExercise.TargetRPE);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressCaption))]
@@ -95,8 +96,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial bool IsPlanComplete { get; set; }
 
     public string ProgressCaption => Rest.IsResting
-        ? string.Join(UiText.ListSeparator, SetProgressText, TargetText)
-        : string.Join(UiText.ListSeparator, ExerciseProgressText, SetProgressText);
+        ? string.Join(AppResources.ListSeparator, SetProgressText, TargetText)
+        : string.Join(AppResources.ListSeparator, ExerciseProgressText, SetProgressText);
 
     [ObservableProperty]
     public partial string LastSessionResultsText { get; set; } = string.Empty;
@@ -112,7 +113,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     public RestTimerViewModel Rest { get; }
 
-    public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, CurrentSets.Select(item => item.Set).TotalVolume());
+    public string CurrentVolumeText => string.Format(CultureInfo.CurrentCulture, AppResources.VolumeFormat, CurrentSets.Select(item => item.Set).TotalVolume());
 
     public ActiveWorkoutViewModel(
         IActiveWorkoutSessionService sessions,
@@ -326,13 +327,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasPreviousExercise = index > 0;
         HasNextExercise = index < Exercises.Count - 1;
 
-        ExerciseProgressText = string.Format(CultureInfo.CurrentCulture, UiText.ExerciseProgressFormat, index + 1, Exercises.Count);
+        ExerciseProgressText = string.Format(CultureInfo.CurrentCulture, AppResources.ExerciseProgressFormat, index + 1, Exercises.Count);
 
         var lastSessionSets = await _sessions.GetLastSessionSetsAsync(exercise.ExerciseId, _sessionId);
         HasLastSession = lastSessionSets.Count > 0;
         LastSessionResultsText = HasLastSession
-            ? UiText.LastSessionPrefix + string.Join(UiText.ResultSeparator, lastSessionSets.Select(set => string.Format(CultureInfo.CurrentCulture, UiText.SetResultFormat, set.Weight, set.Reps)))
-            : UiText.FirstTimePerformingExercise;
+            ? AppResources.LastSessionPrefix + string.Join(AppResources.ResultSeparator, lastSessionSets.Select(set => string.Format(CultureInfo.CurrentCulture, AppResources.SetResultFormat, set.Weight, set.Reps)))
+            : AppResources.FirstTimePerformingExercise;
 
         await LoadSetsForCurrentExerciseAsync();
         PrefillInputs(CurrentSets.LastOrDefault()?.Set ?? lastSessionSets.FirstOrDefault());
@@ -364,8 +365,8 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var currentSetNumber = CurrentSets.Count + 1;
 
         SetProgressText = currentSetNumber <= _totalSetsForExercise
-            ? string.Format(CultureInfo.CurrentCulture, UiText.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
-            : string.Format(CultureInfo.CurrentCulture, UiText.SetProgressFormat, currentSetNumber);
+            ? string.Format(CultureInfo.CurrentCulture, AppResources.SetProgressWithTotalFormat, currentSetNumber, _totalSetsForExercise)
+            : string.Format(CultureInfo.CurrentCulture, AppResources.SetProgressFormat, currentSetNumber);
 
         if (_totalSetsForExercise > 0)
         {
@@ -485,10 +486,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         var summary = await _summaryService.BuildAsync([.. Exercises]);
 
         var isConfirmed = await _dialogs.ConfirmAsync(
-            UiText.TitleFinishWorkout,
-            summary.HasLoggedSets ? UiText.BodyFinishWorkoutConfirmation : UiText.BodyFinishUnsavedWorkoutConfirmation,
-            UiText.ButtonFinish,
-            UiText.ButtonCancel);
+            AppResources.TitleFinishWorkout,
+            summary.HasLoggedSets ? AppResources.BodyFinishWorkoutConfirmation : AppResources.BodyFinishUnsavedWorkoutConfirmation,
+            AppResources.ButtonFinish,
+            AppResources.ButtonCancel);
 
         if (!isConfirmed)
         {
@@ -566,7 +567,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsPlanComplete = false;
         Exercises.Clear();
 
-        WorkoutTitle = UiText.LoadingText;
+        WorkoutTitle = AppResources.LoadingText;
         TimerText = ZeroTimeText;
     }
 

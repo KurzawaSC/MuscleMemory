@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -41,7 +42,7 @@ public sealed partial class RestTimerViewModel : ObservableObject
     [ObservableProperty]
     public partial string TotalText { get; private set; } = string.Empty;
 
-    public string ExtensionText { get; } = string.Format(CultureInfo.CurrentCulture, UiText.RestExtensionFormat, DomainDefaults.RestExtensionInSeconds);
+    public string ExtensionText { get; } = string.Format(CultureInfo.CurrentCulture, AppResources.RestExtensionFormat, DomainDefaults.RestExtensionInSeconds);
 
     [ObservableProperty]
     public partial double Progress { get; private set; }
@@ -136,5 +137,5 @@ public sealed partial class RestTimerViewModel : ObservableObject
     }
 
     private static string FormatTotal(int durationSeconds) =>
-        string.Format(CultureInfo.CurrentCulture, UiText.RestTotalFormat, durationSeconds);
+        string.Format(CultureInfo.CurrentCulture, AppResources.RestTotalFormat, durationSeconds);
 }

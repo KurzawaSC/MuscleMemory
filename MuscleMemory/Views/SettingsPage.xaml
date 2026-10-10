@@ -4,37 +4,37 @@
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:services="clr-namespace:MuscleMemory.Services"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
+                             xmlns:strings="clr-namespace:MuscleMemory.Resources.Strings"
                              x:Class="MuscleMemory.Views.SettingsPage"
                              x:DataType="viewmodels:SettingsViewModel"
                              BackCommand="{Binding CloseSheetsCommand}">
 
     <Grid RowDefinitions="Auto, *">
-        <controls:ScreenHeader Title="{x:Static constants:UiText.HeaderSettings}" />
+        <controls:ScreenHeader Title="{x:Static strings:AppResources.HeaderSettings}" />
 
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="{markup:Gutter Top=12, Bottom=20}" Spacing="8">
-                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelAppearance}" />
+                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelAppearance}" />
                 <Border Style="{StaticResource SettingsGroup}">
-                    <controls:ActionRow Text="{x:Static constants:UiText.LabelAppTheme}"
+                    <controls:ActionRow Text="{x:Static strings:AppResources.LabelAppTheme}"
                                         Value="{Binding SelectedTheme, Converter={StaticResource EnumDisplayNameConverter}}"
                                         TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                         Command="{Binding OpenThemeSheetCommand}" />
                 </Border>
 
-                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelData}" Margin="0,10,0,0" />
+                <Label Style="{StaticResource OverlineLabel}" Text="{x:Static strings:AppResources.LabelData}" Margin="0,10,0,0" />
                 <Border Style="{StaticResource SettingsGroup}">
                     <VerticalStackLayout>
-                        <controls:ActionRow Text="{x:Static constants:UiText.ActionExportData}"
+                        <controls:ActionRow Text="{x:Static strings:AppResources.ActionExportData}"
                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                             Command="{Binding ExportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
-                        <controls:ActionRow Text="{x:Static constants:UiText.ActionImportData}"
+                        <controls:ActionRow Text="{x:Static strings:AppResources.ActionImportData}"
                                             TextColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}"
                                             Command="{Binding ImportDataCommand}" />
                         <BoxView Style="{StaticResource Divider}" />
-                        <controls:ActionRow Text="{x:Static constants:UiText.ActionEraseAllData}"
+                        <controls:ActionRow Text="{x:Static strings:AppResources.ActionEraseAllData}"
                                             TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}"
                                             Command="{Binding OpenEraseSheetCommand}" />
                     </VerticalStackLayout>
@@ -52,14 +52,14 @@
 
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding IsThemeSheetOpen}">
             <VerticalStackLayout Spacing="16">
-                <Label Style="{StaticResource TitleLabel}" Text="{x:Static constants:UiText.LabelAppTheme}" />
+                <Label Style="{StaticResource TitleLabel}" Text="{x:Static strings:AppResources.LabelAppTheme}" />
                 <Grid ColumnDefinitions="*, *, *"
                       ColumnSpacing="10"
                       RadioButtonGroup.GroupName="AppTheme"
                       RadioButtonGroup.SelectedValue="{Binding SelectedTheme}">
                     <RadioButton Style="{StaticResource ThemeCard}"
                                  Value="{x:Static services:ThemePreference.System}"
-                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionSystem}">
+                                 SemanticProperties.Description="{x:Static strings:AppResources.ThemeOptionSystem}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}">
@@ -70,29 +70,29 @@
                                         </LinearGradientBrush>
                                     </Border.Background>
                                 </Border>
-                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameSystem}" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static strings:AppResources.ThemeNameSystem}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource ThemeCard}"
                                  Value="{x:Static services:ThemePreference.Light}"
-                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionLight}">
+                                 SemanticProperties.Description="{x:Static strings:AppResources.ThemeOptionLight}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceLight}" />
-                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameLight}" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static strings:AppResources.ThemeNameLight}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
                     <RadioButton Grid.Column="2"
                                  Style="{StaticResource ThemeCard}"
                                  Value="{x:Static services:ThemePreference.Dark}"
-                                 SemanticProperties.Description="{x:Static constants:UiText.ThemeOptionDark}">
+                                 SemanticProperties.Description="{x:Static strings:AppResources.ThemeOptionDark}">
                         <RadioButton.Content>
                             <VerticalStackLayout Spacing="9">
                                 <Border Style="{StaticResource ThemePreview}" BackgroundColor="{StaticResource SurfaceDark}" />
-                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static constants:UiText.ThemeNameDark}" HorizontalTextAlignment="Center" />
+                                <Label Style="{StaticResource SmallLabel}" Text="{x:Static strings:AppResources.ThemeNameDark}" HorizontalTextAlignment="Center" />
                             </VerticalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
@@ -108,13 +108,13 @@
                     <RoundRectangle CornerRadius="{StaticResource CardRadius}" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="6">
-                    <Label Style="{StaticResource MediumTitleLabel}" Text="{x:Static constants:UiText.TitleEraseAllData}" />
+                    <Label Style="{StaticResource MediumTitleLabel}" Text="{x:Static strings:AppResources.TitleEraseAllData}" />
                     <Label Style="{StaticResource LargeCaptionLabel}"
-                           Text="{x:Static constants:UiText.BodyEraseAllData}" />
+                           Text="{x:Static strings:AppResources.BodyEraseAllData}" />
                 </VerticalStackLayout>
             </Border>
             <controls:BottomSheet.Footer>
-                <controls:SheetActionBar ConfirmText="{x:Static constants:UiText.ButtonErase}"
+                <controls:SheetActionBar ConfirmText="{x:Static strings:AppResources.ButtonErase}"
                                          CancelCommand="{Binding CloseEraseSheetCommand}"
                                          ConfirmCommand="{Binding EraseDataCommand}" />
             </controls:BottomSheet.Footer>
