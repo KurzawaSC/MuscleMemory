@@ -64,7 +64,7 @@ public sealed partial class WorkoutSummaryViewModel : ObservableObject
     private void ShowText(WorkoutSummary summary)
     {
         Exercises.ReplaceAll(summary.Exercises.Select(SummaryExerciseItem.Create));
-        DateText = _startTimeUtc.ToLocalTime().ToString(AppResources.SummaryDateFormat, CultureInfo.InvariantCulture);
+        DateText = _startTimeUtc.ToLocalTime().ToString(AppResources.SummaryDateFormat, CultureInfo.CurrentCulture);
         OnPropertyChanged(nameof(TotalSetsCaption));
     }
 
