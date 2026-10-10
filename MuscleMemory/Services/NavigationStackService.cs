@@ -16,9 +16,14 @@ public sealed class NavigationStackService : INavigationStackService
     public bool ContainsPageBoundTo(object bindingContext) =>
         AllTabs().Any(section => section.Navigation.NavigationStack.Any(page => page?.BindingContext == bindingContext));
 
-    public async Task<bool> ConfirmDiscardingChangesOnTabAsync(string tabRoute)
+    public Task<bool> ConfirmDiscardingChangesOnTabAsync(string tabRoute) =>
+        ConfirmDiscardingAsync(GuardsOn(AllTabs().Where(section => section.Items.Any(content => content.Route == tabRoute))));
+
+    public Task<bool> ConfirmDiscardingAllChangesAsync() => ConfirmDiscardingAsync(GuardsOn(AllTabs()));
+
+    private static async Task<bool> ConfirmDiscardingAsync(List<IUnsavedChangesGuard> guards)
     {
-        foreach (var guard in GuardsOnTab(tabRoute))
+        foreach (var guard in guards)
         {
             if (!await guard.ConfirmDiscardAsync())
             {
@@ -29,10 +34,9 @@ public sealed class NavigationStackService : INavigationStackService
         return true;
     }
 
-    private static List<IUnsavedChangesGuard> GuardsOnTab(string tabRoute) =>
+    private static List<IUnsavedChangesGuard> GuardsOn(IEnumerable<ShellSection> tabs) =>
     [
-        .. AllTabs()
-            .Where(section => section.Items.Any(content => content.Route == tabRoute))
+        .. tabs
             .SelectMany(section => section.Navigation.NavigationStack)
             .Select(page => page?.BindingContext)
             .OfType<IUnsavedChangesGuard>()
