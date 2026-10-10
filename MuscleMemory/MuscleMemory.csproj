@@ -65,4 +65,16 @@
 	        DependsOnTargets="PrepareResourceNames;CoreResGen"
 	        Condition="'$(DesignTimeBuild)' == 'true'" />
 
+	<Target Name="AddSatelliteLanguagesMetadata" BeforeTargets="GetAssemblyAttributes">
+		<AssignCulture Files="@(EmbeddedResource)">
+			<Output TaskParameter="AssignedFilesWithCulture" ItemName="_LocalizedEmbeddedResource" />
+		</AssignCulture>
+		<ItemGroup>
+			<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+				<_Parameter1>SatelliteLanguages</_Parameter1>
+				<_Parameter2>@(_LocalizedEmbeddedResource->'%(Culture)'->Distinct())</_Parameter2>
+			</AssemblyAttribute>
+		</ItemGroup>
+	</Target>
+
 </Project>
