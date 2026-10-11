@@ -88,7 +88,7 @@
     <Style x:Key="BaseLabel" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.BarlowSemiCondensed}" />
         <Setter Property="FontSize" Value="15" />
     </Style>
 
@@ -598,7 +598,7 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.LilitaOne}" />
+        <Setter Property="FontFamily" Value="{x:Static constants:FontFamilies.BarlowSemiCondensed}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="MinimumHeightRequest" Value="{StaticResource TouchTarget}" />
         <Setter Property="MinimumWidthRequest" Value="{StaticResource TouchTarget}" />

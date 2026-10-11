@@ -20,7 +20,7 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont(FontFamilies.LilitaOneFile, FontFamilies.LilitaOne);
+                fonts.AddFont(FontFamilies.BarlowSemiCondensedFile, FontFamilies.BarlowSemiCondensed);
             })
             .ConfigureMauiHandlers(handlers =>
             {
