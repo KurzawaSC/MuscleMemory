@@ -32,7 +32,7 @@
 	<ItemGroup>
 		<MauiIcon Include="Resources\AppIcon\logo.png" />
 
-		<MauiSplashScreen Include="Resources\Splash\splash.png" BackgroundColor="#FF4040" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.png" Color="#FF4040" BaseSize="128,128" />
 
 		<MauiImage Include="Resources\Images\*" />
 
