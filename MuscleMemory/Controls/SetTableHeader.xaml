@@ -9,6 +9,6 @@
           BackgroundColor="{AppThemeBinding Light={StaticResource InsetFillLight}, Dark={StaticResource InsetFillDark}}">
         <Label Style="{StaticResource SmallOverlineLabel}" Text="{loc:Text LabelSet}" />
         <Label Grid.Column="1" Style="{StaticResource SmallOverlineLabel}" Text="{loc:Text LabelWeight}" HorizontalTextAlignment="Center" />
-        <Label Grid.Column="2" Style="{StaticResource SmallOverlineLabel}" Text="{loc:Text LabelReps}" HorizontalTextAlignment="End" />
+        <Label Grid.Column="2" Style="{StaticResource SmallOverlineLabel}" Text="{loc:Text LabelRepsColumn}" HorizontalTextAlignment="End" />
     </Grid>
 </ContentView>

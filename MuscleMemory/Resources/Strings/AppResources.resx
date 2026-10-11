@@ -273,6 +273,9 @@
   <data name="LabelReps" xml:space="preserve">
     <value>Reps</value>
   </data>
+  <data name="LabelRepsColumn" xml:space="preserve">
+    <value>Reps</value>
+  </data>
   <data name="LabelRest" xml:space="preserve">
     <value>Rest</value>
   </data>
