@@ -46,7 +46,7 @@ internal sealed class TabBarAppearanceTracker(IShellContext shellContext, ShellI
             return;
         }
 
-        var typeface = fontManager.GetTypeface(Microsoft.Maui.Font.OfSize(FontFamilies.LilitaOne, LabelTextSizeSp));
+        var typeface = fontManager.GetTypeface(Microsoft.Maui.Font.OfSize(FontFamilies.BarlowSemiCondensed, LabelTextSizeSp));
         bottomView.SetItemTextAppearanceActiveBoldEnabled(false);
 
         foreach (var label in FindLabels(bottomView))
