@@ -5,24 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:MuscleMemory.Views"
     xmlns:constants="clr-namespace:MuscleMemory.Constants"
+    xmlns:loc="clr-namespace:MuscleMemory.Localization"
     Shell.FlyoutBehavior="Disabled"
-    Title="{x:Static constants:UiText.AppName}">
+    Title="{loc:Text AppName}">
 
     <TabBar>
 
-        <Tab Title="{x:Static constants:UiText.HeaderExercises}" Icon="exercise_list_icon.png">
+        <Tab Title="{loc:Text HeaderExercises}" Icon="exercise_list_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:ExerciseListPage}"
                 Route="{x:Static constants:NavigationRoutes.ExerciseTab}" />
         </Tab>
 
-        <Tab Title="{x:Static constants:UiText.HeaderWorkouts}" Icon="workout_list_icon.png">
+        <Tab Title="{loc:Text HeaderWorkouts}" Icon="workout_list_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:WorkoutListPage}"
                 Route="{x:Static constants:NavigationRoutes.WorkoutTab}" />
         </Tab>
 
-        <Tab Title="{x:Static constants:UiText.HeaderSettings}" Icon="settings_icon.png">
+        <Tab Title="{loc:Text HeaderSettings}" Icon="settings_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate views:SettingsPage}"
                 Route="{x:Static constants:NavigationRoutes.SettingsTab}" />

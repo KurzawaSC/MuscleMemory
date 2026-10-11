@@ -3,19 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              x:Class="MuscleMemory.Controls.SetEditorSheet"
              x:Name="Root"
              x:DataType="controls:SetEditorSheet">
 
     <VerticalStackLayout Spacing="16">
         <Label Style="{StaticResource TitleLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
-        <controls:InputStepper Title="{x:Static constants:UiText.LabelWeightInKg}"
+        <controls:InputStepper Title="{loc:Text LabelWeightInKg}"
                                Text="{Binding Editor.WeightInput, Source={x:Reference Root}, FallbackValue=''}"
                                MaxLength="{x:Static constants:InputLimits.MaxWeightInputLength}"
                                ErrorText="{Binding Editor.WeightError, Source={x:Reference Root}, FallbackValue=''}"
                                DecrementCommand="{Binding Editor.DecreaseWeightCommand, Source={x:Reference Root}}"
                                IncrementCommand="{Binding Editor.IncreaseWeightCommand, Source={x:Reference Root}}" />
-        <controls:InputStepper Title="{x:Static constants:UiText.LabelReps}"
+        <controls:InputStepper Title="{loc:Text LabelReps}"
                                Text="{Binding Editor.RepsInput, Source={x:Reference Root}, FallbackValue=''}"
                                MaxLength="{x:Static constants:InputLimits.MaxRepsInputLength}"
                                ErrorText="{Binding Editor.RepsError, Source={x:Reference Root}, FallbackValue=''}"

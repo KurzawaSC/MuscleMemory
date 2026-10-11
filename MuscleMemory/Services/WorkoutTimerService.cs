@@ -30,6 +30,6 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
     public string FormatDuration(TimeSpan duration)
     {
         var displayed = duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
-        return displayed.ToString(displayed.TotalHours >= 1 ? UiText.ElapsedWithHoursFormat : UiText.ElapsedFormat);
+        return displayed.ToString(displayed.TotalHours >= 1 ? DisplayFormats.ElapsedWithHours : DisplayFormats.Elapsed);
     }
 }

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              x:Class="MuscleMemory.Controls.ExerciseConfigurationSheet"
              x:Name="Root"
@@ -12,11 +13,11 @@
         <controls:SheetItemHeader Title="{Binding Configuration.ExerciseName, Source={x:Reference Root}, FallbackValue=''}" />
 
         <VerticalStackLayout Spacing="10">
-            <controls:ValueStepper Title="{x:Static constants:UiText.LabelSets}"
+            <controls:ValueStepper Title="{loc:Text LabelSets}"
                                    Value="{Binding Configuration.Sets, Source={x:Reference Root}}"
                                    Minimum="{x:Static constants:DomainDefaults.MinSets}"
                                    Maximum="{x:Static constants:DomainDefaults.MaxSets}" />
-            <controls:ValueStepper Title="{x:Static constants:UiText.LabelReps}"
+            <controls:ValueStepper Title="{loc:Text LabelReps}"
                                    Value="{Binding Configuration.Reps, Source={x:Reference Root}}"
                                    Minimum="{x:Static constants:DomainDefaults.MinReps}"
                                    Maximum="{x:Static constants:DomainDefaults.MaxReps}" />
@@ -24,9 +25,9 @@
             <Border Style="{StaticResource InsetPanel}">
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Text="{x:Static constants:UiText.LabelRest}" />
+                        <Label Text="{loc:Text LabelRest}" />
                         <Label Grid.Column="1"
-                               Text="{Binding Configuration.BreakTimeInSeconds, Source={x:Reference Root}, StringFormat={x:Static constants:UiText.RestDurationFormat}}"
+                               Text="{Binding Configuration.BreakTimeText, Source={x:Reference Root}}"
                                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     </Grid>
                     <FlexLayout RadioButtonGroup.GroupName="RestPresets"
@@ -43,20 +44,20 @@
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>
-                    <controls:ValueStepper Title="{x:Static constants:UiText.LabelCustom}"
+                    <controls:ValueStepper Title="{loc:Text LabelCustom}"
                                            IsVisible="{Binding Configuration.IsCustomRest, Source={x:Reference Root}, FallbackValue=False}"
                                            Value="{Binding Configuration.BreakTimeInSeconds, Source={x:Reference Root}}"
                                            Minimum="{x:Static constants:DomainDefaults.MinBreakTimeInSeconds}"
                                            Maximum="{x:Static constants:DomainDefaults.MaxBreakTimeInSeconds}"
                                            Step="{x:Static constants:DomainDefaults.BreakTimeStepInSeconds}"
-                                           ValueFormat="{x:Static constants:UiText.RestDurationFormat}" />
+                                           ValueFormat="{loc:Text RestDurationFormat}" />
                 </VerticalStackLayout>
             </Border>
 
             <Border Style="{StaticResource InsetPanel}">
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Text="{x:Static constants:UiText.LabelTargetRpe}" />
+                        <Label Text="{loc:Text LabelTargetRpe}" />
                         <Label Grid.Column="1"
                                Text="{Binding Configuration.TargetRPE, Source={x:Reference Root}}"
                                TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
@@ -67,15 +68,15 @@
                                        SegmentInset="2.5,0"
                                        SelectCommand="{Binding Configuration.SelectRpeCommand, Source={x:Reference Root}}" />
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.LabelRpeEasy}" />
-                        <Label Grid.Column="1" Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.LabelRpeMax}" />
+                        <Label Style="{StaticResource CaptionLabel}" Text="{loc:Text LabelRpeEasy}" />
+                        <Label Grid.Column="1" Style="{StaticResource CaptionLabel}" Text="{loc:Text LabelRpeMax}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>
 
         <controls:TappableButton Style="{StaticResource SmallTextButton}"
-                                 Text="{x:Static constants:UiText.ButtonRemoveFromWorkout}"
+                                 Text="{loc:Text ButtonRemoveFromWorkout}"
                                  HorizontalOptions="Center"
                                  IsVisible="{Binding Configuration.IsEditing, Source={x:Reference Root}, FallbackValue=False}"
                                  Command="{Binding RemoveCommand, Source={x:Reference Root}}" />

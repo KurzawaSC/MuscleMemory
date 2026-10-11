@@ -4,7 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -43,7 +45,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     }
 
     [ObservableProperty]
-    public partial string HeaderTitle { get; set; } = UiText.HeaderNewWorkout;
+    public partial string HeaderTitle { get; set; } = AppResources.HeaderNewWorkout;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
@@ -72,9 +74,9 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [NotifyPropertyChangedFor(nameof(TotalSetsCaption))]
     public partial int TotalSets { get; set; }
 
-    public string ExerciseCountCaption => CountCaption.Exercises(ExerciseCount);
+    public string ExerciseCountCaption => Plurals.Format(nameof(AppResources.ExercisesCaption_Other), ExerciseCount);
 
-    public string TotalSetsCaption => CountCaption.Sets(TotalSets);
+    public string TotalSetsCaption => Plurals.Format(nameof(AppResources.SetsCaption_Other), TotalSets);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
@@ -117,7 +119,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         if (query.TryGetValue(QueryKeys.WorkoutToEdit, out var editable) && editable is Workout workout)
         {
             _workoutToEdit = workout;
-            HeaderTitle = UiText.HeaderEditWorkout;
+            HeaderTitle = AppResources.HeaderEditWorkout;
             IsLoading = true;
             _errors.ReportFailures(LoadWorkoutAsync(workout));
         }
@@ -187,7 +189,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
             return true;
         }
 
-        var discard = await _dialogs.ConfirmAsync(UiText.TitleUnsavedChanges, UiText.BodyUnsavedChangesConfirmation, UiText.ButtonDiscard, UiText.ButtonCancel);
+        var discard = await _dialogs.ConfirmAsync(AppResources.TitleUnsavedChanges, AppResources.BodyUnsavedChangesConfirmation, AppResources.ButtonDiscard, AppResources.ButtonCancel);
         if (discard)
         {
             HasUnsavedChanges = false;

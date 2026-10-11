@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.ViewModels;
 
@@ -13,7 +15,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     public partial string ExerciseName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string ConfirmText { get; set; } = UiText.ButtonAddToWorkout;
+    public partial string ConfirmText { get; set; } = AppResources.ButtonAddToWorkout;
 
     [ObservableProperty]
     public partial bool IsEditing { get; set; }
@@ -25,7 +27,10 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     public partial int Reps { get; set; } = DomainDefaults.Reps;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BreakTimeText))]
     public partial int BreakTimeInSeconds { get; set; } = DomainDefaults.BreakTimeInSeconds;
+
+    public string BreakTimeText => string.Format(CultureInfo.CurrentCulture, AppResources.RestDurationFormat, BreakTimeInSeconds);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsCustomRest))]
@@ -35,7 +40,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     public partial int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
 
     public IReadOnlyList<RestPreset> RestPresets { get; } =
-        [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom];
+        [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom()];
 
     public ObservableCollection<LevelSegment> RpeLevels { get; } = [.. BuildRpeLevels(DomainDefaults.TargetRPE)];
 
@@ -55,7 +60,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     {
         ExerciseName = exerciseName;
         IsEditing = false;
-        ConfirmText = UiText.ButtonAddToWorkout;
+        ConfirmText = AppResources.ButtonAddToWorkout;
         Apply(new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE));
     }
 
@@ -63,7 +68,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     {
         ExerciseName = exercise.ExerciseName;
         IsEditing = true;
-        ConfirmText = UiText.ButtonSave;
+        ConfirmText = AppResources.ButtonSave;
         Apply(new ExerciseConfiguration(exercise.Sets, exercise.Reps, exercise.BreakTimeInSeconds, exercise.TargetRPE));
     }
 
@@ -76,7 +81,7 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     {
         Sets = configuration.Sets;
         Reps = configuration.Reps;
-        SelectedRestPreset = RestPresets.FirstOrDefault(preset => preset.Seconds == configuration.BreakTimeInSeconds) ?? RestPreset.Custom;
+        SelectedRestPreset = RestPresets.FirstOrDefault(preset => preset.Seconds == configuration.BreakTimeInSeconds) ?? RestPresets.First(preset => preset.IsCustom);
         BreakTimeInSeconds = configuration.BreakTimeInSeconds;
         TargetRPE = configuration.TargetRPE;
     }

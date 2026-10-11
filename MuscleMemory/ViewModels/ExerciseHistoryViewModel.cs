@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -48,7 +50,7 @@ public partial class ExerciseHistoryViewModel(
     }
 
     private static string FormatSessionCount(int count) =>
-        string.Format(CultureInfo.CurrentCulture, UiText.SessionCountFormat, count, CountCaption.Sessions(count));
+        string.Format(CultureInfo.CurrentCulture, AppResources.SessionCountFormat, Plurals.Format(nameof(AppResources.SessionCount_Other), count));
 
     [RelayCommand]
     private Task GoBackAsync() =>

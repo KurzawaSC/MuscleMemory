@@ -5,6 +5,7 @@ using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -112,10 +113,10 @@ public partial class WorkoutListViewModel : ObservableObject
     private async Task OfferToResumeActiveWorkoutAsync()
     {
         var resume = await _dialogs.ConfirmAsync(
-            UiText.TitleHoldOn,
-            string.Format(UiText.WorkoutAlreadyActiveFormat, ActiveWorkout.WorkoutTitle),
-            UiText.ButtonResume,
-            UiText.ButtonCancel);
+            AppResources.TitleHoldOn,
+            string.Format(AppResources.WorkoutAlreadyActiveFormat, ActiveWorkout.WorkoutTitle),
+            AppResources.ButtonResume,
+            AppResources.ButtonCancel);
 
         if (resume && ActiveWorkout.ResumeWorkoutCommand.CanExecute(null))
         {
@@ -182,7 +183,7 @@ public partial class WorkoutListViewModel : ObservableObject
             return;
         }
 
-        var answer = await _dialogs.ConfirmAsync(UiText.TitleDeleteWorkout, string.Format(UiText.DeleteWorkoutConfirmationFormat, item.Workout.Name), UiText.ButtonDelete, UiText.ButtonCancel);
+        var answer = await _dialogs.ConfirmAsync(AppResources.TitleDeleteWorkout, string.Format(AppResources.DeleteWorkoutConfirmationFormat, item.Workout.Name), AppResources.ButtonDelete, AppResources.ButtonCancel);
         if (answer)
         {
             await _workoutRepository.DeleteAsync(item.Workout.Id);

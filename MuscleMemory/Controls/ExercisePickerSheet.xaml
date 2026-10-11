@@ -2,7 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              x:Class="MuscleMemory.Controls.ExercisePickerSheet"
              x:Name="Root"
@@ -10,16 +10,16 @@
 
     <VerticalStackLayout Spacing="14">
         <Grid ColumnDefinitions="*, Auto">
-            <Label Style="{StaticResource TitleLabel}" Text="{x:Static constants:UiText.HeaderSelectExercise}" VerticalOptions="Center" />
+            <Label Style="{StaticResource TitleLabel}" Text="{loc:Text HeaderSelectExercise}" VerticalOptions="Center" />
             <controls:TappableButton Grid.Column="1"
                                      Style="{StaticResource SmallNeutralTextButton}"
-                                     Text="{x:Static constants:UiText.ButtonClose}"
+                                     Text="{loc:Text ButtonClose}"
                                      Command="{Binding CloseCommand, Source={x:Reference Root}}" />
         </Grid>
 
         <controls:TextField IsFilled="True"
                             Text="{Binding Picker.Filter.SearchText, Source={x:Reference Root}}"
-                            Placeholder="{x:Static constants:UiText.PlaceholderSearch}"
+                            Placeholder="{loc:Text PlaceholderSearch}"
                             IsClearable="True" />
 
         <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -85,7 +85,7 @@
             <CollectionView.FooterTemplate>
                 <DataTemplate x:DataType="x:Object">
                     <VerticalStackLayout Margin="0,8,0,0" Spacing="16">
-                        <Label Text="{x:Static constants:UiText.EmptyNoMatchingExercises}"
+                        <Label Text="{loc:Text EmptyNoMatchingExercises}"
                                TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                HorizontalOptions="Center"
                                Margin="0,16,0,0"
@@ -95,7 +95,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding CreateCommand, Source={x:Reference Root}, x:DataType=controls:ExercisePickerSheet}" />
                             </Border.GestureRecognizers>
-                            <Label Text="{x:Static constants:UiText.ButtonCreateExercise}"
+                            <Label Text="{loc:Text ButtonCreateExercise}"
                                    TextColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
                                    HorizontalOptions="Center" />
                         </Border>

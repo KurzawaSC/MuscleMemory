@@ -4,6 +4,7 @@
              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:markup="clr-namespace:MuscleMemory.Markup"
              x:Class="MuscleMemory.Views.ActiveWorkoutPage"
@@ -35,7 +36,7 @@
             </VerticalStackLayout>
             <controls:TappableButton Grid.Column="2"
                                      Style="{StaticResource CompactSoftButton}"
-                                     Text="{x:Static constants:UiText.ButtonFinish}"
+                                     Text="{loc:Text ButtonFinish}"
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
 
@@ -98,13 +99,13 @@
                             </Label>
                         </Grid>
 
-                        <controls:InputStepper Title="{x:Static constants:UiText.LabelWeightInKg}"
+                        <controls:InputStepper Title="{loc:Text LabelWeightInKg}"
                                                Text="{Binding SetInput.WeightInput}"
                                                MaxLength="{x:Static constants:InputLimits.MaxWeightInputLength}"
                                                ErrorText="{Binding SetInput.WeightError}"
                                                DecrementCommand="{Binding SetInput.DecreaseWeightCommand}"
                                                IncrementCommand="{Binding SetInput.IncreaseWeightCommand}" />
-                        <controls:InputStepper Title="{x:Static constants:UiText.LabelReps}"
+                        <controls:InputStepper Title="{loc:Text LabelReps}"
                                                Text="{Binding SetInput.RepsInput}"
                                                MaxLength="{x:Static constants:InputLimits.MaxRepsInputLength}"
                                                ErrorText="{Binding SetInput.RepsError}"
@@ -113,14 +114,14 @@
 
                         <Grid ColumnDefinitions="Auto, *">
                             <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                                     Text="{x:Static constants:UiText.ButtonUndo}"
+                                                     Text="{loc:Text ButtonUndo}"
                                                      WidthRequest="120"
                                                      Margin="0,0,10,0"
                                                      Command="{Binding UndoLastSetCommand}"
                                                      IsVisible="{Binding HasSavedSets}" />
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{Binding IsPlanComplete, Converter={StaticResource SaveSetButtonStyleConverter}}"
-                                                     Text="{x:Static constants:UiText.ButtonSaveSet}"
+                                                     Text="{loc:Text ButtonSaveSet}"
                                                      PressedScale="0.97"
                                                      DismissesKeyboard="True"
                                                      Command="{Binding SaveSetCommand}" />
@@ -131,7 +132,7 @@
                 <Border Style="{StaticResource RestPanel}" IsVisible="{Binding Rest.IsResting}">
                     <VerticalStackLayout>
                         <Label Style="{StaticResource OverlineLabel}"
-                               Text="{x:Static constants:UiText.LabelRest}"
+                               Text="{loc:Text LabelRest}"
                                TextColor="{AppThemeBinding Light={StaticResource OnRestPanelMutedLight}, Dark={StaticResource OnRestPanelMutedDark}}"
                                HorizontalTextAlignment="Center" />
                         <controls:PulseView PulseKey="{Binding Rest.TimerText}" IsPulsing="{Binding Rest.IsEnding}" Margin="0,14,0,6" HorizontalOptions="Center">
@@ -158,7 +159,7 @@
                                                      Command="{Binding Rest.ExtendCommand}" />
                             <controls:TappableButton Grid.Column="1"
                                                      Style="{StaticResource RestPanelButton}"
-                                                     Text="{x:Static constants:UiText.ButtonSkipRest}"
+                                                     Text="{loc:Text ButtonSkipRest}"
                                                      Command="{Binding Rest.SkipCommand}" />
                         </Grid>
                     </VerticalStackLayout>
@@ -167,10 +168,10 @@
 
             <ScrollView Grid.Row="2" VerticalScrollBarVisibility="Never" IsVisible="{Binding HasSavedSets}">
                 <VerticalStackLayout Spacing="8">
-                    <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelThisSession}">
+                    <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelThisSession}">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding Rest.IsResting}" Value="True">
-                                <Setter Property="Text" Value="{x:Static constants:UiText.LabelLoggedSets}" />
+                                <Setter Property="Text" Value="{loc:Text LabelLoggedSets}" />
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
@@ -193,7 +194,7 @@
                             </VerticalStackLayout>
                             <BoxView Style="{StaticResource Divider}" />
                             <Grid ColumnDefinitions="*, Auto" Padding="12,0" MinimumHeightRequest="{StaticResource TouchTarget}">
-                                <Label Style="{StaticResource SmallOverlineLabel}" Text="{x:Static constants:UiText.LabelVolume}" VerticalOptions="Center" />
+                                <Label Style="{StaticResource SmallOverlineLabel}" Text="{loc:Text LabelVolume}" VerticalOptions="Center" />
                                 <Label Grid.Column="1" Style="{StaticResource SmallLabel}" Text="{Binding CurrentVolumeText}" VerticalOptions="Center" />
                             </Grid>
                         </VerticalStackLayout>
@@ -230,11 +231,11 @@
                            VerticalOptions="Center" />
                 </Border>
                 <Label Style="{StaticResource LargeCaptionLabel}"
-                       Text="{x:Static constants:UiText.HintFirstTimeExercise}"
+                       Text="{loc:Text HintFirstTimeExercise}"
                        HorizontalTextAlignment="Center">
                     <Label.Triggers>
                         <DataTrigger TargetType="Label" Binding="{Binding HasLastSession}" Value="True">
-                            <Setter Property="Text" Value="{x:Static constants:UiText.HintPrefilledFromLastSession}" />
+                            <Setter Property="Text" Value="{loc:Text HintPrefilledFromLastSession}" />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>
@@ -242,7 +243,7 @@
 
             <controls:TappableButton Grid.Row="3"
                                      Style="{Binding IsPlanComplete, Converter={StaticResource FinishButtonStyleConverter}}"
-                                     Text="{x:Static constants:UiText.TitleFinishWorkout}"
+                                     Text="{loc:Text TitleFinishWorkout}"
                                      HeightRequest="{StaticResource LargeButtonHeight}"
                                      Command="{Binding FinishWorkoutCommand}" />
         </Grid>
@@ -251,7 +252,7 @@
             <ScrollView>
                 <VerticalStackLayout Padding="{markup:Gutter Top=16}" Spacing="4">
                     <Label Style="{StaticResource OverlineLabel}"
-                           Text="{x:Static constants:UiText.LabelWorkoutComplete}"
+                           Text="{loc:Text LabelWorkoutComplete}"
                            TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
                     <Label Style="{StaticResource DisplayLabel}" Text="{Binding WorkoutTitle}" />
                     <Label Style="{StaticResource LargeCaptionLabel}" Text="{Binding Summary.DateText}" />
@@ -260,14 +261,14 @@
                         <controls:StatTile Padding="14"
                                            ContentSpacing="2"
                                            Value="{Binding Summary.TotalTimeText}"
-                                           Caption="{x:Static constants:UiText.CaptionTime}" />
+                                           Caption="{loc:Text CaptionTime}" />
                         <controls:StatTile Grid.Column="1"
                                            Padding="14"
                                            ContentSpacing="2"
                                            Value="{Binding Summary.TotalVolume}"
-                                           ValueFormat="{x:Static constants:UiText.VolumeNumberFormat}"
-                                           Unit="{x:Static constants:UiText.KilogramSuffix}"
-                                           Caption="{x:Static constants:UiText.CaptionVolume}" />
+                                           ValueFormat="{x:Static constants:DisplayFormats.VolumeNumber}"
+                                           Unit="{loc:Text KilogramSuffix}"
+                                           Caption="{loc:Text CaptionVolume}" />
                         <controls:StatTile Grid.Column="2"
                                            Padding="14"
                                            ContentSpacing="2"
@@ -275,7 +276,7 @@
                                            Caption="{Binding Summary.TotalSetsCaption}" />
                     </Grid>
 
-                    <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.HeaderExercises}" Margin="0,18,0,6" />
+                    <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text HeaderExercises}" Margin="0,18,0,6" />
 
                     <VerticalStackLayout Spacing="10" Margin="0,0,0,14" BindableLayout.ItemsSource="{Binding Summary.Exercises}">
                         <BindableLayout.ItemTemplate>
@@ -342,11 +343,11 @@
 
             <Grid Grid.Row="1" ColumnDefinitions="*, 1.4*" ColumnSpacing="10" Padding="{markup:Gutter Top=14, Bottom=16}">
                 <controls:TappableButton Style="{StaticResource SecondaryButton}"
-                                         Text="{x:Static constants:UiText.ButtonHistory}"
+                                         Text="{loc:Text ButtonHistory}"
                                          Command="{Binding ViewCompletedHistoryCommand}" />
                 <controls:TappableButton Grid.Column="1"
                                          Style="{StaticResource PrimaryButton}"
-                                         Text="{x:Static constants:UiText.ButtonDone}"
+                                         Text="{loc:Text ButtonDone}"
                                          Command="{Binding ExitWorkoutCommand}" />
             </Grid>
         </Grid>
@@ -354,17 +355,17 @@
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding SetActions.IsActionSheetOpen}">
             <controls:ItemActionsSheet Title="{Binding SetActions.ActionSetTitle}"
                                        Subtitle="{Binding SetActions.ActionSetSubtitle}"
-                                       EditText="{x:Static constants:UiText.TitleEditSet}"
-                                       DeleteText="{x:Static constants:UiText.TitleDeleteSet}"
+                                       EditText="{loc:Text TitleEditSet}"
+                                       DeleteText="{loc:Text TitleDeleteSet}"
                                        EditCommand="{Binding SetActions.EditCommand}"
                                        DeleteCommand="{Binding SetActions.DeleteCommand}"
                                        CancelCommand="{Binding SetActions.CancelCommand}" />
         </controls:BottomSheet>
 
         <controls:BottomSheet Grid.RowSpan="2" IsOpen="{Binding SetActions.IsEditorOpen}">
-            <controls:SetEditorSheet Title="{x:Static constants:UiText.TitleEditSet}" Editor="{Binding SetActions.Editor}" />
+            <controls:SetEditorSheet Title="{loc:Text TitleEditSet}" Editor="{Binding SetActions.Editor}" />
             <controls:BottomSheet.Footer>
-                <controls:SheetActionBar ConfirmText="{x:Static constants:UiText.ButtonSave}"
+                <controls:SheetActionBar ConfirmText="{loc:Text ButtonSave}"
                                          ConfirmCommand="{Binding SetActions.SaveEditorCommand}"
                                          CancelCommand="{Binding SetActions.CloseEditorCommand}" />
             </controls:BottomSheet.Footer>

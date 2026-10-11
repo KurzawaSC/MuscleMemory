@@ -1,22 +1,55 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Localization;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class SettingsViewModel(
-    IDatabaseMaintenanceService maintenanceService,
-    IThemeService themeService,
-    IDialogService dialogs,
-    INavigationStackService navigationStack,
-    IErrorHandler errors,
-    ActiveWorkoutViewModel activeWorkout) : ObservableObject
+public partial class SettingsViewModel : ObservableObject
 {
+    private readonly IDatabaseMaintenanceService _maintenanceService;
+    private readonly IThemeService _themeService;
+    private readonly IDialogService _dialogs;
+    private readonly INavigationStackService _navigationStack;
+    private readonly IErrorHandler _errors;
+    private readonly ILocalizationService _localization;
+    private readonly IDataChangeNotifier _dataChanges;
+
+    public SettingsViewModel(
+        IDatabaseMaintenanceService maintenanceService,
+        IThemeService themeService,
+        IDialogService dialogs,
+        INavigationStackService navigationStack,
+        IErrorHandler errors,
+        ILocalizationService localization,
+        IDataChangeNotifier dataChanges,
+        ActiveWorkoutViewModel activeWorkout)
+    {
+        _maintenanceService = maintenanceService;
+        _themeService = themeService;
+        _dialogs = dialogs;
+        _navigationStack = navigationStack;
+        _errors = errors;
+        _localization = localization;
+        _dataChanges = dataChanges;
+        ActiveWorkout = activeWorkout;
+        SelectedTheme = themeService.SavedPreference;
+        ShowLanguages();
+        localization.LanguageChanged += OnLanguageChanged;
+    }
+
     [ObservableProperty]
-    public partial ThemePreference SelectedTheme { get; set; } = themeService.SavedPreference;
+    [NotifyPropertyChangedFor(nameof(ThemeText))]
+    public partial ThemePreference SelectedTheme { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LanguageText))]
+    public partial LanguageOption SelectedLanguage { get; set; } = null!;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
@@ -24,23 +57,89 @@ public partial class SettingsViewModel(
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
+    public partial bool IsLanguageSheetOpen { get; set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseSheetsCommand))]
     public partial bool IsEraseSheetOpen { get; set; }
 
-    public string VersionText { get; } = string.Format(UiText.VersionFormat, AppInfo.Current.VersionString);
+    public ObservableCollection<LanguageOption> Languages { get; } = [];
 
-    public ActiveWorkoutViewModel ActiveWorkout { get; } = activeWorkout;
+    public string ThemeText => SelectedTheme.ToDisplayName();
 
-    private bool IsAnySheetOpen => IsThemeSheetOpen || IsEraseSheetOpen;
+    public string LanguageText => SelectedLanguage.ShortLabel;
+
+    public string VersionText => string.Format(AppResources.VersionFormat, AppInfo.Current.VersionString);
+
+    public ActiveWorkoutViewModel ActiveWorkout { get; }
+
+    private bool IsAnySheetOpen => IsThemeSheetOpen || IsLanguageSheetOpen || IsEraseSheetOpen;
 
     partial void OnSelectedThemeChanged(ThemePreference value)
     {
-        themeService.ChangeTheme(value);
+        if (value != _themeService.SavedPreference)
+        {
+            _themeService.ChangeTheme(value);
+        }
     }
+
+    partial void OnSelectedLanguageChanged(LanguageOption value)
+    {
+        if (!value.Represents(_localization.SavedLanguage))
+        {
+            _errors.ReportFailures(SwitchLanguageAsync(value));
+        }
+    }
+
+    private async Task SwitchLanguageAsync(LanguageOption option)
+    {
+        await SheetTransition.CloseAsync(CloseLanguageSheet);
+
+        if (!await _navigationStack.ConfirmDiscardingAllChangesAsync())
+        {
+            SelectedLanguage = OptionFor(_localization.SavedLanguage);
+            return;
+        }
+
+        _localization.ChangeLanguage(option.Language);
+        _navigationStack.PopAllTabsToRoot();
+        _dataChanges.Notify(DataArea.All);
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        ShowLanguages();
+        OnPropertyChanged(nameof(ThemeText));
+        OnPropertyChanged(nameof(VersionText));
+    }
+
+    private void ShowLanguages()
+    {
+        Languages.ReplaceAll(
+        [
+            LanguageOption.SystemDefault(_localization.SystemLanguage),
+            .. _localization.AvailableLanguages.Select(LanguageOption.For)
+        ]);
+        SelectedLanguage = OptionFor(_localization.SavedLanguage);
+    }
+
+    private LanguageOption OptionFor(CultureInfo? language) => Languages.First(option => option.Represents(language));
 
     [RelayCommand]
     private void OpenThemeSheet()
     {
         IsThemeSheetOpen = true;
+    }
+
+    [RelayCommand]
+    private void OpenLanguageSheet()
+    {
+        IsLanguageSheetOpen = true;
+    }
+
+    private void CloseLanguageSheet()
+    {
+        IsLanguageSheetOpen = false;
     }
 
     [RelayCommand]
@@ -53,6 +152,7 @@ public partial class SettingsViewModel(
     private void CloseSheets()
     {
         IsThemeSheetOpen = false;
+        IsLanguageSheetOpen = false;
         IsEraseSheetOpen = false;
     }
 
@@ -63,46 +163,46 @@ public partial class SettingsViewModel(
     }
 
     [RelayCommand]
-    private Task EraseDataAsync() => errors.RunAsync(async () =>
+    private Task EraseDataAsync() => _errors.RunAsync(async () =>
     {
         await SheetTransition.CloseAsync(CloseEraseSheet);
 
-        await maintenanceService.ClearAllDataAsync();
-        navigationStack.PopAllTabsToRoot();
+        await _maintenanceService.ClearAllDataAsync();
+        _navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
-        await maintenanceService.DeleteTemporaryFilesAsync();
-        await dialogs.ShowMessageAsync(UiText.TitleSuccess, UiText.BodyDataErased);
+        await _maintenanceService.DeleteTemporaryFilesAsync();
+        await _dialogs.ShowMessageAsync(AppResources.TitleSuccess, AppResources.BodyDataErased);
     });
 
     [RelayCommand]
-    private Task ExportDataAsync() => errors.RunAsync(async () =>
+    private Task ExportDataAsync() => _errors.RunAsync(async () =>
     {
-        if (await maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
+        if (await _maintenanceService.CreateExportSnapshotAsync() is not { } snapshotPath)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleOops, UiText.BodyNoDataToExport);
+            await _dialogs.ShowMessageAsync(AppResources.TitleOops, AppResources.BodyNoDataToExport);
             return;
         }
         await Share.Default.RequestAsync(new ShareFileRequest
         {
-            Title = UiText.TitleExportData,
+            Title = AppResources.TitleExportData,
             File = new ShareFile(snapshotPath, DatabaseNames.ExportContentType)
         });
-    }, UiText.BodyExportFailed);
+    }, AppResources.BodyExportFailed);
 
     [RelayCommand]
-    private Task ImportDataAsync() => errors.RunAsync(async () =>
+    private Task ImportDataAsync() => _errors.RunAsync(async () =>
     {
         if (ActiveWorkout.IsWorkoutActive)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleHoldOn, UiText.BodyImportBlockedByWorkout);
+            await _dialogs.ShowMessageAsync(AppResources.TitleHoldOn, AppResources.BodyImportBlockedByWorkout);
             return;
         }
 
-        if (await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = UiText.TitlePickBackup }) is { } file)
+        if (await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppResources.TitlePickBackup }) is { } file)
         {
             await ImportFromAsync(file);
         }
-    }, UiText.BodyImportFailed);
+    }, AppResources.BodyImportFailed);
 
     private async Task ImportFromAsync(FileResult file)
     {
@@ -115,16 +215,16 @@ public partial class SettingsViewModel(
                 return;
             }
 
-            await maintenanceService.ImportAsync();
+            await _maintenanceService.ImportAsync();
         }
         finally
         {
-            await maintenanceService.DeleteImportCopiesAsync(file.FullPath);
+            await _maintenanceService.DeleteImportCopiesAsync(file.FullPath);
         }
 
-        navigationStack.PopAllTabsToRoot();
+        _navigationStack.PopAllTabsToRoot();
         ActiveWorkout.Reset();
-        await dialogs.ShowMessageAsync(UiText.TitleSuccess, DescribeCounts(UiText.DataImportedFormat, counts));
+        await _dialogs.ShowMessageAsync(AppResources.TitleSuccess, DescribeCounts(AppResources.DataImportedFormat, counts));
     }
 
     private async Task<ImportCounts?> ConfirmImportAsync(FileResult file)
@@ -132,37 +232,34 @@ public partial class SettingsViewModel(
         ImportPreview preview;
         await using (var source = await file.OpenReadAsync())
         {
-            preview = await maintenanceService.PrepareImportAsync(source);
+            preview = await _maintenanceService.PrepareImportAsync(source);
         }
 
         if (preview.Status != ImportFileStatus.Valid)
         {
-            await dialogs.ShowMessageAsync(UiText.TitleOops, RejectionMessage(preview.Status));
+            await _dialogs.ShowMessageAsync(AppResources.TitleOops, RejectionMessage(preview.Status));
             return null;
         }
 
-        var confirmed = await dialogs.ConfirmAsync(
-            UiText.TitleImportData,
-            DescribeCounts(UiText.ImportConfirmationFormat, preview.Counts),
-            UiText.ButtonImport,
-            UiText.ButtonCancel);
+        var confirmed = await _dialogs.ConfirmAsync(
+            AppResources.TitleImportData,
+            DescribeCounts(AppResources.ImportConfirmationFormat, preview.Counts),
+            AppResources.ButtonImport,
+            AppResources.ButtonCancel);
         return confirmed ? preview.Counts : null;
     }
 
     private static string RejectionMessage(ImportFileStatus status) => status switch
     {
-        ImportFileStatus.Damaged => UiText.BodyImportDamaged,
-        ImportFileStatus.Incompatible => UiText.BodyImportIncompatible,
-        _ => UiText.BodyImportNotBackup
+        ImportFileStatus.Damaged => AppResources.BodyImportDamaged,
+        ImportFileStatus.Incompatible => AppResources.BodyImportIncompatible,
+        _ => AppResources.BodyImportNotBackup
     };
 
     private static string DescribeCounts(string format, ImportCounts counts) => string.Format(
         CultureInfo.CurrentCulture,
         format,
-        counts.Exercises,
-        CountCaption.Exercises(counts.Exercises),
-        counts.Workouts,
-        CountCaption.Workouts(counts.Workouts),
-        counts.Sessions,
-        CountCaption.Sessions(counts.Sessions));
+        Plurals.Format(nameof(AppResources.ExerciseCount_Other), counts.Exercises),
+        Plurals.Format(nameof(AppResources.WorkoutCount_Other), counts.Workouts),
+        Plurals.Format(nameof(AppResources.SessionCount_Other), counts.Sessions));
 }

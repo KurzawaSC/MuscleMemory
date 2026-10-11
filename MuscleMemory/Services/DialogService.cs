@@ -1,5 +1,5 @@
-using MuscleMemory.Constants;
 using MuscleMemory.Controls;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.ViewModels;
 
 namespace MuscleMemory.Services;
@@ -12,7 +12,7 @@ public sealed class DialogService : IDialogService
         ShowAsync(new ConfirmDialogViewModel(title, message, confirmText, cancelText));
 
     public Task ShowMessageAsync(string title, string message) =>
-        ShowAsync(new ConfirmDialogViewModel(title, message, UiText.ButtonOk, null));
+        ShowAsync(new ConfirmDialogViewModel(title, message, AppResources.ButtonOk, null));
 
     private static async Task<bool> ShowAsync(ConfirmDialogViewModel viewModel)
     {

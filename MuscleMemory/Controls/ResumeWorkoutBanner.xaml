@@ -2,8 +2,8 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-             xmlns:constants="clr-namespace:MuscleMemory.Constants"
              xmlns:markup="clr-namespace:MuscleMemory.Markup"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
              x:Class="MuscleMemory.Controls.ResumeWorkoutBanner"
              x:Name="Root"
              x:DataType="controls:ResumeWorkoutBanner"
@@ -23,7 +23,7 @@
             <TapGestureRecognizer Command="{Binding ActiveWorkout.ResumeWorkoutCommand, Source={x:Reference Root}}" />
         </Border.GestureRecognizers>
         <Label Style="{StaticResource EmphasisLabel}"
-               Text="{x:Static constants:UiText.BannerResumeWorkout}"
+               Text="{loc:Text BannerResumeWorkout}"
                HorizontalTextAlignment="Center"
                TextColor="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}"
                VerticalOptions="Center" />

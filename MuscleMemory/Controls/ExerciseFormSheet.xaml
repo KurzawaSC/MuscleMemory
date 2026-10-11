@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:MuscleMemory.Controls"
              xmlns:constants="clr-namespace:MuscleMemory.Constants"
-             xmlns:models="clr-namespace:MuscleMemory.Models"
+             xmlns:loc="clr-namespace:MuscleMemory.Localization"
+             xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
              x:Class="MuscleMemory.Controls.ExerciseFormSheet"
              x:Name="Root"
              x:DataType="controls:ExerciseFormSheet">
@@ -11,20 +12,20 @@
     <VerticalStackLayout Spacing="16">
         <VerticalStackLayout Spacing="4">
             <Label Style="{StaticResource TitleLabel}" Text="{Binding Form.Title, Source={x:Reference Root}}" />
-            <Label Style="{StaticResource CaptionLabel}" Text="{x:Static constants:UiText.HintExerciseForm}" />
+            <Label Style="{StaticResource CaptionLabel}" Text="{loc:Text HintExerciseForm}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelName}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelName}" />
             <controls:TextField FieldHeight="52"
                                 Text="{Binding Form.Name, Source={x:Reference Root}}"
                                 ErrorText="{Binding Form.NameError, Source={x:Reference Root}, FallbackValue=''}"
                                 MaxLength="{x:Static constants:DomainDefaults.MaxNameLength}"
-                                Placeholder="{x:Static constants:UiText.PlaceholderExerciseName}" />
+                                Placeholder="{loc:Text PlaceholderExerciseName}" />
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelMuscleGroup}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelMuscleGroup}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"
@@ -32,18 +33,18 @@
                         RadioButtonGroup.SelectedValue="{Binding Form.SelectedMuscleGroup, Source={x:Reference Root}}"
                         BindableLayout.ItemsSource="{Binding Form.MuscleGroups, Source={x:Reference Root}}">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:MuscleGroup">
+                    <DataTemplate x:DataType="viewmodels:EnumOption">
                         <RadioButton Style="{StaticResource ChoiceChip}"
                                      Margin="0,0,4,4"
-                                     Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
-                                     Value="{Binding .}" />
+                                     Content="{Binding Label}"
+                                     Value="{Binding Value}" />
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </FlexLayout>
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="6">
-            <Label Style="{StaticResource OverlineLabel}" Text="{x:Static constants:UiText.LabelEquipment}" />
+            <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelEquipment}" />
             <FlexLayout Wrap="Wrap"
                         AlignContent="Start"
                         AlignItems="Start"
@@ -51,11 +52,11 @@
                         RadioButtonGroup.SelectedValue="{Binding Form.SelectedEquipment, Source={x:Reference Root}}"
                         BindableLayout.ItemsSource="{Binding Form.EquipmentTypes, Source={x:Reference Root}}">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:EquipmentType">
+                    <DataTemplate x:DataType="viewmodels:EnumOption">
                         <RadioButton Style="{StaticResource ChoiceChip}"
                                      Margin="0,0,4,4"
-                                     Content="{Binding ., Converter={StaticResource EnumDisplayNameConverter}}"
-                                     Value="{Binding .}" />
+                                     Content="{Binding Label}"
+                                     Value="{Binding Value}" />
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </FlexLayout>

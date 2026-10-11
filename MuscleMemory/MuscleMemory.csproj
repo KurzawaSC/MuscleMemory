@@ -13,6 +13,8 @@
 
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
+		<NeutralLanguage>en</NeutralLanguage>
+
 		<ApplicationTitle>Muscle Memory</ApplicationTitle>
 
 		<ApplicationId>io.github.kurzawasc.musclememory</ApplicationId>
@@ -34,9 +36,15 @@
 
 		<MauiImage Include="Resources\Images\*" />
 
-		<MauiFont Include="Resources\Fonts\*" />
+		<MauiFont Include="Resources\Fonts\*.ttf" />
 
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<EmbeddedResource Update="Resources\Strings\AppResources.resx"
+		                  StronglyTypedLanguage="CSharp"
+		                  StronglyTypedNamespace="MuscleMemory.Resources.Strings"
+		                  StronglyTypedClassName="AppResources"
+		                  StronglyTypedFileName="$(IntermediateOutputPath)AppResources.g.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -51,5 +59,22 @@
 		<PackageReference Include="SQLitePCLRaw.core" Version="3.0.5" />
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
 	</ItemGroup>
+
+	<Target Name="GenerateResourceAccessorAtDesignTime"
+	        BeforeTargets="CoreCompile"
+	        DependsOnTargets="PrepareResourceNames;CoreResGen"
+	        Condition="'$(DesignTimeBuild)' == 'true'" />
+
+	<Target Name="AddSatelliteLanguagesMetadata" BeforeTargets="GetAssemblyAttributes">
+		<AssignCulture Files="@(EmbeddedResource)">
+			<Output TaskParameter="AssignedFilesWithCulture" ItemName="_LocalizedEmbeddedResource" />
+		</AssignCulture>
+		<ItemGroup>
+			<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+				<_Parameter1>SatelliteLanguages</_Parameter1>
+				<_Parameter2>@(_LocalizedEmbeddedResource->'%(Culture)'->Distinct())</_Parameter2>
+			</AssemblyAttribute>
+		</ItemGroup>
+	</Target>
 
 </Project>

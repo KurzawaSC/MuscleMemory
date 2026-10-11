@@ -20,7 +20,7 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont(FontFamilies.LilitaOneFile, FontFamilies.LilitaOne);
+                fonts.AddFont(FontFamilies.BarlowSemiCondensedFile, FontFamilies.BarlowSemiCondensed);
             })
             .ConfigureMauiHandlers(handlers =>
             {
@@ -46,6 +46,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IExerciseCatalogService, ExerciseCatalogService>();
         builder.Services.AddSingleton<IStatusBarService, StatusBarService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
+        builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
         builder.Services.AddSingleton<IWorkoutTimerService, WorkoutTimerService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();

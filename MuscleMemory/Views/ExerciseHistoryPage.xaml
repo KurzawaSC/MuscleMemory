@@ -3,21 +3,21 @@
                              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                              xmlns:viewmodels="clr-namespace:MuscleMemory.ViewModels"
                              xmlns:controls="clr-namespace:MuscleMemory.Controls"
-                             xmlns:constants="clr-namespace:MuscleMemory.Constants"
                              xmlns:markup="clr-namespace:MuscleMemory.Markup"
+                             xmlns:loc="clr-namespace:MuscleMemory.Localization"
                              x:Class="MuscleMemory.Views.ExerciseHistoryPage"
                              x:DataType="viewmodels:ExerciseHistoryViewModel"
                              BackCommand="{Binding GoBackCommand}">
 
     <Grid RowDefinitions="Auto, Auto, *">
-        <controls:NavigationHeader Title="{x:Static constants:UiText.HeaderExerciseHistory}" BackCommand="{Binding GoBackCommand}" />
+        <controls:NavigationHeader Title="{loc:Text HeaderExerciseHistory}" BackCommand="{Binding GoBackCommand}" />
 
         <controls:ScreenHeader Grid.Row="1"
                                Title="{Binding ExerciseName}"
                                Subtitle="{Binding SessionCountText}" />
 
         <controls:EmptyState Grid.Row="2"
-                             Message="{x:Static constants:UiText.EmptyExerciseHistory}"
+                             Message="{loc:Text EmptyExerciseHistory}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
         <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Margin="{markup:Gutter Top=8}">
@@ -60,7 +60,7 @@
                                 <controls:UnitLabel Grid.Column="1"
                                                     Style="{StaticResource CaptionLabel}"
                                                     Value="{Binding VolumeText}"
-                                                    Unit="{x:Static constants:UiText.VolumeSuffix}"
+                                                    Unit="{loc:Text VolumeSuffix}"
                                                     ValueColor="{AppThemeBinding Light={StaticResource InkLight}, Dark={StaticResource InkDark}}" />
                             </Grid>
                         </VerticalStackLayout>

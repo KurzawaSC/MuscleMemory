@@ -3,6 +3,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
+using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.ViewModels;
 
@@ -11,14 +12,14 @@ public sealed partial class SetInputViewModel : ObservableObject
     private const char CommaDecimalSeparator = ',';
     private const char InvariantDecimalSeparator = '.';
 
-    private static readonly string WeightRangeError = string.Format(
-        CultureInfo.CurrentCulture, UiText.WeightRangeErrorFormat, DomainDefaults.MinWeightInKg, DomainDefaults.MaxWeightInKg);
+    private static string WeightRangeError => string.Format(
+        CultureInfo.CurrentCulture, AppResources.WeightRangeErrorFormat, DomainDefaults.MinWeightInKg, DomainDefaults.MaxWeightInKg);
 
-    private static readonly string WeightPrecisionError = string.Format(
-        CultureInfo.CurrentCulture, UiText.WeightPrecisionErrorFormat, DomainDefaults.WeightPrecisionInKg);
+    private static string WeightPrecisionError => string.Format(
+        CultureInfo.CurrentCulture, AppResources.WeightPrecisionErrorFormat, DomainDefaults.WeightPrecisionInKg);
 
-    private static readonly string RepsRangeError = string.Format(
-        CultureInfo.CurrentCulture, UiText.RepsRangeErrorFormat, DomainDefaults.MinReps, DomainDefaults.MaxReps);
+    private static string RepsRangeError => string.Format(
+        CultureInfo.CurrentCulture, AppResources.RepsRangeErrorFormat, DomainDefaults.MinReps, DomainDefaults.MaxReps);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsValid))]
@@ -58,6 +59,17 @@ public sealed partial class SetInputViewModel : ObservableObject
     {
         WeightInput = string.Empty;
         RepsInput = string.Empty;
+    }
+
+    public void RefreshText()
+    {
+        if (TryParseWeight(out var weight))
+        {
+            WeightInput = FormatWeight(weight);
+        }
+
+        OnPropertyChanged(nameof(WeightError));
+        OnPropertyChanged(nameof(RepsError));
     }
 
     [RelayCommand]

@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 using MuscleMemory.Threading;
 
@@ -47,7 +49,10 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HeaderTitle))]
     public partial string WorkoutName { get; set; } = string.Empty;
+
+    public string HeaderTitle => string.Format(CultureInfo.CurrentCulture, AppResources.WorkoutHistoryTitleFormat, WorkoutName);
 
     public ListLoadState ListState { get; } = new();
 
@@ -184,8 +189,8 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     [RelayCommand]
     private void AddSet(WorkoutHistoryExerciseItem item) =>
         SetActions.OpenEditor(
-            UiText.TitleAddSet,
-            UiText.ButtonAdd,
+            AppResources.TitleAddSet,
+            AppResources.ButtonAdd,
             item.Exercise.Sets.LastOrDefault(),
             item.Exercise.SessionExerciseId,
             values => AddSetAsync(item.Exercise.SessionExerciseId, values));
@@ -234,7 +239,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
             return;
         }
 
-        var confirm = await _dialogs.ConfirmAsync(UiText.TitleRemoveExercise, string.Format(UiText.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), UiText.ButtonRemove, UiText.ButtonCancel);
+        var confirm = await _dialogs.ConfirmAsync(AppResources.TitleRemoveExercise, string.Format(AppResources.RemoveExerciseConfirmationFormat, loggedExercise.ExerciseName), AppResources.ButtonRemove, AppResources.ButtonCancel);
         if (!confirm)
         {
             return;

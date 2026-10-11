@@ -60,6 +60,12 @@ leaves the page.
 ### Settings
 
 - Theme: System, Light or Dark.
+- Language: System default, or any language the app contains, listed by its native name. The choice
+  applies at once: every tab returns to its root, lists reload, and a running session keeps going
+  with its text re-formatted. System default follows the Android language when the app has it and
+  falls back to English otherwise. Numbers and dates use the system's regional format when it
+  matches the chosen language, and that language's default region otherwise. The app ships in
+  English and Polish.
 - Export data, through the system share sheet.
 - Import data from a file made by Export data. It replaces all current data after a confirmation
   that shows the file's exercise, workout and session counts, and it is blocked while a workout is
@@ -98,7 +104,7 @@ leaves the page.
 | Database | `sqlite-net-e` 1.11.285 on `SourceGear.sqlite3` 3.53.4, with `SQLitePCLRaw.core`, `SQLitePCLRaw.config.e_sqlite3` and `SQLitePCLRaw.provider.e_sqlite3` 3.0.5 |
 | Audio | `Plugin.Maui.Audio` 4.0.0, for the rest-timer sound |
 | Logging | `Microsoft.Extensions.Logging.Debug` 10.0.12, Debug builds only |
-| Font | Lilita One, bundled |
+| Font | Barlow Semi Condensed ExtraBold, bundled (SIL Open Font License 1.1) |
 
 ## Architecture
 
@@ -144,6 +150,7 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IExerciseCatalogService` | Exercise create, edit and delete, and the data-changed notification for them |
 | `IStatusBarService` | Paints the status bar after each navigation and picks light or dark icons |
 | `IThemeService` | Saves the theme preference and applies it to `UserAppTheme` |
+| `ILocalizationService` | Finds the available languages, saves the language choice, applies it to the default cultures and raises `LanguageChanged` |
 | `IAudioCueService` | Plays the rest-end sound |
 | `IWorkoutTimerService` | One-second tick and elapsed or countdown formatting |
 | `IDialogService` | Styled confirmation and message dialogs |
@@ -178,6 +185,12 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
   It finds the open session through `IActiveWorkoutSessionService.FindResumableAsync` and restores
   the exercise index and rest countdown. All times are stored in UTC and recomputed from
   timestamps, never from a tick counter. A state row whose session has already ended is cleared.
+- **Localization.** Every user-visible string is a key in `Resources/Strings/AppResources.resx`.
+  MSBuild generates the typed `AppResources` accessor on every build, so C# keys are checked by the
+  compiler. XAML reads text through `{loc:Text Key}`, a binding to the `LocalizedText` indexer that
+  updates when the language changes; view models re-format the text they build on
+  `ILocalizationService.LanguageChanged`. The language is applied as the process default culture,
+  so it holds on every thread and across async continuations.
 - **Composed child view models.** Logic shared between pages lives in child view models that the
   parent creates and exposes as properties. `SetActionsViewModel` (the set sheet and editor) is used
   by both the live session and workout history. `RestTimerViewModel`, `SetInputViewModel` and
@@ -193,9 +206,9 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
 └── MuscleMemory/
     ├── MuscleMemory.csproj
     ├── MauiProgram.cs           DI registrations and app configuration
-    ├── App.xaml(.cs)            Application resources; restores the saved theme; reuses one Window
+    ├── App.xaml(.cs)            Application resources; restores the saved language and theme; reuses one Window
     ├── AppShell.xaml(.cs)       Tab bar and routes; starts session restore
-    ├── Constants/               UI text, routes, domain limits, timings, spacing, database names
+    ├── Constants/               Routes, domain limits, timings, spacing, display formats, database names
     ├── Controls/                Reusable XAML controls and BackNavigationPage
     ├── Converters/              Enum display name, equality and initials converters
     ├── Data/
@@ -203,12 +216,14 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
     │   └── Repositories/        Repository interfaces and implementations
     ├── Diagnostics/             AppLog (logcat)
     ├── Extensions/              Helpers for collections, commands, enums, colours, time and sets
+    ├── Localization/            {loc:Text} extension, LocalizedText, plural rules
     ├── Markup/                  {markup:Gutter} XAML extension
     ├── Models/                  SQLite tables and persisted enums
     ├── Platforms/Android/       MainActivity, MainApplication, manifest and Android-only code
     │   └── Resources/           Page transition animations and colours
     ├── Resources/
     │   ├── AppIcon/  Fonts/  Images/  Raw/  Splash/
+    │   ├── Strings/             AppResources.resx (English) and one AppResources.<code>.resx per language
     │   └── Styles/              Colors.xaml (theme roles), Styles.xaml
     ├── Services/                Service interfaces, implementations and result records
     ├── Threading/               SequentialTaskQueue
@@ -248,6 +263,36 @@ dotnet publish MuscleMemory/MuscleMemory.csproj -f net10.0-android -c Release
 Release produces an Android App Bundle (`.aab`). Add `-p:AndroidPackageFormat=apk` for an APK.
 Release signing is configured separately and is not part of this repository.
 
+## Adding a language
+
+1. Copy `MuscleMemory/Resources/Strings/AppResources.resx` to `AppResources.<code>.resx` in the same
+   folder, where `<code>` is the language (`de`, `pl`) or a regional variant (`pt-PT`), and
+   translate the values. Keys you leave out fall back to English.
+2. Keep every `{0}`-style placeholder. Quotation marks and the order of words around a placeholder
+   live in the string, so each language can use its own (`„{0}”` in Polish, for example). Date
+   patterns such as `ShortDateFormat` are .NET custom format strings and are formatted with the
+   regional culture. Write a line break inside a value as `&#xA;`, as `EmptyWorkoutEditor` does,
+   never as a literal new line.
+3. Counted words are plurals. A key ending in `_Other` has siblings per CLDR cardinal category:
+   `_Zero`, `_One`, `_Two`, `_Few`, `_Many`. Provide the categories your language uses, for example
+   `SetCount_One`, `SetCount_Few`, `SetCount_Many` and `SetCount_Other` for Polish. A missing
+   category falls back to `_Other`.
+4. Build. The build records the new culture and the language appears in Settings under its native
+   name. No code or list changes.
+
+Built-in plural rules cover every EU official language (Bulgarian, Croatian, Czech, Danish, Dutch,
+English, Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian,
+Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish) plus Ukrainian and
+Russian. Any other language uses one/other.
+
+Table column headers sit in fixed-width columns, so they have their own short keys: give
+`LabelRepsColumn` the abbreviation your language uses ("Powt." in Polish) when the full word does
+not fit. Text may wrap between words, but never inside one.
+
+The bundled Barlow Semi Condensed font covers Latin-1, Latin Extended-A and every letter of the
+EU's Latin-script languages, including Romanian ș and ț. It has no Greek or Cyrillic, so Greek,
+Bulgarian, Ukrainian and Russian would show their letters in Android's fallback font.
+
 ## Known limitations
 
 - **Crash on a fast relaunch that does not come from the launcher.** Pressing BACK on a tab root and
@@ -260,7 +305,15 @@ Release signing is configured separately and is not part of this repository.
   drops frames: 15 % janky frames and a 90th-percentile frame of 40 ms on an emulator Release build,
   against 18 ms for vertical scrolling on the same page. The exercise filter chips are not
   affected.
-- **Locale changes need a restart.** Changing the app language in Android settings while the app
-  is running does not change number formatting, such as the decimal separator or digit grouping,
-  until the process restarts.
+- **Android language changes need a restart.** The app reads the Android language once, at
+  startup. With the language set to System default, changing the language in Android settings
+  while the app is running changes neither its text nor its number and date formatting until the
+  process restarts. A language picked in the app's own Settings applies immediately.
 - **No reordering.** Exercises in a workout cannot be reordered.
+
+## Font license
+
+The app bundles Barlow Semi Condensed ExtraBold (Copyright 2017 The Barlow Project Authors,
+https://github.com/jpt/barlow), unmodified from the google/fonts repository. It is licensed under
+the SIL Open Font License 1.1, whose full text ships next to the font in
+`MuscleMemory/Resources/Fonts/OFL.txt`.

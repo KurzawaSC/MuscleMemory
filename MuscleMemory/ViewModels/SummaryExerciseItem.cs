@@ -1,6 +1,6 @@
 using System.Globalization;
-using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
+using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
@@ -15,10 +15,10 @@ public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText,
 
         return new SummaryExerciseItem(
             exercise.ExerciseName,
-            string.Format(CultureInfo.CurrentCulture, UiText.VolumeFormat, volumes.Sum()),
+            string.Format(CultureInfo.CurrentCulture, AppResources.VolumeFormat, volumes.Sum()),
             [.. exercise.Sets.Select(set => new SummarySetBar(
                 set.SetNumber,
-                string.Format(CultureInfo.CurrentCulture, UiText.LoggedSetFormat, set.Weight, set.Reps),
+                string.Format(CultureInfo.CurrentCulture, AppResources.LoggedSetFormat, set.Weight, set.Reps),
                 new Rect(0, 0, bestVolume > 0 ? set.Volume() / bestVolume : 0, 1),
                 hasSingleBest && set.Volume() == bestVolume))]);
     }
