@@ -64,8 +64,8 @@ leaves the page.
   applies at once: every tab returns to its root, lists reload, and a running session keeps going
   with its text re-formatted. System default follows the Android language when the app has it and
   falls back to English otherwise. Numbers and dates use the system's regional format when it
-  matches the chosen language, and that language's default region otherwise. English is the only
-  language shipped so far.
+  matches the chosen language, and that language's default region otherwise. The app ships in
+  English and Polish.
 - Export data, through the system share sheet.
 - Import data from a file made by Export data. It replaces all current data after a confirmation
   that shows the file's exercise, workout and session counts, and it is blocked while a workout is
@@ -104,7 +104,7 @@ leaves the page.
 | Database | `sqlite-net-e` 1.11.285 on `SourceGear.sqlite3` 3.53.4, with `SQLitePCLRaw.core`, `SQLitePCLRaw.config.e_sqlite3` and `SQLitePCLRaw.provider.e_sqlite3` 3.0.5 |
 | Audio | `Plugin.Maui.Audio` 4.0.0, for the rest-timer sound |
 | Logging | `Microsoft.Extensions.Logging.Debug` 10.0.12, Debug builds only |
-| Font | Lilita One, bundled |
+| Font | Barlow Semi Condensed ExtraBold, bundled (SIL Open Font License 1.1) |
 
 ## Architecture
 
@@ -285,9 +285,13 @@ English, Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, La
 Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish) plus Ukrainian and
 Russian. Any other language uses one/other.
 
-The bundled Lilita One font covers Latin-1 and only a few other letters. It has no ą, ć, ę, ń, ś, ź
-or ż, so Polish, and other languages that need letters outside its set, would show those letters in
-Android's fallback font.
+Table column headers sit in fixed-width columns, so they have their own short keys: give
+`LabelRepsColumn` the abbreviation your language uses ("Powt." in Polish) when the full word does
+not fit. Text may wrap between words, but never inside one.
+
+The bundled Barlow Semi Condensed font covers Latin-1, Latin Extended-A and every letter of the
+EU's Latin-script languages, including Romanian ș and ț. It has no Greek or Cyrillic, so Greek,
+Bulgarian, Ukrainian and Russian would show their letters in Android's fallback font.
 
 ## Known limitations
 
@@ -306,3 +310,10 @@ Android's fallback font.
   while the app is running changes neither its text nor its number and date formatting until the
   process restarts. A language picked in the app's own Settings applies immediately.
 - **No reordering.** Exercises in a workout cannot be reordered.
+
+## Font license
+
+The app bundles Barlow Semi Condensed ExtraBold (Copyright 2017 The Barlow Project Authors,
+https://github.com/jpt/barlow), unmodified from the google/fonts repository. It is licensed under
+the SIL Open Font License 1.1, whose full text ships next to the font in
+`MuscleMemory/Resources/Fonts/OFL.txt`.
