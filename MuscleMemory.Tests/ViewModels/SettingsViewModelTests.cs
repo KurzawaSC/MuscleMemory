@@ -47,6 +47,7 @@ public sealed class SettingsViewModelTests
             Substitute.For<IAppInfo>(),
             Substitute.For<IShare>(),
             Substitute.For<IFilePicker>(),
+            Substitute.For<IFileResultReader>(),
             _activeWorkout);
     }
 

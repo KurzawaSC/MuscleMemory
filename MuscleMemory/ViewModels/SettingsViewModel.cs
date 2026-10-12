@@ -23,6 +23,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAppInfo _appInfo;
     private readonly IShare _share;
     private readonly IFilePicker _filePicker;
+    private readonly IFileResultReader _fileReader;
 
     public SettingsViewModel(
         IDatabaseMaintenanceService maintenanceService,
@@ -36,6 +37,7 @@ public partial class SettingsViewModel : ObservableObject
         IAppInfo appInfo,
         IShare share,
         IFilePicker filePicker,
+        IFileResultReader fileReader,
         ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
@@ -49,6 +51,7 @@ public partial class SettingsViewModel : ObservableObject
         _appInfo = appInfo;
         _share = share;
         _filePicker = filePicker;
+        _fileReader = fileReader;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
         ShowLanguages();
@@ -242,7 +245,7 @@ public partial class SettingsViewModel : ObservableObject
     private async Task<ImportCounts?> ConfirmImportAsync(FileResult file)
     {
         ImportPreview preview;
-        await using (var source = await file.OpenReadAsync())
+        await using (var source = await _fileReader.OpenReadAsync(file))
         {
             preview = await _maintenanceService.PrepareImportAsync(source);
         }

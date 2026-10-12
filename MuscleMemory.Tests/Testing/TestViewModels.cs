@@ -16,6 +16,7 @@ public sealed class TestViewModels : IAsyncDisposable
         NavigationStack.ConfirmDiscardingChangesOnTabAsync(Arg.Any<string>()).Returns(true);
         NavigationStack.ConfirmDiscardingAllChangesAsync().Returns(true);
         AppInfo.VersionString.Returns(AppVersion);
+        FileReader.OpenReadAsync(Arg.Any<FileResult>()).Returns(call => File.OpenRead(call.Arg<FileResult>().FullPath));
 
         App = new TestApp(new DataChangeNotifier(Dispatcher));
         Errors = new TrackingErrorHandler(new ErrorHandler(Dialogs));
@@ -50,6 +51,8 @@ public sealed class TestViewModels : IAsyncDisposable
     public IShare Share { get; } = Substitute.For<IShare>();
 
     public IFilePicker FilePicker { get; } = Substitute.For<IFilePicker>();
+
+    public IFileResultReader FileReader { get; } = Substitute.For<IFileResultReader>();
 
     public MemoryPreferences Preferences { get; } = new();
 
@@ -99,7 +102,7 @@ public sealed class TestViewModels : IAsyncDisposable
 
     public SettingsViewModel CreateSettings() =>
         new(App.Maintenance, Theme, Dialogs, NavigationStack, Errors, Localization, App.DataChanges, Clock,
-            AppInfo, Share, FilePicker, ActiveWorkout);
+            AppInfo, Share, FilePicker, FileReader, ActiveWorkout);
 
     public ValueTask DisposeAsync() => App.DisposeAsync();
 
