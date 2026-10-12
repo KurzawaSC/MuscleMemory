@@ -13,6 +13,9 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
     private const string EmptiedSessionBug =
         "Bug: removing every exercise of a finished session on the history page leaves its WorkoutSession row behind; " +
         "history hides it, but export keeps it and the import preview counts it (2 sessions shown as 1 in history).";
+    private const string NestedPickerFolderBug =
+        "Bug: MAUI 10.0.110's FilePicker copies a picked file to cache/<hash>/<guid>/<name>; DeleteImportCopiesAsync deletes the file " +
+        "and the <guid> folder but leaves the <hash> folder empty in the cache after every import (seen on the emulator).";
     private const string QuickCheckPassed = "ok";
     private const string StaleContent = "stale";
     private const int SeededSets = 4;
@@ -21,6 +24,7 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
     private const int SeededSessions = 2;
     private const string PickedFileName = "backup.db3";
     private const string PickerFolderName = "picker-copy";
+    private const string NestedPickerFolderName = "b82ff697daea43f08526d0516e823b6a";
     private const string NeighbourFileName = "other.txt";
     private const string MainSchema = "main";
     private const string AttachedSchemasSql = "SELECT name FROM pragma_database_list";
@@ -272,6 +276,17 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
         Assert.False(File.Exists(pickedPath));
         Assert.False(Directory.Exists(Path.GetDirectoryName(pickedPath)));
         Assert.True(Directory.Exists(_app.Database.CacheFolder));
+    }
+
+    [Fact(Skip = NestedPickerFolderBug)]
+    public async Task DeleteImportCopiesAsync_PickerCopyTwoFoldersDeep_LeavesNoEmptyFolder()
+    {
+        var pickedPath = PickerCopy(Path.Combine(PickerFolderName, NestedPickerFolderName));
+        await PrepareAsync(pickedPath);
+
+        await _app.Maintenance.DeleteImportCopiesAsync(pickedPath);
+
+        Assert.Empty(Directory.EnumerateFileSystemEntries(_app.Database.CacheFolder));
     }
 
     [Fact]
