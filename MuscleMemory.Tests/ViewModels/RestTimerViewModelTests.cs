@@ -25,7 +25,7 @@ public sealed class RestTimerViewModelTests
     {
         _errors.RunAsync(Arg.Any<Func<Task>>(), Arg.Any<string?>(), Arg.Any<string>())
             .Returns(call => call.Arg<Func<Task>>()());
-        _rest = new RestTimerViewModel(_host, new WorkoutTimerService(_clock), _clock, _haptics, _audioCues, _errors);
+        _rest = new RestTimerViewModel(_host, new WorkoutTimerService(_clock, Substitute.For<IDispatcher>()), _clock, _haptics, _audioCues, _errors);
     }
 
     [Fact]
