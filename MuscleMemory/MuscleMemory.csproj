@@ -49,6 +49,7 @@
 
 	<ItemGroup>
 		<MauiPlatformSpecificFolder Include="Platforms\Net\" Condition="'$(TargetPlatformIdentifier)' == ''" />
+		<InternalsVisibleTo Include="MuscleMemory.Tests" />
 	</ItemGroup>
 
 	<ItemGroup>

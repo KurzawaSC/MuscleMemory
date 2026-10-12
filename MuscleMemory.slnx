@@ -2,4 +2,5 @@
   <Project Path="MuscleMemory/MuscleMemory.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
+  <Project Path="MuscleMemory.Tests/MuscleMemory.Tests.csproj" />
 </Solution>
