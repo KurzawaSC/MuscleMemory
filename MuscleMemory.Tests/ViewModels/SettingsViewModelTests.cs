@@ -44,6 +44,9 @@ public sealed class SettingsViewModelTests
             _localization,
             Substitute.For<IDataChangeNotifier>(),
             TimeProvider.System,
+            Substitute.For<IAppInfo>(),
+            Substitute.For<IShare>(),
+            Substitute.For<IFilePicker>(),
             _activeWorkout);
     }
 

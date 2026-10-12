@@ -20,6 +20,9 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ILocalizationService _localization;
     private readonly IDataChangeNotifier _dataChanges;
     private readonly TimeProvider _clock;
+    private readonly IAppInfo _appInfo;
+    private readonly IShare _share;
+    private readonly IFilePicker _filePicker;
 
     public SettingsViewModel(
         IDatabaseMaintenanceService maintenanceService,
@@ -30,6 +33,9 @@ public partial class SettingsViewModel : ObservableObject
         ILocalizationService localization,
         IDataChangeNotifier dataChanges,
         TimeProvider clock,
+        IAppInfo appInfo,
+        IShare share,
+        IFilePicker filePicker,
         ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
@@ -40,6 +46,9 @@ public partial class SettingsViewModel : ObservableObject
         _localization = localization;
         _dataChanges = dataChanges;
         _clock = clock;
+        _appInfo = appInfo;
+        _share = share;
+        _filePicker = filePicker;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
         ShowLanguages();
@@ -72,7 +81,7 @@ public partial class SettingsViewModel : ObservableObject
 
     public string LanguageText => SelectedLanguage.ShortLabel;
 
-    public string VersionText => string.Format(AppResources.VersionFormat, AppInfo.Current.VersionString);
+    public string VersionText => string.Format(AppResources.VersionFormat, _appInfo.VersionString);
 
     public ActiveWorkoutViewModel ActiveWorkout { get; }
 
@@ -185,7 +194,7 @@ public partial class SettingsViewModel : ObservableObject
             await _dialogs.ShowMessageAsync(AppResources.TitleOops, AppResources.BodyNoDataToExport);
             return;
         }
-        await Share.Default.RequestAsync(new ShareFileRequest
+        await _share.RequestAsync(new ShareFileRequest
         {
             Title = AppResources.TitleExportData,
             File = new ShareFile(snapshotPath, DatabaseNames.ExportContentType)
@@ -201,7 +210,7 @@ public partial class SettingsViewModel : ObservableObject
             return;
         }
 
-        if (await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppResources.TitlePickBackup }) is { } file)
+        if (await _filePicker.PickAsync(new PickOptions { PickerTitle = AppResources.TitlePickBackup }) is { } file)
         {
             await ImportFromAsync(file);
         }
