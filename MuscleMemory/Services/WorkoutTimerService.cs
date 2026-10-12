@@ -1,3 +1,4 @@
+using System.Globalization;
 using MuscleMemory.Constants;
 
 namespace MuscleMemory.Services;
@@ -30,6 +31,8 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
     public string FormatDuration(TimeSpan duration)
     {
         var displayed = duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
-        return displayed.ToString(displayed.TotalHours >= 1 ? DisplayFormats.ElapsedWithHours : DisplayFormats.Elapsed);
+        return displayed.TotalHours >= 1
+            ? string.Format(CultureInfo.CurrentCulture, DisplayFormats.ElapsedWithHours, displayed.Ticks / TimeSpan.TicksPerHour, displayed)
+            : displayed.ToString(DisplayFormats.Elapsed);
     }
 }
