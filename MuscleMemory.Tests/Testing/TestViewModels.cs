@@ -87,7 +87,7 @@ public sealed class TestViewModels : IAsyncDisposable
 
     public ExercisePickerViewModel CreateExercisePicker() => new(App.Exercises, new ExerciseFilterViewModel());
 
-    public ExerciseFormViewModel CreateExerciseForm() => new(App.Exercises, App.Catalog);
+    public ExerciseFormViewModel CreateExerciseForm() => new(App.Catalog);
 
     public ExerciseListViewModel CreateExerciseList() =>
         new(App.Exercises, App.Workouts, App.Catalog, ActiveWorkout, CreateExerciseForm(), new ExerciseFilterViewModel(),
