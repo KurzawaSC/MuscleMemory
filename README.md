@@ -116,8 +116,9 @@ Views (XAML pages)  →  ViewModels  →  Services  →  Repositories  →  Data
 
 - **Views** are pages whose code-behind only calls `InitializeComponent` and takes its view model
   from DI. Navigation is triggered by view-model commands.
-- **ViewModels** use CommunityToolkit.Mvvm and depend only on service and repository interfaces.
-  They never touch the database connection or the Shell directly.
+- **ViewModels** use CommunityToolkit.Mvvm and depend only on service interfaces. They never touch
+  a repository, the database connection or the Shell directly; the architecture tests enforce the
+  layering.
 - **Services** hold the logic that is neither presentation nor storage: history projections, the
   summary, the session lifecycle, dialogs, navigation, theme, audio, haptics and the timer.
 - **Repositories** (`Data/Repositories`) have one interface per aggregate. Multi-statement writes run
@@ -147,7 +148,8 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IActiveWorkoutStateRepository` | The single active-session row, written through a serial queue |
 | `IHistoryQueryService` | Builds workout and exercise history from batched reads |
 | `IDatabaseMaintenanceService` | Export snapshot; import with validation, replacing all data in one transaction; deletion of temporary copies; erase-all in one transaction |
-| `IExerciseCatalogService` | Exercise create, edit and delete, and the data-changed notification for them |
+| `IExerciseCatalogService` | The exercise list, exercise create, edit and delete with the data-changed notification for them, and how many workouts use an exercise |
+| `IWorkoutTemplateService` | Workout plans: list, load, save and delete |
 | `IStatusBarService` | Paints the status bar after each navigation and picks light or dark icons |
 | `IThemeService` | Saves the theme preference and applies it to `UserAppTheme` |
 | `ILocalizationService` | Finds the available languages, saves the language choice, applies it to the default cultures and raises `LanguageChanged` |
@@ -203,6 +205,8 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
 .
 ├── MuscleMemory.slnx
 ├── README.md
+├── .github/workflows/tests.yml  CI: build, format check and unit tests
+├── MuscleMemory.Tests/          Unit tests (see Testing)
 └── MuscleMemory/
     ├── MuscleMemory.csproj
     ├── MauiProgram.cs           DI registrations and app configuration
@@ -263,27 +267,103 @@ dotnet publish MuscleMemory/MuscleMemory.csproj -f net10.0-android -c Release
 Release produces an Android App Bundle (`.aab`). Add `-p:AndroidPackageFormat=apk` for an APK.
 Release signing is configured separately and is not part of this repository.
 
+## Testing
+
+[![Tests](https://github.com/KurzawaSC/MuscleMemory/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/KurzawaSC/MuscleMemory/actions/workflows/tests.yml)
+
+The unit tests are the `MuscleMemory.Tests` project, xUnit v3 with NSubstitute, running on
+`net10.0`. The app project has a second target framework, `net10.0`, that exists only for them: it
+compiles the shared code without the Android-specific parts, and nothing ships from it.
+
+Running them needs the .NET 10 SDK and the `maui-android` workload. The `net10.0` target itself
+needs no workload, but restoring the app project also evaluates its Android target. No Android SDK
+or device is needed. From the repository root:
+
+```bash
+dotnet test MuscleMemory.Tests/MuscleMemory.Tests.csproj
+```
+
+With coverage, which writes a Cobertura `coverage.cobertura.xml` under
+`MuscleMemory.Tests/TestResults/`:
+
+```bash
+dotnet test MuscleMemory.Tests/MuscleMemory.Tests.csproj --collect:"XPlat Code Coverage"
+```
+
+The test folders mirror the app's:
+
+| Folder | Contents |
+| --- | --- |
+| `Architecture/` | Layering and dependency-injection rules, checked by reflection over the app assembly |
+| `Constants/`, `Converters/`, `Extensions/`, `Threading/` | Formatting, conversion and helper logic |
+| `Data/` | Every repository, against a real SQLite file |
+| `Localization/` | Plural rules and formatting, and the consistency of the resource files |
+| `Services/` | The services, over a real temporary database |
+| `ViewModels/` | The view models, over the real services |
+| `Testing/` | Shared helpers: temporary database, fake clock, culture scopes, data builders |
+
+What the unit tests cover:
+
+- **Logic:** number, date and duration formatting under fixed cultures, plural rules, parsing and
+  validation.
+- **Data:** each test gets its own SQLite file in a temporary folder, filled through the app's own
+  services. Transactions are tested by forcing a statement to fail and checking that nothing was
+  half-written. Set numbering, the session snapshot, import validation and the startup cleanup are
+  covered.
+- **View models:** what a page shows and does: bound properties, change notifications, command
+  availability, navigation targets, dialogs and the rows written. Only dialogs, navigation, haptics,
+  audio, the status bar, the dispatcher and the share, file-picker and app-info APIs are
+  substituted, and the clock is a fake one, so no test waits or depends on the machine's culture or
+  time zone.
+- **Architecture:** view models do not depend on the data layer, repositories are used only by
+  services and the data layer (and registered in `MauiProgram`), and every constructor parameter of
+  every registered type is itself registered.
+- **Localization:** see [Adding a language](#adding-a-language).
+
+What is verified on a device or emulator instead, because a unit test cannot see it:
+
+- XAML layout, bindings and rendering in both themes, and text fit at large font scales.
+- Shell navigation, hardware BACK and page lifecycle.
+- The Android code under `Platforms/Android`: sheets and dialogs on the window layer, long-press,
+  status-bar and tab-bar painting, decimal input and TalkBack state.
+- Audio, vibration, the file picker and the share sheet.
+- Recovery of a session after the process is killed, and performance.
+
+Continuous integration runs on every push and pull request to `master`, on Ubuntu with the pinned
+.NET SDK and the `maui-android` workload. It builds the app's `net10.0` target and the tests with
+warnings as errors, checks the formatting of both projects with `dotnet format --verify-no-changes`,
+runs the tests with coverage and uploads the TRX results and the coverage report as the
+`test-results` artifact. It does not build the Android app.
+
 ## Adding a language
 
 1. Copy `MuscleMemory/Resources/Strings/AppResources.resx` to `AppResources.<code>.resx` in the same
    folder, where `<code>` is the language (`de`, `pl`) or a regional variant (`pt-PT`), and
-   translate the values. Keys you leave out fall back to English.
+   translate every value. At run time a missing key would fall back to English, but the
+   localization tests fail on it.
 2. Keep every `{0}`-style placeholder. Quotation marks and the order of words around a placeholder
    live in the string, so each language can use its own (`„{0}”` in Polish, for example). Date
    patterns such as `ShortDateFormat` are .NET custom format strings and are formatted with the
    regional culture. Write a line break inside a value as `&#xA;`, as `EmptyWorkoutEditor` does,
    never as a literal new line.
 3. Counted words are plurals. A key ending in `_Other` has siblings per CLDR cardinal category:
-   `_Zero`, `_One`, `_Two`, `_Few`, `_Many`. Provide the categories your language uses, for example
-   `SetCount_One`, `SetCount_Few`, `SetCount_Many` and `SetCount_Other` for Polish. A missing
-   category falls back to `_Other`.
+   `_Zero`, `_One`, `_Two`, `_Few`, `_Many`. Provide `_Other` and exactly the categories the
+   plural rules select for your language, for example `SetCount_One`, `SetCount_Few`,
+   `SetCount_Many` and `SetCount_Other` for Polish.
 4. Build. The build records the new culture and the language appears in Settings under its native
    name. No code or list changes.
+5. Run the tests. The localization tests in `MuscleMemory.Tests/Localization/AppResourcesTests.cs`
+   check every resource file against `AppResources.resx`, so they catch a missing or extra key, an
+   empty value, a placeholder that differs from the English one (`{0}`, `{1:N0}`), a plural
+   category missing or one the language never selects, and a XAML `{loc:Text}` key that does not
+   exist. They also fail on a key that nothing uses.
 
 Built-in plural rules cover every EU official language (Bulgarian, Croatian, Czech, Danish, Dutch,
 English, Estonian, Finnish, French, German, Greek, Hungarian, Irish, Italian, Latvian, Lithuanian,
 Maltese, Polish, Portuguese, Romanian, Slovak, Slovenian, Spanish, Swedish) plus Ukrainian and
-Russian. Any other language uses one/other.
+Russian. Any other language uses one/other. The tests accept a language only if `PluralRules` has a
+rule for it or it is listed in the tests as a one/other language, so a language outside the EU
+needs its CLDR rules checked and either a rule or that entry.
 
 Table column headers sit in fixed-width columns, so they have their own short keys: give
 `LabelRepsColumn` the abbreviation your language uses ("Powt." in Polish) when the full word does
