@@ -10,6 +10,9 @@ namespace MuscleMemory.Tests.Services;
 
 public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
 {
+    private const string EmptiedSessionBug =
+        "Bug: removing every exercise of a finished session on the history page leaves its WorkoutSession row behind; " +
+        "history hides it, but export keeps it and the import preview counts it (2 sessions shown as 1 in history).";
     private const string QuickCheckPassed = "ok";
     private const string StaleContent = "stale";
     private const int SeededSets = 4;
@@ -109,6 +112,24 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
 
         Assert.Equal(new ImportPreview(ImportFileStatus.Valid, new ImportCounts(SeededExercises, SeededWorkouts, SeededSessions)), preview);
         Assert.Equal(await File.ReadAllBytesAsync(backupPath, TestContext.Current.CancellationToken), await File.ReadAllBytesAsync(ImportPath, TestContext.Current.CancellationToken));
+    }
+
+    [Fact(Skip = EmptiedSessionBug)]
+    public async Task PrepareImportAsync_SessionWithEveryExerciseRemoved_CountsOnlySessionsHistoryShows()
+    {
+        await using var source = new TestApp();
+        var push = await SeedAsync(source);
+        var emptied = (await source.History.GetWorkoutHistoryAsync(push.Id))[0];
+        foreach (var exercise in emptied.Exercises)
+        {
+            await source.SessionExercises.DeleteAsync(exercise.SessionExerciseId);
+        }
+
+        var backupPath = await source.Maintenance.CreateExportSnapshotAsync();
+        Assert.NotNull(backupPath);
+        var preview = await PrepareAsync(backupPath);
+
+        Assert.Equal((await source.History.GetWorkoutHistoryAsync(push.Id)).Count, preview.Counts.Sessions);
     }
 
     [Fact]
