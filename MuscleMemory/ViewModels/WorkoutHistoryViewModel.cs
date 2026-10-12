@@ -3,7 +3,6 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
@@ -15,8 +14,7 @@ namespace MuscleMemory.ViewModels;
 public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributable, ISetActionsHost
 {
     private readonly IHistoryQueryService _historyQueryService;
-    private readonly ISessionExerciseRepository _sessionExerciseRepository;
-    private readonly IWorkoutSetRepository _setRepository;
+    private readonly IActiveWorkoutSessionService _sessions;
     private readonly IDialogService _dialogs;
     private readonly IWorkoutTimerService _timer;
     private readonly IHapticService _haptics;
@@ -27,8 +25,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
 
     public WorkoutHistoryViewModel(
         IHistoryQueryService historyQueryService,
-        ISessionExerciseRepository sessionExerciseRepository,
-        IWorkoutSetRepository setRepository,
+        IActiveWorkoutSessionService sessions,
         IDialogService dialogs,
         IWorkoutTimerService timer,
         IHapticService haptics,
@@ -37,8 +34,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         ExercisePickerViewModel exercisePicker)
     {
         _historyQueryService = historyQueryService;
-        _sessionExerciseRepository = sessionExerciseRepository;
-        _setRepository = setRepository;
+        _sessions = sessions;
         _dialogs = dialogs;
         _timer = timer;
         _haptics = haptics;
@@ -79,12 +75,12 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     bool ISetActionsHost.CanShowSetActions => true;
 
     Task ISetActionsHost.UpdateSetAsync(WorkoutSet set, SetValues values) =>
-        _setRepository.UpdateAsync(set.Id, values.Weight, values.Reps);
+        _sessions.UpdateSetAsync(set.Id, values.Weight, values.Reps);
 
     async Task ISetActionsHost.DeleteSetAsync(WorkoutSet set)
     {
         var sessionId = SessionIdOf(set.SessionExerciseId);
-        await _setRepository.DeleteAsync(set.Id);
+        await _sessions.DeleteSetAsync(set.Id);
         await RefreshSessionAsync(sessionId);
     }
 
@@ -196,7 +192,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
             values => AddSetAsync(item.Exercise.SessionExerciseId, values));
 
     private Task AddSetAsync(int sessionExerciseId, SetValues values) =>
-        _setRepository.AddAsync(new WorkoutSet
+        _sessions.AddSetAsync(new WorkoutSet
         {
             SessionExerciseId = sessionExerciseId,
             Weight = values.Weight,
@@ -246,7 +242,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         }
 
         var sessionId = SessionIdOf(loggedExercise.SessionExerciseId);
-        await _sessionExerciseRepository.DeleteAsync(loggedExercise.SessionExerciseId);
+        await _sessions.RemoveExerciseAsync(loggedExercise.SessionExerciseId);
         await RefreshSessionAsync(sessionId);
     });
 
@@ -273,17 +269,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
             return;
         }
 
-        await _sessionExerciseRepository.AppendToSessionAsync(new SessionExercise
-        {
-            WorkoutSessionId = selected.Session.SessionId,
-            ExerciseId = exercise.Id,
-            ExerciseName = exercise.Name,
-            PlannedSets = DomainDefaults.Sets,
-            PlannedReps = DomainDefaults.Reps,
-            BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
-            TargetRPE = DomainDefaults.TargetRPE
-        });
-
+        await _sessions.AppendExerciseAsync(selected.Session.SessionId, exercise);
         await RefreshSessionAsync(selected.Session.SessionId);
     });
 }
