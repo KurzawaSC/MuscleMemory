@@ -116,6 +116,8 @@ public sealed class DatabaseMaintenanceService(
         });
     }
 
+    public Task DeleteEmptySessionsAsync() => sessionRepository.DeleteEmptyFinishedAsync();
+
     public async Task ClearAllDataAsync()
     {
         var connection = await context.GetConnectionAsync();

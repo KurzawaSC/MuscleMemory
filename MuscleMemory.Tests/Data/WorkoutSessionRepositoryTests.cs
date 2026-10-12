@@ -118,6 +118,21 @@ public sealed class WorkoutSessionRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task DeleteEmptyFinishedAsync_EmptiedFinishedSession_DeletesOnlyIt()
+    {
+        var kept = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        var emptied = await _app.Data.EmptiedSessionFromBeforeTheFixAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 82.5, 5));
+        var open = await _app.Data.StartAsync(await _app.Data.WorkoutAsync(LegDay));
+
+        await _app.Sessions.DeleteEmptyFinishedAsync();
+
+        Assert.Null(await _app.Sessions.GetAsync(emptied));
+        Assert.NotNull(await _app.Sessions.GetAsync(kept));
+        Assert.Empty(open.Exercises);
+        Assert.NotNull(await _app.Sessions.GetAsync(open.SessionId));
+    }
+
+    [Fact]
     public async Task GetAsync_MissingSession_ReturnsNull() =>
         Assert.Null(await _app.Sessions.GetAsync(MissingId));
 

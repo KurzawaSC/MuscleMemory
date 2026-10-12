@@ -10,9 +10,6 @@ namespace MuscleMemory.Tests.Services;
 
 public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
 {
-    private const string EmptiedSessionBug =
-        "Bug: removing every exercise of a finished session on the history page leaves its WorkoutSession row behind; " +
-        "history hides it, but export keeps it and the import preview counts it (2 sessions shown as 1 in history).";
     private const string NestedPickerFolderBug =
         "Bug: MAUI 10.0.110's FilePicker copies a picked file to cache/<hash>/<guid>/<name>; DeleteImportCopiesAsync deletes the file " +
         "and the <guid> folder but leaves the <hash> folder empty in the cache after every import (seen on the emulator).";
@@ -118,7 +115,7 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
         Assert.Equal(await File.ReadAllBytesAsync(backupPath, TestContext.Current.CancellationToken), await File.ReadAllBytesAsync(ImportPath, TestContext.Current.CancellationToken));
     }
 
-    [Fact(Skip = EmptiedSessionBug)]
+    [Fact]
     public async Task PrepareImportAsync_SessionWithEveryExerciseRemoved_CountsOnlySessionsHistoryShows()
     {
         await using var source = new TestApp();
@@ -328,6 +325,55 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
         await _app.Maintenance.DeleteImportCopiesAsync(pickedPath);
 
         Assert.Empty(Directory.EnumerateFileSystemEntries(_app.Database.CacheFolder));
+    }
+
+    [Fact]
+    public async Task DeleteEmptySessionsAsync_EmptiedSessionFromBeforeTheFix_RemovesItAndKeepsHistory()
+    {
+        var push = await SeedAsync(_app);
+        var shownBefore = (await _app.History.GetWorkoutHistoryAsync(push.Id)).Select(session => session.SessionId).ToList();
+        var emptied = await _app.Data.EmptiedSessionFromBeforeTheFixAsync(push, TestApp.StartUtc + (2 * OneDay), new LoggedSet(0, 90, 2));
+
+        await _app.Maintenance.DeleteEmptySessionsAsync();
+
+        Assert.Null(await _app.Sessions.GetAsync(emptied));
+        Assert.Equal(SeededSessions, await _app.Database.CountAsync(nameof(WorkoutSession)));
+        Assert.Equal(shownBefore, (await _app.History.GetWorkoutHistoryAsync(push.Id)).Select(session => session.SessionId));
+    }
+
+    [Fact]
+    public async Task DeleteEmptySessionsAsync_RunTwice_SecondRunChangesNothing()
+    {
+        var push = await SeedAsync(_app);
+        await _app.Data.EmptiedSessionFromBeforeTheFixAsync(push, TestApp.StartUtc + (2 * OneDay), new LoggedSet(0, 90, 2));
+        await _app.Maintenance.DeleteEmptySessionsAsync();
+        var afterFirstRun = DatabaseRows.ReadAll(_app.Database.FilePath);
+
+        await _app.Maintenance.DeleteEmptySessionsAsync();
+
+        Assert.Equal(afterFirstRun, DatabaseRows.ReadAll(_app.Database.FilePath));
+    }
+
+    [Fact]
+    public async Task DeleteEmptySessionsAsync_ActiveSessionWithoutExercises_KeepsItResumable()
+    {
+        var open = await _app.Data.StartAsync(await _app.Data.WorkoutAsync("Freestyle"));
+        await _app.Data.SaveActiveStateAsync(open);
+
+        await _app.Maintenance.DeleteEmptySessionsAsync();
+
+        Assert.Equal(open.SessionId, (await _app.ActiveSessions.FindResumableAsync())?.Session.Id);
+    }
+
+    [Fact]
+    public async Task DeleteEmptySessionsAsync_NothingToRemove_DoesNotNotify()
+    {
+        await SeedAsync(_app);
+        _app.DataChanges.ClearReceivedCalls();
+
+        await _app.Maintenance.DeleteEmptySessionsAsync();
+
+        _app.DataChanges.DidNotReceiveWithAnyArgs().Notify(default);
     }
 
     [Fact]

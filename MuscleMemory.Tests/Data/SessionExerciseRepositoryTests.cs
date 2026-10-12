@@ -141,6 +141,61 @@ public sealed class SessionExerciseRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task DeleteAsync_LastExerciseOfFinishedSession_DeletesTheSession()
+    {
+        var sessionId = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 40, 8));
+
+        foreach (var performed in await _app.SessionExercises.GetForSessionAsync(sessionId))
+        {
+            await _app.SessionExercises.DeleteAsync(performed.Id);
+        }
+
+        Assert.Null(await _app.Sessions.GetAsync(sessionId));
+        Assert.Equal(0, await _app.Database.CountAsync(nameof(WorkoutSet)));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_OneExerciseLeftInFinishedSession_KeepsTheSession()
+    {
+        var sessionId = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 40, 8));
+        var performed = await _app.SessionExercises.GetForSessionAsync(sessionId);
+
+        await _app.SessionExercises.DeleteAsync(performed[0].Id);
+
+        var session = Assert.Single(await _app.History.GetWorkoutHistoryAsync(_push.Id));
+        Assert.Equal((sessionId, _press.Name), (session.SessionId, Assert.Single(session.Exercises).ExerciseName));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_LastExerciseOfActiveSession_KeepsTheSessionResumable()
+    {
+        var started = await _app.Data.StartAsync(_push);
+        await _app.Data.SaveActiveStateAsync(started);
+
+        foreach (var performed in started.Exercises)
+        {
+            await _app.SessionExercises.DeleteAsync(performed.Id);
+        }
+
+        Assert.Null((await _app.Sessions.GetAsync(started.SessionId))?.EndTimeUtc);
+        Assert.Equal(started.SessionId, (await _app.ActiveSessions.FindResumableAsync())?.Session.Id);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_SessionDeleteFails_KeepsTheExerciseAndItsSets()
+    {
+        var curls = await _app.Data.WorkoutAsync("Curls", _squat);
+        var sessionId = await _app.Data.CompletedSessionAsync(curls, TestApp.StartUtc, new LoggedSet(0, 30, 12));
+        var performed = Assert.Single(await _app.SessionExercises.GetForSessionAsync(sessionId));
+        await _app.Database.FailOnAsync(nameof(WorkoutSession), TableOperation.Delete);
+
+        await Assert.ThrowsAsync<SQLiteException>(() => _app.SessionExercises.DeleteAsync(performed.Id));
+
+        Assert.Single(await _app.SessionExercises.GetForSessionAsync(sessionId));
+        Assert.Single(await _app.Sets.GetForSessionExerciseAsync(performed.Id));
+    }
+
+    [Fact]
     public async Task Clear_InTransaction_RemovesEveryPerformance()
     {
         await _app.Data.StartAsync(_push);
