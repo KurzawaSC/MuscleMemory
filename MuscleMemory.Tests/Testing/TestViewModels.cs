@@ -85,19 +85,19 @@ public sealed class TestViewModels : IAsyncDisposable
 
     public ExerciseHistoryViewModel CreateExerciseHistory() => new(App.History, Navigation, Errors);
 
-    public ExercisePickerViewModel CreateExercisePicker() => new(App.Exercises, new ExerciseFilterViewModel());
+    public ExercisePickerViewModel CreateExercisePicker() => new(App.Catalog, new ExerciseFilterViewModel());
 
-    public ExerciseFormViewModel CreateExerciseForm() => new(App.Exercises, App.Catalog);
+    public ExerciseFormViewModel CreateExerciseForm() => new(App.Catalog);
 
     public ExerciseListViewModel CreateExerciseList() =>
-        new(App.Exercises, App.Workouts, App.Catalog, ActiveWorkout, CreateExerciseForm(), new ExerciseFilterViewModel(),
+        new(App.Catalog, ActiveWorkout, CreateExerciseForm(), new ExerciseFilterViewModel(),
             Haptics, Dialogs, App.DataChanges, Navigation, Errors, Localization, Clock);
 
     public WorkoutListViewModel CreateWorkoutList() =>
-        new(App.Workouts, ActiveWorkout, Haptics, Dialogs, App.DataChanges, Navigation, Errors, Clock);
+        new(App.Templates, ActiveWorkout, Haptics, Dialogs, App.DataChanges, Navigation, Errors, Clock);
 
     public AddEditWorkoutViewModel CreateWorkoutEditor() =>
-        new(App.Workouts, CreateExercisePicker(), new ExerciseConfigurationViewModel(), CreateExerciseForm(),
+        new(App.Templates, CreateExercisePicker(), new ExerciseConfigurationViewModel(), CreateExerciseForm(),
             Dialogs, NavigationStack, Navigation, Errors, Clock);
 
     public SettingsViewModel CreateSettings() =>

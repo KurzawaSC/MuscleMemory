@@ -10,12 +10,49 @@ public sealed class ExerciseCatalogServiceTests : IAsyncLifetime
 {
     private const string Bench = "Bench Press";
     private const string Renamed = "Paused Bench Press";
+    private const string Squat = "Back Squat";
 
     private readonly TestApp _app = new();
 
     public ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
     public ValueTask DisposeAsync() => _app.DisposeAsync();
+
+    [Fact]
+    public async Task GetAllAsync_EmptyCatalog_ReturnsNothing() =>
+        Assert.Empty(await _app.Catalog.GetAllAsync());
+
+    [Fact]
+    public async Task GetAllAsync_SeveralExercises_ReturnsEachWithItsDetails()
+    {
+        var bench = await _app.Data.ExerciseAsync(Bench, MuscleGroup.Chest, EquipmentType.Barbell);
+        var squat = await _app.Data.ExerciseAsync(Squat, MuscleGroup.Legs, EquipmentType.Barbell);
+
+        var exercises = await _app.Catalog.GetAllAsync();
+
+        Assert.Equal(
+            [(bench.Id, Bench, MuscleGroup.Chest), (squat.Id, Squat, MuscleGroup.Legs)],
+            exercises.Select(exercise => (exercise.Id, exercise.Name, exercise.TargetMuscleGroup)).OrderBy(exercise => exercise.Id));
+    }
+
+    [Fact]
+    public async Task CountWorkoutsContainingAsync_InNoWorkout_ReturnsZero()
+    {
+        var bench = await _app.Data.ExerciseAsync(Bench);
+        await _app.Data.WorkoutAsync("Leg Day", await _app.Data.ExerciseAsync(Squat));
+
+        Assert.Equal(0, await _app.Catalog.CountWorkoutsContainingAsync(bench.Id));
+    }
+
+    [Fact]
+    public async Task CountWorkoutsContainingAsync_TwiceInOneWorkoutAndOnceInAnother_CountsEachWorkoutOnce()
+    {
+        var bench = await _app.Data.ExerciseAsync(Bench);
+        await _app.Data.WorkoutAsync("Push Day", bench, bench);
+        await _app.Data.WorkoutAsync("Upper Day", bench);
+
+        Assert.Equal(2, await _app.Catalog.CountWorkoutsContainingAsync(bench.Id));
+    }
 
     [Fact]
     public async Task AddAsync_NewExercise_StoresItAndNotifiesExercisesOnce()

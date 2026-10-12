@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
@@ -8,7 +7,7 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepository, IExerciseCatalogService exerciseCatalog) : ObservableObject
+public partial class ExerciseFormViewModel(IExerciseCatalogService exerciseCatalog) : ObservableObject
 {
     private Exercise? _existingExercise;
 
@@ -101,7 +100,7 @@ public partial class ExerciseFormViewModel(IExerciseRepository exerciseRepositor
 
     private async Task<IReadOnlySet<string>> LoadTakenNamesAsync()
     {
-        var exercises = await exerciseRepository.GetAllAsync();
+        var exercises = await exerciseCatalog.GetAllAsync();
         return exercises
             .Where(exercise => exercise.Id != _existingExercise?.Id)
             .Select(exercise => NormalizeName(exercise.Name))

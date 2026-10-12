@@ -10,6 +10,10 @@ public sealed class ExerciseCatalogService(
     IWorkoutRepository workoutRepository,
     IDataChangeNotifier dataChanges) : IExerciseCatalogService
 {
+    public Task<List<Exercise>> GetAllAsync() => exerciseRepository.GetAllAsync();
+
+    public Task<int> CountWorkoutsContainingAsync(int exerciseId) => workoutRepository.CountWorkoutsContainingAsync(exerciseId);
+
     public async Task AddAsync(Exercise exercise)
     {
         await exerciseRepository.AddAsync(exercise);

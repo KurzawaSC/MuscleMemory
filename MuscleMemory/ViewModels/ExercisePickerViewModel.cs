@@ -1,18 +1,18 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
+using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
 public partial class ExercisePickerViewModel : ObservableObject
 {
-    private readonly IExerciseRepository _exerciseRepository;
+    private readonly IExerciseCatalogService _exerciseCatalog;
     private List<ExerciseItem> _allExercises = [];
 
-    public ExercisePickerViewModel(IExerciseRepository exerciseRepository, ExerciseFilterViewModel filter)
+    public ExercisePickerViewModel(IExerciseCatalogService exerciseCatalog, ExerciseFilterViewModel filter)
     {
-        _exerciseRepository = exerciseRepository;
+        _exerciseCatalog = exerciseCatalog;
         Filter = filter;
         Filter.Changed += (_, _) => ApplyFilter();
     }
@@ -26,7 +26,7 @@ public partial class ExercisePickerViewModel : ObservableObject
 
     public async Task LoadAsync()
     {
-        var exercises = await _exerciseRepository.GetAllAsync();
+        var exercises = await _exerciseCatalog.GetAllAsync();
         _allExercises = [.. exercises.Select(ExerciseItem.Create)];
         Filter.Reset();
         Filter.UpdateFilters(exercises);

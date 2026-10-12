@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Localization;
 using MuscleMemory.Models;
@@ -13,7 +12,7 @@ namespace MuscleMemory.ViewModels;
 
 public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributable, IUnsavedChangesGuard
 {
-    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IWorkoutTemplateService _templates;
     private readonly IDialogService _dialogs;
     private readonly INavigationStackService _navigationStack;
     private readonly INavigationService _navigation;
@@ -25,7 +24,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     private WorkoutExerciseItem? _exerciseBeingEdited;
 
     public AddEditWorkoutViewModel(
-        IWorkoutRepository workoutRepository,
+        IWorkoutTemplateService templates,
         ExercisePickerViewModel exercisePicker,
         ExerciseConfigurationViewModel exerciseConfiguration,
         ExerciseFormViewModel exerciseForm,
@@ -35,7 +34,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         IErrorHandler errors,
         TimeProvider clock)
     {
-        _workoutRepository = workoutRepository;
+        _templates = templates;
         _dialogs = dialogs;
         _navigationStack = navigationStack;
         _navigation = navigation;
@@ -130,7 +129,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
 
     private async Task LoadWorkoutAsync(Workout workout)
     {
-        var exercises = await _workoutRepository.GetExercisesAsync(workout.Id);
+        var exercises = await _templates.GetExercisesAsync(workout.Id);
 
         WorkoutName = workout.Name;
         Exercises.ReplaceAll(exercises.Select(exercise => new WorkoutExerciseItem(exercise)));
@@ -385,13 +384,13 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
 
         if (_workoutToEdit is not null)
         {
-            await _workoutRepository.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, exercises);
+            await _templates.UpdateWithExercisesAsync(new Workout { Id = _workoutToEdit.Id, Name = name }, exercises);
             _workoutToEdit.Name = name;
         }
         else
         {
             var workout = new Workout { Name = name };
-            await _workoutRepository.SaveWithExercisesAsync(workout, exercises);
+            await _templates.SaveWithExercisesAsync(workout, exercises);
             _workoutToEdit = workout;
         }
 

@@ -3,7 +3,6 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Localization;
 using MuscleMemory.Models;
@@ -14,8 +13,6 @@ namespace MuscleMemory.ViewModels;
 
 public partial class ExerciseListViewModel : ObservableObject
 {
-    private readonly IExerciseRepository _exerciseRepository;
-    private readonly IWorkoutRepository _workoutRepository;
     private readonly IExerciseCatalogService _exerciseCatalog;
     private readonly IHapticService _haptics;
     private readonly IDialogService _dialogs;
@@ -26,8 +23,6 @@ public partial class ExerciseListViewModel : ObservableObject
     private int _latestLoad;
 
     public ExerciseListViewModel(
-        IExerciseRepository exerciseRepository,
-        IWorkoutRepository workoutRepository,
         IExerciseCatalogService exerciseCatalog,
         ActiveWorkoutViewModel activeWorkout,
         ExerciseFormViewModel exerciseForm,
@@ -40,8 +35,6 @@ public partial class ExerciseListViewModel : ObservableObject
         ILocalizationService localization,
         TimeProvider clock)
     {
-        _exerciseRepository = exerciseRepository;
-        _workoutRepository = workoutRepository;
         _exerciseCatalog = exerciseCatalog;
         _haptics = haptics;
         _dialogs = dialogs;
@@ -105,7 +98,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private async Task ReloadAsync()
     {
         var load = ++_latestLoad;
-        var exercises = await _exerciseRepository.GetAllAsync();
+        var exercises = await _exerciseCatalog.GetAllAsync();
         if (load != _latestLoad)
         {
             return;
@@ -201,7 +194,7 @@ public partial class ExerciseListViewModel : ObservableObject
             return;
         }
 
-        var workoutCount = await _workoutRepository.CountWorkoutsContainingAsync(exercise.Id);
+        var workoutCount = await _exerciseCatalog.CountWorkoutsContainingAsync(exercise.Id);
         var answer = await _dialogs.ConfirmAsync(AppResources.TitleDeleteExercise, DeleteConfirmationText(exercise.Name, workoutCount), AppResources.ButtonDelete, AppResources.ButtonCancel);
         if (answer)
         {
