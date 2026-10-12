@@ -1,0 +1,62 @@
+using Microsoft.Extensions.Time.Testing;
+using MuscleMemory.Data.Repositories;
+using MuscleMemory.Services;
+using NSubstitute;
+
+namespace MuscleMemory.Tests.Testing;
+
+public sealed class TestApp : IAsyncDisposable
+{
+    public static readonly DateTime StartUtc = new(2026, 1, 5, 8, 0, 0, DateTimeKind.Utc);
+
+    public TestApp()
+    {
+        Exercises = new ExerciseRepository(Database.Context);
+        Workouts = new WorkoutRepository(Database.Context);
+        Sessions = new WorkoutSessionRepository(Database.Context, Clock);
+        SessionExercises = new SessionExerciseRepository(Database.Context);
+        Sets = new WorkoutSetRepository(Database.Context);
+        ActiveState = new ActiveWorkoutStateRepository(Database.Context);
+
+        Catalog = new ExerciseCatalogService(Database.Context, Exercises, Workouts, DataChanges);
+        ActiveSessions = new ActiveWorkoutSessionService(Workouts, Sessions, SessionExercises, Sets, ActiveState);
+        History = new HistoryQueryService(Sessions, SessionExercises, Sets);
+        Summary = new WorkoutSummaryService(Sets);
+        Maintenance = new DatabaseMaintenanceService(
+            Database.Context, Exercises, Workouts, Sessions, SessionExercises, Sets, ActiveState, DataChanges, Database.FileSystem);
+
+        Data = new TestDataBuilder(this);
+    }
+
+    public TestDatabase Database { get; } = new();
+
+    public FakeTimeProvider Clock { get; } = new(StartUtc);
+
+    public IDataChangeNotifier DataChanges { get; } = Substitute.For<IDataChangeNotifier>();
+
+    public ExerciseRepository Exercises { get; }
+
+    public WorkoutRepository Workouts { get; }
+
+    public WorkoutSessionRepository Sessions { get; }
+
+    public SessionExerciseRepository SessionExercises { get; }
+
+    public WorkoutSetRepository Sets { get; }
+
+    public ActiveWorkoutStateRepository ActiveState { get; }
+
+    public ExerciseCatalogService Catalog { get; }
+
+    public ActiveWorkoutSessionService ActiveSessions { get; }
+
+    public HistoryQueryService History { get; }
+
+    public WorkoutSummaryService Summary { get; }
+
+    public DatabaseMaintenanceService Maintenance { get; }
+
+    public TestDataBuilder Data { get; }
+
+    public ValueTask DisposeAsync() => Database.DisposeAsync();
+}

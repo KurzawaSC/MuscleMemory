@@ -3,7 +3,7 @@ using SQLite;
 
 namespace MuscleMemory.Data.Repositories;
 
-public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkoutSessionRepository
+public sealed class WorkoutSessionRepository(DatabaseContext context, TimeProvider clock) : IWorkoutSessionRepository
 {
     private const string SelectCompletedSessionsByIdsFormat =
         "SELECT * FROM WorkoutSession WHERE EndTimeUtc IS NOT NULL AND Id IN ({0})";
@@ -22,7 +22,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         {
             WorkoutId = workout.Id,
             WorkoutName = workout.Name,
-            StartTimeUtc = DateTime.UtcNow
+            StartTimeUtc = UtcNow
         };
         var snapshot = BuildSnapshot(templateExercises);
 
@@ -46,7 +46,7 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
         {
             if (transaction.ExecuteScalar<int>(CountLoggedSets, sessionId) > 0)
             {
-                transaction.Execute(FinishSession, DateTime.UtcNow, sessionId);
+                transaction.Execute(FinishSession, UtcNow, sessionId);
                 return;
             }
 
@@ -91,6 +91,8 @@ public sealed class WorkoutSessionRepository(DatabaseContext context) : IWorkout
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSession>();
+
+    private DateTime UtcNow => clock.GetUtcNow().UtcDateTime;
 
     private static List<SessionExercise> BuildSnapshot(IReadOnlyList<WorkoutExercise> templateExercises) =>
     [
