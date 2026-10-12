@@ -12,6 +12,8 @@ public sealed class ExerciseCatalogService(
 {
     public Task<List<Exercise>> GetAllAsync() => exerciseRepository.GetAllAsync();
 
+    public Task<int> CountWorkoutsContainingAsync(int exerciseId) => workoutRepository.CountWorkoutsContainingAsync(exerciseId);
+
     public async Task AddAsync(Exercise exercise)
     {
         await exerciseRepository.AddAsync(exercise);

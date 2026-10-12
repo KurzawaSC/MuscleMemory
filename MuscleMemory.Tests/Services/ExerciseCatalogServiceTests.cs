@@ -36,6 +36,25 @@ public sealed class ExerciseCatalogServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CountWorkoutsContainingAsync_InNoWorkout_ReturnsZero()
+    {
+        var bench = await _app.Data.ExerciseAsync(Bench);
+        await _app.Data.WorkoutAsync("Leg Day", await _app.Data.ExerciseAsync(Squat));
+
+        Assert.Equal(0, await _app.Catalog.CountWorkoutsContainingAsync(bench.Id));
+    }
+
+    [Fact]
+    public async Task CountWorkoutsContainingAsync_TwiceInOneWorkoutAndOnceInAnother_CountsEachWorkoutOnce()
+    {
+        var bench = await _app.Data.ExerciseAsync(Bench);
+        await _app.Data.WorkoutAsync("Push Day", bench, bench);
+        await _app.Data.WorkoutAsync("Upper Day", bench);
+
+        Assert.Equal(2, await _app.Catalog.CountWorkoutsContainingAsync(bench.Id));
+    }
+
+    [Fact]
     public async Task AddAsync_NewExercise_StoresItAndNotifiesExercisesOnce()
     {
         var exercise = new Exercise { Name = Bench, TargetMuscleGroup = MuscleGroup.Chest };
