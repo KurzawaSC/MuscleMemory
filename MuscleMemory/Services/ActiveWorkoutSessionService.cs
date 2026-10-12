@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
 
@@ -54,6 +55,20 @@ public sealed class ActiveWorkoutSessionService(
     public Task UpdateSetAsync(int setId, double weight, int reps) => setRepository.UpdateAsync(setId, weight, reps);
 
     public Task DeleteSetAsync(int setId) => setRepository.DeleteAsync(setId);
+
+    public Task AppendExerciseAsync(int sessionId, Exercise exercise) =>
+        sessionExerciseRepository.AppendToSessionAsync(new SessionExercise
+        {
+            WorkoutSessionId = sessionId,
+            ExerciseId = exercise.Id,
+            ExerciseName = exercise.Name,
+            PlannedSets = DomainDefaults.Sets,
+            PlannedReps = DomainDefaults.Reps,
+            BreakTimeInSeconds = DomainDefaults.BreakTimeInSeconds,
+            TargetRPE = DomainDefaults.TargetRPE
+        });
+
+    public Task RemoveExerciseAsync(int sessionExerciseId) => sessionExerciseRepository.DeleteAsync(sessionExerciseId);
 
     public async Task<bool> IsPlanCompleteAsync(IReadOnlyCollection<SessionExercise> exercises)
     {

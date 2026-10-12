@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.Data;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Models;
@@ -267,6 +268,32 @@ public sealed class ActiveWorkoutSessionServiceTests : IAsyncLifetime
         await _app.Data.LogSetAsync(unplanned, 80, 5);
 
         Assert.False(await _app.ActiveSessions.IsPlanCompleteAsync([unplanned]));
+    }
+
+    [Fact]
+    public async Task AppendExerciseAsync_FinishedSession_AddsTheExerciseLastWithTheDefaultPlan()
+    {
+        var sessionId = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        var squat = await _app.Data.ExerciseAsync("Back Squat");
+
+        await _app.ActiveSessions.AppendExerciseAsync(sessionId, squat);
+
+        var appended = (await _app.ActiveSessions.GetExercisesAsync(sessionId))[^1];
+        Assert.Equal(
+            (squat.Id, squat.Name, 2, DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE),
+            (appended.ExerciseId, appended.ExerciseName, appended.Order, appended.PlannedSets, appended.PlannedReps, appended.BreakTimeInSeconds, appended.TargetRPE));
+    }
+
+    [Fact]
+    public async Task RemoveExerciseAsync_LoggedExercise_RemovesItAndItsSets()
+    {
+        var sessionId = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 40, 8));
+        var performed = await _app.ActiveSessions.GetExercisesAsync(sessionId);
+
+        await _app.ActiveSessions.RemoveExerciseAsync(performed[0].Id);
+
+        Assert.Equal(_press.Id, Assert.Single(await _app.ActiveSessions.GetExercisesAsync(sessionId)).ExerciseId);
+        Assert.Empty(await _app.ActiveSessions.GetSetsAsync(performed[0].Id));
     }
 
     private async Task LogPlannedSetsAsync(SessionExercise performed, int count = TestDataBuilder.PlannedSets)

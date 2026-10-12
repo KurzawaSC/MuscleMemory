@@ -1,40 +1,44 @@
-using Microsoft.Extensions.Time.Testing;
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
-using MuscleMemory.Services;
+using MuscleMemory.Tests.Testing;
 using MuscleMemory.ViewModels;
 using NSubstitute;
 
 namespace MuscleMemory.Tests.ViewModels;
 
-public sealed class RestTimerViewModelTests
+public sealed class RestTimerViewModelTests : IAsyncLifetime
 {
     private const int RestSeconds = 60;
+    private const int PlannedRestSeconds = TestDataBuilder.BreakSeconds;
     private const string FullMinute = "01:00";
     private const string Zero = "00:00";
 
-    private static readonly DateTime StartUtc = new(2026, 10, 12, 8, 0, 0, DateTimeKind.Utc);
+    private readonly TestViewModels _ui = new();
+    private Workout _push = null!;
 
-    private readonly FakeTimeProvider _clock = new(StartUtc);
-    private readonly IRestTimerHost _host = Substitute.For<IRestTimerHost>();
-    private readonly IHapticService _haptics = Substitute.For<IHapticService>();
-    private readonly IAudioCueService _audioCues = Substitute.For<IAudioCueService>();
-    private readonly IErrorHandler _errors = Substitute.For<IErrorHandler>();
-    private readonly RestTimerViewModel _rest;
+    private RestTimerViewModel Rest => _ui.ActiveWorkout.Rest;
 
-    public RestTimerViewModelTests()
+    private DateTime Now => _ui.Clock.GetUtcNow().UtcDateTime;
+
+    public async ValueTask InitializeAsync()
     {
-        _errors.RunAsync(Arg.Any<Func<Task>>(), Arg.Any<string?>(), Arg.Any<string>())
-            .Returns(call => call.Arg<Func<Task>>()());
-        _rest = new RestTimerViewModel(_host, new WorkoutTimerService(_clock), _clock, _haptics, _audioCues, _errors);
+        var bench = await _ui.App.Data.ExerciseAsync("Bench Press");
+        _push = await _ui.App.Data.WorkoutAsync("Push Day", bench);
     }
 
-    [Fact]
-    public void Start_AtStart_ShowsFullDuration()
-    {
-        _rest.Start(RestSeconds);
+    public ValueTask DisposeAsync() => _ui.DisposeAsync();
 
-        Assert.True(_rest.IsResting);
-        Assert.Equal(FullMinute, _rest.TimerText);
+    [Fact]
+    public void Start_AtStart_ShowsFullDurationAndTotal()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        Rest.Start(RestSeconds);
+
+        Assert.True(Rest.IsResting);
+        Assert.Equal((FullMinute, "of 60 s"), (Rest.TimerText, Rest.TotalText));
+        Assert.Equal((1.0, false), (Rest.Progress, Rest.IsEnding));
+        Assert.Equal(Now.AddSeconds(RestSeconds), Rest.BreakEndTimeUtc);
     }
 
     [Theory]
@@ -48,85 +52,216 @@ public sealed class RestTimerViewModelTests
     [InlineData(30_500, "00:30")]
     [InlineData(59_000, "00:01")]
     [InlineData(59_999, "00:01")]
-    public void Tick_DuringRest_RoundsRemainingUpToWholeSecond(int elapsedMilliseconds, string expected)
+    public async Task Tick_DuringRest_RoundsRemainingUpToWholeSecond(int elapsedMilliseconds, string expected)
     {
-        _rest.Start(RestSeconds);
-        _clock.Advance(TimeSpan.FromMilliseconds(elapsedMilliseconds));
+        await StartAsync();
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromMilliseconds(elapsedMilliseconds));
 
-        _rest.Tick();
+        _ui.Tick();
 
-        Assert.True(_rest.IsResting);
-        Assert.Equal(expected, _rest.TimerText);
+        Assert.True(Rest.IsResting);
+        Assert.Equal(expected, Rest.TimerText);
     }
 
     [Fact]
-    public void Tick_LastMillisecond_KeepsRestingWithoutCue()
+    public async Task Tick_Halfway_ShowsHalfTheRingWithoutPulse()
     {
-        _rest.Start(RestSeconds);
-        _clock.Advance(TimeSpan.FromSeconds(RestSeconds) - TimeSpan.FromMilliseconds(1));
+        await StartAsync();
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromSeconds(RestSeconds / 2));
 
-        _rest.Tick();
+        _ui.Tick();
 
-        Assert.True(_rest.IsResting);
-        _haptics.DidNotReceive().RestFinished();
-        _ = _audioCues.DidNotReceive().PlayBreakEndAsync();
+        Assert.Equal((0.5, false), (Rest.Progress, Rest.IsEnding));
     }
 
     [Fact]
-    public void Tick_RestEnded_ShowsZeroAndFiresCues()
+    public async Task Tick_LastSeconds_Pulses()
     {
-        _rest.Start(RestSeconds);
-        _clock.Advance(TimeSpan.FromSeconds(RestSeconds));
+        await StartAsync();
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromSeconds(RestSeconds) - UiTiming.RestEndingPulse);
 
-        _rest.Tick();
+        _ui.Tick();
 
-        Assert.False(_rest.IsResting);
-        Assert.Equal(Zero, _rest.TimerText);
-        _haptics.Received(1).RestFinished();
-        _ = _audioCues.Received(1).PlayBreakEndAsync();
-        _ = _host.Received(1).SaveStateAsync();
+        Assert.True(Rest.IsEnding);
+        Assert.True(Rest.IsResting);
+    }
+
+    [Fact]
+    public async Task Tick_LastMillisecond_KeepsRestingWithoutCue()
+    {
+        await StartAsync();
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromSeconds(RestSeconds) - TimeSpan.FromMilliseconds(1));
+
+        _ui.Tick();
+
+        Assert.True(Rest.IsResting);
+        _ui.Haptics.DidNotReceive().RestFinished();
+        _ = _ui.AudioCues.DidNotReceive().PlayBreakEndAsync();
+    }
+
+    [Fact]
+    public async Task Tick_RestEndedDuringWorkout_ClearsFiresEachCueOnceAndSaves()
+    {
+        await StartRestingWorkoutAsync();
+        _ui.Clock.Advance(TimeSpan.FromSeconds(PlannedRestSeconds));
+
+        _ui.Tick();
+        _ui.Tick();
+        await _ui.SettleAsync();
+
+        Assert.False(Rest.IsResting);
+        Assert.Equal(Zero, Rest.TimerText);
+        _ui.Haptics.Received(1).RestFinished();
+        _ = _ui.AudioCues.Received(1).PlayBreakEndAsync();
+        Assert.False((await _ui.App.ActiveState.GetAsync())?.IsResting);
+    }
+
+    [Fact]
+    public async Task Extend_DuringRest_AddsThirtySecondsAndSaves()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await StartRestingWorkoutAsync();
+        var breakEnd = Rest.BreakEndTimeUtc;
+
+        await Rest.ExtendCommand.ExecuteAsync(null);
+
+        Assert.Equal(("02:00", "of 120 s"), (Rest.TimerText, Rest.TotalText));
+        Assert.Equal(breakEnd.AddSeconds(DomainDefaults.RestExtensionInSeconds), Rest.BreakEndTimeUtc);
+        var state = await _ui.App.ActiveState.GetAsync();
+        Assert.Equal((Rest.BreakEndTimeUtc, PlannedRestSeconds + DomainDefaults.RestExtensionInSeconds), (state?.BreakEndTimeUtc, state?.RestDurationSeconds));
     }
 
     [Fact]
     public async Task Extend_MidSecond_RoundsExtendedRemainingUp()
     {
-        _rest.Start(RestSeconds);
-        _clock.Advance(TimeSpan.FromMilliseconds(10_500));
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromMilliseconds(10_500));
 
-        await _rest.ExtendCommand.ExecuteAsync(null);
+        await Rest.ExtendCommand.ExecuteAsync(null);
 
-        Assert.Equal("01:20", _rest.TimerText);
+        Assert.Equal("01:20", Rest.TimerText);
+    }
+
+    [Fact]
+    public async Task Extend_NotResting_ChangesNothing()
+    {
+        await Rest.ExtendCommand.ExecuteAsync(null);
+
+        Assert.False(Rest.IsResting);
+        Assert.Equal((0, Zero), (Rest.DurationSeconds, Rest.TimerText));
+    }
+
+    [Fact]
+    public async Task Skip_DuringRest_ClearsStopsTheCueAndSaves()
+    {
+        await StartRestingWorkoutAsync();
+
+        await Rest.SkipCommand.ExecuteAsync(null);
+
+        Assert.False(Rest.IsResting);
+        _ui.AudioCues.Received(1).Stop();
+        _ui.Haptics.DidNotReceive().RestFinished();
+        var state = await _ui.App.ActiveState.GetAsync();
+        Assert.Equal((false, default(DateTime), 0), (state?.IsResting, state?.BreakEndTimeUtc, state?.RestDurationSeconds));
+    }
+
+    [Fact]
+    public async Task Clear_DuringRest_ResetsEveryValue()
+    {
+        await StartAsync();
+        Rest.Start(RestSeconds);
+        _ui.Clock.Advance(TimeSpan.FromSeconds(57));
+        _ui.Tick();
+
+        Rest.Clear();
+
+        Assert.Equal(
+            (false, default(DateTime), 0, 0.0, false, Zero, string.Empty),
+            (Rest.IsResting, Rest.BreakEndTimeUtc, Rest.DurationSeconds, Rest.Progress, Rest.IsEnding, Rest.TimerText, Rest.TotalText));
+    }
+
+    [Fact]
+    public async Task NextSession_AfterFinishingDuringARest_StartsWithoutRest()
+    {
+        await StartRestingWorkoutAsync();
+        _ui.AnswerConfirmations(true);
+        await _ui.ActiveWorkout.FinishWorkoutCommand.ExecuteAsync(null);
+        await _ui.ActiveWorkout.ExitWorkoutCommand.ExecuteAsync(null);
+
+        await StartAsync();
+
+        Assert.False(Rest.IsResting);
+        Assert.Equal(default, Rest.BreakEndTimeUtc);
+        Assert.False((await _ui.App.ActiveState.GetAsync())?.IsResting);
+    }
+
+    [Fact]
+    public async Task NextSession_AfterResetDuringARest_StartsWithoutRest()
+    {
+        await StartRestingWorkoutAsync();
+        await _ui.App.Maintenance.ClearAllDataAsync();
+        _ui.ActiveWorkout.Reset();
+        var bench = await _ui.App.Data.ExerciseAsync("Bench Press");
+        _push = await _ui.App.Data.WorkoutAsync("Push Day", bench);
+
+        await StartAsync();
+
+        Assert.False(Rest.IsResting);
+        Assert.Equal(default, Rest.BreakEndTimeUtc);
+        Assert.False((await _ui.App.ActiveState.GetAsync())?.IsResting);
     }
 
     [Fact]
     public void Restore_MidSecond_RoundsRemainingUp()
     {
-        var state = new ActiveWorkoutState
+        Rest.Restore(new ActiveWorkoutState
         {
             IsResting = true,
-            BreakEndTimeUtc = StartUtc.AddMilliseconds(45_250),
+            BreakEndTimeUtc = Now.AddMilliseconds(45_250),
             RestDurationSeconds = RestSeconds
-        };
+        });
 
-        _rest.Restore(state);
-
-        Assert.True(_rest.IsResting);
-        Assert.Equal("00:46", _rest.TimerText);
+        Assert.True(Rest.IsResting);
+        Assert.Equal("00:46", Rest.TimerText);
     }
 
     [Fact]
     public void Restore_RestAlreadyEnded_ClearsToZero()
     {
-        var state = new ActiveWorkoutState
+        Rest.Restore(new ActiveWorkoutState
         {
             IsResting = true,
-            BreakEndTimeUtc = StartUtc,
+            BreakEndTimeUtc = Now,
             RestDurationSeconds = RestSeconds
-        };
+        });
 
-        _rest.Restore(state);
+        Assert.False(Rest.IsResting);
+        Assert.Equal(Zero, Rest.TimerText);
+    }
 
-        Assert.False(_rest.IsResting);
-        Assert.Equal(Zero, _rest.TimerText);
+    [Fact]
+    public void ExtensionText_EnglishUs_ShowsTheExtension()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        Assert.Equal("+30 s", Rest.ExtensionText);
+    }
+
+    private async Task StartAsync()
+    {
+        _ui.ActiveWorkout.ApplyQueryAttributes(new Dictionary<string, object> { [QueryKeys.Workout] = _push });
+        await _ui.SettleAsync();
+    }
+
+    private async Task StartRestingWorkoutAsync()
+    {
+        await StartAsync();
+        _ui.ActiveWorkout.SetInput.Fill(80, 5);
+        await _ui.ActiveWorkout.SaveSetCommand.ExecuteAsync(null);
+        Assert.True(Rest.IsResting);
     }
 }

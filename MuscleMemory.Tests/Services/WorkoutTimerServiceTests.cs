@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Time.Testing;
 using MuscleMemory.Services;
 using MuscleMemory.Tests.Testing;
+using NSubstitute;
 
 namespace MuscleMemory.Tests.Services;
 
@@ -9,9 +10,58 @@ public sealed class WorkoutTimerServiceTests
     private static readonly DateTime StartUtc = new(2026, 10, 12, 8, 0, 0, DateTimeKind.Utc);
 
     private readonly FakeTimeProvider _clock = new(StartUtc);
+    private readonly IDispatcher _dispatcher = Substitute.For<IDispatcher>();
+    private readonly IDispatcherTimer _dispatcherTimer = Substitute.For<IDispatcherTimer>();
     private readonly WorkoutTimerService _timer;
 
-    public WorkoutTimerServiceTests() => _timer = new WorkoutTimerService(_clock);
+    public WorkoutTimerServiceTests()
+    {
+        _dispatcher.CreateTimer().Returns(_dispatcherTimer);
+        _timer = new WorkoutTimerService(_clock, _dispatcher);
+    }
+
+    [Fact]
+    public void Start_FirstTime_StartsOneSecondDispatcherTimer()
+    {
+        _timer.Start();
+
+        _dispatcherTimer.Received(1).Start();
+        Assert.Equal(TimeSpan.FromSeconds(1), _dispatcherTimer.Interval);
+    }
+
+    [Fact]
+    public void Start_Again_ReusesTheSameTimer()
+    {
+        _timer.Start();
+        _timer.Stop();
+
+        _timer.Start();
+
+        _dispatcher.Received(1).CreateTimer();
+        _dispatcherTimer.Received(2).Start();
+        _dispatcherTimer.Received(1).Stop();
+    }
+
+    [Fact]
+    public void Stop_NeverStarted_CreatesNoTimer()
+    {
+        _timer.Stop();
+
+        _dispatcher.DidNotReceive().CreateTimer();
+    }
+
+    [Fact]
+    public void DispatcherTimerTick_Started_RaisesTicked()
+    {
+        var ticks = 0;
+        _timer.Ticked += (_, _) => ticks++;
+        _timer.Start();
+
+        _dispatcherTimer.Tick += Raise.Event();
+        _dispatcherTimer.Tick += Raise.Event();
+
+        Assert.Equal(2, ticks);
+    }
 
     [Fact]
     public void ElapsedSince_ClockAdvanced_FormatsTimeSinceStart()

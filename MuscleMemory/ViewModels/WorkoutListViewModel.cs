@@ -17,6 +17,7 @@ public partial class WorkoutListViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
+    private readonly TimeProvider _clock;
     private int _latestLoad;
 
     public WorkoutListViewModel(
@@ -26,13 +27,15 @@ public partial class WorkoutListViewModel : ObservableObject
         IDialogService dialogs,
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
-        IErrorHandler errors)
+        IErrorHandler errors,
+        TimeProvider clock)
     {
         _workoutRepository = workoutRepository;
         _haptics = haptics;
         _dialogs = dialogs;
         _navigation = navigation;
         _errors = errors;
+        _clock = clock;
         ActiveWorkout = activeWorkout;
         dataChanges.Changed += OnDataChanged;
     }
@@ -194,7 +197,7 @@ public partial class WorkoutListViewModel : ObservableObject
     private async Task<WorkoutListItem?> DismissActionSheetAsync()
     {
         var item = ActionWorkout;
-        await SheetTransition.CloseAsync(CancelWorkoutActions);
+        await SheetTransition.CloseAsync(CancelWorkoutActions, _clock);
         return item;
     }
 

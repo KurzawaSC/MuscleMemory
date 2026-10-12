@@ -144,7 +144,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _navigation = navigation;
         _haptics = haptics;
         _errors = errors;
-        SetActions = new SetActionsViewModel(this, dialogs, errors);
+        SetActions = new SetActionsViewModel(this, dialogs, errors, clock);
         Summary = new WorkoutSummaryViewModel(timer);
         Rest = new RestTimerViewModel(this, timer, clock, haptics, audioCues, errors);
 
@@ -246,7 +246,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         await ShowExercisesAsync(session.Exercises, restoreIndex: false);
 
-        await Task.Delay(UiTiming.NavigationAnimation);
+        await Task.Delay(UiTiming.NavigationAnimation, _clock);
         IsWorkoutActive = true;
         await SaveStateAsync();
     }
@@ -456,7 +456,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         if (HasJustMetPlan() && HasNextExercise)
         {
-            await Task.Delay(UiTiming.ExerciseAdvanceDelay);
+            await Task.Delay(UiTiming.ExerciseAdvanceDelay, _clock);
             await AdvanceToExerciseAsync(_currentExerciseIndex + 1);
             return;
         }

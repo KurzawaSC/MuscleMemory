@@ -33,6 +33,10 @@ public static partial class MauiProgram
         builder.Services.AddSingleton(FileSystem.Current);
         builder.Services.AddSingleton(Preferences.Default);
         builder.Services.AddSingleton(AudioManager.Current);
+        builder.Services.AddSingleton(AppInfo.Current);
+        builder.Services.AddSingleton(Share.Default);
+        builder.Services.AddSingleton(FilePicker.Default);
+        builder.Services.AddSingleton<IFileResultReader, FileResultReader>();
         builder.Services.AddSingleton<DatabaseContext>();
         builder.Services.AddSingleton<IExerciseRepository, ExerciseRepository>();
         builder.Services.AddSingleton<IWorkoutRepository, WorkoutRepository>();

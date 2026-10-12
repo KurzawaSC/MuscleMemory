@@ -3,10 +3,8 @@ using MuscleMemory.Constants;
 
 namespace MuscleMemory.Services;
 
-public sealed class WorkoutTimerService(TimeProvider clock) : IWorkoutTimerService
+public sealed class WorkoutTimerService(TimeProvider clock, IDispatcher dispatcher) : IWorkoutTimerService
 {
-    private const string NoDispatcherMessage = "The workout timer needs a running application to start.";
-
     private IDispatcherTimer? _timer;
 
     public event EventHandler? Ticked;
@@ -17,7 +15,6 @@ public sealed class WorkoutTimerService(TimeProvider clock) : IWorkoutTimerServi
 
     private IDispatcherTimer CreateTimer()
     {
-        var dispatcher = Application.Current?.Dispatcher ?? throw new InvalidOperationException(NoDispatcherMessage);
         var timer = dispatcher.CreateTimer();
         timer.Interval = UiTiming.TimerTick;
         timer.Tick += (_, _) => Ticked?.Invoke(this, EventArgs.Empty);

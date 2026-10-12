@@ -15,5 +15,7 @@ public interface IActiveWorkoutSessionService
     Task AddSetAsync(WorkoutSet set);
     Task UpdateSetAsync(int setId, double weight, int reps);
     Task DeleteSetAsync(int setId);
+    Task AppendExerciseAsync(int sessionId, Exercise exercise);
+    Task RemoveExerciseAsync(int sessionExerciseId);
     Task<bool> IsPlanCompleteAsync(IReadOnlyCollection<SessionExercise> exercises);
 }
