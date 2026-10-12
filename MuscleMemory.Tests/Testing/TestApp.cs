@@ -24,6 +24,7 @@ public sealed class TestApp : IAsyncDisposable
         ActiveState = new ActiveWorkoutStateRepository(Database.Context);
 
         Catalog = new ExerciseCatalogService(Database.Context, Exercises, Workouts, DataChanges);
+        Templates = new WorkoutTemplateService(Workouts);
         ActiveSessions = new ActiveWorkoutSessionService(Workouts, Sessions, SessionExercises, Sets, ActiveState);
         History = new HistoryQueryService(Sessions, SessionExercises, Sets);
         Summary = new WorkoutSummaryService(Sets);
@@ -52,6 +53,8 @@ public sealed class TestApp : IAsyncDisposable
     public ActiveWorkoutStateRepository ActiveState { get; }
 
     public ExerciseCatalogService Catalog { get; }
+
+    public WorkoutTemplateService Templates { get; }
 
     public ActiveWorkoutSessionService ActiveSessions { get; }
 

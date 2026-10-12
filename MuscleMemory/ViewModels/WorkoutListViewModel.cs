@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
-using MuscleMemory.Data.Repositories;
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
@@ -12,7 +11,7 @@ namespace MuscleMemory.ViewModels;
 
 public partial class WorkoutListViewModel : ObservableObject
 {
-    private readonly IWorkoutRepository _workoutRepository;
+    private readonly IWorkoutTemplateService _templates;
     private readonly IHapticService _haptics;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
@@ -21,7 +20,7 @@ public partial class WorkoutListViewModel : ObservableObject
     private int _latestLoad;
 
     public WorkoutListViewModel(
-        IWorkoutRepository workoutRepository,
+        IWorkoutTemplateService templates,
         ActiveWorkoutViewModel activeWorkout,
         IHapticService haptics,
         IDialogService dialogs,
@@ -30,7 +29,7 @@ public partial class WorkoutListViewModel : ObservableObject
         IErrorHandler errors,
         TimeProvider clock)
     {
-        _workoutRepository = workoutRepository;
+        _templates = templates;
         _haptics = haptics;
         _dialogs = dialogs;
         _navigation = navigation;
@@ -75,8 +74,8 @@ public partial class WorkoutListViewModel : ObservableObject
     private async Task ReloadAsync()
     {
         var load = ++_latestLoad;
-        var workouts = await _workoutRepository.GetAllAsync();
-        var exercisesByWorkout = (await _workoutRepository.GetAllExercisesAsync()).ToLookup(exercise => exercise.WorkoutId);
+        var workouts = await _templates.GetAllAsync();
+        var exercisesByWorkout = (await _templates.GetAllExercisesAsync()).ToLookup(exercise => exercise.WorkoutId);
         if (load != _latestLoad)
         {
             return;
@@ -189,7 +188,7 @@ public partial class WorkoutListViewModel : ObservableObject
         var answer = await _dialogs.ConfirmAsync(AppResources.TitleDeleteWorkout, string.Format(AppResources.DeleteWorkoutConfirmationFormat, item.Workout.Name), AppResources.ButtonDelete, AppResources.ButtonCancel);
         if (answer)
         {
-            await _workoutRepository.DeleteAsync(item.Workout.Id);
+            await _templates.DeleteAsync(item.Workout.Id);
             await ReloadAsync();
         }
     });

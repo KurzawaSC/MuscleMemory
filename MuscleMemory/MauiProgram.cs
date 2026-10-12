@@ -47,6 +47,7 @@ public static partial class MauiProgram
         builder.Services.AddSingleton<IHistoryQueryService, HistoryQueryService>();
         builder.Services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         builder.Services.AddSingleton<IExerciseCatalogService, ExerciseCatalogService>();
+        builder.Services.AddSingleton<IWorkoutTemplateService, WorkoutTemplateService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
