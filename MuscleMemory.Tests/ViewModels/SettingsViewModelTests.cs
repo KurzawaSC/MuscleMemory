@@ -43,6 +43,7 @@ public sealed class SettingsViewModelTests
             _errors,
             _localization,
             Substitute.For<IDataChangeNotifier>(),
+            TimeProvider.System,
             _activeWorkout);
     }
 

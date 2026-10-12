@@ -19,6 +19,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IErrorHandler _errors;
     private readonly ILocalizationService _localization;
     private readonly IDataChangeNotifier _dataChanges;
+    private readonly TimeProvider _clock;
 
     public SettingsViewModel(
         IDatabaseMaintenanceService maintenanceService,
@@ -28,6 +29,7 @@ public partial class SettingsViewModel : ObservableObject
         IErrorHandler errors,
         ILocalizationService localization,
         IDataChangeNotifier dataChanges,
+        TimeProvider clock,
         ActiveWorkoutViewModel activeWorkout)
     {
         _maintenanceService = maintenanceService;
@@ -37,6 +39,7 @@ public partial class SettingsViewModel : ObservableObject
         _errors = errors;
         _localization = localization;
         _dataChanges = dataChanges;
+        _clock = clock;
         ActiveWorkout = activeWorkout;
         SelectedTheme = themeService.SavedPreference;
         ShowLanguages();
@@ -93,7 +96,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private async Task SwitchLanguageAsync(LanguageOption option)
     {
-        await SheetTransition.CloseAsync(CloseLanguageSheet);
+        await SheetTransition.CloseAsync(CloseLanguageSheet, _clock);
 
         if (!await _navigationStack.ConfirmDiscardingAllChangesAsync())
         {
@@ -165,7 +168,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private Task EraseDataAsync() => _errors.RunAsync(async () =>
     {
-        await SheetTransition.CloseAsync(CloseEraseSheet);
+        await SheetTransition.CloseAsync(CloseEraseSheet, _clock);
 
         await _maintenanceService.ClearAllDataAsync();
         _navigationStack.PopAllTabsToRoot();

@@ -20,6 +20,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private readonly IHapticService _haptics;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
+    private readonly TimeProvider _clock;
     private readonly SequentialTaskQueue _historyUpdates = new();
     private int _workoutId;
 
@@ -31,6 +32,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         IHapticService haptics,
         INavigationService navigation,
         IErrorHandler errors,
+        TimeProvider clock,
         ExercisePickerViewModel exercisePicker)
     {
         _historyQueryService = historyQueryService;
@@ -40,8 +42,9 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
         _haptics = haptics;
         _navigation = navigation;
         _errors = errors;
+        _clock = clock;
         ExercisePicker = exercisePicker;
-        SetActions = new SetActionsViewModel(this, dialogs, errors);
+        SetActions = new SetActionsViewModel(this, dialogs, errors, clock);
     }
 
     [ObservableProperty]
@@ -223,7 +226,7 @@ public partial class WorkoutHistoryViewModel : ObservableObject, IQueryAttributa
     private async Task<WorkoutHistoryExercise?> DismissExerciseActionsAsync()
     {
         var loggedExercise = ActionExercise;
-        await SheetTransition.CloseAsync(CancelExerciseActions);
+        await SheetTransition.CloseAsync(CancelExerciseActions, _clock);
         return loggedExercise;
     }
 

@@ -13,13 +13,15 @@ public sealed partial class SetActionsViewModel : ObservableObject
     private readonly ISetActionsHost _host;
     private readonly IDialogService _dialogs;
     private readonly IErrorHandler _errors;
+    private readonly TimeProvider _clock;
     private PendingSave? _pendingSave;
 
-    public SetActionsViewModel(ISetActionsHost host, IDialogService dialogs, IErrorHandler errors)
+    public SetActionsViewModel(ISetActionsHost host, IDialogService dialogs, IErrorHandler errors, TimeProvider clock)
     {
         _host = host;
         _dialogs = dialogs;
         _errors = errors;
+        _clock = clock;
         SaveEditorCommand.NotifyCanExecuteChangedWhen(Editor, nameof(SetInputViewModel.IsValid));
     }
 
@@ -135,7 +137,7 @@ public sealed partial class SetActionsViewModel : ObservableObject
     private async Task<WorkoutSet?> DismissAsync()
     {
         var set = ActionSet;
-        await SheetTransition.CloseAsync(Cancel);
+        await SheetTransition.CloseAsync(Cancel, _clock);
         return set;
     }
 

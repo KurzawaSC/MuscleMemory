@@ -21,6 +21,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
+    private readonly TimeProvider _clock;
     private List<ExerciseItem> _allExercises = [];
     private int _latestLoad;
 
@@ -36,7 +37,8 @@ public partial class ExerciseListViewModel : ObservableObject
         IDataChangeNotifier dataChanges,
         INavigationService navigation,
         IErrorHandler errors,
-        ILocalizationService localization)
+        ILocalizationService localization,
+        TimeProvider clock)
     {
         _exerciseRepository = exerciseRepository;
         _workoutRepository = workoutRepository;
@@ -45,6 +47,7 @@ public partial class ExerciseListViewModel : ObservableObject
         _dialogs = dialogs;
         _navigation = navigation;
         _errors = errors;
+        _clock = clock;
         ActiveWorkout = activeWorkout;
         ExerciseForm = exerciseForm;
         Filter = filter;
@@ -213,7 +216,7 @@ public partial class ExerciseListViewModel : ObservableObject
     private async Task<Exercise?> DismissActionSheetAsync()
     {
         var exercise = ActionExercise?.Exercise;
-        await SheetTransition.CloseAsync(CancelExerciseActions);
+        await SheetTransition.CloseAsync(CancelExerciseActions, _clock);
         return exercise;
     }
 

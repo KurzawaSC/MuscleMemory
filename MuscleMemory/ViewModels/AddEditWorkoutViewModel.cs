@@ -18,6 +18,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     private readonly INavigationStackService _navigationStack;
     private readonly INavigationService _navigation;
     private readonly IErrorHandler _errors;
+    private readonly TimeProvider _clock;
     private bool _isGuardingUnsavedChanges;
     private Workout? _workoutToEdit;
     private Exercise? _exerciseToAdd;
@@ -31,13 +32,15 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         IDialogService dialogs,
         INavigationStackService navigationStack,
         INavigationService navigation,
-        IErrorHandler errors)
+        IErrorHandler errors,
+        TimeProvider clock)
     {
         _workoutRepository = workoutRepository;
         _dialogs = dialogs;
         _navigationStack = navigationStack;
         _navigation = navigation;
         _errors = errors;
+        _clock = clock;
         ExercisePicker = exercisePicker;
         ExerciseConfiguration = exerciseConfiguration;
         ExerciseForm = exerciseForm;
@@ -253,14 +256,14 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     [RelayCommand]
     private Task PickExerciseAsync(Exercise exercise) => _errors.RunAsync(async () =>
     {
-        await SheetTransition.CloseAsync(CloseExercisePicker);
+        await SheetTransition.CloseAsync(CloseExercisePicker, _clock);
         OpenConfigurationForNewExercise(exercise);
     });
 
     [RelayCommand]
     private Task CreateExerciseAsync() => _errors.RunAsync(async () =>
     {
-        await SheetTransition.CloseAsync(CloseExercisePicker);
+        await SheetTransition.CloseAsync(CloseExercisePicker, _clock);
         await ExerciseForm.BeginNewAsync();
         IsExerciseFormOpen = true;
     });
@@ -275,7 +278,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     private Task SaveNewExerciseAsync() => _errors.RunAsync(async () =>
     {
         var exercise = await ExerciseForm.SaveAsync();
-        await SheetTransition.CloseAsync(CancelExerciseForm);
+        await SheetTransition.CloseAsync(CancelExerciseForm, _clock);
         OpenConfigurationForNewExercise(exercise);
     });
 
