@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using MuscleMemory.Constants;
@@ -10,8 +11,9 @@ using Plugin.Maui.Audio;
 
 namespace MuscleMemory;
 
-public static class MauiProgram
+public static partial class MauiProgram
 {
+    [SupportedOSPlatform("android21.0")]
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -21,14 +23,8 @@ public static class MauiProgram
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont(FontFamilies.BarlowSemiCondensedFile, FontFamilies.BarlowSemiCondensed);
-            })
-            .ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<Shell, TabBarShellRenderer>();
-                BorderlessEntryMapping.Register();
-                NumericEntryMapping.Register();
-                CheckedStateMapping.Register();
             });
+        ConfigurePlatform(builder);
 
 #if DEBUG
         builder.Logging.AddDebug();
@@ -44,7 +40,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<IHistoryQueryService, HistoryQueryService>();
         builder.Services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         builder.Services.AddSingleton<IExerciseCatalogService, ExerciseCatalogService>();
-        builder.Services.AddSingleton<IStatusBarService, StatusBarService>();
         builder.Services.AddSingleton<IThemeService, ThemeService>();
         builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
         builder.Services.AddSingleton<IAudioCueService, AudioCueService>();
@@ -80,4 +75,6 @@ public static class MauiProgram
 
         return builder.Build();
     }
+
+    static partial void ConfigurePlatform(MauiAppBuilder builder);
 }

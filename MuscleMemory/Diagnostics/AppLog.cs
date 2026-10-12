@@ -1,19 +1,16 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using AndroidLog = Android.Util.Log;
 
 namespace MuscleMemory.Diagnostics;
 
-public static class AppLog
+public static partial class AppLog
 {
-    private const string Tag = "MuscleMemory";
-
     public static void Error(Exception exception, string context) =>
-        AndroidLog.Error(Tag, $"{context}: {exception}");
+        WriteError($"{context}: {exception}");
 
     [Conditional("DEBUG")]
     public static void DebugWarning(string message) =>
-        AndroidLog.Warn(Tag, message);
+        WriteWarning(message);
 
     public static void LogFailures(Task task, [CallerMemberName] string context = "") =>
         _ = LogFailuresAsync(task, context);
@@ -29,4 +26,8 @@ public static class AppLog
             Error(exception, context);
         }
     }
+
+    static partial void WriteError(string message);
+
+    static partial void WriteWarning(string message);
 }
