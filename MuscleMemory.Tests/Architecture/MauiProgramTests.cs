@@ -8,7 +8,7 @@ public sealed partial class MauiProgramTests
 {
     private const string ServiceGroup = "service";
 
-    private static readonly string[] AndroidMauiProgramPath = ["MuscleMemory", "Platforms", "Android", "MauiProgram.cs"];
+    private static readonly string[] AndroidMauiProgramPath = [RepositoryFiles.AppProjectFolder, "Platforms", "Android", "MauiProgram.cs"];
 
     [Fact]
     public void CreateMauiApp_EveryRegisteredAppType_HasEveryConstructorParameterRegistered()
