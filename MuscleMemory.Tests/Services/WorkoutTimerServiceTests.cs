@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Time.Testing;
 using MuscleMemory.Services;
 using MuscleMemory.Tests.Testing;
 
@@ -5,7 +6,36 @@ namespace MuscleMemory.Tests.Services;
 
 public sealed class WorkoutTimerServiceTests
 {
-    private readonly WorkoutTimerService _timer = new();
+    private static readonly DateTime StartUtc = new(2026, 10, 12, 8, 0, 0, DateTimeKind.Utc);
+
+    private readonly FakeTimeProvider _clock = new(StartUtc);
+    private readonly WorkoutTimerService _timer;
+
+    public WorkoutTimerServiceTests() => _timer = new WorkoutTimerService(_clock);
+
+    [Fact]
+    public void ElapsedSince_ClockAdvanced_FormatsTimeSinceStart()
+    {
+        _clock.Advance(new TimeSpan(1, 2, 3));
+
+        Assert.Equal("1:02:03", _timer.ElapsedSince(StartUtc));
+    }
+
+    [Fact]
+    public void RemainingUntil_ClockAdvanced_ReturnsTimeLeft()
+    {
+        _clock.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal(TimeSpan.FromSeconds(40), _timer.RemainingUntil(StartUtc.AddMinutes(1)));
+    }
+
+    [Fact]
+    public void RemainingUntil_EndPassed_ReturnsNegative()
+    {
+        _clock.Advance(TimeSpan.FromSeconds(61));
+
+        Assert.Equal(TimeSpan.FromSeconds(-1), _timer.RemainingUntil(StartUtc.AddMinutes(1)));
+    }
 
     [Theory]
     [InlineData(0, "00:00")]

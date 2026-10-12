@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Diagnostics;
+using MuscleMemory.Extensions;
 using MuscleMemory.Models;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
@@ -13,14 +14,16 @@ public sealed partial class RestTimerViewModel : ObservableObject
 {
     private readonly IRestTimerHost _host;
     private readonly IWorkoutTimerService _timer;
+    private readonly TimeProvider _clock;
     private readonly IHapticService _haptics;
     private readonly IAudioCueService _audioCues;
     private readonly IErrorHandler _errors;
 
-    public RestTimerViewModel(IRestTimerHost host, IWorkoutTimerService timer, IHapticService haptics, IAudioCueService audioCues, IErrorHandler errors)
+    public RestTimerViewModel(IRestTimerHost host, IWorkoutTimerService timer, TimeProvider clock, IHapticService haptics, IAudioCueService audioCues, IErrorHandler errors)
     {
         _host = host;
         _timer = timer;
+        _clock = clock;
         _haptics = haptics;
         _audioCues = audioCues;
         _errors = errors;
@@ -50,7 +53,7 @@ public sealed partial class RestTimerViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsEnding { get; private set; }
 
-    public void Start(int durationSeconds) => Show(DateTime.UtcNow.AddSeconds(durationSeconds), durationSeconds);
+    public void Start(int durationSeconds) => Show(_clock.GetUtcNow().UtcDateTime.AddSeconds(durationSeconds), durationSeconds);
 
     public void Restore(ActiveWorkoutState state)
     {
@@ -139,7 +142,7 @@ public sealed partial class RestTimerViewModel : ObservableObject
     private void UpdateCountdown()
     {
         var remaining = _timer.RemainingUntil(BreakEndTimeUtc);
-        TimerText = _timer.FormatDuration(remaining);
+        TimerText = _timer.FormatDuration(remaining.RoundUpToWholeSecond());
         IsEnding = remaining <= UiTiming.RestEndingPulse;
         Progress = DurationSeconds > 0
             ? Math.Clamp(remaining.TotalSeconds / DurationSeconds, 0, 1)

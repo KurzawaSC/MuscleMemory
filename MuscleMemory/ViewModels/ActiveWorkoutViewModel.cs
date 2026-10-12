@@ -18,6 +18,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
     private readonly IActiveWorkoutSessionService _sessions;
     private readonly IWorkoutTimerService _timer;
+    private readonly TimeProvider _clock;
     private readonly IAudioCueService _audioCues;
     private readonly IDialogService _dialogs;
     private readonly IWorkoutSummaryService _summaryService;
@@ -123,6 +124,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public ActiveWorkoutViewModel(
         IActiveWorkoutSessionService sessions,
         IWorkoutTimerService timer,
+        TimeProvider clock,
         IAudioCueService audioCues,
         IDialogService dialogs,
         IWorkoutSummaryService summaryService,
@@ -134,6 +136,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     {
         _sessions = sessions;
         _timer = timer;
+        _clock = clock;
         _audioCues = audioCues;
         _dialogs = dialogs;
         _summaryService = summaryService;
@@ -143,7 +146,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _errors = errors;
         SetActions = new SetActionsViewModel(this, dialogs, errors);
         Summary = new WorkoutSummaryViewModel(timer);
-        Rest = new RestTimerViewModel(this, timer, haptics, audioCues, errors);
+        Rest = new RestTimerViewModel(this, timer, clock, haptics, audioCues, errors);
 
         TimerText = ZeroTimeText;
         _timer.Ticked += OnTimerTicked;
@@ -231,7 +234,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task StartWorkoutAsync(Workout workout)
     {
         ResetDisplayState();
-        _workoutStartTimeUtc = DateTime.UtcNow;
+        _workoutStartTimeUtc = _clock.GetUtcNow().UtcDateTime;
 
         WorkoutName = workout.Name;
         _workoutId = workout.Id;
