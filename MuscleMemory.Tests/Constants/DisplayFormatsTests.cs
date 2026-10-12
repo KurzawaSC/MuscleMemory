@@ -37,8 +37,9 @@ public sealed class DisplayFormatsTests
     [Theory]
     [InlineData(1, 0, 0, "1:00:00")]
     [InlineData(12, 3, 4, "12:03:04")]
-    public void ElapsedWithHours_OneHourOrMore_ShowsHoursMinutesAndSeconds(int hours, int minutes, int seconds, string expected) =>
-        Assert.Equal(expected, new TimeSpan(hours, minutes, seconds).ToString(DisplayFormats.ElapsedWithHours, CultureInfo.InvariantCulture));
+    [InlineData(100, 5, 3, "100:05:03")]
+    public void ElapsedWithHours_TotalHoursAndDuration_ShowsHoursMinutesAndSeconds(int hours, int minutes, int seconds, string expected) =>
+        Assert.Equal(expected, string.Format(CultureInfo.InvariantCulture, DisplayFormats.ElapsedWithHours, hours, new TimeSpan(hours, minutes, seconds)));
 
     private static string FormatVolume(string culture, double volume)
     {

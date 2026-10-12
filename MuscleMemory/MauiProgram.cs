@@ -29,6 +29,7 @@ public static partial class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton(AudioManager.Current);
         builder.Services.AddSingleton<DatabaseContext>();
         builder.Services.AddSingleton<IExerciseRepository, ExerciseRepository>();

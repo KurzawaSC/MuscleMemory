@@ -1,8 +1,9 @@
+using System.Globalization;
 using MuscleMemory.Constants;
 
 namespace MuscleMemory.Services;
 
-public sealed class WorkoutTimerService : IWorkoutTimerService
+public sealed class WorkoutTimerService(TimeProvider clock) : IWorkoutTimerService
 {
     private const string NoDispatcherMessage = "The workout timer needs a running application to start.";
 
@@ -23,13 +24,17 @@ public sealed class WorkoutTimerService : IWorkoutTimerService
         return timer;
     }
 
-    public string ElapsedSince(DateTime startTimeUtc) => FormatDuration(DateTime.UtcNow - startTimeUtc);
+    public string ElapsedSince(DateTime startTimeUtc) => FormatDuration(UtcNow - startTimeUtc);
 
-    public TimeSpan RemainingUntil(DateTime endTimeUtc) => endTimeUtc - DateTime.UtcNow;
+    public TimeSpan RemainingUntil(DateTime endTimeUtc) => endTimeUtc - UtcNow;
+
+    private DateTime UtcNow => clock.GetUtcNow().UtcDateTime;
 
     public string FormatDuration(TimeSpan duration)
     {
         var displayed = duration > TimeSpan.Zero ? duration : TimeSpan.Zero;
-        return displayed.ToString(displayed.TotalHours >= 1 ? DisplayFormats.ElapsedWithHours : DisplayFormats.Elapsed);
+        return displayed.TotalHours >= 1
+            ? string.Format(CultureInfo.CurrentCulture, DisplayFormats.ElapsedWithHours, displayed.Ticks / TimeSpan.TicksPerHour, displayed)
+            : displayed.ToString(DisplayFormats.Elapsed);
     }
 }

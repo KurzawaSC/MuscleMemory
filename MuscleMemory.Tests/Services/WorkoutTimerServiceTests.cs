@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Time.Testing;
 using MuscleMemory.Services;
 using MuscleMemory.Tests.Testing;
 
@@ -5,10 +6,36 @@ namespace MuscleMemory.Tests.Services;
 
 public sealed class WorkoutTimerServiceTests
 {
-    private const string MoreThanOneDayBug =
-        "Bug: FormatDuration uses TimeSpan.Hours, so a duration of a day or more drops the whole days (25 h shows 1:00:00).";
+    private static readonly DateTime StartUtc = new(2026, 10, 12, 8, 0, 0, DateTimeKind.Utc);
 
-    private readonly WorkoutTimerService _timer = new();
+    private readonly FakeTimeProvider _clock = new(StartUtc);
+    private readonly WorkoutTimerService _timer;
+
+    public WorkoutTimerServiceTests() => _timer = new WorkoutTimerService(_clock);
+
+    [Fact]
+    public void ElapsedSince_ClockAdvanced_FormatsTimeSinceStart()
+    {
+        _clock.Advance(new TimeSpan(1, 2, 3));
+
+        Assert.Equal("1:02:03", _timer.ElapsedSince(StartUtc));
+    }
+
+    [Fact]
+    public void RemainingUntil_ClockAdvanced_ReturnsTimeLeft()
+    {
+        _clock.Advance(TimeSpan.FromSeconds(20));
+
+        Assert.Equal(TimeSpan.FromSeconds(40), _timer.RemainingUntil(StartUtc.AddMinutes(1)));
+    }
+
+    [Fact]
+    public void RemainingUntil_EndPassed_ReturnsNegative()
+    {
+        _clock.Advance(TimeSpan.FromSeconds(61));
+
+        Assert.Equal(TimeSpan.FromSeconds(-1), _timer.RemainingUntil(StartUtc.AddMinutes(1)));
+    }
 
     [Theory]
     [InlineData(0, "00:00")]
@@ -28,9 +55,18 @@ public sealed class WorkoutTimerServiceTests
     public void FormatDuration_OneHourOrMore_ShowsHours(int hours, int minutes, int seconds, string expected) =>
         Assert.Equal(expected, _timer.FormatDuration(new TimeSpan(hours, minutes, seconds)));
 
-    [Fact(Skip = MoreThanOneDayBug)]
-    public void FormatDuration_OneDayOrMore_ShowsTotalHours() =>
-        Assert.Equal("25:00:00", _timer.FormatDuration(TimeSpan.FromHours(25)));
+    [Theory]
+    [InlineData(24, 0, 0, "24:00:00")]
+    [InlineData(25, 0, 0, "25:00:00")]
+    [InlineData(99, 59, 59, "99:59:59")]
+    [InlineData(100, 5, 3, "100:05:03")]
+    [InlineData(250, 0, 1, "250:00:01")]
+    public void FormatDuration_OneDayOrMore_ShowsTotalHours(int hours, int minutes, int seconds, string expected) =>
+        Assert.Equal(expected, _timer.FormatDuration(new TimeSpan(hours, minutes, seconds)));
+
+    [Fact]
+    public void FormatDuration_JustUnderOneDay_KeepsHoursUnderTwentyFour() =>
+        Assert.Equal("23:59:59", _timer.FormatDuration(TimeSpan.FromDays(1) - TimeSpan.FromMilliseconds(1)));
 
     [Fact]
     public void FormatDuration_PartialSecond_TruncatesToWholeSecond() =>
