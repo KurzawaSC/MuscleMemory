@@ -283,11 +283,16 @@ public sealed class ExerciseListViewModelTests : IAsyncLifetime
         Assert.Equal("Klatka", _list.ExerciseForm.MuscleGroups[0].Label);
     }
 
-    private async Task<List<Exercise>> SeedAsync() =>
-    [
-        await _ui.App.Data.ExerciseAsync(BenchPress, MuscleGroup.Chest, EquipmentType.Barbell),
-        await _ui.App.Data.ExerciseAsync(InclinePress, MuscleGroup.Chest, EquipmentType.Dumbbell),
-        await _ui.App.Data.ExerciseAsync(BarbellRow, MuscleGroup.Back, EquipmentType.Barbell),
-        await _ui.App.Data.ExerciseAsync(OverheadPress, MuscleGroup.Shoulders, EquipmentType.Barbell)
-    ];
+    private async Task<List<Exercise>> SeedAsync()
+    {
+        List<Exercise> exercises =
+        [
+            await _ui.App.Data.ExerciseAsync(BenchPress, MuscleGroup.Chest, EquipmentType.Barbell),
+            await _ui.App.Data.ExerciseAsync(InclinePress, MuscleGroup.Chest, EquipmentType.Dumbbell),
+            await _ui.App.Data.ExerciseAsync(BarbellRow, MuscleGroup.Back, EquipmentType.Barbell),
+            await _ui.App.Data.ExerciseAsync(OverheadPress, MuscleGroup.Shoulders, EquipmentType.Barbell)
+        ];
+        await _ui.SettleAsync();
+        return exercises;
+    }
 }
