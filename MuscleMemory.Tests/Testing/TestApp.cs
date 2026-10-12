@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Time.Testing;
 using MuscleMemory.Data.Repositories;
 using MuscleMemory.Services;
 using NSubstitute;
@@ -10,7 +9,13 @@ public sealed class TestApp : IAsyncDisposable
     public static readonly DateTime StartUtc = new(2026, 1, 5, 8, 0, 0, DateTimeKind.Utc);
 
     public TestApp()
+        : this(Substitute.For<IDataChangeNotifier>())
     {
+    }
+
+    public TestApp(IDataChangeNotifier dataChanges)
+    {
+        DataChanges = dataChanges;
         Exercises = new ExerciseRepository(Database.Context);
         Workouts = new WorkoutRepository(Database.Context);
         Sessions = new WorkoutSessionRepository(Database.Context, Clock);
@@ -30,9 +35,9 @@ public sealed class TestApp : IAsyncDisposable
 
     public TestDatabase Database { get; } = new();
 
-    public FakeTimeProvider Clock { get; } = new(StartUtc);
+    public TestClock Clock { get; } = new(StartUtc);
 
-    public IDataChangeNotifier DataChanges { get; } = Substitute.For<IDataChangeNotifier>();
+    public IDataChangeNotifier DataChanges { get; }
 
     public ExerciseRepository Exercises { get; }
 
