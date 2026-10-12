@@ -294,6 +294,58 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
         Assert.Empty(Directory.EnumerateFileSystemEntries(_app.Database.CacheFolder));
     }
 
+    [Fact]
+    public async Task ClearAllDataAsync_DataAndActiveWorkout_RemovesEveryRow()
+    {
+        var push = await SeedAsync(_app);
+        await _app.Data.SaveActiveStateAsync(await _app.Data.StartAsync(push));
+
+        await _app.Maintenance.ClearAllDataAsync();
+
+        Assert.All(DatabaseRows.ReadAll(_app.Database.FilePath), table => Assert.Empty(table.Value));
+    }
+
+    [Fact]
+    public async Task ClearAllDataAsync_Data_NotifiesEveryAreaOnce()
+    {
+        await SeedAsync(_app);
+        _app.DataChanges.ClearReceivedCalls();
+
+        await _app.Maintenance.ClearAllDataAsync();
+
+        _app.DataChanges.Received(1).Notify(DataArea.All);
+        _app.DataChanges.ReceivedWithAnyArgs(1).Notify(default);
+    }
+
+    [Fact]
+    public async Task ClearAllDataAsync_ThenLoggingAWorkout_Works()
+    {
+        await SeedAsync(_app);
+        await _app.Maintenance.ClearAllDataAsync();
+
+        var row = await _app.Data.ExerciseAsync("Barbell Row");
+        var pull = await _app.Data.WorkoutAsync("Pull Day", row);
+        var sessionId = await _app.Data.CompletedSessionAsync(pull, TestApp.StartUtc + (3 * OneDay), new LoggedSet(0, 62.5, 10));
+
+        var session = Assert.Single(await _app.History.GetWorkoutHistoryAsync(pull.Id));
+        Assert.Equal((sessionId, 625.0), (session.SessionId, session.TotalVolume));
+        Assert.Equal(row.Id, Assert.Single(await _app.Exercises.GetAllAsync()).Id);
+    }
+
+    [Fact]
+    public async Task ClearAllDataAsync_DeleteFails_KeepsEverythingAndDoesNotNotify()
+    {
+        await SeedAsync(_app);
+        var before = DatabaseRows.ReadAll(_app.Database.FilePath);
+        await _app.Database.FailOnAsync(nameof(WorkoutSession), TableOperation.Delete);
+        _app.DataChanges.ClearReceivedCalls();
+
+        await Assert.ThrowsAsync<SQLiteException>(_app.Maintenance.ClearAllDataAsync);
+
+        Assert.Equal(before, DatabaseRows.ReadAll(_app.Database.FilePath));
+        _app.DataChanges.DidNotReceiveWithAnyArgs().Notify(default);
+    }
+
     public static TheoryData<string> TableNames => [.. DatabaseContext.Tables.Select(table => table.Name)];
 
     private static IEnumerable<Type> ImportedTables => DatabaseContext.Tables.Where(table => table != typeof(ActiveWorkoutState));
