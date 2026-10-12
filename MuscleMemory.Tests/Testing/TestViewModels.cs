@@ -10,7 +10,7 @@ public sealed class TestViewModels : IAsyncDisposable
 
     private readonly Lazy<ActiveWorkoutViewModel> _activeWorkout;
 
-    public TestViewModels()
+    public TestViewModels(string systemCulture = Cultures.EnglishUs)
     {
         Dispatcher.CreateTimer().Returns(WorkoutTicker);
         NavigationStack.ConfirmDiscardingChangesOnTabAsync(Arg.Any<string>()).Returns(true);
@@ -20,7 +20,7 @@ public sealed class TestViewModels : IAsyncDisposable
         App = new TestApp(new DataChangeNotifier(Dispatcher));
         Errors = new TrackingErrorHandler(new ErrorHandler(Dialogs));
         Timer = new WorkoutTimerService(App.Clock, Dispatcher);
-        Localization = new LocalizationService(Preferences);
+        Localization = CreateLocalization(Preferences, systemCulture);
         Theme = new ThemeService(StatusBar, Preferences);
         _activeWorkout = new(CreateActiveWorkout);
     }
@@ -70,6 +70,13 @@ public sealed class TestViewModels : IAsyncDisposable
     public void AnswerConfirmations(bool answer) =>
         Dialogs.ConfirmAsync(default!, default!, default!, default!).ReturnsForAnyArgs(answer);
 
+    public TaskCompletionSource<bool> HoldConfirmations()
+    {
+        var answer = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Dialogs.ConfirmAsync(default!, default!, default!, default!).ReturnsForAnyArgs(answer.Task);
+        return answer;
+    }
+
     public WorkoutHistoryViewModel CreateWorkoutHistory() =>
         new(App.History, App.ActiveSessions, Dialogs, Timer, Haptics, Navigation, Errors, Clock, CreateExercisePicker());
 
@@ -95,6 +102,17 @@ public sealed class TestViewModels : IAsyncDisposable
             AppInfo, Share, FilePicker, ActiveWorkout);
 
     public ValueTask DisposeAsync() => App.DisposeAsync();
+
+    private static LocalizationService CreateLocalization(IPreferences preferences, string systemCulture)
+    {
+        LocalizationService? localization = null;
+        ExecutionContext.Run(ExecutionContext.Capture()!, _ =>
+        {
+            using var scope = new CultureScope(systemCulture);
+            localization = new LocalizationService(preferences);
+        }, null);
+        return localization!;
+    }
 
     private ActiveWorkoutViewModel CreateActiveWorkout() =>
         new(App.ActiveSessions, Timer, Clock, AudioCues, Dialogs, App.Summary, NavigationStack, Navigation, Haptics, Errors, Localization);
