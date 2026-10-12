@@ -13,6 +13,7 @@ public partial class App : Application
         InitializeComponent();
         themeService.RestoreSavedTheme();
         errors.ReportFailures(maintenanceService.DeleteTemporaryFilesAsync());
+        errors.ReportFailures(maintenanceService.DeleteEmptySessionsAsync());
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

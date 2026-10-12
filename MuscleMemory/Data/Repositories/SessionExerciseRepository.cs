@@ -8,6 +8,9 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
     private const string SelectForSessionsFormat = "SELECT * FROM SessionExercise WHERE WorkoutSessionId IN ({0}) ORDER BY [Order]";
     private const string SelectNextOrder = "SELECT IFNULL(MAX([Order]), -1) + 1 FROM SessionExercise WHERE WorkoutSessionId = ?";
     private const string DeleteSetsForSessionExercise = "DELETE FROM WorkoutSet WHERE SessionExerciseId = ?";
+    private const string SelectSessionOfExercise = "SELECT WorkoutSessionId FROM SessionExercise WHERE Id = ?";
+    private const string DeleteSessionIfEmptyAndFinished =
+        "DELETE FROM WorkoutSession WHERE WorkoutSession.Id = ? AND " + EmptyFinishedSession.Condition;
 
     public async Task<List<SessionExercise>> GetForSessionAsync(int workoutSessionId)
     {
@@ -54,8 +57,10 @@ public sealed class SessionExerciseRepository(DatabaseContext context) : ISessio
         var connection = await context.GetConnectionAsync();
         await connection.RunInTransactionAsync(transaction =>
         {
+            var sessionId = transaction.ExecuteScalar<int>(SelectSessionOfExercise, sessionExerciseId);
             transaction.Execute(DeleteSetsForSessionExercise, sessionExerciseId);
             transaction.Delete<SessionExercise>(sessionExerciseId);
+            transaction.Execute(DeleteSessionIfEmptyAndFinished, sessionId);
         });
     }
 

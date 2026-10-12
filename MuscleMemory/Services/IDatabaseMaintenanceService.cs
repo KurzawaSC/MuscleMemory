@@ -7,5 +7,6 @@ public interface IDatabaseMaintenanceService
     Task ImportAsync();
     Task DeleteImportCopiesAsync(string pickedFilePath);
     Task DeleteTemporaryFilesAsync();
+    Task DeleteEmptySessionsAsync();
     Task ClearAllDataAsync();
 }

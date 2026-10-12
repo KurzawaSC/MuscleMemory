@@ -7,6 +7,7 @@ public interface IWorkoutSessionRepository
 {
     Task<StartedSession> CreateWithSnapshotAsync(Workout workout, IReadOnlyList<WorkoutExercise> templateExercises);
     Task FinishOrDiscardAsync(int sessionId);
+    Task DeleteEmptyFinishedAsync();
     Task<WorkoutSession?> GetAsync(int sessionId);
     Task<List<WorkoutSession>> GetCompletedByIdsAsync(IReadOnlyCollection<int> sessionIds);
     Task<List<WorkoutSession>> GetCompletedForWorkoutAsync(int workoutId);
