@@ -10,9 +10,6 @@ namespace MuscleMemory.Tests.Services;
 
 public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
 {
-    private const string NestedPickerFolderBug =
-        "Bug: MAUI 10.0.110's FilePicker copies a picked file to cache/<hash>/<guid>/<name>; DeleteImportCopiesAsync deletes the file " +
-        "and the <guid> folder but leaves the <hash> folder empty in the cache after every import (seen on the emulator).";
     private const string QuickCheckPassed = "ok";
     private const string StaleContent = "stale";
     private const int SeededSets = 4;
@@ -275,7 +272,7 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
         Assert.True(Directory.Exists(_app.Database.CacheFolder));
     }
 
-    [Fact(Skip = NestedPickerFolderBug)]
+    [Fact]
     public async Task DeleteImportCopiesAsync_PickerCopyTwoFoldersDeep_LeavesNoEmptyFolder()
     {
         var pickedPath = PickerCopy(Path.Combine(PickerFolderName, NestedPickerFolderName));
@@ -283,7 +280,38 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
 
         await _app.Maintenance.DeleteImportCopiesAsync(pickedPath);
 
+        Assert.True(Directory.Exists(_app.Database.CacheFolder));
         Assert.Empty(Directory.EnumerateFileSystemEntries(_app.Database.CacheFolder));
+    }
+
+    [Fact]
+    public async Task DeleteImportCopiesAsync_PickerCopyTwoFoldersDeepBesideOtherFiles_KeepsTheParentFolder()
+    {
+        var pickedPath = PickerCopy(Path.Combine(PickerFolderName, NestedPickerFolderName));
+        var neighbour = Path.Combine(_app.Database.CacheFolder, PickerFolderName, NeighbourFileName);
+        await File.WriteAllTextAsync(neighbour, StaleContent, TestContext.Current.CancellationToken);
+        await PrepareAsync(pickedPath);
+
+        await _app.Maintenance.DeleteImportCopiesAsync(pickedPath);
+
+        Assert.False(Directory.Exists(Path.GetDirectoryName(pickedPath)));
+        Assert.True(File.Exists(neighbour));
+    }
+
+    [Fact]
+    public async Task DeleteImportCopiesAsync_PickedFileInEmptyFolderOutsideTheCache_TouchesNothingThere()
+    {
+        var outsideFolder = Path.Combine(_app.Database.Folder, PickerFolderName, NestedPickerFolderName);
+        Directory.CreateDirectory(outsideFolder);
+        var pickedPath = Path.Combine(outsideFolder, PickedFileName);
+        ImportFiles.PlainText(pickedPath);
+        await PrepareAsync(pickedPath);
+
+        await _app.Maintenance.DeleteImportCopiesAsync(pickedPath);
+
+        Assert.True(File.Exists(pickedPath));
+        Assert.True(Directory.Exists(Path.Combine(_app.Database.Folder, PickerFolderName)));
+        Assert.True(Directory.Exists(_app.Database.CacheFolder));
     }
 
     [Fact]

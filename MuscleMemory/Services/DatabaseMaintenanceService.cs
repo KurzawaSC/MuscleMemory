@@ -97,7 +97,7 @@ public sealed class DatabaseMaintenanceService(
     public Task DeleteImportCopiesAsync(string pickedFilePath)
     {
         var importPath = ImportCopyPath;
-        var cacheDirectory = Path.GetFullPath(fileSystem.CacheDirectory);
+        var cacheDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(fileSystem.CacheDirectory));
         return Task.Run(() =>
         {
             File.Delete(importPath);
@@ -133,11 +133,17 @@ public sealed class DatabaseMaintenanceService(
         }
 
         File.Delete(pickerCopy);
-        if (Path.GetDirectoryName(pickerCopy) is { } folder
-            && folder != cacheDirectory
-            && !Directory.EnumerateFileSystemEntries(folder).Any())
+        DeleteEmptyFolders(Path.GetDirectoryName(pickerCopy), cacheDirectory);
+    }
+
+    private static void DeleteEmptyFolders(string? folder, string cacheDirectory)
+    {
+        while (folder is not null
+               && folder.StartsWith(cacheDirectory + Path.DirectorySeparatorChar, StringComparison.Ordinal)
+               && !Directory.EnumerateFileSystemEntries(folder).Any())
         {
             Directory.Delete(folder);
+            folder = Path.GetDirectoryName(folder);
         }
     }
 
