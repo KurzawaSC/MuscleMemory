@@ -1,0 +1,79 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_SDK_VERSION: 10.0.401
+  DOTNET_WORKLOAD_VERSION: 10.0.401.1
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Install .NET apart from the preinstalled SDKs
+        run: echo "DOTNET_INSTALL_DIR=${{ runner.temp }}/dotnet" >> "$GITHUB_ENV"
+
+      - name: Set up the .NET SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Check the SDK version
+        run: test "$(dotnet --version)" = "$DOTNET_SDK_VERSION"
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Install the MAUI Android workload
+        run: dotnet workload install maui-android --version "$DOTNET_WORKLOAD_VERSION"
+
+      - name: Restore
+        run: dotnet restore MuscleMemory.Tests/MuscleMemory.Tests.csproj
+
+      - name: Build the app (net10.0)
+        run: dotnet build MuscleMemory/MuscleMemory.csproj -f net10.0 --no-restore -warnaserror
+
+      - name: Build the tests
+        run: dotnet build MuscleMemory.Tests/MuscleMemory.Tests.csproj --no-restore -warnaserror
+
+      - name: Check formatting of the app
+        run: dotnet format MuscleMemory/MuscleMemory.csproj --verify-no-changes --no-restore
+
+      - name: Check formatting of the tests
+        run: dotnet format MuscleMemory.Tests/MuscleMemory.Tests.csproj --verify-no-changes --no-restore
+
+      - name: Test
+        id: test
+        run: >-
+          dotnet test MuscleMemory.Tests/MuscleMemory.Tests.csproj --no-build
+          --logger trx --results-directory TestResults --collect:"XPlat Code Coverage"
+
+      - name: Upload test results and coverage
+        if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: error
