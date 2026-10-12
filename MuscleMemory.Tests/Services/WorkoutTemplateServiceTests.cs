@@ -52,6 +52,52 @@ public sealed class WorkoutTemplateServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetExercisesAsync_TwoWorkouts_ReturnsOnlyThatWorkoutInOrder()
+    {
+        var push = await _app.Data.WorkoutAsync(PushDay, _press, _bench);
+        await _app.Data.WorkoutAsync(LegDay, _squat);
+
+        Assert.Equal([_press.Id, _bench.Id], (await _app.Templates.GetExercisesAsync(push.Id)).Select(exercise => exercise.ExerciseId));
+    }
+
+    [Fact]
+    public async Task SaveWithExercisesAsync_NewWorkout_AssignsItsIdAndStoresTheExercisesInOrder()
+    {
+        var workout = new Workout { Name = PushDay };
+
+        await _app.Templates.SaveWithExercisesAsync(workout, [TestDataBuilder.Plan(_press), TestDataBuilder.Plan(_bench)]);
+
+        Assert.Equal(PushDay, Assert.Single(await _app.Templates.GetAllAsync(), stored => stored.Id == workout.Id).Name);
+        Assert.Equal(
+            [(_press.Id, 0), (_bench.Id, 1)],
+            (await _app.Templates.GetExercisesAsync(workout.Id)).Select(exercise => (exercise.ExerciseId, exercise.Order)));
+    }
+
+    [Fact]
+    public async Task UpdateWithExercisesAsync_RenamedAndReplaced_StoresTheNewNameAndExercises()
+    {
+        var push = await _app.Data.WorkoutAsync(PushDay, _bench, _press);
+
+        await _app.Templates.UpdateWithExercisesAsync(new Workout { Id = push.Id, Name = LegDay }, [TestDataBuilder.Plan(_squat)]);
+
+        Assert.Equal(LegDay, Assert.Single(await _app.Templates.GetAllAsync()).Name);
+        Assert.Equal(_squat.Id, Assert.Single(await _app.Templates.GetExercisesAsync(push.Id)).ExerciseId);
+    }
+
+    [Fact]
+    public async Task UpdateWithExercisesAsync_ExerciseInsertFails_KeepsTheOldNameAndExercises()
+    {
+        var push = await _app.Data.WorkoutAsync(PushDay, _bench);
+        await _app.Database.FailOnAsync(nameof(WorkoutExercise), TableOperation.Insert);
+
+        await Assert.ThrowsAsync<SQLiteException>(() =>
+            _app.Templates.UpdateWithExercisesAsync(new Workout { Id = push.Id, Name = LegDay }, [TestDataBuilder.Plan(_squat)]));
+
+        Assert.Equal(PushDay, Assert.Single(await _app.Templates.GetAllAsync()).Name);
+        Assert.Equal(_bench.Id, Assert.Single(await _app.Templates.GetExercisesAsync(push.Id)).ExerciseId);
+    }
+
+    [Fact]
     public async Task DeleteAsync_Workout_RemovesItAndOnlyItsExercises()
     {
         var push = await _app.Data.WorkoutAsync(PushDay, _bench, _press);

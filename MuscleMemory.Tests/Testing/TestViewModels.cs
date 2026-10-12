@@ -97,7 +97,7 @@ public sealed class TestViewModels : IAsyncDisposable
         new(App.Templates, ActiveWorkout, Haptics, Dialogs, App.DataChanges, Navigation, Errors, Clock);
 
     public AddEditWorkoutViewModel CreateWorkoutEditor() =>
-        new(App.Workouts, CreateExercisePicker(), new ExerciseConfigurationViewModel(), CreateExerciseForm(),
+        new(App.Templates, CreateExercisePicker(), new ExerciseConfigurationViewModel(), CreateExerciseForm(),
             Dialogs, NavigationStack, Navigation, Errors, Clock);
 
     public SettingsViewModel CreateSettings() =>
