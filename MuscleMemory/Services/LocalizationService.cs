@@ -7,7 +7,7 @@ using MuscleMemory.Resources.Strings;
 
 namespace MuscleMemory.Services;
 
-public sealed class LocalizationService : ILocalizationService
+public sealed class LocalizationService(IPreferences preferences) : ILocalizationService
 {
     private const string SatelliteLanguagesKey = "SatelliteLanguages";
     private const char LanguageSeparator = ';';
@@ -24,7 +24,7 @@ public sealed class LocalizationService : ILocalizationService
     public CultureInfo? SystemLanguage => FindLanguageOf(_systemUiCulture);
 
     public CultureInfo? SavedLanguage =>
-        Preferences.Default.Get<string?>(PreferenceKeys.AppLanguage, null) is { } name
+        preferences.Get<string?>(PreferenceKeys.AppLanguage, null) is { } name
             ? AvailableLanguages.FirstOrDefault(language => IsSameName(language, name))
             : null;
 
@@ -34,11 +34,11 @@ public sealed class LocalizationService : ILocalizationService
     {
         if (language is null)
         {
-            Preferences.Default.Remove(PreferenceKeys.AppLanguage);
+            preferences.Remove(PreferenceKeys.AppLanguage);
         }
         else
         {
-            Preferences.Default.Set(PreferenceKeys.AppLanguage, language.Name);
+            preferences.Set(PreferenceKeys.AppLanguage, language.Name);
         }
 
         Apply(language);

@@ -2,10 +2,10 @@ using MuscleMemory.Constants;
 
 namespace MuscleMemory.Services;
 
-public sealed class ThemeService(IStatusBarService statusBarService) : IThemeService
+public sealed class ThemeService(IStatusBarService statusBarService, IPreferences preferences) : IThemeService
 {
     public ThemePreference SavedPreference =>
-        Enum.TryParse<ThemePreference>(Preferences.Default.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)), out var preference)
+        Enum.TryParse<ThemePreference>(preferences.Get(PreferenceKeys.AppTheme, nameof(ThemePreference.System)), out var preference)
         && Enum.IsDefined(preference)
             ? preference
             : ThemePreference.System;
@@ -24,7 +24,7 @@ public sealed class ThemeService(IStatusBarService statusBarService) : IThemeSer
 
     public void ChangeTheme(ThemePreference preference)
     {
-        Preferences.Default.Set(PreferenceKeys.AppTheme, preference.ToString());
+        preferences.Set(PreferenceKeys.AppTheme, preference.ToString());
 
         if (Application.Current is null)
         {

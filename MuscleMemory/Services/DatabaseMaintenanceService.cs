@@ -15,7 +15,8 @@ public sealed class DatabaseMaintenanceService(
     ISessionExerciseRepository sessionExerciseRepository,
     IWorkoutSetRepository setRepository,
     IActiveWorkoutStateRepository activeWorkoutStateRepository,
-    IDataChangeNotifier dataChanges) : IDatabaseMaintenanceService
+    IDataChangeNotifier dataChanges,
+    IFileSystem fileSystem) : IDatabaseMaintenanceService
 {
     private const string VacuumIntoSql = "VACUUM INTO ?";
     private const string ImportSchema = "import";
@@ -39,9 +40,9 @@ public sealed class DatabaseMaintenanceService(
 
     private static ReadOnlySpan<byte> SqliteHeader => "SQLite format 3\0"u8;
 
-    private static string ExportSnapshotPath => Path.Combine(FileSystem.CacheDirectory, DatabaseNames.ExportFileName);
+    private string ExportSnapshotPath => Path.Combine(fileSystem.CacheDirectory, DatabaseNames.ExportFileName);
 
-    private static string ImportCopyPath => Path.Combine(FileSystem.CacheDirectory, DatabaseNames.ImportFileName);
+    private string ImportCopyPath => Path.Combine(fileSystem.CacheDirectory, DatabaseNames.ImportFileName);
 
     private static IEnumerable<Type> ImportedTables => DatabaseContext.Tables.Where(table => table != typeof(ActiveWorkoutState));
 
@@ -96,7 +97,7 @@ public sealed class DatabaseMaintenanceService(
     public Task DeleteImportCopiesAsync(string pickedFilePath)
     {
         var importPath = ImportCopyPath;
-        var cacheDirectory = Path.GetFullPath(FileSystem.CacheDirectory);
+        var cacheDirectory = Path.GetFullPath(fileSystem.CacheDirectory);
         return Task.Run(() =>
         {
             File.Delete(importPath);

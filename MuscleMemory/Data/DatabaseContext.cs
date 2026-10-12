@@ -4,15 +4,10 @@ using SQLite;
 
 namespace MuscleMemory.Data;
 
-public sealed class DatabaseContext
+public sealed class DatabaseContext(IFileSystem fileSystem)
 {
     private readonly Lock _connectionGate = new();
     private Task<SQLiteAsyncConnection>? _connection;
-
-    public DatabaseContext()
-    {
-        DatabasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
-    }
 
     public static IReadOnlyList<Type> Tables { get; } =
     [
@@ -25,7 +20,7 @@ public sealed class DatabaseContext
         typeof(ActiveWorkoutState)
     ];
 
-    public string DatabasePath { get; }
+    public string DatabasePath { get; } = Path.Combine(fileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
 
     public static SQLiteConnection OpenReadOnly(string path)
     {
