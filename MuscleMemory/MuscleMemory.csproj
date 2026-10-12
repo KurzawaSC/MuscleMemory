@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android</TargetFrameworks>
+		<TargetFrameworks>net10.0-android;net10.0</TargetFrameworks>
 
-		<OutputType>Exe</OutputType>
+		<OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
 		<RootNamespace>MuscleMemory</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
@@ -45,6 +45,11 @@
 		                  StronglyTypedNamespace="MuscleMemory.Resources.Strings"
 		                  StronglyTypedClassName="AppResources"
 		                  StronglyTypedFileName="$(IntermediateOutputPath)AppResources.g.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiPlatformSpecificFolder Include="Platforms\Net\" Condition="'$(TargetPlatformIdentifier)' == ''" />
+		<InternalsVisibleTo Include="MuscleMemory.Tests" />
 	</ItemGroup>
 
 	<ItemGroup>
