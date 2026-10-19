@@ -18,6 +18,26 @@ public sealed class ExerciseProgressTests
         Assert.Equal([ProgressMetric.Volume], new ExerciseProgress([], [Point], []).Metrics);
     }
 
+    [Fact]
+    public void MetricsFor_WeightedRecordKinds_AreOneRepMaxAndVolume()
+    {
+        Assert.Equal(
+            [ProgressMetric.OneRepMax, ProgressMetric.Volume],
+            ExerciseProgress.MetricsFor([RecordKind.HeaviestWeight, RecordKind.BestOneRepMax, RecordKind.BestSessionVolume]));
+    }
+
+    [Fact]
+    public void MetricsFor_NoEstimateRecord_IsVolumeOnly()
+    {
+        Assert.Equal([ProgressMetric.Volume], ExerciseProgress.MetricsFor([RecordKind.HeaviestWeight, RecordKind.BestSessionVolume]));
+    }
+
+    [Fact]
+    public void MetricsFor_MostReps_IsReps()
+    {
+        Assert.Equal([ProgressMetric.Reps], ExerciseProgress.MetricsFor([RecordKind.MostReps]));
+    }
+
     [Theory]
     [InlineData(ProgressMetric.OneRepMax)]
     [InlineData(ProgressMetric.Volume)]

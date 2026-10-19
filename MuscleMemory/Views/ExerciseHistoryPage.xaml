@@ -20,15 +20,15 @@
                              Message="{loc:Text EmptyExerciseHistory}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
-        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Header="{Binding Records}" Margin="{markup:Gutter Top=8}">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Header="{Binding .}" Margin="{markup:Gutter Top=8}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
             <CollectionView.HeaderTemplate>
-                <DataTemplate x:DataType="viewmodels:PersonalRecordsItem">
-                    <VerticalStackLayout Spacing="8" Padding="0,0,0,4">
+                <DataTemplate x:DataType="viewmodels:ExerciseHistoryViewModel">
+                    <VerticalStackLayout Spacing="8" Padding="0,0,0,4" IsVisible="{Binding HasHeader}">
                         <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelRecords}" />
-                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" BindableLayout.ItemsSource="{Binding Records}">
+                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" BindableLayout.ItemsSource="{Binding Records.Records}">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="viewmodels:PersonalRecordItem">
                                     <controls:StatTile Grid.Row="{Binding Row}"
@@ -42,6 +42,93 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </Grid>
+
+                        <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelProgress}" />
+                        <Border Style="{StaticResource SurfaceCard}" Margin="0,0,0,10" Padding="14">
+                            <VerticalStackLayout Spacing="10">
+                                <Border Style="{StaticResource InsetPanel}" Padding="4">
+                                    <FlexLayout RadioButtonGroup.GroupName="ProgressMetrics"
+                                                RadioButtonGroup.SelectedValue="{Binding Progress.SelectedMetric}"
+                                                BindableLayout.ItemsSource="{Binding Progress.Metrics}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodels:EnumOption">
+                                                <RadioButton Style="{StaticResource SegmentChip}"
+                                                             FlexLayout.Grow="1"
+                                                             FlexLayout.Basis="0"
+                                                             Margin="2,0"
+                                                             Content="{Binding Label}"
+                                                             Value="{Binding Value}"
+                                                             SemanticProperties.Description="{Binding Description}" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </FlexLayout>
+                                </Border>
+
+                                <Border Style="{StaticResource InsetPanel}" Padding="4">
+                                    <FlexLayout RadioButtonGroup.GroupName="ProgressRanges"
+                                                RadioButtonGroup.SelectedValue="{Binding Progress.SelectedRange}"
+                                                BindableLayout.ItemsSource="{Binding Progress.Ranges}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="viewmodels:EnumOption">
+                                                <RadioButton Style="{StaticResource SegmentChip}"
+                                                             FlexLayout.Grow="1"
+                                                             FlexLayout.Basis="0"
+                                                             Margin="2,0"
+                                                             Content="{Binding Label}"
+                                                             Value="{Binding Value}"
+                                                             SemanticProperties.Description="{Binding Description}" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </FlexLayout>
+                                </Border>
+
+                                <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="8">
+                                    <Label Style="{StaticResource CompactLabel}" Text="{Binding Progress.SelectionText}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Progress.HasChart}" Value="False">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Setter Property="AutomationProperties.IsInAccessibleTree" Value="False" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <Grid Grid.Row="1" HeightRequest="{StaticResource ProgressChartHeight}">
+                                        <controls:ProgressChart Model="{Binding Progress.Chart}"
+                                                                SelectedIndex="{Binding Progress.SelectedIndex}"
+                                                                SelectCommand="{Binding Progress.SelectPointCommand}"
+                                                                IsVisible="{Binding Progress.HasChart}"
+                                                                SemanticProperties.Description="{Binding Progress.Description}"
+                                                                LineColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                                                SurfaceColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                                                                GridColor="{AppThemeBinding Light={StaticResource LineLight}, Dark={StaticResource LineDark}}"
+                                                                LabelColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
+                                                                TrendColor="{AppThemeBinding Light={StaticResource InkMutedLight}, Dark={StaticResource InkMutedDark}}"
+                                                                GuideColor="{AppThemeBinding Light={StaticResource InkFaintLight}, Dark={StaticResource InkFaintDark}}" />
+                                    </Grid>
+
+                                    <Label Grid.Row="2"
+                                           Style="{StaticResource SmallLabel}"
+                                           Text="{Binding Progress.TrendText}"
+                                           TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Progress.HasChart}" Value="False">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Setter Property="AutomationProperties.IsInAccessibleTree" Value="False" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+
+                                    <Label Grid.RowSpan="3"
+                                           Style="{StaticResource SmallLabel}"
+                                           Text="{loc:Text ChartTooFewSessions}"
+                                           TextColor="{AppThemeBinding Light={StaticResource InkBodyLight}, Dark={StaticResource InkBodyDark}}"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding Progress.IsTooShort}" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+
                         <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelSessions}" />
                     </VerticalStackLayout>
                 </DataTemplate>

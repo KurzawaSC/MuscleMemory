@@ -76,6 +76,33 @@ public sealed class EnumDisplayTests
         AssertDistinctLabels(Enum.GetValues<EquipmentType>().Select(EnumDisplay.ToDisplayName));
         AssertDistinctLabels(Enum.GetValues<ThemePreference>().Select(EnumDisplay.ToDisplayName));
         AssertDistinctLabels(Enum.GetValues<RecordKind>().Select(EnumDisplay.ToDisplayName));
+        AssertDistinctLabels(Enum.GetValues<ProgressMetric>().Select(EnumDisplay.ToDisplayName));
+        AssertDistinctLabels(Enum.GetValues<ProgressMetric>().Select(EnumDisplay.ToDescription));
+        AssertDistinctLabels(Enum.GetValues<ProgressRange>().Select(EnumDisplay.ToDisplayName));
+        AssertDistinctLabels(Enum.GetValues<ProgressRange>().Select(EnumDisplay.ToDescription));
+    }
+
+    [Theory]
+    [InlineData(ProgressMetric.OneRepMax, "e1RM", "Estimated one-rep max")]
+    [InlineData(ProgressMetric.Volume, "Volume", "Session volume")]
+    [InlineData(ProgressMetric.Reps, "Reps", "Most reps in a set")]
+    public void ToDescription_ProgressMetricInEnglish_IsTheSpokenNameOfTheChipLabel(ProgressMetric metric, string label, string description)
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        Assert.Equal((label, description), (metric.ToDisplayName(), metric.ToDescription()));
+    }
+
+    [Theory]
+    [InlineData(ProgressRange.ThreeMonths, "3 mies.", "ostatnie 3 miesiące")]
+    [InlineData(ProgressRange.SixMonths, "6 mies.", "ostatnie 6 miesięcy")]
+    [InlineData(ProgressRange.TwelveMonths, "1 rok", "ostatnie 12 miesięcy")]
+    [InlineData(ProgressRange.All, "Całość", "cała historia")]
+    public void ToDescription_ProgressRangeInPolish_IsTheSpokenNameOfTheChipLabel(ProgressRange range, string label, string description)
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+
+        Assert.Equal((label, description), (range.ToDisplayName(), range.ToDescription()));
     }
 
     [Theory]
@@ -97,6 +124,10 @@ public sealed class EnumDisplayTests
         Assert.Throws<ArgumentOutOfRangeException>(() => ((EquipmentType)UndefinedMember).ToDisplayName());
         Assert.Throws<ArgumentOutOfRangeException>(() => ((ThemePreference)UndefinedMember).ToDisplayName());
         Assert.Throws<ArgumentOutOfRangeException>(() => ((RecordKind)UndefinedMember).ToDisplayName());
+        Assert.Throws<ArgumentOutOfRangeException>(() => ((ProgressMetric)UndefinedMember).ToDisplayName());
+        Assert.Throws<ArgumentOutOfRangeException>(() => ((ProgressMetric)UndefinedMember).ToDescription());
+        Assert.Throws<ArgumentOutOfRangeException>(() => ((ProgressRange)UndefinedMember).ToDisplayName());
+        Assert.Throws<ArgumentOutOfRangeException>(() => ((ProgressRange)UndefinedMember).ToDescription());
     }
 
     private static void AssertDistinctLabels(IEnumerable<string> labels)

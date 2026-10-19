@@ -9,6 +9,17 @@ public sealed record ExerciseProgress(
 
     public bool HasAny => Metrics.Count > 0;
 
+    public static IReadOnlyList<ProgressMetric> MetricsFor(IEnumerable<RecordKind> recordKinds) =>
+    [
+        .. recordKinds.SelectMany(kind => kind switch
+        {
+            RecordKind.BestOneRepMax => [ProgressMetric.OneRepMax],
+            RecordKind.BestSessionVolume => [ProgressMetric.Volume],
+            RecordKind.MostReps => [ProgressMetric.Reps],
+            _ => Array.Empty<ProgressMetric>()
+        }).Order()
+    ];
+
     public IReadOnlyList<ProgressPoint> For(ProgressMetric metric) => metric switch
     {
         ProgressMetric.OneRepMax => OneRepMax,

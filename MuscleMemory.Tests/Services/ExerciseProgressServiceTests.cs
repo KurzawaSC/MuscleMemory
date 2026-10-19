@@ -73,6 +73,20 @@ public sealed class ExerciseProgressServiceTests : IAsyncLifetime
             progress.Volume.OrderBy(point => point.SessionId).Select(point => (point.SessionId, point.Value)));
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public async Task GetProgressAsync_GeneratedHistory_OffersTheMetricsTheRecordKindsPredict(int exerciseIndex)
+    {
+        await LogGeneratedHistoryAsync(exerciseIndex, exerciseIndex == 0 ? LoggedWeight : _ => Bodyweight);
+        var exerciseId = exerciseIndex == 0 ? _bench.Id : _dips.Id;
+
+        var progress = await _app.Progress.GetProgressAsync(exerciseId);
+        var records = await _app.Records.GetRecordsAsync(exerciseId);
+
+        Assert.Equal(ExerciseProgress.MetricsFor(records.Kinds), progress.Metrics);
+    }
+
     [Fact]
     public async Task GetProgressAsync_LocalZoneEastOfUtc_DatesSessionsByTheirLocalStart()
     {

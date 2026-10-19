@@ -729,4 +729,94 @@
   <data name="NewRecordsDescriptionFormat" xml:space="preserve">
     <value>{0:N0} {1}: {2}.</value>
   </data>
+  <data name="LabelProgress" xml:space="preserve">
+    <value>Postęp</value>
+  </data>
+  <data name="ProgressMetricOneRepMax" xml:space="preserve">
+    <value>e1RM</value>
+  </data>
+  <data name="ProgressMetricVolume" xml:space="preserve">
+    <value>Objętość</value>
+  </data>
+  <data name="ProgressMetricReps" xml:space="preserve">
+    <value>Powtórzenia</value>
+  </data>
+  <data name="ProgressMetricOneRepMaxName" xml:space="preserve">
+    <value>Szacowany ciężar maksymalny</value>
+  </data>
+  <data name="ProgressMetricVolumeName" xml:space="preserve">
+    <value>Objętość sesji</value>
+  </data>
+  <data name="ProgressMetricRepsName" xml:space="preserve">
+    <value>Najwięcej powtórzeń w serii</value>
+  </data>
+  <data name="ProgressRangeThreeMonths" xml:space="preserve">
+    <value>3 mies.</value>
+  </data>
+  <data name="ProgressRangeSixMonths" xml:space="preserve">
+    <value>6 mies.</value>
+  </data>
+  <data name="ProgressRangeTwelveMonths" xml:space="preserve">
+    <value>1 rok</value>
+  </data>
+  <data name="ProgressRangeAll" xml:space="preserve">
+    <value>Całość</value>
+  </data>
+  <data name="ProgressRangeThreeMonthsName" xml:space="preserve">
+    <value>ostatnie 3 miesiące</value>
+  </data>
+  <data name="ProgressRangeSixMonthsName" xml:space="preserve">
+    <value>ostatnie 6 miesięcy</value>
+  </data>
+  <data name="ProgressRangeTwelveMonthsName" xml:space="preserve">
+    <value>ostatnie 12 miesięcy</value>
+  </data>
+  <data name="ProgressRangeAllName" xml:space="preserve">
+    <value>cała historia</value>
+  </data>
+  <data name="ChartSelectHint" xml:space="preserve">
+    <value>Dotknij punktu, by zobaczyć wartość</value>
+  </data>
+  <data name="ChartSelectionFormat" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="ChartTrendFormat" xml:space="preserve">
+    <value>Trend {0}</value>
+  </data>
+  <data name="ChartRateKilogramsFormat" xml:space="preserve">
+    <value>{0} kg / mies.</value>
+  </data>
+  <data name="ChartRateRepsFormat" xml:space="preserve">
+    <value>{0} powt. / mies.</value>
+  </data>
+  <data name="ChartTrendUnavailable" xml:space="preserve">
+    <value>Za mało sesji na trend</value>
+  </data>
+  <data name="ChartTooFewSessions" xml:space="preserve">
+    <value>Za mało sesji w tym okresie, by pokazać wykres</value>
+  </data>
+  <data name="ChartDescriptionFormat" xml:space="preserve">
+    <value>{0}, {1}: od {2} ({3}) do {4} ({5}), najlepszy wynik {6}.</value>
+  </data>
+  <data name="ChartDescriptionWithTrendFormat" xml:space="preserve">
+    <value>{0}, {1}: od {2} ({3}) do {4} ({5}), najlepszy wynik {6}, {7}.</value>
+  </data>
+  <data name="ChartTrendKilogramsSpokenFormat" xml:space="preserve">
+    <value>trend {0} kg na miesiąc</value>
+  </data>
+  <data name="ChartTrendRepsSpokenFormat" xml:space="preserve">
+    <value>trend {0} powtórzenia na miesiąc</value>
+  </data>
+  <data name="ChartTrendFlatSpoken" xml:space="preserve">
+    <value>trend bez zmian</value>
+  </data>
+  <data name="ChartDayFormat" xml:space="preserve">
+    <value>d MMM</value>
+  </data>
+  <data name="ChartMonthFormat" xml:space="preserve">
+    <value>MMM yyyy</value>
+  </data>
+  <data name="ChartYearFormat" xml:space="preserve">
+    <value>yyyy</value>
+  </data>
 </root>

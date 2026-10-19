@@ -1,5 +1,6 @@
 using MuscleMemory.Constants;
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using MuscleMemory.Services;
 using MuscleMemory.Tests.Testing;
 using MuscleMemory.ViewModels;
@@ -110,6 +111,109 @@ public sealed class ExerciseHistoryViewModelTests : IAsyncLifetime
         await OpenAsync(_bench);
 
         Assert.Equal(["3 sessions: — | — | —", "3 sessions: 90 kg × 3 | 104.5 kg | 1,300 kg"], recordsShown);
+    }
+
+    [Fact]
+    public async Task Open_WeightedHistory_PreparesTheChartWithTheSessionsAndFillsItWithTheRecords()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await SeedAsync();
+        List<string> headerShown = [];
+        _history.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ExerciseHistoryViewModel.Records))
+            {
+                headerShown.Add($"{_history.History.Count} sessions, chart loaded {_history.Progress.IsLoaded}: {string.Join(" | ", _history.Progress.Metrics.Select(option => option.Label))}");
+            }
+        };
+
+        await OpenAsync(_bench);
+
+        Assert.Equal(["3 sessions, chart loaded False: e1RM | Volume", "3 sessions, chart loaded False: e1RM | Volume"], headerShown);
+        Assert.True(_history.Progress.IsLoaded);
+    }
+
+    [Fact]
+    public async Task Open_WeightedHistory_ChartsTheBestEstimateOfEverySessionOldestFirst()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _ui.Clock.SetLocalTimeZone(TimeZoneInfo.Local);
+        await SeedAsync();
+
+        await OpenAsync(_bench);
+
+        Assert.True(_history.HasHeader);
+        Assert.Equal(ProgressMetric.OneRepMax, _history.Progress.SelectedMetric);
+        Assert.Equal([OneRepMax.Estimate(82.5, 8), OneRepMax.Estimate(85, 5), OneRepMax.Estimate(90, 3)], _history.Progress.Chart?.Points.Select(point => (double?)point.Y));
+        Assert.Equal("Not enough sessions for a trend", _history.Progress.TrendText);
+        Assert.Equal(
+            "Estimated one-rep max, all time: from 104.5 kg on Mar 05, 2026 to 99 kg on Mar 07, 2026, best 104.5 kg.",
+            _history.Progress.Description);
+    }
+
+    [Fact]
+    public async Task Open_SelectAPoint_CaptionsTheValueStoredForThatSession()
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+        _ui.Clock.SetLocalTimeZone(TimeZoneInfo.Local);
+        await SeedAsync();
+        await OpenAsync(_bench);
+        _history.Progress.SelectedMetric = ProgressMetric.Volume;
+
+        _history.Progress.SelectPointCommand.Execute(0);
+
+        Assert.Equal($"1{Cultures.PolishGroupSeparator}300 kg · 5 mar 2026", _history.Progress.SelectionText);
+    }
+
+    [Fact]
+    public async Task Open_SessionsTwoWeeksApart_ShowsTheTrendPerMonth()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var start = FirstLocalStart.ToUniversalTime();
+        await _ui.App.Data.CompletedSessionAsync(_chest, start, new LoggedSet(0, 100, 5));
+        await _ui.App.Data.CompletedSessionAsync(_chest, start + (7 * OneDay), new LoggedSet(0, 102.5, 5));
+        await _ui.App.Data.CompletedSessionAsync(_chest, start + (14 * OneDay), new LoggedSet(0, 105, 5));
+
+        await OpenAsync(_bench);
+
+        Assert.Equal("Trend +12.5 kg / month", _history.Progress.TrendText);
+        Assert.NotNull(_history.Progress.Chart?.TrendStart);
+    }
+
+    [Fact]
+    public async Task Open_BodyweightHistory_ChartsOnlyMostReps()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var dips = await _ui.App.Data.ExerciseAsync("Dips", MuscleGroup.Triceps, EquipmentType.None);
+        var bodyweight = await _ui.App.Data.WorkoutAsync("Bodyweight", dips);
+        await _ui.App.Data.CompletedSessionAsync(bodyweight, FirstLocalStart.ToUniversalTime(), new LoggedSet(0, 0, 12), new LoggedSet(0, 0, 15));
+        await _ui.App.Data.CompletedSessionAsync(bodyweight, FirstLocalStart.ToUniversalTime() + OneDay, new LoggedSet(0, 0, 13));
+
+        await OpenAsync(dips);
+
+        Assert.Equal(["Reps"], _history.Progress.Metrics.Select(option => option.Label));
+        Assert.Equal(ProgressMetric.Reps, _history.Progress.SelectedMetric);
+        Assert.Equal([15.0, 13], _history.Progress.Chart?.Points.Select(point => point.Y));
+    }
+
+    [Fact]
+    public async Task Open_OneSession_ShowsTheRecordsButIsTooShortForAChart()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_chest, FirstLocalStart.ToUniversalTime(), new LoggedSet(0, 100, 5));
+
+        await OpenAsync(_bench);
+
+        Assert.True(_history.HasHeader);
+        Assert.Equal((true, false), (_history.Progress.IsTooShort, _history.Progress.HasChart));
+    }
+
+    [Fact]
+    public async Task Open_NeverPerformed_HasNoHeaderAndNoChart()
+    {
+        await OpenAsync(_press);
+
+        Assert.False(_history.HasHeader);
+        Assert.Equal((false, false, false), (_history.Progress.IsLoaded, _history.Progress.HasChart, _history.Progress.IsTooShort));
     }
 
     [Fact]

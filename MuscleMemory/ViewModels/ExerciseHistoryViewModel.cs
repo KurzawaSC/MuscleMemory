@@ -14,8 +14,10 @@ namespace MuscleMemory.ViewModels;
 public partial class ExerciseHistoryViewModel(
     IHistoryQueryService historyQueryService,
     IPersonalRecordService personalRecords,
+    IExerciseProgressService exerciseProgress,
     INavigationService navigation,
-    IErrorHandler errors) : ObservableObject, IQueryAttributable
+    IErrorHandler errors,
+    TimeProvider clock) : ObservableObject, IQueryAttributable
 {
     private int _exerciseId;
 
@@ -26,7 +28,12 @@ public partial class ExerciseHistoryViewModel(
     public partial string SessionCountText { get; set; } = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasHeader))]
     public partial PersonalRecordsItem? Records { get; private set; }
+
+    public bool HasHeader => Records is not null;
+
+    public ProgressChartViewModel Progress { get; } = new(clock);
 
     public ListLoadState ListState { get; } = new();
 
@@ -52,19 +59,22 @@ public partial class ExerciseHistoryViewModel(
         History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
         ListState.Complete(History.Count);
         SessionCountText = ListState.IsEmpty ? string.Empty : FormatSessionCount(History.Count);
-        await LoadRecordsAsync(PersonalRecords.KindsOf(entries.SelectMany(PerformedSets)));
+        await LoadHeaderAsync(PersonalRecords.KindsOf(entries.SelectMany(PerformedSets)));
     }
 
-    private async Task LoadRecordsAsync(IReadOnlyList<RecordKind> expectedKinds)
+    private async Task LoadHeaderAsync(IReadOnlyList<RecordKind> expectedKinds)
     {
         if (expectedKinds.Count == 0)
         {
             return;
         }
 
+        Progress.Prepare(ExerciseProgress.MetricsFor(expectedKinds));
         Records = PersonalRecordsItem.Placeholder(expectedKinds);
         var records = await personalRecords.GetRecordsAsync(_exerciseId);
+        var progress = await exerciseProgress.GetProgressAsync(_exerciseId);
         Records = records.HasAny ? PersonalRecordsItem.Create(records) : null;
+        Progress.Show(progress);
     }
 
     private static IEnumerable<PerformedSet> PerformedSets(ExerciseHistoryEntry entry) =>
