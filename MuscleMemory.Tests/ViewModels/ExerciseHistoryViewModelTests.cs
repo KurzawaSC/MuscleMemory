@@ -74,11 +74,15 @@ public sealed class ExerciseHistoryViewModelTests : IAsyncLifetime
     }
 
     [Fact]
-    public void Open_BeforeTheLoadEnds_ClaimsNeitherItemsNorEmpty()
+    public async Task Open_BeforeTheLoadEnds_ClaimsNeitherItemsNorEmpty()
     {
+        await SeedAsync();
+
         _history.ApplyQueryAttributes(Query(_bench));
 
         Assert.Equal((false, false), (_history.ListState.IsEmpty, _history.ListState.HasItems));
+        await _ui.SettleAsync();
+        Assert.True(_history.ListState.HasItems);
     }
 
     [Fact]
