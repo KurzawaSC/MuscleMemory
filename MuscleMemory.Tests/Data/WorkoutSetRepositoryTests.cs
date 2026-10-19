@@ -221,6 +221,101 @@ public sealed class WorkoutSetRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetRepMaxesAsync_SeveralSetsPerRepCount_ReturnsTheHeaviestOfEach()
+    {
+        var first = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(0, 85, 5), new LoggedSet(0, 90, 3));
+        var second = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 87.5, 5), new LoggedSet(0, 90, 3));
+
+        var repMaxes = await _app.Sets.GetRepMaxesAsync([_bench.Id]);
+
+        Assert.Equal(
+            [(3, 90.0, first, TestApp.StartUtc), (5, 87.5, second, TestApp.StartUtc + OneDay)],
+            repMaxes.OrderBy(set => set.Reps).Select(set => (set.Reps, set.Weight, set.SessionId, set.DateUtc)));
+        Assert.All(repMaxes, set => Assert.Equal((DateTimeKind.Utc, _bench.Id), (set.DateUtc.Kind, set.ExerciseId)));
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_SameWeightAndRepsInOneSession_ReturnsTheSetLoggedFirst()
+    {
+        var started = await _app.Data.StartAsync(_push);
+        var first = await _app.Data.LogSetAsync(started.Exercises[0], 100, 5);
+        await _app.Data.LogSetAsync(started.Exercises[0], 100, 5);
+        await _app.ActiveSessions.FinishAsync(started.SessionId);
+
+        var repMax = Assert.Single(await _app.Sets.GetRepMaxesAsync([_bench.Id]));
+
+        Assert.Equal(first.Id, repMax.SetId);
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_OpenSession_IsIgnored()
+    {
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        var open = await _app.Data.StartAsync(_push);
+        await _app.Data.LogSetAsync(open.Exercises[0], 120, 5);
+
+        Assert.Equal(80, Assert.Single(await _app.Sets.GetRepMaxesAsync([_bench.Id])).Weight);
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_DeletedSet_IsGone()
+    {
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(0, 120, 5));
+        var heaviest = (await _app.Sets.GetRepMaxesAsync([_bench.Id])).Single();
+
+        await _app.ActiveSessions.DeleteSetAsync(heaviest.SetId);
+
+        Assert.Equal(80, Assert.Single(await _app.Sets.GetRepMaxesAsync([_bench.Id])).Weight);
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_SetWithoutReps_IsIgnored()
+    {
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 200, 0), new LoggedSet(0, 80, 5));
+
+        var repMax = Assert.Single(await _app.Sets.GetRepMaxesAsync([_bench.Id]));
+
+        Assert.Equal((80.0, 5), (repMax.Weight, repMax.Reps));
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_SeveralExercises_KeepsThemApart()
+    {
+        var squat = await _app.Data.ExerciseAsync("Squat");
+        var twice = await _app.Data.WorkoutAsync("Bench Twice", _bench, _press, _bench);
+        await _app.Data.CompletedSessionAsync(twice, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 50, 5), new LoggedSet(2, 85, 5));
+
+        var repMaxes = await _app.Sets.GetRepMaxesAsync([_bench.Id, _press.Id, squat.Id]);
+
+        Assert.Equal([(_bench.Id, 85.0), (_press.Id, 50.0)], repMaxes.OrderBy(set => set.ExerciseId).Select(set => (set.ExerciseId, set.Weight)));
+    }
+
+    [Fact]
+    public async Task GetRepMaxesAsync_NoIds_ReturnsNothing() =>
+        Assert.Empty(await _app.Sets.GetRepMaxesAsync([]));
+
+    [Fact]
+    public async Task GetSessionVolumesAsync_FinishedSessions_SumsEachSessionOfTheExercise()
+    {
+        var twice = await _app.Data.WorkoutAsync("Bench Twice", _bench, _press, _bench);
+        var first = await _app.Data.CompletedSessionAsync(twice, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 50, 10), new LoggedSet(2, 60, 10));
+        var second = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 100, 3), new LoggedSet(0, 200, 0));
+        var open = await _app.Data.StartAsync(_push);
+        await _app.Data.LogSetAsync(open.Exercises[0], 100, 10);
+
+        var volumes = await _app.Sets.GetSessionVolumesAsync(_bench.Id);
+
+        Assert.Equal(
+            [(first, TestApp.StartUtc, 1000.0), (second, TestApp.StartUtc + OneDay, 300.0)],
+            volumes.OrderBy(volume => volume.SessionId).Select(volume => (volume.SessionId, volume.DateUtc, volume.Volume)));
+        Assert.All(volumes, volume => Assert.Equal(DateTimeKind.Utc, volume.DateUtc.Kind));
+    }
+
+    [Fact]
+    public async Task GetSessionVolumesAsync_NoHistory_ReturnsNothing() =>
+        Assert.Empty(await _app.Sets.GetSessionVolumesAsync(_bench.Id));
+
+    [Fact]
     public async Task Clear_InTransaction_RemovesEverySet()
     {
         var started = await _app.Data.StartAsync(_push);

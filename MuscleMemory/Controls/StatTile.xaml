@@ -7,7 +7,7 @@
         x:DataType="controls:StatTile"
         Style="{StaticResource SurfaceCard}">
 
-    <VerticalStackLayout Spacing="{Binding ContentSpacing, Source={x:Reference Root}}">
+    <VerticalStackLayout x:Name="Values" Spacing="{Binding ContentSpacing, Source={x:Reference Root}}">
         <controls:UnitLabel Style="{StaticResource StatValueLabel}"
                             Value="{Binding Value, Source={x:Reference Root}}"
                             ValueFormat="{Binding ValueFormat, Source={x:Reference Root}}"

@@ -71,14 +71,64 @@ public sealed class ExerciseHistoryViewModelTests : IAsyncLifetime
         Assert.Equal((true, false), (_history.ListState.IsEmpty, _history.ListState.HasItems));
         Assert.Equal(string.Empty, _history.SessionCountText);
         Assert.Empty(_history.History);
+        Assert.Null(_history.Records);
     }
 
     [Fact]
-    public void Open_BeforeTheLoadEnds_ClaimsNeitherItemsNorEmpty()
+    public async Task Open_WeightedHistory_ShowsItsRecordsWithTheirDates()
     {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await SeedAsync();
+
+        await OpenAsync(_bench);
+
+        var records = Assert.IsType<PersonalRecordsItem>(_history.Records).Records;
+        Assert.Equal(
+            [
+                ("90 kg × 3", "Heaviest weight\nMar 07, 2026"),
+                ("104.5 kg", "Estimated 1RM\nMar 05, 2026"),
+                ("1,300 kg", "Best session volume\nMar 05, 2026")
+            ],
+            records.Select(record => (record.ValueText, record.Caption)));
+        Assert.Equal("Heaviest weight: 90 kg for 3 reps, achieved on Mar 07, 2026.", records[0].Description);
+    }
+
+    [Fact]
+    public async Task Open_BodyweightHistory_ShowsOnlyMostReps()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var dips = await _ui.App.Data.ExerciseAsync("Dips", MuscleGroup.Triceps, EquipmentType.None);
+        var bodyweight = await _ui.App.Data.WorkoutAsync("Bodyweight", dips);
+        await _ui.App.Data.CompletedSessionAsync(bodyweight, FirstLocalStart.ToUniversalTime(), new LoggedSet(0, 0, 12), new LoggedSet(0, 0, 15));
+
+        await OpenAsync(dips);
+
+        var record = Assert.Single(Assert.IsType<PersonalRecordsItem>(_history.Records).Records);
+        Assert.Equal(("15", "Most reps in a set\nMar 05, 2026"), (record.ValueText, record.Caption));
+    }
+
+    [Fact]
+    public async Task Open_OnlyAnOpenSession_HasNoRecords()
+    {
+        var open = await _ui.App.Data.StartAsync(_push);
+        await _ui.App.Data.LogSetAsync(open.Exercises[0], 100, 5);
+
+        await OpenAsync(_bench);
+
+        Assert.Null(_history.Records);
+        Assert.True(_history.ListState.IsEmpty);
+    }
+
+    [Fact]
+    public async Task Open_BeforeTheLoadEnds_ClaimsNeitherItemsNorEmpty()
+    {
+        await SeedAsync();
+
         _history.ApplyQueryAttributes(Query(_bench));
 
         Assert.Equal((false, false), (_history.ListState.IsEmpty, _history.ListState.HasItems));
+        await _ui.SettleAsync();
+        Assert.True(_history.ListState.HasItems);
     }
 
     [Fact]

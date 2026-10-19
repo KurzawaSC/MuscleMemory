@@ -17,6 +17,9 @@ public partial class StatTile : Border
     public static readonly BindableProperty ContentSpacingProperty =
         BindableProperty.Create(nameof(ContentSpacing), typeof(double), typeof(StatTile), 0d);
 
+    public static readonly BindableProperty DescriptionProperty =
+        BindableProperty.Create(nameof(Description), typeof(string), typeof(StatTile), string.Empty, propertyChanged: OnDescriptionChanged);
+
     public StatTile() => InitializeComponent();
 
     public object? Value
@@ -47,5 +50,20 @@ public partial class StatTile : Border
     {
         get => (double)GetValue(ContentSpacingProperty);
         set => SetValue(ContentSpacingProperty, value);
+    }
+
+    public string Description
+    {
+        get => (string)GetValue(DescriptionProperty);
+        set => SetValue(DescriptionProperty, value);
+    }
+
+    private static void OnDescriptionChanged(BindableObject bindable, object oldValue, object newValue) =>
+        ((StatTile)bindable).Describe((string)newValue);
+
+    private void Describe(string description)
+    {
+        SemanticProperties.SetDescription(this, description);
+        AutomationProperties.SetExcludedWithChildren(Values, !string.IsNullOrEmpty(description));
     }
 }

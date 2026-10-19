@@ -83,7 +83,7 @@ public sealed class TestViewModels : IAsyncDisposable
     public WorkoutHistoryViewModel CreateWorkoutHistory() =>
         new(App.History, App.ActiveSessions, Dialogs, Timer, Haptics, Navigation, Errors, Clock, CreateExercisePicker());
 
-    public ExerciseHistoryViewModel CreateExerciseHistory() => new(App.History, Navigation, Errors);
+    public ExerciseHistoryViewModel CreateExerciseHistory() => new(App.History, App.Records, Navigation, Errors);
 
     public ExercisePickerViewModel CreateExercisePicker() => new(App.Catalog, new ExerciseFilterViewModel());
 
@@ -118,5 +118,5 @@ public sealed class TestViewModels : IAsyncDisposable
     }
 
     private ActiveWorkoutViewModel CreateActiveWorkout() =>
-        new(App.ActiveSessions, Timer, Clock, AudioCues, Dialogs, App.Summary, NavigationStack, Navigation, Haptics, Errors, Localization);
+        new(App.ActiveSessions, Timer, Clock, AudioCues, Dialogs, App.Summary, App.Records, NavigationStack, Navigation, Haptics, Errors, Localization);
 }

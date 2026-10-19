@@ -12,6 +12,7 @@ namespace MuscleMemory.ViewModels;
 
 public partial class ExerciseHistoryViewModel(
     IHistoryQueryService historyQueryService,
+    IPersonalRecordService personalRecords,
     INavigationService navigation,
     IErrorHandler errors) : ObservableObject, IQueryAttributable
 {
@@ -22,6 +23,9 @@ public partial class ExerciseHistoryViewModel(
 
     [ObservableProperty]
     public partial string SessionCountText { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial PersonalRecordsItem? Records { get; private set; }
 
     public ListLoadState ListState { get; } = new();
 
@@ -44,6 +48,8 @@ public partial class ExerciseHistoryViewModel(
     private async Task LoadHistoryAsync()
     {
         var entries = await historyQueryService.GetExerciseHistoryAsync(_exerciseId);
+        var records = await personalRecords.GetRecordsAsync(_exerciseId);
+        Records = records.HasAny ? PersonalRecordsItem.Create(records) : null;
         History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
         ListState.Complete(History.Count);
         SessionCountText = ListState.IsEmpty ? string.Empty : FormatSessionCount(History.Count);

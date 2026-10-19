@@ -47,6 +47,37 @@ public sealed class LoggedSetItemTests
     }
 
     [Fact]
+    public void Create_Default_IsNotANewRecord()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        var item = LoggedSetItem.Create(new WorkoutSet { SetNumber = 1, Weight = 100, Reps = 5 });
+
+        Assert.False(item.IsNewRecord);
+    }
+
+    [Fact]
+    public void Create_NewRecord_SaysSoInTheDescription()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        var item = LoggedSetItem.Create(new WorkoutSet { SetNumber = 2, Weight = 102.5, Reps = 5 }, isNewRecord: true);
+
+        Assert.True(item.IsNewRecord);
+        Assert.Equal("Set 2, 102.5 kg, 5 reps, new record", item.Description);
+    }
+
+    [Fact]
+    public void Create_PolishNewRecord_SaysSoInPolish()
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+
+        var item = LoggedSetItem.Create(new WorkoutSet { SetNumber = 1, Weight = 102.5, Reps = 5 }, isNewRecord: true);
+
+        Assert.Equal("Seria 1, 102,5 kg, 5 powtórzeń, nowy rekord", item.Description);
+    }
+
+    [Fact]
     public void Create_QuarterKilogram_KeepsFullPrecision()
     {
         using var scope = new CultureScope(Cultures.EnglishUs);

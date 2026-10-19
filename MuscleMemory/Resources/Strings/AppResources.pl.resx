@@ -672,4 +672,61 @@
   <data name="EquipmentOther" xml:space="preserve">
     <value>Inne</value>
   </data>
+  <data name="LabelRecords" xml:space="preserve">
+    <value>Rekordy</value>
+  </data>
+  <data name="LabelSessions" xml:space="preserve">
+    <value>Sesje</value>
+  </data>
+  <data name="RecordHeaviestWeight" xml:space="preserve">
+    <value>Największy ciężar</value>
+  </data>
+  <data name="RecordBestOneRepMax" xml:space="preserve">
+    <value>Szacowany 1RM</value>
+  </data>
+  <data name="RecordBestSessionVolume" xml:space="preserve">
+    <value>Największa objętość sesji</value>
+  </data>
+  <data name="RecordMostReps" xml:space="preserve">
+    <value>Najwięcej powtórzeń w serii</value>
+  </data>
+  <data name="RecordCaptionFormat" xml:space="preserve">
+    <value>{0}&#xA;{1}</value>
+  </data>
+  <data name="OneRepMaxFormat" xml:space="preserve">
+    <value>{0:#,##0.#} kg</value>
+  </data>
+  <data name="HeaviestWeightDescriptionFormat" xml:space="preserve">
+    <value>Największy ciężar: {0} na {1}, osiągnięty {2}.</value>
+  </data>
+  <data name="BestOneRepMaxDescriptionFormat" xml:space="preserve">
+    <value>Szacowany ciężar maksymalny na jedno powtórzenie: {0}, osiągnięty {1}.</value>
+  </data>
+  <data name="BestSessionVolumeDescriptionFormat" xml:space="preserve">
+    <value>Największa objętość sesji: {0}, osiągnięta {1}.</value>
+  </data>
+  <data name="MostRepsDescriptionFormat" xml:space="preserve">
+    <value>Rekord powtórzeń w serii: {0}, osiągnięty {1}.</value>
+  </data>
+  <data name="BadgeNewRecord" xml:space="preserve">
+    <value>Rekord</value>
+  </data>
+  <data name="NewRecordSetDescriptionFormat" xml:space="preserve">
+    <value>{0}, nowy rekord</value>
+  </data>
+  <data name="NewRecordsCaption_One" xml:space="preserve">
+    <value>nowy rekord</value>
+  </data>
+  <data name="NewRecordsCaption_Few" xml:space="preserve">
+    <value>nowe rekordy</value>
+  </data>
+  <data name="NewRecordsCaption_Many" xml:space="preserve">
+    <value>nowych rekordów</value>
+  </data>
+  <data name="NewRecordsCaption_Other" xml:space="preserve">
+    <value>nowego rekordu</value>
+  </data>
+  <data name="NewRecordsDescriptionFormat" xml:space="preserve">
+    <value>{0:N0} {1}: {2}.</value>
+  </data>
 </root>

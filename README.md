@@ -39,11 +39,15 @@ leaves the page.
   or `,` as the decimal separator.
 - **Save set** logs a set and starts the rest timer for that exercise. **Undo** removes the last
   set. Tapping a logged set opens a sheet to edit or delete it.
+- A logged set that beats the exercise's personal record carries a **PR** badge (see
+  [Personal records](#personal-records)). Editing, deleting or undoing a set recomputes the badges.
 - The rest timer offers **+30 s** and **Skip rest**. When it runs out, the phone vibrates and plays
   a sound.
 - Once an exercise's planned sets are logged, the session moves on to the next exercise.
 - **Finish** asks for confirmation and then shows a summary: duration, total volume, set count, and
-  each exercise's sets as bars. A session with no logged sets is discarded instead of saved.
+  each exercise's sets as bars. When the session set new records, a tile counts them and the
+  exercises that set them carry the **PR** badge. A session with no logged sets is discarded
+  instead of saved.
 - Only one session can be active. While it is, the other tabs show a resume banner and hide their
   "+" buttons. Session state is written to the database on every change, so the session and a
   running rest countdown survive the app being killed.
@@ -52,10 +56,37 @@ leaves the page.
 
 - **Workout history** lists the sessions of a workout behind date chips. A past session stays
   editable: add, edit or delete sets, remove an exercise, or add an exercise to it.
-- **Exercise history** lists every session that included an exercise, newest first, with its sets
-  and volume.
+- **Exercise history** opens with the exercise's personal records, one tile per record with the
+  date it was set, and then lists every session that included the exercise, newest first, with its
+  sets and volume.
 - Each session keeps a snapshot of the plan as it was at the start, so later edits to the workout or
   its exercises do not change what was logged.
+
+### Personal records
+
+Records are computed from the logged sets whenever they are shown and are never stored, so editing
+or deleting a set can never leave a stale record behind.
+
+- **Estimated one-rep max (e1RM)** uses the Epley formula: e1RM = w · (1 + r / 30) for
+  2 ≤ r ≤ 12 repetitions at weight w, and e1RM = w for r = 1. It is undefined for r > 12, for
+  w ≤ 0 and for r ≤ 0. It is computed as w · (30 + r) / 30, the same value written so that equal
+  estimates compare exactly equal, and it is rounded only for display, to one decimal place.
+- **Eligible sets** are logged sets with at least one repetition, from finished sessions. Sets of a
+  session still in progress never count towards a record.
+- **Heaviest weight**: the greatest w over sets with w > 0, shown as "w × r". Ties go to more
+  repetitions, then to the earlier session, then to the set logged first.
+- **Best e1RM**: the greatest estimate. Ties go to the earlier session, then to the set logged
+  first.
+- **Best session volume**: the greatest Σ (w · r) over the exercise's sets within one session.
+  Ties go to the earlier session.
+- **Most reps**: the greatest r in one set. It is shown only for an exercise whose sets are all
+  bodyweight sets, which the app stores with a weight of 0; such an exercise has no other record.
+- **New records during a workout**: a set is a new record when it strictly exceeds the running
+  best of heaviest weight, e1RM, or, for a bodyweight exercise, most reps. The running best starts
+  from finished sessions and is raised by each earlier set of the current session in the order the
+  sets were logged. A value equal to the running best is never a record, and a record type with no
+  value in the finished history marks nothing, so an exercise done for the first time shows no
+  badges.
 
 ### Settings
 
@@ -120,7 +151,10 @@ Views (XAML pages)  →  ViewModels  →  Services  →  Repositories  →  Data
   a repository, the database connection or the Shell directly; the architecture tests enforce the
   layering.
 - **Services** hold the logic that is neither presentation nor storage: history projections, the
-  summary, the session lifecycle, dialogs, navigation, theme, audio, haptics and the timer.
+  summary, personal records, the session lifecycle, dialogs, navigation, theme, audio, haptics and
+  the timer.
+- **Progression** holds pure domain rules with no dependencies: the Epley estimate and the record
+  definitions. Repositories return its value records, and services apply its rules.
 - **Repositories** (`Data/Repositories`) have one interface per aggregate. Multi-statement writes run
   in a transaction, and multi-row reads are batched rather than issued in a loop.
 - **Models** are plain SQLite tables plus the enums they store. `DatabaseContext` owns one lazily
@@ -147,6 +181,7 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IWorkoutSetRepository` | Logged sets; owns set numbering |
 | `IActiveWorkoutStateRepository` | The single active-session row, written through a serial queue |
 | `IHistoryQueryService` | Builds workout and exercise history from batched reads |
+| `IPersonalRecordService` | An exercise's personal records, and the sets of a session that set new ones |
 | `IDatabaseMaintenanceService` | Export snapshot; import with validation, replacing all data in one transaction; deletion of temporary copies; erase-all in one transaction |
 | `IExerciseCatalogService` | The exercise list, exercise create, edit and delete with the data-changed notification for them, and how many workouts use an exercise |
 | `IWorkoutTemplateService` | Workout plans: list, load, save and delete |
@@ -225,6 +260,7 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
     ├── Models/                  SQLite tables and persisted enums
     ├── Platforms/Android/       MainActivity, MainApplication, manifest and Android-only code
     │   └── Resources/           Page transition animations and colours
+    ├── Progression/             Pure domain rules: the Epley e1RM and personal records
     ├── Resources/
     │   ├── AppIcon/  Fonts/  Images/  Raw/  Splash/
     │   ├── Strings/             AppResources.resx (English) and one AppResources.<code>.resx per language
@@ -298,6 +334,7 @@ The test folders mirror the app's:
 | `Constants/`, `Converters/`, `Extensions/`, `Threading/` | Formatting, conversion and helper logic |
 | `Data/` | Every repository, against a real SQLite file |
 | `Localization/` | Plural rules and formatting, and the consistency of the resource files |
+| `Progression/` | The e1RM formula, record selection and new-record detection, with exact expected values |
 | `Services/` | The services, over a real temporary database |
 | `ViewModels/` | The view models, over the real services |
 | `Testing/` | Shared helpers: temporary database, fake clock, culture scopes, data builders |

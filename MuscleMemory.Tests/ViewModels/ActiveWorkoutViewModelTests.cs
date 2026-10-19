@@ -349,6 +349,113 @@ public sealed class ActiveWorkoutViewModelTests : IAsyncLifetime
         Assert.False(Workout.SetActions.IsActionSheetOpen);
     }
 
+    [Fact]
+    public async Task SaveSet_EqualThenBeyondTheFinishedHistory_MarksOnlyTheSetBeyondIt()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+
+        await LogAsync(100, 5);
+        await LogAsync(102.5, 5);
+
+        Assert.Equal([false, true], Workout.CurrentSets.Select(item => item.IsNewRecord));
+        Assert.Equal("Set 2, 102.5 kg, 5 reps, new record", Workout.CurrentSets[1].Description);
+    }
+
+    [Fact]
+    public async Task SaveSet_EqualToTheSessionsOwnRecord_IsNotMarkedAgain()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+
+        await LogAsync(102.5, 5);
+        await LogAsync(102.5, 5);
+
+        Assert.Equal([true, false], Workout.CurrentSets.Select(item => item.IsNewRecord));
+    }
+
+    [Fact]
+    public async Task SaveSet_HigherEstimateAtALighterWeight_IsANewRecord()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+
+        await LogAsync(95, 8);
+
+        Assert.True(Assert.Single(Workout.CurrentSets).IsNewRecord);
+    }
+
+    [Fact]
+    public async Task SaveSet_ExerciseWithoutFinishedHistory_MarksNothing()
+    {
+        await StartAsync(_push);
+
+        await LogAsync(60, 5);
+        await LogAsync(100, 5);
+
+        Assert.All(Workout.CurrentSets, item => Assert.False(item.IsNewRecord));
+    }
+
+    [Fact]
+    public async Task SetActionsDelete_NewRecord_RecomputesTheMarks()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+        await LogAsync(105, 5);
+        await LogAsync(102.5, 5);
+        Assert.Equal([true, false], Workout.CurrentSets.Select(item => item.IsNewRecord));
+        _ui.AnswerConfirmations(true);
+
+        Workout.SetActions.ShowCommand.Execute(Workout.CurrentSets[0].Set);
+        await Workout.SetActions.DeleteCommand.ExecuteAsync(null);
+
+        var remaining = Assert.Single(Workout.CurrentSets);
+        Assert.Equal((102.5, true), (remaining.Set.Weight, remaining.IsNewRecord));
+    }
+
+    [Fact]
+    public async Task SetActionsEdit_NewRecordEditedDown_RemovesTheMark()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+        await LogAsync(105, 5);
+
+        Workout.SetActions.ShowCommand.Execute(Workout.CurrentSets[0].Set);
+        await Workout.SetActions.EditCommand.ExecuteAsync(null);
+        Workout.SetActions.Editor.WeightInput = "100";
+        await Workout.SetActions.SaveEditorCommand.ExecuteAsync(null);
+
+        Assert.False(Assert.Single(Workout.CurrentSets).IsNewRecord);
+    }
+
+    [Fact]
+    public async Task UndoLastSet_NewRecord_RemovesItAndItsMark()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        await StartAsync(_push);
+        await LogAsync(90, 5);
+        await LogAsync(105, 5);
+
+        await Workout.UndoLastSetCommand.ExecuteAsync(null);
+
+        Assert.False(Assert.Single(Workout.CurrentSets).IsNewRecord);
+    }
+
+    [Fact]
+    public async Task LoadState_SessionWithANewRecord_RestoresTheMark()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 100, 5));
+        var started = await _ui.App.Data.StartAsync(_push);
+        await _ui.App.Data.LogSetAsync(started.Exercises[0], 90, 5);
+        await _ui.App.Data.LogSetAsync(started.Exercises[0], 110, 3);
+        await _ui.App.Data.SaveActiveStateAsync(started);
+
+        await Workout.LoadStateAsync();
+
+        Assert.Equal([false, true], Workout.CurrentSets.Select(item => item.IsNewRecord));
+    }
+
     [Fact(Timeout = TimeoutMilliseconds)]
     public async Task FinishWhileConfirming_OtherCommands_AreRefused()
     {
@@ -629,6 +736,21 @@ public sealed class ActiveWorkoutViewModelTests : IAsyncLifetime
         Assert.Equal("82,5", Workout.SetInput.WeightInput);
         Assert.Contains(nameof(ActiveWorkoutViewModel.TargetText), changed);
         Assert.Contains(nameof(ActiveWorkoutViewModel.ProgressCaption), changed);
+    }
+
+    [Fact]
+    public async Task LanguageChange_NewRecord_KeepsTheMarkInTheNewLanguage()
+    {
+        using var defaults = new DefaultCultureScope();
+        _ui.Localization.RestoreSavedLanguage();
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        await StartAsync(_push);
+        await LogAsync(82.5, 5);
+
+        _ui.Localization.ChangeLanguage(CultureInfo.GetCultureInfo(Cultures.PolishLanguage));
+
+        var item = Assert.Single(Workout.CurrentSets);
+        Assert.Equal((true, "Seria 1, 82,5 kg, 5 powtórzeń, nowy rekord"), (item.IsNewRecord, item.Description));
     }
 
     [Fact]
