@@ -630,4 +630,40 @@
   <data name="EquipmentOther" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="LabelRecords" xml:space="preserve">
+    <value>Records</value>
+  </data>
+  <data name="LabelSessions" xml:space="preserve">
+    <value>Sessions</value>
+  </data>
+  <data name="RecordHeaviestWeight" xml:space="preserve">
+    <value>Heaviest weight</value>
+  </data>
+  <data name="RecordBestOneRepMax" xml:space="preserve">
+    <value>Estimated 1RM</value>
+  </data>
+  <data name="RecordBestSessionVolume" xml:space="preserve">
+    <value>Best session volume</value>
+  </data>
+  <data name="RecordMostReps" xml:space="preserve">
+    <value>Most reps in a set</value>
+  </data>
+  <data name="RecordCaptionFormat" xml:space="preserve">
+    <value>{0}&#xA;{1}</value>
+  </data>
+  <data name="OneRepMaxFormat" xml:space="preserve">
+    <value>{0:#,##0.#} kg</value>
+  </data>
+  <data name="HeaviestWeightDescriptionFormat" xml:space="preserve">
+    <value>Heaviest weight: {0} for {1}, achieved on {2}.</value>
+  </data>
+  <data name="BestOneRepMaxDescriptionFormat" xml:space="preserve">
+    <value>Estimated one-rep max: {0}, achieved on {1}.</value>
+  </data>
+  <data name="BestSessionVolumeDescriptionFormat" xml:space="preserve">
+    <value>Best session volume: {0}, achieved on {1}.</value>
+  </data>
+  <data name="MostRepsDescriptionFormat" xml:space="preserve">
+    <value>Most reps in a set: {0}, achieved on {1}.</value>
+  </data>
 </root>

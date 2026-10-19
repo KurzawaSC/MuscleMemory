@@ -20,10 +20,32 @@
                              Message="{loc:Text EmptyExerciseHistory}"
                              IsVisible="{Binding ListState.IsEmpty}" />
 
-        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Margin="{markup:Gutter Top=8}">
+        <CollectionView Grid.Row="2" ItemsSource="{Binding History}" Header="{Binding Records}" Margin="{markup:Gutter Top=8}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="{StaticResource CardSpacing}" />
             </CollectionView.ItemsLayout>
+            <CollectionView.HeaderTemplate>
+                <DataTemplate x:DataType="viewmodels:PersonalRecordsItem">
+                    <VerticalStackLayout Spacing="8" Padding="0,0,0,4">
+                        <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelRecords}" />
+                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="10" BindableLayout.ItemsSource="{Binding Records}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:PersonalRecordItem">
+                                    <controls:StatTile Grid.Row="{Binding Row}"
+                                                       Grid.Column="{Binding Column}"
+                                                       Margin="0,0,0,10"
+                                                       Padding="14"
+                                                       ContentSpacing="2"
+                                                       Value="{Binding ValueText}"
+                                                       Caption="{Binding Caption}"
+                                                       Description="{Binding Description}" />
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </Grid>
+                        <Label Style="{StaticResource OverlineLabel}" Text="{loc:Text LabelSessions}" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.HeaderTemplate>
             <CollectionView.Footer>
                 <BoxView HeightRequest="20" Color="Transparent" />
             </CollectionView.Footer>
