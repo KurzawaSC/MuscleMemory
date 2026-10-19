@@ -18,10 +18,11 @@ internal sealed class ProgressChartDrawable(ProgressChart chart) : IDrawable
     private const float MinMarkerSpacing = 8;
     private const float Half = 0.5f;
     private const float BaselineToCenter = 0.35f;
-    private const string MeasuredDigit = "0";
 
     private static readonly float[] TrendDash = [4, 4];
     private static readonly Microsoft.Maui.Graphics.Font LabelFont = new(FontFamilies.BarlowSemiCondensedFile);
+
+    private ChartLabelSizes? _labels;
 
     public IReadOnlyList<float> PointXs { get; private set; } = [];
 
@@ -38,19 +39,18 @@ internal sealed class ProgressChartDrawable(ProgressChart chart) : IDrawable
         canvas.FontSize = fontSize;
         canvas.FontColor = chart.LabelColor;
 
-        var labelHeight = canvas.GetStringSize(MeasuredDigit, LabelFont, fontSize).Height;
-        var labelWidth = model.YTicks.Max(tick => canvas.GetStringSize(tick.Label, LabelFont, fontSize).Width);
+        var labels = LabelSizes(canvas, model, fontSize);
         var plot = new RectF(
-            dirtyRect.Left + labelWidth + LabelGap,
-            dirtyRect.Top + (labelHeight * Half),
-            dirtyRect.Width - labelWidth - LabelGap - SelectedRadius,
-            dirtyRect.Height - (labelHeight * Half) - labelHeight - LabelGap);
+            dirtyRect.Left + labels.ValueWidth + LabelGap,
+            dirtyRect.Top + (labels.Height * Half),
+            dirtyRect.Width - labels.ValueWidth - LabelGap - SelectedRadius,
+            dirtyRect.Height - (labels.Height * Half) - labels.Height - LabelGap);
         var x = new LinearScale(model.FirstX, model.LastX, plot.Left + SelectedRadius, plot.Right - SelectedRadius);
         var y = new LinearScale(model.MinimumY, model.MaximumY, plot.Bottom, plot.Top);
         List<PointF> points = [.. model.Points.Select(point => new PointF(x.Map(point.X), y.Map(point.Y)))];
 
-        DrawValueAxis(canvas, model, plot, y, fontSize);
-        DrawDateAxis(canvas, model, dirtyRect, plot, x, fontSize);
+        DrawValueAxis(canvas, model, labels, plot, y);
+        DrawDateAxis(canvas, model, labels, dirtyRect, plot, x);
         DrawLine(canvas, points);
         DrawMarkers(canvas, points, plot);
         DrawTrend(canvas, model, x, y);
@@ -59,28 +59,38 @@ internal sealed class ProgressChartDrawable(ProgressChart chart) : IDrawable
         PointXs = [.. points.Select(point => point.X)];
     }
 
-    private void DrawValueAxis(ICanvas canvas, ChartModel model, RectF plot, LinearScale y, float fontSize)
+    private ChartLabelSizes LabelSizes(ICanvas canvas, ChartModel model, float fontSize)
+    {
+        if (_labels is not { } labels || !labels.Fits(model, fontSize))
+        {
+            _labels = labels = ChartLabelSizes.Measure(canvas, model, LabelFont, fontSize);
+        }
+
+        return labels;
+    }
+
+    private void DrawValueAxis(ICanvas canvas, ChartModel model, ChartLabelSizes labels, RectF plot, LinearScale y)
     {
         canvas.StrokeColor = chart.GridColor;
         canvas.StrokeSize = GridWidth;
 
-        foreach (var tick in model.YTicks)
+        foreach (var (tick, width) in model.YTicks.Zip(labels.ValueWidths))
         {
             var tickY = y.Map(tick.Value);
             canvas.DrawLine(plot.Left, tickY, plot.Right, tickY);
-            canvas.DrawString(tick.Label, plot.Left - LabelGap, tickY + (fontSize * BaselineToCenter), HorizontalAlignment.Right);
+            canvas.DrawString(tick.Label, plot.Left - LabelGap - width, tickY + (labels.FontSize * BaselineToCenter), HorizontalAlignment.Left);
         }
     }
 
-    private static void DrawDateAxis(ICanvas canvas, ChartModel model, RectF bounds, RectF plot, LinearScale x, float fontSize)
+    private static void DrawDateAxis(ICanvas canvas, ChartModel model, ChartLabelSizes labels, RectF bounds, RectF plot, LinearScale x)
     {
-        var baseline = plot.Bottom + LabelGap + fontSize;
+        var baseline = plot.Bottom + LabelGap + labels.FontSize;
 
-        foreach (var tick in model.XTicks)
+        foreach (var (tick, width) in model.XTicks.Zip(labels.DateWidths))
         {
-            var halfWidth = canvas.GetStringSize(tick.Label, LabelFont, fontSize).Width * Half;
+            var halfWidth = width * Half;
             var center = Math.Clamp(x.Map(tick.Value), plot.Left + halfWidth, bounds.Right - halfWidth);
-            canvas.DrawString(tick.Label, center, baseline, HorizontalAlignment.Center);
+            canvas.DrawString(tick.Label, center - halfWidth, baseline, HorizontalAlignment.Left);
         }
     }
 
