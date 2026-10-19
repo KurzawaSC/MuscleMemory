@@ -666,4 +666,10 @@
   <data name="MostRepsDescriptionFormat" xml:space="preserve">
     <value>Most reps in a set: {0}, achieved on {1}.</value>
   </data>
+  <data name="BadgeNewRecord" xml:space="preserve">
+    <value>PR</value>
+  </data>
+  <data name="NewRecordSetDescriptionFormat" xml:space="preserve">
+    <value>{0}, new record</value>
+  </data>
 </root>

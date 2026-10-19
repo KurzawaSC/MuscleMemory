@@ -22,6 +22,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IAudioCueService _audioCues;
     private readonly IDialogService _dialogs;
     private readonly IWorkoutSummaryService _summaryService;
+    private readonly IPersonalRecordService _personalRecords;
     private readonly INavigationStackService _navigationStack;
     private readonly INavigationService _navigation;
     private readonly IHapticService _haptics;
@@ -128,6 +129,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IAudioCueService audioCues,
         IDialogService dialogs,
         IWorkoutSummaryService summaryService,
+        IPersonalRecordService personalRecords,
         INavigationStackService navigationStack,
         INavigationService navigation,
         IHapticService haptics,
@@ -140,6 +142,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _audioCues = audioCues;
         _dialogs = dialogs;
         _summaryService = summaryService;
+        _personalRecords = personalRecords;
         _navigationStack = navigationStack;
         _navigation = navigation;
         _haptics = haptics;
@@ -198,7 +201,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
 
         OnPropertyChanged(nameof(ProgressCaption));
-        CurrentSets.ReplaceAll(CurrentSets.Select(item => LoggedSetItem.Create(item.Set)).ToList());
+        CurrentSets.ReplaceAll(CurrentSets.Select(item => LoggedSetItem.Create(item.Set, item.IsNewRecord)).ToList());
         SetInput.RefreshText();
         SetActions.RefreshText();
         Rest.RefreshText();
@@ -391,10 +394,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private async Task LoadSetsForCurrentExerciseAsync()
     {
         var sets = await _sessions.GetSetsAsync(CurrentExercise.Id);
-        CurrentSets.ReplaceAll(sets.Select(LoggedSetItem.Create));
+        var newRecords = await FindNewRecordsOfCurrentExerciseAsync();
+        CurrentSets.ReplaceAll(sets.Select(set => LoggedSetItem.Create(set, newRecords.Contains(set.Id))));
 
         HasSavedSets = CurrentSets.Any();
     }
+
+    private Task<IReadOnlySet<int>> FindNewRecordsOfCurrentExerciseAsync() =>
+        _personalRecords.FindNewRecordsAsync([.. Exercises.Where(exercise => exercise.ExerciseId == CurrentExercise.ExerciseId)]);
 
     private void ShowSetProgress()
     {
@@ -443,9 +450,10 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
 
         await _sessions.AddSetAsync(newSet);
+        var newRecords = await FindNewRecordsOfCurrentExerciseAsync();
         _haptics.Click();
         SetInput.Fill(newSet.Weight, newSet.Reps);
-        CurrentSets.Add(LoggedSetItem.Create(newSet));
+        CurrentSets.Add(LoggedSetItem.Create(newSet, newRecords.Contains(newSet.Id)));
         HasSavedSets = true;
         if (CurrentExercise.BreakTimeInSeconds > 0)
         {

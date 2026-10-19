@@ -708,4 +708,10 @@
   <data name="MostRepsDescriptionFormat" xml:space="preserve">
     <value>Rekord powtórzeń w serii: {0}, osiągnięty {1}.</value>
   </data>
+  <data name="BadgeNewRecord" xml:space="preserve">
+    <value>Rekord</value>
+  </data>
+  <data name="NewRecordSetDescriptionFormat" xml:space="preserve">
+    <value>{0}, nowy rekord</value>
+  </data>
 </root>
