@@ -28,7 +28,7 @@ public sealed class TestApp : IAsyncDisposable
         ActiveSessions = new ActiveWorkoutSessionService(Workouts, Sessions, SessionExercises, Sets, ActiveState);
         History = new HistoryQueryService(Sessions, SessionExercises, Sets);
         Records = new PersonalRecordService(Sets);
-        Summary = new WorkoutSummaryService(Sets);
+        Summary = new WorkoutSummaryService(Sets, Records);
         Maintenance = new DatabaseMaintenanceService(
             Database.Context, Exercises, Workouts, Sessions, SessionExercises, Sets, ActiveState, DataChanges, Database.FileSystem);
 

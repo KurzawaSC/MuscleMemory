@@ -13,9 +13,14 @@ public sealed class WorkoutSummaryServiceTests
     private const int SquatId = 13;
 
     private readonly IWorkoutSetRepository _sets = Substitute.For<IWorkoutSetRepository>();
+    private readonly IPersonalRecordService _records = Substitute.For<IPersonalRecordService>();
     private readonly WorkoutSummaryService _service;
 
-    public WorkoutSummaryServiceTests() => _service = new WorkoutSummaryService(_sets);
+    public WorkoutSummaryServiceTests()
+    {
+        _records.FindNewRecordsAsync(default!).ReturnsForAnyArgs(new HashSet<int>());
+        _service = new WorkoutSummaryService(_sets, _records);
+    }
 
     [Fact]
     public async Task BuildAsync_PerformedExercises_ReadsSetsInOneBatch()
@@ -109,6 +114,25 @@ public sealed class WorkoutSummaryServiceTests
 
         Assert.Equal(400, summary.TotalVolume);
         Assert.Equal(1, Assert.Single(summary.Exercises).Sets.Single().SetNumber);
+    }
+
+    [Fact]
+    public async Task BuildAsync_SessionBeatingItsHistory_CountsNewRecordsPerExercise()
+    {
+        await using var app = new TestApp();
+        var bench = await app.Data.ExerciseAsync("Bench");
+        var press = await app.Data.ExerciseAsync("Press");
+        var push = await app.Data.WorkoutAsync("Push", bench, press);
+        await app.Data.CompletedSessionAsync(push, TestApp.StartUtc, new LoggedSet(0, 100, 5), new LoggedSet(1, 50, 5));
+        var started = await app.Data.StartAsync(push);
+        await app.Data.LogSetAsync(started.Exercises[0], 102.5, 5);
+        await app.Data.LogSetAsync(started.Exercises[0], 105, 5);
+        await app.Data.LogSetAsync(started.Exercises[1], 50, 5);
+
+        var summary = await app.Summary.BuildAsync(started.Exercises);
+
+        Assert.Equal([("Bench", 2), ("Press", 0)], summary.Exercises.Select(exercise => (exercise.ExerciseName, exercise.NewRecordCount)));
+        Assert.Equal(2, summary.NewRecordCount);
     }
 
     [Fact]

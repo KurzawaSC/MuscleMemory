@@ -98,8 +98,19 @@ public sealed class SummaryExerciseItemTests
         Assert.Empty(item.Sets);
     }
 
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(1, true)]
+    [InlineData(2, true)]
+    public void Create_NewRecordCount_MarksExercisesThatSetOne(int newRecords, bool expected)
+    {
+        var item = SummaryExerciseItem.Create(new CompletedExerciseSummary(ExerciseName, [Set(1, 100, 5), Set(2, 105, 5)], newRecords));
+
+        Assert.Equal(expected, item.HasNewRecord);
+    }
+
     private static SummaryExerciseItem Create(params WorkoutSet[] sets) =>
-        SummaryExerciseItem.Create(new CompletedExerciseSummary(ExerciseName, sets));
+        SummaryExerciseItem.Create(new CompletedExerciseSummary(ExerciseName, sets, 0));
 
     private static WorkoutSet Set(int setNumber, double weight, int reps) =>
         new() { SetNumber = setNumber, Weight = weight, Reps = reps };

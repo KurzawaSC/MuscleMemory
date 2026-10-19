@@ -4,11 +4,12 @@ using MuscleMemory.Models;
 
 namespace MuscleMemory.Services;
 
-public sealed class WorkoutSummaryService(IWorkoutSetRepository setRepository) : IWorkoutSummaryService
+public sealed class WorkoutSummaryService(IWorkoutSetRepository setRepository, IPersonalRecordService personalRecords) : IWorkoutSummaryService
 {
     public async Task<WorkoutSummary> BuildAsync(IReadOnlyList<SessionExercise> performedExercises)
     {
         var loggedSets = await setRepository.GetForSessionExercisesAsync([.. performedExercises.Select(performed => performed.Id)]);
+        var newRecords = await personalRecords.FindNewRecordsAsync(performedExercises);
 
         var setsByExercise = loggedSets
             .GroupBy(set => set.SessionExerciseId)
@@ -27,7 +28,7 @@ public sealed class WorkoutSummaryService(IWorkoutSetRepository setRepository) :
             }
 
             totalVolume += sets.TotalVolume();
-            completedExercises.Add(new CompletedExerciseSummary(performedExercise.ExerciseName, sets));
+            completedExercises.Add(new CompletedExerciseSummary(performedExercise.ExerciseName, sets, sets.Count(set => newRecords.Contains(set.Id))));
         }
 
         return new WorkoutSummary(totalVolume, completedExercises);

@@ -714,4 +714,19 @@
   <data name="NewRecordSetDescriptionFormat" xml:space="preserve">
     <value>{0}, nowy rekord</value>
   </data>
+  <data name="NewRecordsCaption_One" xml:space="preserve">
+    <value>nowy rekord</value>
+  </data>
+  <data name="NewRecordsCaption_Few" xml:space="preserve">
+    <value>nowe rekordy</value>
+  </data>
+  <data name="NewRecordsCaption_Many" xml:space="preserve">
+    <value>nowych rekordów</value>
+  </data>
+  <data name="NewRecordsCaption_Other" xml:space="preserve">
+    <value>nowego rekordu</value>
+  </data>
+  <data name="NewRecordsDescriptionFormat" xml:space="preserve">
+    <value>{0:N0} {1}: {2}.</value>
+  </data>
 </root>

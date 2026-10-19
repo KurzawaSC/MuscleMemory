@@ -672,4 +672,13 @@
   <data name="NewRecordSetDescriptionFormat" xml:space="preserve">
     <value>{0}, new record</value>
   </data>
+  <data name="NewRecordsCaption_One" xml:space="preserve">
+    <value>new record</value>
+  </data>
+  <data name="NewRecordsCaption_Other" xml:space="preserve">
+    <value>new records</value>
+  </data>
+  <data name="NewRecordsDescriptionFormat" xml:space="preserve">
+    <value>{0:N0} {1}: {2}.</value>
+  </data>
 </root>

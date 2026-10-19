@@ -5,7 +5,7 @@ using MuscleMemory.Services;
 
 namespace MuscleMemory.ViewModels;
 
-public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText, IReadOnlyList<SummarySetBar> Sets)
+public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText, IReadOnlyList<SummarySetBar> Sets, bool HasNewRecord)
 {
     public static SummaryExerciseItem Create(CompletedExerciseSummary exercise)
     {
@@ -20,6 +20,7 @@ public sealed record SummaryExerciseItem(string ExerciseName, string VolumeText,
                 set.SetNumber,
                 string.Format(CultureInfo.CurrentCulture, AppResources.LoggedSetFormat, set.Weight, set.Reps),
                 new Rect(0, 0, bestVolume > 0 ? set.Volume() / bestVolume : 0, 1),
-                hasSingleBest && set.Volume() == bestVolume))]);
+                hasSingleBest && set.Volume() == bestVolume))],
+            exercise.NewRecordCount > 0);
     }
 }

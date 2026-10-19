@@ -112,14 +112,86 @@ public sealed class WorkoutSummaryViewModelTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Show_NoNewRecords_HidesTheRecordsTile()
+    {
+        await SeedHistoryAsync();
+
+        await FinishAsync(Duration, (100, 5), (80, 5));
+
+        Assert.Equal((0, false), (Summary.NewRecordCount, Summary.HasNewRecords));
+        Assert.All(Summary.Exercises, exercise => Assert.False(exercise.HasNewRecord));
+    }
+
+    [Fact]
+    public async Task Show_NewRecords_CountsThemAndNamesTheirExercises()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await SeedHistoryAsync();
+
+        await FinishAsync(Duration, (102.5, 5), (105, 5), (80, 5), (52.5, 5));
+
+        Assert.Equal((3, true, "new records"), (Summary.NewRecordCount, Summary.HasNewRecords, Summary.NewRecordsCaption));
+        Assert.Equal("3 new records: Bench Press, Overhead Press.", Summary.NewRecordsDescription);
+        Assert.Equal([true, true], Summary.Exercises.Select(exercise => exercise.HasNewRecord));
+    }
+
+    [Fact]
+    public async Task Show_SingleNewRecord_UsesTheSingularCaption()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await SeedHistoryAsync();
+
+        await FinishAsync(Duration, (102.5, 5), (90, 5));
+
+        Assert.Equal((1, "new record"), (Summary.NewRecordCount, Summary.NewRecordsCaption));
+        Assert.Equal("1 new record: Bench Press.", Summary.NewRecordsDescription);
+    }
+
+    [Theory]
+    [InlineData(1, "nowy rekord")]
+    [InlineData(2, "nowe rekordy")]
+    [InlineData(5, "nowych rekordów")]
+    public async Task Show_PolishNewRecords_UsePolishPlurals(int records, string caption)
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+        await SeedHistoryAsync();
+        (double, int)[] benchThenPress = [(102.5, 5), (105, 5), (107.5, 5), (52.5, 5), (55, 5)];
+
+        await FinishAsync(Duration, [.. benchThenPress.Take(records)]);
+
+        Assert.Equal((records, caption), (Summary.NewRecordCount, Summary.NewRecordsCaption));
+        Assert.StartsWith($"{records} {caption}: {BenchPress}", Summary.NewRecordsDescription);
+    }
+
+    [Fact]
+    public async Task RefreshText_LanguageChangedWithNewRecords_ReformatsTheRecordsTile()
+    {
+        await SeedHistoryAsync();
+        using (new CultureScope(Cultures.EnglishUs))
+        {
+            await FinishAsync(Duration, (102.5, 5), (105, 5));
+        }
+
+        using var polish = new CultureScope(Cultures.Polish);
+        var changed = PropertyChanges.Record(Summary);
+
+        Summary.RefreshText();
+
+        Assert.Equal(("nowe rekordy", "2 nowe rekordy: Bench Press."), (Summary.NewRecordsCaption, Summary.NewRecordsDescription));
+        Assert.Contains(nameof(WorkoutSummaryViewModel.NewRecordsCaption), changed);
+    }
+
+    [Fact]
     public async Task Clear_LeavingTheSummary_ResetsEveryTile()
     {
-        await FinishAsync(Duration, (80, 5));
+        await SeedHistoryAsync();
+        await FinishAsync(Duration, (102.5, 5));
 
         await _ui.ActiveWorkout.ExitWorkoutCommand.ExecuteAsync(null);
 
         Assert.False(Summary.IsVisible);
         Assert.Equal(("00:00", 0.0, 0, string.Empty), (Summary.TotalTimeText, Summary.TotalVolume, Summary.TotalSets, Summary.DateText));
+        Assert.Equal((0, false, string.Empty), (Summary.NewRecordCount, Summary.HasNewRecords, Summary.NewRecordsDescription));
         Assert.Empty(Summary.Exercises);
     }
 
@@ -132,6 +204,9 @@ public sealed class WorkoutSummaryViewModelTests : IAsyncLifetime
         Assert.Equal(("00:00", 0, "sets"), (Summary.TotalTimeText, Summary.TotalSets, Summary.TotalSetsCaption));
         Assert.Empty(Summary.Exercises);
     }
+
+    private Task SeedHistoryAsync() =>
+        _ui.App.Data.CompletedSessionAsync(_push, _ui.Clock.GetUtcNow().UtcDateTime, new LoggedSet(0, 100, 5), new LoggedSet(1, 50, 5));
 
     private async Task FinishAsync(TimeSpan duration, params (double Weight, int Reps)[] sets)
     {
