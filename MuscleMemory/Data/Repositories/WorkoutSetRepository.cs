@@ -1,4 +1,5 @@
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using SQLite;
 
 namespace MuscleMemory.Data.Repositories;
@@ -26,6 +27,31 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
             ORDER BY session.StartTimeUtc DESC, earlier.[Order] DESC
             LIMIT 1)
         ORDER BY SetNumber
+        """;
+    private const string SelectRepMaxesFormat = """
+        SELECT SetId, SessionId, ExerciseId, DateUtc, Weight, Reps FROM (
+            SELECT logged.Id AS SetId,
+                   session.Id AS SessionId,
+                   performed.ExerciseId AS ExerciseId,
+                   session.StartTimeUtc AS DateUtc,
+                   logged.Weight AS Weight,
+                   logged.Reps AS Reps,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY performed.ExerciseId, logged.Reps
+                       ORDER BY logged.Weight DESC, session.StartTimeUtc, logged.Id) AS Rank
+            FROM WorkoutSet logged
+            JOIN SessionExercise performed ON performed.Id = logged.SessionExerciseId
+            JOIN WorkoutSession session ON session.Id = performed.WorkoutSessionId
+            WHERE session.EndTimeUtc IS NOT NULL AND logged.Reps >= ? AND performed.ExerciseId IN ({0}))
+        WHERE Rank = 1
+        """;
+    private const string SelectSessionVolumes = """
+        SELECT session.Id AS SessionId, session.StartTimeUtc AS DateUtc, SUM(logged.Weight * logged.Reps) AS Volume
+        FROM WorkoutSet logged
+        JOIN SessionExercise performed ON performed.Id = logged.SessionExerciseId
+        JOIN WorkoutSession session ON session.Id = performed.WorkoutSessionId
+        WHERE session.EndTimeUtc IS NOT NULL AND logged.Reps >= ? AND performed.ExerciseId = ?
+        GROUP BY session.Id, session.StartTimeUtc
         """;
 
     public async Task AddAsync(WorkoutSet set)
@@ -94,6 +120,28 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     {
         var connection = await context.GetConnectionAsync();
         return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, currentSessionId);
+    }
+
+    public async Task<List<PerformedSet>> GetRepMaxesAsync(IReadOnlyCollection<int> exerciseIds)
+    {
+        if (exerciseIds.Count == 0)
+        {
+            return [];
+        }
+
+        var connection = await context.GetConnectionAsync();
+        var query = string.Format(SelectRepMaxesFormat, SqlPlaceholders.For(exerciseIds.Count));
+        var repMaxes = await connection.QueryAsync<PerformedSet>(query, [PersonalRecords.MinReps, .. exerciseIds.Select(id => (object)id)]);
+
+        return [.. repMaxes.Select(set => set with { DateUtc = StoredDateTime.AsUtc(set.DateUtc) })];
+    }
+
+    public async Task<List<SessionVolume>> GetSessionVolumesAsync(int exerciseId)
+    {
+        var connection = await context.GetConnectionAsync();
+        var volumes = await connection.QueryAsync<SessionVolume>(SelectSessionVolumes, PersonalRecords.MinReps, exerciseId);
+
+        return [.. volumes.Select(volume => volume with { DateUtc = StoredDateTime.AsUtc(volume.DateUtc) })];
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSet>();

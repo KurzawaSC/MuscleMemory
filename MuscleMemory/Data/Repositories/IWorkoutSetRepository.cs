@@ -1,4 +1,5 @@
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using SQLite;
 
 namespace MuscleMemory.Data.Repositories;
@@ -11,5 +12,7 @@ public interface IWorkoutSetRepository
     Task<List<WorkoutSet>> GetForSessionExerciseAsync(int sessionExerciseId);
     Task<List<WorkoutSet>> GetForSessionExercisesAsync(IReadOnlyCollection<int> sessionExerciseIds);
     Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId);
+    Task<List<PerformedSet>> GetRepMaxesAsync(IReadOnlyCollection<int> exerciseIds);
+    Task<List<SessionVolume>> GetSessionVolumesAsync(int exerciseId);
     void Clear(SQLiteConnection transaction);
 }
