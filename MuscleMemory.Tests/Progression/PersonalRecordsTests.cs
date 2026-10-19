@@ -264,6 +264,60 @@ public sealed class PersonalRecordsTests
         Assert.Equal([11], marked.Order());
     }
 
+    [Fact]
+    public void KindsOf_NoEligibleSets_IsEmpty()
+    {
+        Assert.Empty(PersonalRecords.KindsOf([Set(1, 100, 0, day: 1)]));
+    }
+
+    [Fact]
+    public void KindsOf_WeightedSetsWithinTwelveReps_AreHeaviestEstimateAndVolume()
+    {
+        Assert.Equal(
+            [RecordKind.HeaviestWeight, RecordKind.BestOneRepMax, RecordKind.BestSessionVolume],
+            PersonalRecords.KindsOf([Set(1, 100, 15, day: 1), Set(2, 80, 12, day: 2)]));
+    }
+
+    [Fact]
+    public void KindsOf_OnlyMoreThanTwelveReps_HasNoEstimate()
+    {
+        Assert.Equal([RecordKind.HeaviestWeight, RecordKind.BestSessionVolume], PersonalRecords.KindsOf([Set(1, 40, 15, day: 1)]));
+    }
+
+    [Fact]
+    public void KindsOf_BodyweightOnly_IsMostReps()
+    {
+        Assert.Equal([RecordKind.MostReps], PersonalRecords.KindsOf([Set(1, Bodyweight, 12, day: 1, exercise: Dips)]));
+    }
+
+    [Fact]
+    public void KindsOf_GeneratedSets_AreTheKindsThatFindFinds()
+    {
+        const int seed = 20261019;
+        const int histories = 500;
+        const int mostSets = 6;
+        const int mostReps = 15;
+        double[] weights = [Bodyweight, 20, 60, 100];
+        var random = new Random(seed);
+
+        for (var history = 0; history < histories; history++)
+        {
+            List<PerformedSet> sets =
+            [
+                .. Enumerable.Range(1, random.Next(1, mostSets + 1))
+                             .Select(id => Set(id, weights[random.Next(weights.Length)], random.Next(0, mostReps + 1), day: random.Next(1, 4)))
+            ];
+            List<SessionVolume> volumes =
+            [
+                .. sets.Where(PersonalRecords.IsEligible)
+                       .GroupBy(set => set.SessionId)
+                       .Select(session => Volume(session.Key, session.Sum(set => set.Weight * set.Reps), session.Key))
+            ];
+
+            Assert.Equal(PersonalRecords.Find(sets, volumes).Kinds, PersonalRecords.KindsOf(sets));
+        }
+    }
+
     private static PerformedSet Set(int id, double weight, int reps, int day, int exercise = Bench) => new()
     {
         SetId = id,

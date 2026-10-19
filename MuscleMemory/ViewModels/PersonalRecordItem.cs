@@ -1,4 +1,6 @@
 using System.Globalization;
+using MuscleMemory.Constants;
+using MuscleMemory.Extensions;
 using MuscleMemory.Localization;
 using MuscleMemory.Progression;
 using MuscleMemory.Resources.Strings;
@@ -10,6 +12,16 @@ public sealed record PersonalRecordItem(string ValueText, string Caption, string
     public int Row { get; init; }
 
     public int Column { get; init; }
+
+    public static PersonalRecordItem Placeholder(RecordKind kind)
+    {
+        var label = kind.ToDisplayName();
+
+        return new PersonalRecordItem(
+            DisplayFormats.MissingValue,
+            Format(AppResources.RecordCaptionFormat, label, DisplayFormats.MissingValue),
+            label);
+    }
 
     public static PersonalRecordItem ForHeaviestWeight(PerformedSet set)
     {

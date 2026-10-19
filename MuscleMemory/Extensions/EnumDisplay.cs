@@ -1,4 +1,5 @@
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -40,5 +41,14 @@ public static class EnumDisplay
         ThemePreference.Light => AppResources.ThemeNameLight,
         ThemePreference.Dark => AppResources.ThemeNameDark,
         _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null)
+    };
+
+    public static string ToDisplayName(this RecordKind kind) => kind switch
+    {
+        RecordKind.HeaviestWeight => AppResources.RecordHeaviestWeight,
+        RecordKind.BestOneRepMax => AppResources.RecordBestOneRepMax,
+        RecordKind.BestSessionVolume => AppResources.RecordBestSessionVolume,
+        RecordKind.MostReps => AppResources.RecordMostReps,
+        _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
     };
 }

@@ -17,6 +17,25 @@ public static class PersonalRecords
             MostReps(eligible));
     }
 
+    public static IReadOnlyList<RecordKind> KindsOf(IEnumerable<PerformedSet> sets)
+    {
+        List<PerformedSet> eligible = [.. sets.Where(IsEligible)];
+
+        if (eligible.Count == 0)
+        {
+            return [];
+        }
+
+        if (eligible.All(set => set.IsBodyweight))
+        {
+            return [RecordKind.MostReps];
+        }
+
+        return eligible.Any(set => set.EstimatedOneRepMax is not null)
+            ? [RecordKind.HeaviestWeight, RecordKind.BestOneRepMax, RecordKind.BestSessionVolume]
+            : [RecordKind.HeaviestWeight, RecordKind.BestSessionVolume];
+    }
+
     public static IReadOnlySet<int> FindNewRecords(IEnumerable<PerformedSet> history, IEnumerable<PerformedSet> session)
     {
         var bests = history.Where(IsEligible)

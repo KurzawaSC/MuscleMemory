@@ -1,5 +1,6 @@
 using MuscleMemory.Extensions;
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using MuscleMemory.Services;
 using MuscleMemory.Tests.Testing;
 
@@ -74,6 +75,19 @@ public sealed class EnumDisplayTests
         AssertDistinctLabels(Enum.GetValues<MuscleGroup>().Select(EnumDisplay.ToDisplayName));
         AssertDistinctLabels(Enum.GetValues<EquipmentType>().Select(EnumDisplay.ToDisplayName));
         AssertDistinctLabels(Enum.GetValues<ThemePreference>().Select(EnumDisplay.ToDisplayName));
+        AssertDistinctLabels(Enum.GetValues<RecordKind>().Select(EnumDisplay.ToDisplayName));
+    }
+
+    [Theory]
+    [InlineData(RecordKind.HeaviestWeight, "Heaviest weight")]
+    [InlineData(RecordKind.BestOneRepMax, "Estimated 1RM")]
+    [InlineData(RecordKind.BestSessionVolume, "Best session volume")]
+    [InlineData(RecordKind.MostReps, "Most reps in a set")]
+    public void ToDisplayName_RecordKindInEnglish_IsTheRecordTileLabel(RecordKind kind, string expected)
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        Assert.Equal(expected, kind.ToDisplayName());
     }
 
     [Fact]
@@ -82,6 +96,7 @@ public sealed class EnumDisplayTests
         Assert.Throws<ArgumentOutOfRangeException>(() => ((MuscleGroup)UndefinedMember).ToDisplayName());
         Assert.Throws<ArgumentOutOfRangeException>(() => ((EquipmentType)UndefinedMember).ToDisplayName());
         Assert.Throws<ArgumentOutOfRangeException>(() => ((ThemePreference)UndefinedMember).ToDisplayName());
+        Assert.Throws<ArgumentOutOfRangeException>(() => ((RecordKind)UndefinedMember).ToDisplayName());
     }
 
     private static void AssertDistinctLabels(IEnumerable<string> labels)

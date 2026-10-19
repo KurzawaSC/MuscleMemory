@@ -41,6 +41,22 @@ public sealed class PersonalRecordsItemTests
     }
 
     [Fact]
+    public void Placeholder_ExpectedKinds_ArrangesDashTilesLikeTheRecords()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        var item = PersonalRecordsItem.Placeholder([RecordKind.HeaviestWeight, RecordKind.BestOneRepMax, RecordKind.BestSessionVolume]);
+
+        Assert.Equal(
+            [
+                ("—", "Heaviest weight\n—", 0, 0),
+                ("—", "Estimated 1RM\n—", 0, 1),
+                ("—", "Best session volume\n—", 1, 0)
+            ],
+            item.Records.Select(record => (record.ValueText, record.Caption, record.Row, record.Column)));
+    }
+
+    [Fact]
     public void Create_NoRecords_IsEmpty()
     {
         Assert.Empty(PersonalRecordsItem.Create(new ExerciseRecords(null, null, null, null)).Records);

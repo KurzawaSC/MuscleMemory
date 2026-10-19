@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Localization;
+using MuscleMemory.Progression;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -48,12 +49,26 @@ public partial class ExerciseHistoryViewModel(
     private async Task LoadHistoryAsync()
     {
         var entries = await historyQueryService.GetExerciseHistoryAsync(_exerciseId);
-        var records = await personalRecords.GetRecordsAsync(_exerciseId);
-        Records = records.HasAny ? PersonalRecordsItem.Create(records) : null;
         History.ReplaceAll(entries.Select(ExerciseHistoryItem.Create));
         ListState.Complete(History.Count);
         SessionCountText = ListState.IsEmpty ? string.Empty : FormatSessionCount(History.Count);
+        await LoadRecordsAsync(PersonalRecords.KindsOf(entries.SelectMany(PerformedSets)));
     }
+
+    private async Task LoadRecordsAsync(IReadOnlyList<RecordKind> expectedKinds)
+    {
+        if (expectedKinds.Count == 0)
+        {
+            return;
+        }
+
+        Records = PersonalRecordsItem.Placeholder(expectedKinds);
+        var records = await personalRecords.GetRecordsAsync(_exerciseId);
+        Records = records.HasAny ? PersonalRecordsItem.Create(records) : null;
+    }
+
+    private static IEnumerable<PerformedSet> PerformedSets(ExerciseHistoryEntry entry) =>
+        entry.Sets.Select(set => new PerformedSet { Weight = set.Weight, Reps = set.Reps });
 
     private static string FormatSessionCount(int count) =>
         string.Format(CultureInfo.CurrentCulture, AppResources.SessionCountFormat, Plurals.Format(nameof(AppResources.SessionCount_Other), count));

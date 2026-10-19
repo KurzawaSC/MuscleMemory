@@ -94,6 +94,25 @@ public sealed class ExerciseHistoryViewModelTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Open_WeightedHistory_ListsTheSessionsUnderPlaceholderTilesBeforeTheRecordsArrive()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        await SeedAsync();
+        List<string> recordsShown = [];
+        _history.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ExerciseHistoryViewModel.Records))
+            {
+                recordsShown.Add($"{_history.History.Count} sessions: {string.Join(" | ", _history.Records?.Records.Select(record => record.ValueText) ?? [])}");
+            }
+        };
+
+        await OpenAsync(_bench);
+
+        Assert.Equal(["3 sessions: — | — | —", "3 sessions: 90 kg × 3 | 104.5 kg | 1,300 kg"], recordsShown);
+    }
+
+    [Fact]
     public async Task Open_BodyweightHistory_ShowsOnlyMostReps()
     {
         using var scope = new CultureScope(Cultures.EnglishUs);
