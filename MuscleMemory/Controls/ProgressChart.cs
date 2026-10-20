@@ -36,12 +36,15 @@ public class ProgressChart : GraphicsView
         BindableProperty.Create(nameof(GuideColor), typeof(Color), typeof(ProgressChart), Colors.Gray, propertyChanged: Redraw);
 
     private readonly ProgressChartDrawable _drawable;
+    private readonly ChartGesture _gesture = new(PlatformTouch.Slop);
 
     public ProgressChart()
     {
         Drawable = _drawable = new ProgressChartDrawable(this);
         StartInteraction += OnStartInteraction;
         DragInteraction += OnDragInteraction;
+        EndInteraction += OnEndInteraction;
+        CancelInteraction += OnCancelInteraction;
     }
 
     public ChartModel? Model
@@ -100,18 +103,51 @@ public class ProgressChart : GraphicsView
 
     private static void Redraw(BindableObject bindable, object oldValue, object newValue) => ((ProgressChart)bindable).Invalidate();
 
-    private void OnStartInteraction(object? sender, TouchEventArgs e) => SelectNearest(e, clearWhenMissed: true);
-
-    private void OnDragInteraction(object? sender, TouchEventArgs e) => SelectNearest(e, clearWhenMissed: false);
-
-    private void SelectNearest(TouchEventArgs e, bool clearWhenMissed)
+    private void OnStartInteraction(object? sender, TouchEventArgs e)
     {
-        if (e.Touches.Length == 0)
+        if (e.Touches is [var touch, ..])
+        {
+            _gesture.Begin(touch.X, touch.Y);
+        }
+    }
+
+    private void OnDragInteraction(object? sender, TouchEventArgs e)
+    {
+        if (e.Touches is not [var touch, ..])
         {
             return;
         }
 
-        var nearest = ChartHitTest.Nearest(_drawable.PointXs, e.Touches[0].X, TouchTolerance);
+        var wasHorizontal = _gesture.Kind == ChartGestureKind.HorizontalDrag;
+
+        if (_gesture.Move(touch.X, touch.Y) != ChartGestureKind.HorizontalDrag)
+        {
+            return;
+        }
+
+        if (!wasHorizontal)
+        {
+            PlatformTouch.ClaimGesture(this);
+        }
+
+        SelectNearest(touch, clearWhenMissed: false);
+    }
+
+    private void OnEndInteraction(object? sender, TouchEventArgs e)
+    {
+        if (e.Touches is [var touch, ..] && _gesture.EndAsTap(touch.X, touch.Y))
+        {
+            SelectNearest(touch, clearWhenMissed: true);
+        }
+
+        _gesture.Cancel();
+    }
+
+    private void OnCancelInteraction(object? sender, EventArgs e) => _gesture.Cancel();
+
+    private void SelectNearest(PointF touch, bool clearWhenMissed)
+    {
+        var nearest = ChartHitTest.Nearest(_drawable.PointXs, touch.X, TouchTolerance);
 
         if ((nearest is null && !clearWhenMissed) || (nearest ?? NoSelection) == SelectedIndex)
         {
