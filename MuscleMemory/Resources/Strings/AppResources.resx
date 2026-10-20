@@ -771,4 +771,25 @@
   <data name="ChartYearFormat" xml:space="preserve">
     <value>yyyy</value>
   </data>
+  <data name="LabelRepRangeFrom" xml:space="preserve">
+    <value>Reps from</value>
+  </data>
+  <data name="LabelRepRangeTo" xml:space="preserve">
+    <value>Reps to</value>
+  </data>
+  <data name="CaptionRepRange" xml:space="preserve">
+    <value>Optional rep range. With it, the workout suggests your next weight and reps.</value>
+  </data>
+  <data name="DescriptionRepRangeFrom" xml:space="preserve">
+    <value>Rep range, fewest reps</value>
+  </data>
+  <data name="DescriptionRepRangeTo" xml:space="preserve">
+    <value>Rep range, most reps</value>
+  </data>
+  <data name="RepRangeMissingBound" xml:space="preserve">
+    <value>Enter both or neither</value>
+  </data>
+  <data name="RepRangeOrderErrorFormat" xml:space="preserve">
+    <value>Enter at least {0}</value>
+  </data>
 </root>

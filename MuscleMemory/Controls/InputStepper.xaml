@@ -36,6 +36,7 @@
                        Style="{StaticResource StepperEntry}"
                        Text="{Binding Text, Source={x:Reference Root}}"
                        MaxLength="{Binding MaxLength, Source={x:Reference Root}}"
+                       SemanticProperties.Description="{Binding Description, Source={x:Reference Root}}"
                        Placeholder="—"
                        Keyboard="Numeric"
                        HorizontalTextAlignment="Center"

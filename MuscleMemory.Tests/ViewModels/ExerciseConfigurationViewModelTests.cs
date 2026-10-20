@@ -16,7 +16,7 @@ public sealed class ExerciseConfigurationViewModelTests
     public void New_Always_StartsFromTheDefaultPlan()
     {
         Assert.Equal(
-            new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE),
+            new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE, null, null),
             _configuration.ToConfiguration());
         Assert.Equal(DomainDefaults.BreakTimeInSeconds, _configuration.SelectedRestPreset.Seconds);
         Assert.Equal(FilledUpTo(DomainDefaults.TargetRPE), _configuration.RpeLevels);
@@ -39,7 +39,7 @@ public sealed class ExerciseConfigurationViewModelTests
 
         _configuration.BeginEdit(Planned(sets: 4, reps: 12, restSeconds: 90, rpe: 6));
 
-        Assert.Equal(new ExerciseConfiguration(4, 12, 90, 6), _configuration.ToConfiguration());
+        Assert.Equal(new ExerciseConfiguration(4, 12, 90, 6, null, null), _configuration.ToConfiguration());
         Assert.Equal((BenchPress, true, "Save"), (_configuration.ExerciseName, _configuration.IsEditing, _configuration.ConfirmText));
         Assert.Equal((90, false), (_configuration.SelectedRestPreset.Seconds, _configuration.IsCustomRest));
         Assert.Equal(FilledUpTo(6), _configuration.RpeLevels);
@@ -66,7 +66,7 @@ public sealed class ExerciseConfigurationViewModelTests
 
         Assert.Equal(("Squat", false, "Add to workout"), (_configuration.ExerciseName, _configuration.IsEditing, _configuration.ConfirmText));
         Assert.Equal(
-            new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE),
+            new ExerciseConfiguration(DomainDefaults.Sets, DomainDefaults.Reps, DomainDefaults.BreakTimeInSeconds, DomainDefaults.TargetRPE, null, null),
             _configuration.ToConfiguration());
         Assert.False(_configuration.IsCustomRest);
     }
@@ -110,13 +110,200 @@ public sealed class ExerciseConfigurationViewModelTests
         Assert.Equal(rpe, _configuration.ToConfiguration().TargetRPE);
     }
 
-    private static WorkoutExercise Planned(int sets, int reps, int restSeconds, int rpe) => new()
+    [Fact]
+    public void New_Always_HasNoRepRangeAndIsValid()
+    {
+        Assert.Equal((string.Empty, string.Empty), (_configuration.MinRepsInput, _configuration.MaxRepsInput));
+        Assert.Equal((string.Empty, string.Empty), (_configuration.MinRepsError, _configuration.MaxRepsError));
+        Assert.True(_configuration.IsValid);
+    }
+
+    [Fact]
+    public void BeginEdit_RepRange_LoadsItAndKeepsItInTheConfiguration()
+    {
+        _configuration.BeginEdit(Planned(sets: 3, reps: 10, restSeconds: 90, rpe: 8, minReps: 8, maxReps: 12));
+
+        Assert.Equal(("8", "12"), (_configuration.MinRepsInput, _configuration.MaxRepsInput));
+        Assert.Equal(new ExerciseConfiguration(3, 10, 90, 8, 8, 12), _configuration.ToConfiguration());
+    }
+
+    [Fact]
+    public void BeginNew_AfterEditingARange_ClearsTheRange()
+    {
+        _configuration.BeginEdit(Planned(sets: 3, reps: 10, restSeconds: 90, rpe: 8, minReps: 8, maxReps: 12));
+
+        _configuration.BeginNew("Squat");
+
+        Assert.Equal((string.Empty, string.Empty), (_configuration.MinRepsInput, _configuration.MaxRepsInput));
+        Assert.Equal((null, null), (_configuration.ToConfiguration().MinReps, _configuration.ToConfiguration().MaxReps));
+    }
+
+    [Theory]
+    [InlineData("8", "12", 8, 12)]
+    [InlineData("1", "1", 1, 1)]
+    [InlineData("10", "10", 10, 10)]
+    [InlineData("1", "30", 1, 30)]
+    public void RepRange_BothBoundsWithinOneToThirty_IsValidAndConfigured(string min, string max, int expectedMin, int expectedMax)
+    {
+        _configuration.MinRepsInput = min;
+        _configuration.MaxRepsInput = max;
+
+        Assert.True(_configuration.IsValid);
+        Assert.Equal((string.Empty, string.Empty), (_configuration.MinRepsError, _configuration.MaxRepsError));
+        Assert.Equal((expectedMin, expectedMax), (_configuration.ToConfiguration().MinReps, _configuration.ToConfiguration().MaxReps));
+    }
+
+    [Fact]
+    public void RepRange_OnlyTheLowerBound_AsksForTheOtherOne()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        _configuration.MinRepsInput = "8";
+
+        Assert.False(_configuration.IsValid);
+        Assert.Equal((string.Empty, "Enter both or neither"), (_configuration.MinRepsError, _configuration.MaxRepsError));
+    }
+
+    [Fact]
+    public void RepRange_OnlyTheUpperBound_AsksForTheOtherOne()
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+
+        _configuration.MaxRepsInput = "12";
+
+        Assert.False(_configuration.IsValid);
+        Assert.Equal(("Wpisz obie wartości albo żadną", string.Empty), (_configuration.MinRepsError, _configuration.MaxRepsError));
+    }
+
+    [Theory]
+    [InlineData("0")]
+    [InlineData("31")]
+    [InlineData("99")]
+    [InlineData("-1")]
+    [InlineData("8.5")]
+    [InlineData("8,5")]
+    [InlineData("abc")]
+    public void RepRange_LowerBoundOutsideOneToThirty_ShowsTheAllowedRange(string min)
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.MaxRepsInput = "12";
+
+        _configuration.MinRepsInput = min;
+
+        Assert.False(_configuration.IsValid);
+        Assert.Equal(("Enter 1–30 reps", string.Empty), (_configuration.MinRepsError, _configuration.MaxRepsError));
+    }
+
+    [Fact]
+    public void RepRange_UpperBoundOutsideOneToThirtyInPolish_ShowsTheAllowedRange()
+    {
+        using var scope = new CultureScope(Cultures.Polish);
+        _configuration.MinRepsInput = "8";
+
+        _configuration.MaxRepsInput = "40";
+
+        Assert.False(_configuration.IsValid);
+        Assert.Equal((string.Empty, "Wpisz 1–30 powtórzeń"), (_configuration.MinRepsError, _configuration.MaxRepsError));
+    }
+
+    [Fact]
+    public void RepRange_UpperBoundBelowTheLowerOne_AsksForAtLeastTheLowerOne()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        _configuration.MinRepsInput = "12";
+        _configuration.MaxRepsInput = "8";
+
+        Assert.False(_configuration.IsValid);
+        Assert.Equal((string.Empty, "Enter at least 12"), (_configuration.MinRepsError, _configuration.MaxRepsError));
+    }
+
+    [Fact]
+    public void RepRange_ClearedAgain_IsValidWithoutARange()
+    {
+        _configuration.MinRepsInput = "12";
+        _configuration.MaxRepsInput = "8";
+
+        _configuration.MinRepsInput = string.Empty;
+        _configuration.MaxRepsInput = string.Empty;
+
+        Assert.True(_configuration.IsValid);
+        Assert.Equal((null, null), (_configuration.ToConfiguration().MinReps, _configuration.ToConfiguration().MaxReps));
+    }
+
+    [Fact]
+    public void MinRepsInput_Typed_RaisesValidityAndBothErrors()
+    {
+        var changed = PropertyChanges.Record(_configuration);
+
+        _configuration.MinRepsInput = "8";
+
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.IsValid), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MinRepsError), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MaxRepsError), changed);
+    }
+
+    [Fact]
+    public void MaxRepsInput_Typed_RaisesValidityAndBothErrors()
+    {
+        var changed = PropertyChanges.Record(_configuration);
+
+        _configuration.MaxRepsInput = "12";
+
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.IsValid), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MinRepsError), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MaxRepsError), changed);
+    }
+
+    [Theory]
+    [InlineData("8", "9")]
+    [InlineData("29", "30")]
+    [InlineData("30", "30")]
+    [InlineData("abc", "1")]
+    public void IncreaseMinReps_Value_StepsUpWithinOneToThirty(string current, string expected)
+    {
+        _configuration.MinRepsInput = current;
+
+        _configuration.IncreaseMinRepsCommand.Execute(null);
+
+        Assert.Equal(expected, _configuration.MinRepsInput);
+    }
+
+    [Theory]
+    [InlineData("12", "11")]
+    [InlineData("2", "1")]
+    [InlineData("1", "1")]
+    [InlineData("45", "30")]
+    public void DecreaseMaxReps_Value_StepsDownWithinOneToThirty(string current, string expected)
+    {
+        _configuration.MaxRepsInput = current;
+
+        _configuration.DecreaseMaxRepsCommand.Execute(null);
+
+        Assert.Equal(expected, _configuration.MaxRepsInput);
+    }
+
+    [Fact]
+    public void DecreaseMinRepsAndIncreaseMaxReps_Values_StepTheirOwnBound()
+    {
+        _configuration.MinRepsInput = "8";
+        _configuration.MaxRepsInput = "12";
+
+        _configuration.DecreaseMinRepsCommand.Execute(null);
+        _configuration.IncreaseMaxRepsCommand.Execute(null);
+
+        Assert.Equal(("7", "13"), (_configuration.MinRepsInput, _configuration.MaxRepsInput));
+    }
+
+    private static WorkoutExercise Planned(int sets, int reps, int restSeconds, int rpe, int? minReps = null, int? maxReps = null) => new()
     {
         ExerciseName = BenchPress,
         Sets = sets,
         Reps = reps,
         BreakTimeInSeconds = restSeconds,
-        TargetRPE = rpe
+        TargetRPE = rpe,
+        MinReps = minReps,
+        MaxReps = maxReps
     };
 
     private static List<LevelSegment> FilledUpTo(int rpe) =>

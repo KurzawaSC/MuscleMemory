@@ -15,6 +15,9 @@ public partial class InputStepper : ContentView
         BindableProperty.Create(nameof(ErrorText), typeof(string), typeof(InputStepper), string.Empty,
             propertyChanged: (bindable, _, _) => ((InputStepper)bindable).OnPropertyChanged(nameof(HasError)));
 
+    public static readonly BindableProperty DescriptionProperty =
+        BindableProperty.Create(nameof(Description), typeof(string), typeof(InputStepper));
+
     public static readonly BindableProperty MaxLengthProperty =
         BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(InputStepper), int.MaxValue);
 
@@ -30,6 +33,12 @@ public partial class InputStepper : ContentView
     {
         get => (string)GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
+    }
+
+    public string? Description
+    {
+        get => (string?)GetValue(DescriptionProperty);
+        set => SetValue(DescriptionProperty, value);
     }
 
     public int MaxLength

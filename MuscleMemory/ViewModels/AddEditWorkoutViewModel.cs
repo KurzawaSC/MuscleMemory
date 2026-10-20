@@ -44,6 +44,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         ExerciseConfiguration = exerciseConfiguration;
         ExerciseForm = exerciseForm;
         SaveNewExerciseCommand.NotifyCanExecuteChangedWhen(ExerciseForm, nameof(ExerciseFormViewModel.CanSave));
+        ConfirmConfigurationCommand.NotifyCanExecuteChangedWhen(ExerciseConfiguration, nameof(ExerciseConfigurationViewModel.IsValid));
     }
 
     [ObservableProperty]
@@ -113,6 +114,8 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
     public bool CanSave => IsEditable && !string.IsNullOrWhiteSpace(WorkoutName) && !IsEmpty;
 
     private bool CanSaveNewExercise => ExerciseForm.CanSave;
+
+    private bool CanConfirmConfiguration => ExerciseConfiguration.IsValid;
 
     private bool IsAnySheetOpen => IsExercisePickerOpen || IsExerciseFormOpen || IsConfigurationOpen;
 
@@ -296,7 +299,7 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
         IsConfigurationOpen = false;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanConfirmConfiguration))]
     private void ConfirmConfiguration()
     {
         var configuration = ExerciseConfiguration.ToConfiguration();
@@ -349,7 +352,9 @@ public partial class AddEditWorkoutViewModel : ObservableObject, IQueryAttributa
             Sets = configuration.Sets,
             Reps = configuration.Reps,
             BreakTimeInSeconds = configuration.BreakTimeInSeconds,
-            TargetRPE = configuration.TargetRPE
+            TargetRPE = configuration.TargetRPE,
+            MinReps = configuration.MinReps,
+            MaxReps = configuration.MaxReps
         }));
 
         RefreshSummary();

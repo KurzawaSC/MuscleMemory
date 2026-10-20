@@ -819,4 +819,25 @@
   <data name="ChartYearFormat" xml:space="preserve">
     <value>yyyy</value>
   </data>
+  <data name="LabelRepRangeFrom" xml:space="preserve">
+    <value>Powtórzenia od</value>
+  </data>
+  <data name="LabelRepRangeTo" xml:space="preserve">
+    <value>Powtórzenia do</value>
+  </data>
+  <data name="CaptionRepRange" xml:space="preserve">
+    <value>Opcjonalny zakres powtórzeń. Na jego podstawie trening podpowie kolejny ciężar i powtórzenia.</value>
+  </data>
+  <data name="DescriptionRepRangeFrom" xml:space="preserve">
+    <value>Zakres powtórzeń, najmniej powtórzeń</value>
+  </data>
+  <data name="DescriptionRepRangeTo" xml:space="preserve">
+    <value>Zakres powtórzeń, najwięcej powtórzeń</value>
+  </data>
+  <data name="RepRangeMissingBound" xml:space="preserve">
+    <value>Wpisz obie wartości albo żadną</value>
+  </data>
+  <data name="RepRangeOrderErrorFormat" xml:space="preserve">
+    <value>Wpisz co najmniej {0}</value>
+  </data>
 </root>

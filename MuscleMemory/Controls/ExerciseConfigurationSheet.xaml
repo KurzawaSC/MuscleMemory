@@ -22,6 +22,27 @@
                                    Minimum="{x:Static constants:DomainDefaults.MinReps}"
                                    Maximum="{x:Static constants:DomainDefaults.MaxReps}" />
 
+            <VerticalStackLayout Spacing="6">
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                    <controls:InputStepper Title="{loc:Text LabelRepRangeFrom}"
+                                           Description="{loc:Text DescriptionRepRangeFrom}"
+                                           Text="{Binding Configuration.MinRepsInput, Source={x:Reference Root}}"
+                                           ErrorText="{Binding Configuration.MinRepsError, Source={x:Reference Root}}"
+                                           MaxLength="{x:Static constants:InputLimits.MaxRepRangeInputLength}"
+                                           DecrementCommand="{Binding Configuration.DecreaseMinRepsCommand, Source={x:Reference Root}}"
+                                           IncrementCommand="{Binding Configuration.IncreaseMinRepsCommand, Source={x:Reference Root}}" />
+                    <controls:InputStepper Grid.Column="1"
+                                           Title="{loc:Text LabelRepRangeTo}"
+                                           Description="{loc:Text DescriptionRepRangeTo}"
+                                           Text="{Binding Configuration.MaxRepsInput, Source={x:Reference Root}}"
+                                           ErrorText="{Binding Configuration.MaxRepsError, Source={x:Reference Root}}"
+                                           MaxLength="{x:Static constants:InputLimits.MaxRepRangeInputLength}"
+                                           DecrementCommand="{Binding Configuration.DecreaseMaxRepsCommand, Source={x:Reference Root}}"
+                                           IncrementCommand="{Binding Configuration.IncreaseMaxRepsCommand, Source={x:Reference Root}}" />
+                </Grid>
+                <Label Style="{StaticResource CaptionLabel}" Text="{loc:Text CaptionRepRange}" />
+            </VerticalStackLayout>
+
             <Border Style="{StaticResource InsetPanel}">
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto">
