@@ -111,7 +111,9 @@ public sealed class WorkoutSessionRepository(DatabaseContext context, TimeProvid
             PlannedSets = templateExercise.Sets,
             PlannedReps = templateExercise.Reps,
             BreakTimeInSeconds = templateExercise.BreakTimeInSeconds,
-            TargetRPE = templateExercise.TargetRPE
+            TargetRPE = templateExercise.TargetRPE,
+            MinReps = templateExercise.MinReps,
+            MaxReps = templateExercise.MaxReps
         })
     ];
 

@@ -23,10 +23,12 @@ public sealed class TestDataBuilder(TestApp app)
         return exercise;
     }
 
-    public async Task<Workout> WorkoutAsync(string name, params Exercise[] exercises)
+    public Task<Workout> WorkoutAsync(string name, params Exercise[] exercises) => PlannedWorkoutAsync(name, [.. exercises.Select(Plan)]);
+
+    public async Task<Workout> PlannedWorkoutAsync(string name, params WorkoutExercise[] plan)
     {
         var workout = new Workout { Name = name };
-        await app.Workouts.SaveWithExercisesAsync(workout, [.. exercises.Select(Plan)]);
+        await app.Workouts.SaveWithExercisesAsync(workout, [.. plan]);
         return workout;
     }
 
@@ -77,13 +79,17 @@ public sealed class TestDataBuilder(TestApp app)
         return sessionId;
     }
 
-    public static WorkoutExercise Plan(Exercise exercise) => new()
+    public static WorkoutExercise Plan(Exercise exercise) => Plan(exercise, minReps: null, maxReps: null);
+
+    public static WorkoutExercise Plan(Exercise exercise, int? minReps, int? maxReps, int sets = PlannedSets) => new()
     {
         ExerciseId = exercise.Id,
         ExerciseName = exercise.Name,
-        Sets = PlannedSets,
+        Sets = sets,
         Reps = PlannedReps,
         BreakTimeInSeconds = BreakSeconds,
-        TargetRPE = TargetRpe
+        TargetRPE = TargetRpe,
+        MinReps = minReps,
+        MaxReps = maxReps
     };
 }

@@ -11,6 +11,8 @@ public sealed class WorkoutSessionRepositoryTests : IAsyncLifetime
     private const string Renamed = "Renamed";
     private const int MissingId = 999;
     private const int PushExerciseCount = 2;
+    private const int RangeMin = 8;
+    private const int RangeMax = 12;
 
     private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
 
@@ -52,6 +54,30 @@ public sealed class WorkoutSessionRepositoryTests : IAsyncLifetime
         Assert.All(snapshot, exercise => Assert.Equal(
             (TestDataBuilder.PlannedSets, TestDataBuilder.PlannedReps, TestDataBuilder.BreakSeconds, TestDataBuilder.TargetRpe),
             (exercise.PlannedSets, exercise.PlannedReps, exercise.BreakTimeInSeconds, exercise.TargetRPE)));
+    }
+
+    [Fact]
+    public async Task CreateWithSnapshotAsync_RepRanges_CopiesThemWithThePlan()
+    {
+        var ranged = await _app.Data.PlannedWorkoutAsync(LegDay, TestDataBuilder.Plan(_bench, RangeMin, RangeMax), TestDataBuilder.Plan(_press));
+
+        var started = await _app.Sessions.CreateWithSnapshotAsync(ranged, await _app.Workouts.GetExercisesAsync(ranged.Id));
+
+        Assert.Equal<(int?, int?)>(
+            [(RangeMin, RangeMax), (null, null)],
+            (await _app.SessionExercises.GetForSessionAsync(started.SessionId)).Select(exercise => (exercise.MinReps, exercise.MaxReps)));
+    }
+
+    [Fact]
+    public async Task CreateWithSnapshotAsync_RangeEditedLater_KeepsTheSnapshotRange()
+    {
+        var ranged = await _app.Data.PlannedWorkoutAsync(LegDay, TestDataBuilder.Plan(_bench, RangeMin, RangeMax));
+        var started = await _app.Data.StartAsync(ranged);
+
+        await _app.Workouts.UpdateWithExercisesAsync(ranged, [TestDataBuilder.Plan(_bench, RangeMin + 1, RangeMax + 1)]);
+
+        var snapshot = Assert.Single(await _app.SessionExercises.GetForSessionAsync(started.SessionId));
+        Assert.Equal((RangeMin, RangeMax), (snapshot.MinReps, snapshot.MaxReps));
     }
 
     [Fact]

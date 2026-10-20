@@ -10,6 +10,7 @@ namespace MuscleMemory.Tests.Data;
 public sealed class DatabaseContextTests : IAsyncLifetime
 {
     private const string MissingFolderName = "missing";
+    private const string SqlNull = "NULL";
     private const string TablesSql = "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
     private const string IndexesSql = "SELECT tbl_name || '.' || name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL ORDER BY name";
     private const string TableSqlFormat = "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = '{0}'";
@@ -27,13 +28,14 @@ public sealed class DatabaseContextTests : IAsyncLifetime
         {
             nameof(WorkoutExercise),
             ["Id integer pk", "WorkoutId integer", "ExerciseId integer", "Order integer", "Sets integer", "Reps integer",
-             "BreakTimeInSeconds integer", "ExerciseName varchar", "TargetRPE integer"]
+             "BreakTimeInSeconds integer", "ExerciseName varchar", "TargetRPE integer", "MinReps integer", "MaxReps integer"]
         },
         { nameof(WorkoutSession), ["Id integer pk", "WorkoutId integer", "WorkoutName varchar", "StartTimeUtc bigint", "EndTimeUtc bigint"] },
         {
             nameof(SessionExercise),
             ["Id integer pk", "WorkoutSessionId integer", "ExerciseId integer", "ExerciseName varchar", "Order integer",
-             "PlannedSets integer", "PlannedReps integer", "BreakTimeInSeconds integer", "TargetRPE integer"]
+             "PlannedSets integer", "PlannedReps integer", "BreakTimeInSeconds integer", "TargetRPE integer", "MinReps integer",
+             "MaxReps integer"]
         },
         { nameof(WorkoutSet), ["Id integer pk", "SessionExerciseId integer", "Weight float", "Reps integer", "SetNumber integer"] },
         {
@@ -141,6 +143,34 @@ public sealed class DatabaseContextTests : IAsyncLifetime
         Assert.Equal(nameof(Exercise), Assert.Single(await connection.Table<Exercise>().ToListAsync()).Name);
         Assert.Equal(DatabaseContext.Tables.Count, (await connection.QueryScalarsAsync<string>(TablesSql)).Count);
         await connection.CloseAsync();
+    }
+
+    [Fact]
+    public async Task GetConnectionAsync_DatabaseFromBeforeRepRange_AddsEveryAddedColumn()
+    {
+        ImportFiles.FromBeforeRepRange(_database.FilePath);
+
+        await _database.Context.GetConnectionAsync();
+
+        Assert.All(DatabaseContext.AddedColumns, added =>
+            Assert.Contains(added.Column, DatabaseRows.ColumnNames(_database.FilePath, added.Table.Name)));
+    }
+
+    [Fact]
+    public async Task GetConnectionAsync_DatabaseFromBeforeRepRange_KeepsEveryRowAndLeavesTheRangesEmpty()
+    {
+        ImportFiles.FromBeforeRepRange(_database.FilePath);
+        var oldColumns = DatabaseContext.Tables.ToDictionary(table => table.Name, table => DatabaseRows.ColumnNames(_database.FilePath, table.Name));
+        var before = oldColumns.ToDictionary(table => table.Key, table => DatabaseRows.ReadColumns(_database.FilePath, table.Key, table.Value));
+
+        await _database.Context.GetConnectionAsync();
+
+        Assert.All(DatabaseContext.Tables, table => Assert.Equal(
+            before[table.Name],
+            DatabaseRows.ReadColumns(_database.FilePath, table.Name, oldColumns[table.Name])));
+        Assert.All(DatabaseContext.AddedColumns, added => Assert.All(
+            DatabaseRows.ReadColumns(_database.FilePath, added.Table.Name, [added.Column]),
+            value => Assert.Equal(SqlNull, value)));
     }
 
     [Fact]

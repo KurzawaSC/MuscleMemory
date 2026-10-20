@@ -22,6 +22,9 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
     private const string NeighbourFileName = "other.txt";
     private const string MainSchema = "main";
     private const string AttachedSchemasSql = "SELECT name FROM pragma_database_list";
+    private const string SqlNull = "NULL";
+    private const int RangeMin = 8;
+    private const int RangeMax = 12;
 
     private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
 
@@ -243,6 +246,62 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
     public async Task PrepareImportAsync_ColumnMissing_IsIncompatible() =>
         Assert.Equal(ImportPreview.Rejected(ImportFileStatus.Incompatible), await PrepareAsync(Write(ImportFiles.WithoutRepsColumn)));
 
+    [Theory]
+    [MemberData(nameof(ColumnsBeforeTheAddedOnes))]
+    public async Task PrepareImportAsync_AnyColumnButAnAddedOneMissing_IsIncompatible(string table, string column) =>
+        Assert.Equal(
+            ImportPreview.Rejected(ImportFileStatus.Incompatible),
+            await PrepareAsync(Write(path => ImportFiles.WithoutColumn(path, DatabaseContext.Tables.Single(type => type.Name == table), column))));
+
+    [Theory]
+    [MemberData(nameof(AddedColumnNames))]
+    public async Task PrepareImportAsync_OnlyAnAddedColumnMissing_IsValid(string table, string column) =>
+        Assert.Equal(
+            new ImportPreview(ImportFileStatus.Valid, ImportCounts.None),
+            await PrepareAsync(Write(path => ImportFiles.WithoutColumn(path, DatabaseContext.Tables.Single(type => type.Name == table), column))));
+
+    [Fact]
+    public async Task PrepareImportAsync_BackupFromBeforeRepRange_IsValid() =>
+        Assert.Equal(new ImportPreview(ImportFileStatus.Valid, ImportFiles.CountsBeforeRepRange), await PrepareAsync(Write(ImportFiles.FromBeforeRepRange)));
+
+    [Fact]
+    public async Task ImportAsync_BackupFromBeforeRepRange_ImportsEveryRowWithoutRanges()
+    {
+        await SeedOwnDataAsync();
+        var backupPath = Write(ImportFiles.FromBeforeRepRange);
+        var backupColumns = ImportedTables.ToDictionary(table => table.Name, table => DatabaseRows.ColumnNames(backupPath, table.Name));
+        await PrepareAsync(backupPath);
+
+        await _app.Maintenance.ImportAsync();
+
+        Assert.All(backupColumns, table => Assert.Equal(
+            DatabaseRows.ReadColumns(backupPath, table.Key, table.Value),
+            DatabaseRows.ReadColumns(_app.Database.FilePath, table.Key, table.Value)));
+        Assert.All(DatabaseContext.AddedColumns, added => Assert.All(
+            DatabaseRows.ReadColumns(_app.Database.FilePath, added.Table.Name, [added.Column]),
+            value => Assert.Equal(SqlNull, value)));
+        Assert.Equal(0, await _app.Database.CountAsync(nameof(ActiveWorkoutState)));
+    }
+
+    [Fact]
+    public async Task ImportAsync_BackupWithRepRanges_ImportsThem()
+    {
+        await using var source = new TestApp();
+        var bench = await source.Data.ExerciseAsync("Bench Press");
+        var push = await source.Data.PlannedWorkoutAsync("Push Day", TestDataBuilder.Plan(bench, RangeMin, RangeMax));
+        await source.Data.CompletedSessionAsync(push, TestApp.StartUtc, new LoggedSet(0, 80, 8));
+        var backupPath = await source.Maintenance.CreateExportSnapshotAsync();
+        Assert.NotNull(backupPath);
+        await PrepareAsync(backupPath);
+
+        await _app.Maintenance.ImportAsync();
+
+        var plan = Assert.Single(await _app.Workouts.GetAllExercisesAsync());
+        var snapshot = Assert.Single(await (await _app.Database.ConnectionAsync()).Table<SessionExercise>().ToListAsync());
+        Assert.Equal((RangeMin, RangeMax), (plan.MinReps, plan.MaxReps));
+        Assert.Equal((RangeMin, RangeMax), (snapshot.MinReps, snapshot.MaxReps));
+    }
+
     [Fact]
     public async Task PrepareImportAsync_ExtraTableAndColumn_IsValid() =>
         Assert.Equal(new ImportPreview(ImportFileStatus.Valid, ImportCounts.None), await PrepareAsync(Write(ImportFiles.WithExtraTableAndColumn)));
@@ -457,6 +516,13 @@ public sealed class DatabaseMaintenanceServiceTests : IAsyncLifetime
     }
 
     public static TheoryData<string> TableNames => [.. DatabaseContext.Tables.Select(table => table.Name)];
+
+    public static TheoryData<string, string> ColumnsBeforeTheAddedOnes => new(
+        DatabaseContext.Tables.SelectMany(table => new TableMapping(table).Columns
+                                                                         .Where(column => !DatabaseContext.AddedColumns.Contains(new AddedColumn(table, column.PropertyName)))
+                                                                         .Select(column => (table.Name, column.Name))));
+
+    public static TheoryData<string, string> AddedColumnNames => new(DatabaseContext.AddedColumns.Select(added => (added.Table.Name, added.Column)));
 
     private static IEnumerable<Type> ImportedTables => DatabaseContext.Tables.Where(table => table != typeof(ActiveWorkoutState));
 
