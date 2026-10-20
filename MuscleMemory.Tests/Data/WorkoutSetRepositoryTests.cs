@@ -9,6 +9,7 @@ public sealed class WorkoutSetRepositoryTests : IAsyncLifetime
     private const int MissingId = 999;
     private const int StaleSetNumber = 42;
     private const double HalfKilogramWeight = 62.5;
+    private const int RecentSessions = 2;
 
     private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
 
@@ -210,6 +211,84 @@ public sealed class WorkoutSetRepositoryTests : IAsyncLifetime
         var current = await _app.Data.StartAsync(_push);
 
         Assert.Equal(60.0, Assert.Single(await _app.Sets.GetLastSessionSetsAsync(_bench.Id, current.SessionId)).Weight);
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_ThreeFinishedSessions_ReturnsTheNewestTwoNewestFirst()
+    {
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 70, 5));
+        var previous = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 75, 6));
+        var last = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + (2 * OneDay), new LoggedSet(0, 80, 5), new LoggedSet(0, 82.5, 4));
+
+        var recent = await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions);
+
+        Assert.Equal([(last, 80.0), (last, 82.5), (previous, 75.0)], recent.Select(set => (set.SessionId, set.Weight)));
+        Assert.All(recent, set => Assert.Equal(_bench.Id, set.ExerciseId));
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_SessionsOfOtherPlans_CountWhenTheyContainTheExercise()
+    {
+        var upper = await _app.Data.WorkoutAsync("Upper Day", _press, _bench);
+        var fromPush = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        var fromUpper = await _app.Data.CompletedSessionAsync(upper, TestApp.StartUtc + OneDay, new LoggedSet(1, 77.5, 8));
+
+        var recent = await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions);
+
+        Assert.Equal([fromUpper, fromPush], recent.Select(set => set.SessionId));
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_NewerSessionWithoutSetsOfThatExercise_SkipsIt()
+    {
+        var older = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 75, 5));
+        var withBench = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 80, 5));
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + (2 * OneDay), new LoggedSet(1, 40, 8));
+
+        var recent = await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions);
+
+        Assert.Equal([withBench, older], recent.Select(set => set.SessionId));
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_OpenSessions_AreIgnored()
+    {
+        var finished = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+        var open = await _app.Data.StartAsync(_push);
+        await _app.Data.LogSetAsync(open.Exercises[0], 100, 1);
+
+        var recent = await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions);
+
+        Assert.Equal(finished, Assert.Single(recent).SessionId);
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_ExerciseTwiceInSession_ReturnsEverySetInLoggingOrder()
+    {
+        var twice = await _app.Data.WorkoutAsync("Bench Twice", _bench, _press, _bench);
+        await _app.Data.CompletedSessionAsync(twice, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 40, 8), new LoggedSet(2, 60, 12));
+
+        var recent = await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions);
+
+        Assert.Equal([80.0, 60.0], recent.Select(set => set.Weight));
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_Dates_AreUtc()
+    {
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 5));
+
+        var set = Assert.Single(await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions));
+
+        Assert.Equal((TestApp.StartUtc, DateTimeKind.Utc), (set.DateUtc, set.DateUtc.Kind));
+    }
+
+    [Fact]
+    public async Task GetRecentSessionSetsAsync_NoHistory_ReturnsNothing()
+    {
+        await _app.Data.StartAsync(_push);
+
+        Assert.Empty(await _app.Sets.GetRecentSessionSetsAsync(_bench.Id, RecentSessions));
     }
 
     [Fact]

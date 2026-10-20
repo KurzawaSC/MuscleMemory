@@ -28,6 +28,26 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
             LIMIT 1)
         ORDER BY SetNumber
         """;
+    private const string SelectRecentSessionSets = """
+        SELECT logged.Id AS SetId,
+               session.Id AS SessionId,
+               performed.ExerciseId AS ExerciseId,
+               session.StartTimeUtc AS DateUtc,
+               logged.Weight AS Weight,
+               logged.Reps AS Reps
+        FROM WorkoutSet logged
+        JOIN SessionExercise performed ON performed.Id = logged.SessionExerciseId
+        JOIN WorkoutSession session ON session.Id = performed.WorkoutSessionId
+        WHERE performed.ExerciseId = ? AND logged.Reps >= ? AND session.Id IN (
+            SELECT recent.Id FROM WorkoutSession recent
+            WHERE recent.EndTimeUtc IS NOT NULL AND EXISTS (
+                SELECT 1 FROM SessionExercise slot
+                JOIN WorkoutSet slotSet ON slotSet.SessionExerciseId = slot.Id
+                WHERE slot.WorkoutSessionId = recent.Id AND slot.ExerciseId = ? AND slotSet.Reps >= ?)
+            ORDER BY recent.StartTimeUtc DESC, recent.Id DESC
+            LIMIT ?)
+        ORDER BY session.StartTimeUtc DESC, session.Id DESC, logged.Id
+        """;
     private const string SelectRepMaxesFormat = """
         SELECT SetId, SessionId, ExerciseId, DateUtc, Weight, Reps FROM (
             SELECT logged.Id AS SetId,
@@ -132,6 +152,15 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
     {
         var connection = await context.GetConnectionAsync();
         return await connection.QueryAsync<WorkoutSet>(SelectLastSessionSets, exerciseId, currentSessionId);
+    }
+
+    public async Task<List<PerformedSet>> GetRecentSessionSetsAsync(int exerciseId, int sessionCount)
+    {
+        var connection = await context.GetConnectionAsync();
+        var sets = await connection.QueryAsync<PerformedSet>(
+            SelectRecentSessionSets, exerciseId, PersonalRecords.MinReps, exerciseId, PersonalRecords.MinReps, sessionCount);
+
+        return [.. sets.Select(set => set with { DateUtc = StoredDateTime.AsUtc(set.DateUtc) })];
     }
 
     public async Task<List<PerformedSet>> GetRepMaxesAsync(IReadOnlyCollection<int> exerciseIds)
