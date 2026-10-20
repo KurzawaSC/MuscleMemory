@@ -316,6 +316,29 @@ public sealed class WorkoutSetRepositoryTests : IAsyncLifetime
         Assert.Empty(await _app.Sets.GetSessionVolumesAsync(_bench.Id));
 
     [Fact]
+    public async Task GetSessionRepTotalsAsync_FinishedSessions_GroupsEachSessionByRepCount()
+    {
+        var twice = await _app.Data.WorkoutAsync("Bench Twice", _bench, _press, _bench);
+        var first = await _app.Data.CompletedSessionAsync(
+            twice, TestApp.StartUtc, new LoggedSet(0, 80, 5), new LoggedSet(1, 50, 5), new LoggedSet(2, 85, 5), new LoggedSet(2, 60, 10));
+        var second = await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc + OneDay, new LoggedSet(0, 100, 3), new LoggedSet(0, 200, 0));
+        var open = await _app.Data.StartAsync(_push);
+        await _app.Data.LogSetAsync(open.Exercises[0], 120, 5);
+
+        var totals = await _app.Sets.GetSessionRepTotalsAsync(_bench.Id);
+
+        Assert.Equal(
+            [(first, 5, 85.0, 825.0), (first, 10, 60.0, 600.0), (second, 3, 100.0, 300.0)],
+            totals.OrderBy(total => total.SessionId).ThenBy(total => total.Reps).Select(total => (total.SessionId, total.Reps, total.HeaviestWeight, total.Volume)));
+        Assert.Equal([TestApp.StartUtc, TestApp.StartUtc, TestApp.StartUtc + OneDay], totals.OrderBy(total => total.SessionId).Select(total => total.DateUtc));
+        Assert.All(totals, total => Assert.Equal(DateTimeKind.Utc, total.DateUtc.Kind));
+    }
+
+    [Fact]
+    public async Task GetSessionRepTotalsAsync_NoHistory_ReturnsNothing() =>
+        Assert.Empty(await _app.Sets.GetSessionRepTotalsAsync(_bench.Id));
+
+    [Fact]
     public async Task Clear_InTransaction_RemovesEverySet()
     {
         var started = await _app.Data.StartAsync(_push);

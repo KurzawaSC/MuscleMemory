@@ -57,8 +57,10 @@ leaves the page.
 - **Workout history** lists the sessions of a workout behind date chips. A past session stays
   editable: add, edit or delete sets, remove an exercise, or add an exercise to it.
 - **Exercise history** opens with the exercise's personal records, one tile per record with the
-  date it was set, and then lists every session that included the exercise, newest first, with its
-  sets and volume.
+  date it was set, then a progress chart (see [Progress chart](#progress-chart)), and then lists
+  every session that included the exercise, newest first, with its sets and volume. The sessions
+  appear first; the record tiles and the chart are laid out empty in the same place and filled in
+  when they have been computed, so nothing on the page moves when they arrive.
 - Each session keeps a snapshot of the plan as it was at the start, so later edits to the workout or
   its exercises do not change what was logged.
 
@@ -87,6 +89,29 @@ or deleting a set can never leave a stale record behind.
   sets were logged. A value equal to the running best is never a record, and a record type with no
   value in the finished history marks nothing, so an exercise done for the first time shows no
   badges.
+
+### Progress chart
+
+The chart on Exercise history plots one point per finished session, at the session's local start
+date, using the same eligible sets and the same e1RM as the records.
+
+- **Series.** *e1RM*: the greatest e1RM among the session's sets; a session with no defined e1RM is
+  left out. *Volume*: Σ (w · r) over the session's sets; a session with volume 0 is left out.
+  *Reps*: the greatest r in the session, offered only for an exercise whose sets are all bodyweight
+  sets, which has no other series.
+- **Range**: the last 3, 6 or 12 months, counted back from today's local date (a session on the
+  first day of the range counts), or All. All is the default.
+- **Trend**: an ordinary least-squares line of the value against time in days over the points in
+  the range, with slope b = Σ (tᵢ − t̄)(yᵢ − ȳ) / Σ (tᵢ − t̄)². It is shown as the rate per 30 days
+  in the series' unit, rounded to one decimal place, for example "+1.2 kg / month"; a rate that
+  rounds to zero is shown as "0". It needs at least 3 points spanning at least 14 days; otherwise
+  the card says there are not enough sessions for a trend.
+- With fewer than 2 points in the range the card shows a message instead of the chart, and an
+  exercise with no eligible sets has no chart at all.
+- Tapping or dragging across the chart selects the nearest session by date and shows its value
+  and date above the chart; tapping where no session is near clears the selection.
+- For screen readers the chart is a single element that reads the series, the range, the first and
+  last values with their dates, the best value and the trend.
 
 ### Settings
 

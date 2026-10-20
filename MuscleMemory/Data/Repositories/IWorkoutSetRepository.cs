@@ -14,5 +14,6 @@ public interface IWorkoutSetRepository
     Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId);
     Task<List<PerformedSet>> GetRepMaxesAsync(IReadOnlyCollection<int> exerciseIds);
     Task<List<SessionVolume>> GetSessionVolumesAsync(int exerciseId);
+    Task<List<SessionRepTotals>> GetSessionRepTotalsAsync(int exerciseId);
     void Clear(SQLiteConnection transaction);
 }

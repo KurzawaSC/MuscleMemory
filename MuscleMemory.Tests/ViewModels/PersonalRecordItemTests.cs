@@ -9,6 +9,16 @@ public sealed class PersonalRecordItemTests
     private static readonly DateTime LocalDate = new(2026, 3, 5, 9, 15, 0, DateTimeKind.Local);
 
     [Fact]
+    public void Placeholder_Kind_ShowsDashesUnderTheRecordLabel()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        var item = PersonalRecordItem.Placeholder(RecordKind.MostReps);
+
+        Assert.Equal(("—", "Most reps in a set\n—", "Most reps in a set"), (item.ValueText, item.Caption, item.Description));
+    }
+
+    [Fact]
     public void ForHeaviestWeight_EnglishUs_ShowsWeightTimesRepsAndTheDate()
     {
         using var scope = new CultureScope(Cultures.EnglishUs);

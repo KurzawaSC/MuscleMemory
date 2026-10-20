@@ -6,7 +6,14 @@ public sealed record PersonalRecordsItem(IReadOnlyList<PersonalRecordItem> Recor
 {
     public const int Columns = 2;
 
-    public static PersonalRecordsItem Create(ExerciseRecords records)
+    public static PersonalRecordsItem Create(ExerciseRecords records) => Arranged(Items(records));
+
+    public static PersonalRecordsItem Placeholder(IEnumerable<RecordKind> kinds) => Arranged(kinds.Select(PersonalRecordItem.Placeholder));
+
+    private static PersonalRecordsItem Arranged(IEnumerable<PersonalRecordItem> items) =>
+        new([.. items.Select((item, index) => item with { Row = index / Columns, Column = index % Columns })]);
+
+    private static List<PersonalRecordItem> Items(ExerciseRecords records)
     {
         List<PersonalRecordItem> items = [];
 
@@ -30,6 +37,6 @@ public sealed record PersonalRecordsItem(IReadOnlyList<PersonalRecordItem> Recor
             items.Add(PersonalRecordItem.ForMostReps(mostReps));
         }
 
-        return new PersonalRecordsItem([.. items.Select((item, index) => item with { Row = index / Columns, Column = index % Columns })]);
+        return items;
     }
 }

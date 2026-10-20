@@ -53,6 +53,18 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         WHERE session.EndTimeUtc IS NOT NULL AND logged.Reps >= ? AND performed.ExerciseId = ?
         GROUP BY session.Id, session.StartTimeUtc
         """;
+    private const string SelectSessionRepTotals = """
+        SELECT session.Id AS SessionId,
+               session.StartTimeUtc AS DateUtc,
+               logged.Reps AS Reps,
+               MAX(logged.Weight) AS HeaviestWeight,
+               SUM(logged.Weight * logged.Reps) AS Volume
+        FROM WorkoutSet logged
+        JOIN SessionExercise performed ON performed.Id = logged.SessionExerciseId
+        JOIN WorkoutSession session ON session.Id = performed.WorkoutSessionId
+        WHERE session.EndTimeUtc IS NOT NULL AND logged.Reps >= ? AND performed.ExerciseId = ?
+        GROUP BY session.Id, session.StartTimeUtc, logged.Reps
+        """;
 
     public async Task AddAsync(WorkoutSet set)
     {
@@ -142,6 +154,14 @@ public sealed class WorkoutSetRepository(DatabaseContext context) : IWorkoutSetR
         var volumes = await connection.QueryAsync<SessionVolume>(SelectSessionVolumes, PersonalRecords.MinReps, exerciseId);
 
         return [.. volumes.Select(volume => volume with { DateUtc = StoredDateTime.AsUtc(volume.DateUtc) })];
+    }
+
+    public async Task<List<SessionRepTotals>> GetSessionRepTotalsAsync(int exerciseId)
+    {
+        var connection = await context.GetConnectionAsync();
+        var totals = await connection.QueryAsync<SessionRepTotals>(SelectSessionRepTotals, PersonalRecords.MinReps, exerciseId);
+
+        return [.. totals.Select(total => total with { DateUtc = StoredDateTime.AsUtc(total.DateUtc) })];
     }
 
     public void Clear(SQLiteConnection transaction) => transaction.DeleteAll<WorkoutSet>();
