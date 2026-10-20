@@ -89,6 +89,7 @@
                             <Label Grid.Column="1"
                                    Style="{StaticResource CaptionLabel}"
                                    Text="{Binding LastSessionResultsText}"
+                                   SemanticProperties.Description="{Binding LastSessionDescription}"
                                    LineBreakMode="TailTruncation"
                                    HorizontalTextAlignment="End">
                                 <Label.Triggers>
@@ -98,6 +99,11 @@
                                 </Label.Triggers>
                             </Label>
                         </Grid>
+
+                        <Label Style="{StaticResource CompactLabel}"
+                               Text="{Binding Suggestion.Text, FallbackValue=''}"
+                               SemanticProperties.Description="{Binding Suggestion.Description, FallbackValue=''}"
+                               IsVisible="{Binding HasSuggestion}" />
 
                         <controls:InputStepper Title="{loc:Text LabelWeightInKg}"
                                                Text="{Binding SetInput.WeightInput}"
@@ -234,8 +240,15 @@
                        Text="{loc:Text HintFirstTimeExercise}"
                        HorizontalTextAlignment="Center">
                     <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding HasLastSession}" Value="True">
+                        <MultiTrigger TargetType="Label">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding HasLastSession}" Value="True" />
+                                <BindingCondition Binding="{Binding IsPrefilledFromSuggestion}" Value="False" />
+                            </MultiTrigger.Conditions>
                             <Setter Property="Text" Value="{loc:Text HintPrefilledFromLastSession}" />
+                        </MultiTrigger>
+                        <DataTrigger TargetType="Label" Binding="{Binding IsPrefilledFromSuggestion}" Value="True">
+                            <Setter Property="Text" Value="{loc:Text HintPrefilledFromSuggestion}" />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>

@@ -792,4 +792,46 @@
   <data name="RepRangeOrderErrorFormat" xml:space="preserve">
     <value>Enter at least {0}</value>
   </data>
+  <data name="SuggestionIncreaseFormat" xml:space="preserve">
+    <value>Increase: {0}</value>
+  </data>
+  <data name="SuggestionHoldFormat" xml:space="preserve">
+    <value>Hold: {0}</value>
+  </data>
+  <data name="SuggestionDecreaseFormat" xml:space="preserve">
+    <value>Decrease: {0}</value>
+  </data>
+  <data name="WeightByRepsFormat" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
+  <data name="SuggestionIncreaseDescriptionFormat" xml:space="preserve">
+    <value>Suggestion: increase the weight to {0}, {1}.</value>
+  </data>
+  <data name="SuggestionHoldDescriptionFormat" xml:space="preserve">
+    <value>Suggestion: keep {0}, {1}.</value>
+  </data>
+  <data name="SuggestionDecreaseDescriptionFormat" xml:space="preserve">
+    <value>Suggestion: decrease the weight to {0}, {1}.</value>
+  </data>
+  <data name="SetsOfRepsFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="VaryingSetsFormat" xml:space="preserve">
+    <value>sets of {0}</value>
+  </data>
+  <data name="ListAndFormat" xml:space="preserve">
+    <value>{0} and {1}</value>
+  </data>
+  <data name="LastSessionDescriptionFormat" xml:space="preserve">
+    <value>Last time: {0}.</value>
+  </data>
+  <data name="LastSessionSetDescriptionFormat" xml:space="preserve">
+    <value>{0} for {1}</value>
+  </data>
+  <data name="FirstTimeDescription" xml:space="preserve">
+    <value>First time doing this exercise.</value>
+  </data>
+  <data name="HintPrefilledFromSuggestion" xml:space="preserve">
+    <value>Weight and reps are prefilled from the suggestion.</value>
+  </data>
 </root>

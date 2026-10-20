@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using MuscleMemory.Tests.Testing;
 using MuscleMemory.ViewModels;
 
@@ -246,7 +247,7 @@ public sealed class SetInputViewModelTests
     }
 
     [Fact]
-    public void WeightInput_Changed_RaisesValidityAndError()
+    public void WeightInput_Changed_RaisesEditedValidityAndError()
     {
         List<string?> changed = [];
         _input.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
@@ -254,12 +255,12 @@ public sealed class SetInputViewModelTests
         _input.WeightInput = ValidWeight;
 
         Assert.Equal(
-            [nameof(SetInputViewModel.WeightInput), nameof(SetInputViewModel.IsValid), nameof(SetInputViewModel.WeightError)],
+            [nameof(SetInputViewModel.IsEdited), nameof(SetInputViewModel.WeightInput), nameof(SetInputViewModel.IsValid), nameof(SetInputViewModel.WeightError)],
             changed);
     }
 
     [Fact]
-    public void RepsInput_Changed_RaisesValidityAndError()
+    public void RepsInput_Changed_RaisesEditedValidityAndError()
     {
         List<string?> changed = [];
         _input.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
@@ -267,7 +268,80 @@ public sealed class SetInputViewModelTests
         _input.RepsInput = ValidReps;
 
         Assert.Equal(
-            [nameof(SetInputViewModel.RepsInput), nameof(SetInputViewModel.IsValid), nameof(SetInputViewModel.RepsError)],
+            [nameof(SetInputViewModel.IsEdited), nameof(SetInputViewModel.RepsInput), nameof(SetInputViewModel.IsValid), nameof(SetInputViewModel.RepsError)],
             changed);
+    }
+
+    [Fact]
+    public void IsEdited_New_IsFalse()
+    {
+        Assert.False(_input.IsEdited);
+    }
+
+    [Fact]
+    public void IsEdited_Typed_IsTrue()
+    {
+        _input.Fill(80, 8);
+
+        _input.RepsInput = "9";
+
+        Assert.True(_input.IsEdited);
+    }
+
+    public static TheoryData<Func<SetInputViewModel, IRelayCommand>> Steppers => new(
+        input => input.IncreaseWeightCommand,
+        input => input.DecreaseWeightCommand,
+        input => input.IncreaseRepsCommand,
+        input => input.DecreaseRepsCommand);
+
+    [Theory]
+    [MemberData(nameof(Steppers))]
+    public void IsEdited_Stepped_IsTrue(Func<SetInputViewModel, IRelayCommand> stepper)
+    {
+        _input.Fill(80, 8);
+
+        stepper(_input).Execute(null);
+
+        Assert.True(_input.IsEdited);
+    }
+
+    [Fact]
+    public void IsEdited_FilledAfterAnEdit_IsFalseAgain()
+    {
+        _input.WeightInput = ValidWeight;
+
+        _input.Fill(80, 8);
+
+        Assert.False(_input.IsEdited);
+    }
+
+    [Fact]
+    public void IsEdited_ClearedAfterAnEdit_IsFalseAgain()
+    {
+        _input.WeightInput = ValidWeight;
+
+        _input.Clear();
+
+        Assert.False(_input.IsEdited);
+    }
+
+    [Fact]
+    public void RefreshText_AfterAFill_StaysUnedited()
+    {
+        _input.Fill(82.5, 8);
+
+        _input.RefreshText();
+
+        Assert.False(_input.IsEdited);
+    }
+
+    [Fact]
+    public void RefreshText_AfterAnEdit_StaysEdited()
+    {
+        _input.WeightInput = ValidWeight;
+
+        _input.RefreshText();
+
+        Assert.True(_input.IsEdited);
     }
 }

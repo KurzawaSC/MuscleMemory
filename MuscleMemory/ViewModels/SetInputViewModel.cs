@@ -12,6 +12,8 @@ public sealed partial class SetInputViewModel : ObservableObject
     private const char CommaDecimalSeparator = ',';
     private const char InvariantDecimalSeparator = '.';
 
+    private bool _isWriting;
+
     private static string WeightRangeError => string.Format(
         CultureInfo.CurrentCulture, AppResources.WeightRangeErrorFormat, DomainDefaults.MinWeightInKg, DomainDefaults.MaxWeightInKg);
 
@@ -30,6 +32,9 @@ public sealed partial class SetInputViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsValid))]
     [NotifyPropertyChangedFor(nameof(RepsError))]
     public partial string RepsInput { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsEdited { get; private set; }
 
     public bool IsValid => TryRead(out _);
 
@@ -51,25 +56,51 @@ public sealed partial class SetInputViewModel : ObservableObject
 
     public void Fill(double weight, int reps)
     {
-        WeightInput = FormatWeight(weight);
-        RepsInput = FormatReps(reps);
+        Write(FormatWeight(weight), FormatReps(reps));
+        IsEdited = false;
     }
 
     public void Clear()
     {
-        WeightInput = string.Empty;
-        RepsInput = string.Empty;
+        Write(string.Empty, string.Empty);
+        IsEdited = false;
     }
 
     public void RefreshText()
     {
         if (TryParseWeight(out var weight))
         {
-            WeightInput = FormatWeight(weight);
+            Write(FormatWeight(weight), RepsInput);
         }
 
         OnPropertyChanged(nameof(WeightError));
         OnPropertyChanged(nameof(RepsError));
+    }
+
+    partial void OnWeightInputChanged(string value) => MarkEditedByUser();
+
+    partial void OnRepsInputChanged(string value) => MarkEditedByUser();
+
+    private void MarkEditedByUser()
+    {
+        if (!_isWriting)
+        {
+            IsEdited = true;
+        }
+    }
+
+    private void Write(string weight, string reps)
+    {
+        _isWriting = true;
+        try
+        {
+            WeightInput = weight;
+            RepsInput = reps;
+        }
+        finally
+        {
+            _isWriting = false;
+        }
     }
 
     [RelayCommand]
