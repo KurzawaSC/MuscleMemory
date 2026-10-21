@@ -19,9 +19,9 @@
 
 		<ApplicationId>io.github.kurzawasc.musclememory</ApplicationId>
 
-		<ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>2.1.0</ApplicationDisplayVersion>
 		<Version>$(ApplicationDisplayVersion)</Version>
-		<ApplicationVersion>2</ApplicationVersion>
+		<ApplicationVersion>3</ApplicationVersion>
 
 		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
