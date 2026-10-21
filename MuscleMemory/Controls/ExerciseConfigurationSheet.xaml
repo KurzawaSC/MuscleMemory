@@ -28,6 +28,7 @@
                                            Description="{loc:Text DescriptionRepRangeFrom}"
                                            Text="{Binding Configuration.MinRepsInput, Source={x:Reference Root}}"
                                            ErrorText="{Binding Configuration.MinRepsError, Source={x:Reference Root}}"
+                                           IsInputFocused="{Binding Configuration.IsMinRepsFocused, Source={x:Reference Root}}"
                                            MaxLength="{x:Static constants:InputLimits.MaxRepRangeInputLength}"
                                            DecrementCommand="{Binding Configuration.DecreaseMinRepsCommand, Source={x:Reference Root}}"
                                            IncrementCommand="{Binding Configuration.IncreaseMinRepsCommand, Source={x:Reference Root}}" />
@@ -36,6 +37,7 @@
                                            Description="{loc:Text DescriptionRepRangeTo}"
                                            Text="{Binding Configuration.MaxRepsInput, Source={x:Reference Root}}"
                                            ErrorText="{Binding Configuration.MaxRepsError, Source={x:Reference Root}}"
+                                           IsInputFocused="{Binding Configuration.IsMaxRepsFocused, Source={x:Reference Root}}"
                                            MaxLength="{x:Static constants:InputLimits.MaxRepRangeInputLength}"
                                            DecrementCommand="{Binding Configuration.DecreaseMaxRepsCommand, Source={x:Reference Root}}"
                                            IncrementCommand="{Binding Configuration.IncreaseMaxRepsCommand, Source={x:Reference Root}}" />

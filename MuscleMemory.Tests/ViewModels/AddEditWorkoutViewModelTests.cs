@@ -383,6 +383,73 @@ public sealed class AddEditWorkoutViewModelTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ConfirmConfigurationCommand_MinThenMaxTyped_CanExecuteOnlyWhileTheRangeIsValid()
+    {
+        await _editor.PickExerciseCommand.ExecuteAsync(_bench);
+        var range = _editor.ExerciseConfiguration;
+        List<bool> canConfirm = [];
+
+        range.IsMinRepsFocused = true;
+        canConfirm.Add(CanConfirm());
+        range.MinRepsInput = "8";
+        canConfirm.Add(CanConfirm());
+        range.IsMinRepsFocused = false;
+        range.IsMaxRepsFocused = true;
+        canConfirm.Add(CanConfirm());
+        range.MaxRepsInput = "1";
+        canConfirm.Add(CanConfirm());
+        range.MaxRepsInput = "12";
+        canConfirm.Add(CanConfirm());
+        range.IsMaxRepsFocused = false;
+        canConfirm.Add(CanConfirm());
+
+        Assert.Equal([true, false, false, false, true, true], canConfirm);
+    }
+
+    [Fact]
+    public async Task ConfirmConfigurationCommand_MaxThenMinTyped_CanExecuteOnlyWhileTheRangeIsValid()
+    {
+        await _editor.PickExerciseCommand.ExecuteAsync(_bench);
+        var range = _editor.ExerciseConfiguration;
+        List<bool> canConfirm = [];
+
+        range.IsMaxRepsFocused = true;
+        range.MaxRepsInput = "1";
+        canConfirm.Add(CanConfirm());
+        range.MaxRepsInput = "12";
+        canConfirm.Add(CanConfirm());
+        range.IsMaxRepsFocused = false;
+        range.IsMinRepsFocused = true;
+        canConfirm.Add(CanConfirm());
+        range.MinRepsInput = "8";
+        canConfirm.Add(CanConfirm());
+        range.IsMinRepsFocused = false;
+        canConfirm.Add(CanConfirm());
+
+        Assert.Equal([false, false, false, true, true], canConfirm);
+    }
+
+    [Fact]
+    public async Task ConfirmConfigurationCommand_UpperBelowLower_CannotExecuteWhetherShownOrNot()
+    {
+        await _editor.PickExerciseCommand.ExecuteAsync(_bench);
+        var range = _editor.ExerciseConfiguration;
+        range.MinRepsInput = "12";
+        range.IsMaxRepsFocused = true;
+        List<bool> canConfirm = [];
+
+        range.MaxRepsInput = "8";
+        canConfirm.Add(CanConfirm());
+        range.IsMaxRepsFocused = false;
+        canConfirm.Add(CanConfirm());
+        range.IsMaxRepsFocused = true;
+        range.MaxRepsInput = "15";
+        canConfirm.Add(CanConfirm());
+
+        Assert.Equal([false, false, true], canConfirm);
+    }
+
+    [Fact]
     public async Task SaveWorkout_NewExerciseWithRepRange_StoresTheRange()
     {
         await _editor.PickExerciseCommand.ExecuteAsync(_bench);
@@ -450,6 +517,8 @@ public sealed class AddEditWorkoutViewModelTests : IAsyncLifetime
         await _ui.Navigation.DidNotReceive().GoToAsync(Route.Is(NavigationRoutes.GoBack));
         Assert.Equal(12, (await _ui.App.Workouts.GetExercisesAsync(push.Id))[0].MaxReps);
     }
+
+    private bool CanConfirm() => _editor.ConfirmConfigurationCommand.CanExecute(null);
 
     private async Task AddAsync(Exercise exercise, int sets)
     {

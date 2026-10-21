@@ -21,6 +21,9 @@ public partial class InputStepper : ContentView
     public static readonly BindableProperty MaxLengthProperty =
         BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(InputStepper), int.MaxValue);
 
+    public static readonly BindableProperty IsInputFocusedProperty =
+        BindableProperty.Create(nameof(IsInputFocused), typeof(bool), typeof(InputStepper), false, BindingMode.OneWayToSource);
+
     public static readonly BindableProperty DecrementCommandProperty =
         BindableProperty.Create(nameof(DecrementCommand), typeof(ICommand), typeof(InputStepper));
 
@@ -59,6 +62,12 @@ public partial class InputStepper : ContentView
         set => SetValue(ErrorTextProperty, value);
     }
 
+    public bool IsInputFocused
+    {
+        get => (bool)GetValue(IsInputFocusedProperty);
+        set => SetValue(IsInputFocusedProperty, value);
+    }
+
     public ICommand? DecrementCommand
     {
         get => (ICommand?)GetValue(DecrementCommandProperty);
@@ -81,7 +90,11 @@ public partial class InputStepper : ContentView
         UpdateFieldState();
     }
 
-    private void OnValueEntryFocusChanged(object? sender, FocusEventArgs e) => UpdateFieldState();
+    private void OnValueEntryFocusChanged(object? sender, FocusEventArgs e)
+    {
+        IsInputFocused = e.IsFocused;
+        UpdateFieldState();
+    }
 
     private void UpdateFieldState() => VisualStateManager.GoToState(Field, FieldVisualStates.For(ValueEntry.IsFocused, HasError));
 }
