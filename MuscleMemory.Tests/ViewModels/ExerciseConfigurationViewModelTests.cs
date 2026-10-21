@@ -9,6 +9,7 @@ public sealed class ExerciseConfigurationViewModelTests
 {
     private const string BenchPress = "Bench Press";
     private const int CustomRestSeconds = 75;
+    private const string MissingBound = "Enter both or neither";
 
     private readonly ExerciseConfigurationViewModel _configuration = new();
 
@@ -255,6 +256,142 @@ public sealed class ExerciseConfigurationViewModelTests
         Assert.Contains(nameof(ExerciseConfigurationViewModel.MaxRepsError), changed);
     }
 
+    [Fact]
+    public void RepRange_MinThenMaxTypedThroughTransientValues_ShowsNoRangeErrorWhileTyping()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        _configuration.IsMinRepsFocused = true;
+        var typingMin = TypeMin("8");
+        MoveFocusToMax();
+        var focusedMax = Shown();
+        var typingMax = TypeMax("12");
+        _configuration.IsMaxRepsFocused = false;
+
+        Assert.Equal([NoErrors(isValid: false)], typingMin);
+        Assert.Equal(NoErrors(isValid: false), focusedMax);
+        Assert.Equal([NoErrors(isValid: false), NoErrors(isValid: true)], typingMax);
+        Assert.Equal(NoErrors(isValid: true), Shown());
+    }
+
+    [Fact]
+    public void RepRange_MaxThenMinTypedThroughTransientValues_ShowsNoRangeErrorWhileTyping()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        _configuration.IsMaxRepsFocused = true;
+        var typingMax = TypeMax("12");
+        MoveFocusToMin();
+        var focusedMin = Shown();
+        var typingMin = TypeMin("8");
+        _configuration.IsMinRepsFocused = false;
+
+        Assert.Equal([NoErrors(isValid: false), NoErrors(isValid: false)], typingMax);
+        Assert.Equal(NoErrors(isValid: false), focusedMin);
+        Assert.Equal([NoErrors(isValid: true)], typingMin);
+        Assert.Equal(NoErrors(isValid: true), Shown());
+    }
+
+    [Fact]
+    public void RepRange_OnlyTheLowerBoundTypedAndLeft_AsksForTheUpperOne()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.IsMinRepsFocused = true;
+        TypeMin("8");
+
+        _configuration.IsMinRepsFocused = false;
+
+        Assert.Equal((string.Empty, MissingBound, false), Shown());
+    }
+
+    [Fact]
+    public void RepRange_OnlyTheUpperBoundTypedAndLeft_AsksForTheLowerOne()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.IsMaxRepsFocused = true;
+        TypeMax("12");
+
+        _configuration.IsMaxRepsFocused = false;
+
+        Assert.Equal((MissingBound, string.Empty, false), Shown());
+    }
+
+    [Fact]
+    public void RepRange_LowerBoundCleared_AsksForItOnlyOnceFocusLeaves()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.BeginEdit(Planned(sets: 3, reps: 10, restSeconds: 90, rpe: 8, minReps: 8, maxReps: 12));
+
+        _configuration.IsMinRepsFocused = true;
+        _configuration.MinRepsInput = string.Empty;
+        var whileTyping = Shown();
+        _configuration.IsMinRepsFocused = false;
+
+        Assert.Equal(NoErrors(isValid: false), whileTyping);
+        Assert.Equal((MissingBound, string.Empty, false), Shown());
+        Assert.Equal((null, null), (_configuration.ToConfiguration().MinReps, _configuration.ToConfiguration().MaxReps));
+    }
+
+    [Fact]
+    public void RepRange_UpperBelowLower_ShowsTheOrderErrorOnceFocusLeavesAndClearsItOnceFixed()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.IsMinRepsFocused = true;
+        TypeMin("12");
+        MoveFocusToMax();
+
+        var typingMax = TypeMax("8");
+        _configuration.IsMaxRepsFocused = false;
+        var afterLeaving = Shown();
+        _configuration.IsMaxRepsFocused = true;
+        var refocused = Shown();
+        _configuration.MaxRepsInput = string.Empty;
+        var fixing = TypeMax("15");
+        _configuration.IsMaxRepsFocused = false;
+
+        Assert.Equal([NoErrors(isValid: false)], typingMax);
+        Assert.Equal((string.Empty, "Enter at least 12", false), afterLeaving);
+        Assert.Equal(NoErrors(isValid: false), refocused);
+        Assert.Equal([NoErrors(isValid: false), NoErrors(isValid: true)], fixing);
+        Assert.Equal(NoErrors(isValid: true), Shown());
+    }
+
+    [Fact]
+    public void RepRange_BoundOutsideOneToThirtyWhileTyping_ShowsTheLimitErrorAtOnce()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        _configuration.MinRepsInput = "8";
+        _configuration.IsMaxRepsFocused = true;
+
+        var typingMax = TypeMax("40");
+
+        Assert.Equal([NoErrors(isValid: false), (string.Empty, "Enter 1–30 reps", false)], typingMax);
+    }
+
+    [Fact]
+    public void IsMinRepsFocused_Changed_RaisesBothErrorsButNotValidity()
+    {
+        var changed = PropertyChanges.Record(_configuration);
+
+        _configuration.IsMinRepsFocused = true;
+
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MinRepsError), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MaxRepsError), changed);
+        Assert.DoesNotContain(nameof(ExerciseConfigurationViewModel.IsValid), changed);
+    }
+
+    [Fact]
+    public void IsMaxRepsFocused_Changed_RaisesBothErrorsButNotValidity()
+    {
+        var changed = PropertyChanges.Record(_configuration);
+
+        _configuration.IsMaxRepsFocused = true;
+
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MinRepsError), changed);
+        Assert.Contains(nameof(ExerciseConfigurationViewModel.MaxRepsError), changed);
+        Assert.DoesNotContain(nameof(ExerciseConfigurationViewModel.IsValid), changed);
+    }
+
     [Theory]
     [InlineData("8", "9")]
     [InlineData("29", "30")]
@@ -305,6 +442,36 @@ public sealed class ExerciseConfigurationViewModelTests
         MinReps = minReps,
         MaxReps = maxReps
     };
+
+    private (string MinError, string MaxError, bool IsValid) Shown() =>
+        (_configuration.MinRepsError, _configuration.MaxRepsError, _configuration.IsValid);
+
+    private static (string, string, bool) NoErrors(bool isValid) => (string.Empty, string.Empty, isValid);
+
+    private List<(string, string, bool)> TypeMin(string text) => Type(text, prefix => _configuration.MinRepsInput = prefix);
+
+    private List<(string, string, bool)> TypeMax(string text) => Type(text, prefix => _configuration.MaxRepsInput = prefix);
+
+    private List<(string, string, bool)> Type(string text, Action<string> enter) =>
+    [
+        .. Enumerable.Range(1, text.Length).Select(length =>
+        {
+            enter(text[..length]);
+            return Shown();
+        })
+    ];
+
+    private void MoveFocusToMax()
+    {
+        _configuration.IsMinRepsFocused = false;
+        _configuration.IsMaxRepsFocused = true;
+    }
+
+    private void MoveFocusToMin()
+    {
+        _configuration.IsMaxRepsFocused = false;
+        _configuration.IsMinRepsFocused = true;
+    }
 
     private static List<LevelSegment> FilledUpTo(int rpe) =>
     [

@@ -52,11 +52,29 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(MaxRepsError))]
     public partial string MaxRepsInput { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MinRepsError))]
+    [NotifyPropertyChangedFor(nameof(MaxRepsError))]
+    public partial bool IsMinRepsFocused { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MinRepsError))]
+    [NotifyPropertyChangedFor(nameof(MaxRepsError))]
+    public partial bool IsMaxRepsFocused { get; set; }
+
     public bool IsValid => TryReadRange(out _, out _);
 
-    public string MinRepsError => DescribeBoundError(MinRepsInput, MaxRepsInput);
+    public string MinRepsError =>
+        DescribeLimitError(MinRepsInput)
+        ?? (ShowsRangeErrors ? DescribeMissingBound(MinRepsInput, MaxRepsInput) : null)
+        ?? string.Empty;
 
-    public string MaxRepsError => DescribeBoundError(MaxRepsInput, MinRepsInput) is { Length: > 0 } boundError ? boundError : DescribeOrderError();
+    public string MaxRepsError =>
+        DescribeLimitError(MaxRepsInput)
+        ?? (ShowsRangeErrors ? DescribeMissingBound(MaxRepsInput, MinRepsInput) ?? DescribeOrderError() : null)
+        ?? string.Empty;
+
+    private bool ShowsRangeErrors => !IsMinRepsFocused && !IsMaxRepsFocused;
 
     public IReadOnlyList<RestPreset> RestPresets { get; } =
         [.. DomainDefaults.BreakTimePresetsInSeconds.Select(RestPreset.For), RestPreset.Custom()];
@@ -143,20 +161,18 @@ public partial class ExerciseConfigurationViewModel : ObservableObject
         return true;
     }
 
-    private string DescribeOrderError() =>
+    private string? DescribeOrderError() =>
         TryParseBound(MinRepsInput, out var min) && TryParseBound(MaxRepsInput, out var max) && max < min
             ? string.Format(CultureInfo.CurrentCulture, AppResources.RepRangeOrderErrorFormat, min)
-            : string.Empty;
+            : null;
 
-    private static string DescribeBoundError(string input, string otherInput)
-    {
-        if (input.Length > 0 && !TryParseBound(input, out _))
-        {
-            return string.Format(CultureInfo.CurrentCulture, AppResources.RepsRangeErrorFormat, RepRange.Lowest, RepRange.Highest);
-        }
+    private static string? DescribeLimitError(string input) =>
+        input.Length > 0 && !TryParseBound(input, out _)
+            ? string.Format(CultureInfo.CurrentCulture, AppResources.RepsRangeErrorFormat, RepRange.Lowest, RepRange.Highest)
+            : null;
 
-        return input.Length == 0 && otherInput.Length > 0 ? AppResources.RepRangeMissingBound : string.Empty;
-    }
+    private static string? DescribeMissingBound(string input, string otherInput) =>
+        input.Length == 0 && otherInput.Length > 0 ? AppResources.RepRangeMissingBound : null;
 
     private static bool TryParseBound(string input, out int reps) =>
         int.TryParse(input, NumberStyles.None, CultureInfo.InvariantCulture, out reps) && reps is >= RepRange.Lowest and <= RepRange.Highest;
