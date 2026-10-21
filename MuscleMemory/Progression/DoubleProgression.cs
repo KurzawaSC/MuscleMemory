@@ -9,7 +9,8 @@ public static class DoubleProgression
         int plannedSets,
         IReadOnlyList<PerformedSet> lastSession,
         IReadOnlyList<PerformedSet> previousSession,
-        double weightStep)
+        double weightStep,
+        double maxWeight)
     {
         if (range is null || WorkingSets(lastSession) is not [var heaviest, ..] working)
         {
@@ -23,7 +24,7 @@ public static class DoubleProgression
             return Hold(weight, working.Select(set => set.Reps + RepIncrement), plannedSets, range);
         }
 
-        if (IsIncrease(range, plannedSets, working))
+        if (IsIncrease(range, plannedSets, working) && weight + weightStep <= maxWeight)
         {
             return new ProgressionSuggestion(SuggestionOutcome.Increase, weight + weightStep, AtBottomOfRange(range, plannedSets));
         }

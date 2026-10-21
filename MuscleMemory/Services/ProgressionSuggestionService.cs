@@ -24,6 +24,7 @@ public sealed class ProgressionSuggestionService(IWorkoutSetRepository setReposi
             exercise.PlannedSets,
             sessions.ElementAtOrDefault(0) ?? [],
             sessions.ElementAtOrDefault(1) ?? [],
-            DomainDefaults.WeightStepInKg);
+            DomainDefaults.WeightStepInKg,
+            DomainDefaults.MaxWeightInKg);
     }
 }
