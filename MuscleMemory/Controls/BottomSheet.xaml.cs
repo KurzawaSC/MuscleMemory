@@ -27,6 +27,8 @@ public partial class BottomSheet : ContentView
     private double _panStartTranslation;
     private double _bottomInset;
     private int _transition;
+    private int _fieldScrollRequest;
+    private bool _isScrollingToField;
     private IDisposable? _insetRegistration;
 
     public BottomSheet()
@@ -38,6 +40,7 @@ public partial class BottomSheet : ContentView
         FooterHost.SizeChanged += (_, _) => LimitBodyHeight();
         BodyContent.SizeChanged += (_, _) => OnBodyLayoutChanged();
         Body.SizeChanged += (_, _) => OnBodyLayoutChanged();
+        Body.HandlerChanged += (_, _) => EndFieldScroll();
     }
 
     public bool IsOpen
@@ -185,7 +188,8 @@ public partial class BottomSheet : ContentView
         }
 
         var contentHeight = BodyContent.Measure(Body.Width, double.PositiveInfinity).Height;
-        Body.Orientation = contentHeight > Body.MaximumHeightRequest ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
+        var scrolls = _isScrollingToField || contentHeight > Body.MaximumHeightRequest;
+        Body.Orientation = scrolls ? ScrollOrientation.Vertical : ScrollOrientation.Neither;
     }
 
     private double SheetChromeHeight()
@@ -199,14 +203,52 @@ public partial class BottomSheet : ContentView
 
     private void ScrollFocusedFieldIntoView()
     {
-        if (Body.GetVisualTreeDescendants().OfType<VisualElement>().FirstOrDefault(element => element.IsFocused) is { } focusedElement)
+        if (Body.GetVisualTreeDescendants().OfType<VisualElement>().FirstOrDefault(element => element.IsFocused) is { } focusedElement
+            && ScrollFor(OwningField(focusedElement)).TargetScrollY() is { } scrollY)
         {
-            AppLog.LogFailures(ScrollIntoViewAsync(OwningField(focusedElement)));
+            AppLog.LogFailures(ScrollFieldIntoViewAsync(scrollY));
         }
     }
 
-    private async Task ScrollIntoViewAsync(Element field) =>
-        await Body.ScrollToAsync(field, ScrollToPosition.MakeVisible, true);
+    private FocusedFieldScroll ScrollFor(VisualElement field) => new(
+        Body.Handler is not null && Window is not null,
+        BodyContent.Height,
+        Body.Height,
+        Body.ScrollY,
+        OffsetInBody(field),
+        field.Height);
+
+    private double OffsetInBody(VisualElement element)
+    {
+        var offset = 0d;
+
+        for (var current = element; current is not null && current != Body; current = current.Parent as VisualElement)
+        {
+            offset += current.Y;
+        }
+
+        return offset;
+    }
+
+    private async Task ScrollFieldIntoViewAsync(double scrollY)
+    {
+        var request = ++_fieldScrollRequest;
+        _isScrollingToField = true;
+
+        await Body.ScrollToAsync(Body.ScrollX, scrollY, true);
+
+        if (request == _fieldScrollRequest)
+        {
+            EndFieldScroll();
+        }
+    }
+
+    private void EndFieldScroll()
+    {
+        _fieldScrollRequest++;
+        _isScrollingToField = false;
+        UpdateBodyScrolling();
+    }
 
     private static VisualElement OwningField(VisualElement focusedElement)
     {
