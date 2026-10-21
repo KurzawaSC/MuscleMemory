@@ -24,7 +24,7 @@ public partial class TextField : ContentView
 
     public static readonly BindableProperty ErrorTextProperty =
         BindableProperty.Create(nameof(ErrorText), typeof(string), typeof(TextField), string.Empty,
-            propertyChanged: (bindable, _, _) => ((TextField)bindable).OnPropertyChanged(nameof(HasError)));
+            propertyChanged: (bindable, _, _) => ((TextField)bindable).OnErrorTextChanged());
 
     public TextField() => InitializeComponent();
 
@@ -75,4 +75,14 @@ public partial class TextField : ContentView
     public bool ShowsClearButton => IsClearable && !string.IsNullOrEmpty(Text);
 
     private void OnClearTapped(object? sender, TappedEventArgs e) => Text = string.Empty;
+
+    private void OnErrorTextChanged()
+    {
+        OnPropertyChanged(nameof(HasError));
+        UpdateFieldState();
+    }
+
+    private void OnInputFocusChanged(object? sender, FocusEventArgs e) => UpdateFieldState();
+
+    private void UpdateFieldState() => VisualStateManager.GoToState(Field, FieldVisualStates.For(Input.IsFocused, HasError));
 }

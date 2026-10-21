@@ -8,16 +8,25 @@
 
     <VerticalStackLayout Spacing="6">
         <Label Style="{StaticResource OverlineLabel}" Text="{Binding Title, Source={x:Reference Root}}" />
-        <Border Style="{StaticResource InsetPanel}" Padding="0" HeightRequest="56" StrokeThickness="2" Stroke="Transparent">
-            <Border.Triggers>
-                <DataTrigger TargetType="Border" Binding="{Binding HasError, Source={x:Reference Root}}" Value="True">
-                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLineLight}, Dark={StaticResource PrimaryLineDark}}" />
-                </DataTrigger>
-                <DataTrigger TargetType="Border" Binding="{Binding IsFocused, Source={x:Reference ValueEntry}}" Value="True">
-                    <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
-                </DataTrigger>
-            </Border.Triggers>
+        <Border x:Name="Field" Style="{StaticResource InsetPanel}" Padding="0" HeightRequest="56" StrokeThickness="2" Stroke="Transparent">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup>
+                        <VisualState Name="{x:Static controls:FieldVisualStates.Idle}" />
+                        <VisualState Name="{x:Static controls:FieldVisualStates.Invalid}">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLineLight}, Dark={StaticResource PrimaryLineDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="{x:Static controls:FieldVisualStates.Editing}">
+                            <VisualState.Setters>
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
             <Grid ColumnDefinitions="Auto, *, Auto">
                 <controls:GlyphButton Glyph="−"
                                       Style="{StaticResource StepperGlyphButton}"
@@ -40,7 +49,9 @@
                        Placeholder="—"
                        Keyboard="Numeric"
                        HorizontalTextAlignment="Center"
-                       VerticalOptions="Center" />
+                       VerticalOptions="Center"
+                       Focused="OnValueEntryFocusChanged"
+                       Unfocused="OnValueEntryFocusChanged" />
                 <controls:GlyphButton Grid.Column="2"
                                       Glyph="+"
                                       Style="{StaticResource StepperGlyphButton}"

@@ -13,7 +13,7 @@ public partial class InputStepper : ContentView
 
     public static readonly BindableProperty ErrorTextProperty =
         BindableProperty.Create(nameof(ErrorText), typeof(string), typeof(InputStepper), string.Empty,
-            propertyChanged: (bindable, _, _) => ((InputStepper)bindable).OnPropertyChanged(nameof(HasError)));
+            propertyChanged: (bindable, _, _) => ((InputStepper)bindable).OnErrorTextChanged());
 
     public static readonly BindableProperty DescriptionProperty =
         BindableProperty.Create(nameof(Description), typeof(string), typeof(InputStepper));
@@ -74,4 +74,14 @@ public partial class InputStepper : ContentView
     public bool HasValue => !string.IsNullOrEmpty(Text);
 
     public bool HasError => !string.IsNullOrEmpty(ErrorText);
+
+    private void OnErrorTextChanged()
+    {
+        OnPropertyChanged(nameof(HasError));
+        UpdateFieldState();
+    }
+
+    private void OnValueEntryFocusChanged(object? sender, FocusEventArgs e) => UpdateFieldState();
+
+    private void UpdateFieldState() => VisualStateManager.GoToState(Field, FieldVisualStates.For(ValueEntry.IsFocused, HasError));
 }
