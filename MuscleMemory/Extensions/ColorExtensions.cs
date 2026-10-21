@@ -15,7 +15,7 @@ public static class ColorExtensions
     public static bool PrefersDarkForeground(this Color background) =>
         RelativeLuminance(background) > DarkForegroundLuminanceThreshold;
 
-    private static double RelativeLuminance(Color color) =>
+    internal static double RelativeLuminance(this Color color) =>
         (RedLuminanceWeight * ToLinear(color.Red))
         + (GreenLuminanceWeight * ToLinear(color.Green))
         + (BlueLuminanceWeight * ToLinear(color.Blue));

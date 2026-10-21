@@ -60,7 +60,7 @@
     <Color x:Key="InkBodyLight">#5B5B64</Color>
     <Color x:Key="InkBodyDark">#B9B9C2</Color>
 
-    <Color x:Key="InkMutedLight">#7A7A82</Color>
+    <Color x:Key="InkMutedLight">#6E6E76</Color>
     <Color x:Key="InkMutedDark">#8E8E98</Color>
 
     <Color x:Key="InkFaintLight">#A9A9B2</Color>
