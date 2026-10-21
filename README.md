@@ -131,17 +131,20 @@ The input is the exercise's eligible sets (as for records) from the most recent 
 that contains logged sets of it — the **last session**, from any workout — and from the finished
 session before that, the **previous session**. The working weight W is the heaviest weight in the
 last session, and the **working sets** are its sets at W, in the order they were logged; lighter
-back-off sets are ignored. Δ is the weight step, 2.5 kg.
+back-off sets are ignored. Δ is the weight step, 2.5 kg, and X is the heaviest weight the set
+input accepts, 500 kg.
 
 | # | Condition (checked in this order) | Suggestion |
 |---|---|---|
 | 1 | No rep range, or no finished session with the exercise | none |
 | 2 | W = 0 (bodyweight) | Hold at 0, target r + 1 for each working set (no cap) |
-| 3 | At least n working sets, and every one has r ≥ M | Increase to W + Δ, m reps × n sets |
+| 3 | At least n working sets, every one has r ≥ M, and W + Δ ≤ X | Increase to W + Δ, m reps × n sets |
 | 4 | Every working set has r < m, the previous session's working weight is also W with every working set r < m, and W − Δ > 0 | Decrease to W − Δ, m reps × n sets |
 | 5 | Anything else | Hold at W, target min(r + 1, M) for each working set in order |
 
 In both Hold rows, when fewer than n working sets were done, the missing sets get a target of m.
+When every working set reached M but W + Δ would exceed X, row 3 does not apply and row 5 holds at
+W with a target of M for each working set.
 The range is always the current one, also when judging the previous session. History and summary
 screens show no suggestion. For screen readers the line is one sentence, for example "Suggestion:
 keep 80 kg, sets of 9, 9 and 8 reps."

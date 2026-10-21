@@ -1,3 +1,4 @@
+using MuscleMemory.Constants;
 using MuscleMemory.Models;
 using MuscleMemory.Progression;
 using MuscleMemory.Tests.Testing;
@@ -61,6 +62,15 @@ public sealed class ProgressionSuggestionServiceTests : IAsyncLifetime
         await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, Max), new LoggedSet(0, 80, Max), new LoggedSet(0, 80, Max));
 
         AssertSuggestion(SuggestionOutcome.Increase, 82.5, [Min, Min, Min], await _app.Suggestions.SuggestAsync(await CurrentBenchAsync(_push)));
+    }
+
+    [Fact]
+    public async Task SuggestAsync_LastSessionAtTheTopOfTheRangeAtTheMaximumWeight_Holds()
+    {
+        const double weight = DomainDefaults.MaxWeightInKg;
+        await _app.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, weight, Max), new LoggedSet(0, weight, Max), new LoggedSet(0, weight, Max));
+
+        AssertSuggestion(SuggestionOutcome.Hold, weight, [Max, Max, Max], await _app.Suggestions.SuggestAsync(await CurrentBenchAsync(_push)));
     }
 
     [Fact]

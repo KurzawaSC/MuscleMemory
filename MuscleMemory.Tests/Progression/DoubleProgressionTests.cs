@@ -11,6 +11,7 @@ public sealed class DoubleProgressionTests
     private const int LastSessionId = 2;
     private const int PreviousSessionId = 1;
     private const double Step = DomainDefaults.WeightStepInKg;
+    private const double MaxWeight = DomainDefaults.MaxWeightInKg;
 
     private static readonly RepRange Range = RepRange.From(Min, Max)!;
 
@@ -22,7 +23,7 @@ public sealed class DoubleProgressionTests
         [.. sets.Select((set, index) => new PerformedSet { SetId = (sessionId * 100) + index, SessionId = sessionId, Weight = set.Weight, Reps = set.Reps })];
 
     private static ProgressionSuggestion? Suggest(IReadOnlyList<PerformedSet> last, IReadOnlyList<PerformedSet>? previous = null, RepRange? range = null, int plannedSets = PlannedSets) =>
-        DoubleProgression.Suggest(range ?? Range, plannedSets, last, previous ?? [], Step);
+        DoubleProgression.Suggest(range ?? Range, plannedSets, last, previous ?? [], Step, MaxWeight);
 
     private static void AssertSuggestion(SuggestionOutcome outcome, double weight, int[] targets, ProgressionSuggestion? actual)
     {
@@ -34,7 +35,7 @@ public sealed class DoubleProgressionTests
     [Fact]
     public void Suggest_NoRange_SuggestsNothing()
     {
-        Assert.Null(DoubleProgression.Suggest(null, PlannedSets, Last((80, 12), (80, 12), (80, 12)), [], Step));
+        Assert.Null(DoubleProgression.Suggest(null, PlannedSets, Last((80, 12), (80, 12), (80, 12)), [], Step, MaxWeight));
     }
 
     [Fact]
@@ -59,6 +60,28 @@ public sealed class DoubleProgressionTests
     public void Suggest_MoreWorkingSetsThanPlannedAllAtTheTop_IncreasesForThePlannedSets()
     {
         AssertSuggestion(SuggestionOutcome.Increase, 82.5, [Min, Min, Min], Suggest(Last((80, Max), (80, Max), (80, Max), (80, Max))));
+    }
+
+    [Fact]
+    public void Suggest_IncreaseLandingExactlyOnTheMaximumWeight_Increases()
+    {
+        const double weight = MaxWeight - Step;
+
+        AssertSuggestion(SuggestionOutcome.Increase, MaxWeight, [Min, Min, Min], Suggest(Last((weight, Max), (weight, Max), (weight, Max))));
+    }
+
+    [Theory]
+    [InlineData(MaxWeight - Step + DomainDefaults.WeightPrecisionInKg)]
+    [InlineData(MaxWeight)]
+    public void Suggest_IncreaseWouldExceedTheMaximumWeight_HoldsWithTheTopOfTheRange(double weight)
+    {
+        AssertSuggestion(SuggestionOutcome.Hold, weight, [Max, Max, Max], Suggest(Last((weight, Max), (weight, Max), (weight, 15))));
+    }
+
+    [Fact]
+    public void Suggest_IncreaseWouldExceedTheMaximumWeightWithMoreSetsThanPlanned_HoldsWithATargetForEveryWorkingSet()
+    {
+        AssertSuggestion(SuggestionOutcome.Hold, MaxWeight, [Max, Max, Max, Max], Suggest(Last((MaxWeight, Max), (MaxWeight, Max), (MaxWeight, Max), (MaxWeight, Max))));
     }
 
     [Fact]
