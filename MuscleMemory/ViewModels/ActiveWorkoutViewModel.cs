@@ -7,6 +7,7 @@ using MuscleMemory.Constants;
 using MuscleMemory.Extensions;
 using MuscleMemory.Localization;
 using MuscleMemory.Models;
+using MuscleMemory.Progression;
 using MuscleMemory.Resources.Strings;
 using MuscleMemory.Services;
 
@@ -23,16 +24,19 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private readonly IDialogService _dialogs;
     private readonly IWorkoutSummaryService _summaryService;
     private readonly IPersonalRecordService _personalRecords;
+    private readonly IProgressionSuggestionService _suggestions;
     private readonly INavigationStackService _navigationStack;
     private readonly INavigationService _navigation;
     private readonly IHapticService _haptics;
     private readonly IErrorHandler _errors;
+    private readonly HashSet<int> _exercisesHandedOver = [];
     private int _sessionId;
     private int _workoutId;
     private int _currentExerciseIndex;
     private int _totalSetsForExercise;
     private DateTime _workoutStartTimeUtc;
     private IReadOnlyList<WorkoutSet> _lastSessionSets = [];
+    private ProgressionSuggestion? _suggestion;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBannerVisible))]
@@ -110,7 +114,19 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     public partial string LastSessionResultsText { get; set; } = string.Empty;
 
     [ObservableProperty]
+    public partial string LastSessionDescription { get; set; } = string.Empty;
+
+    [ObservableProperty]
     public partial bool HasLastSession { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSuggestion))]
+    public partial SuggestionItem? Suggestion { get; private set; }
+
+    public bool HasSuggestion => Suggestion is not null;
+
+    [ObservableProperty]
+    public partial bool IsPrefilledFromSuggestion { get; private set; }
 
     public SetInputViewModel SetInput { get; } = new();
 
@@ -130,6 +146,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IDialogService dialogs,
         IWorkoutSummaryService summaryService,
         IPersonalRecordService personalRecords,
+        IProgressionSuggestionService suggestions,
         INavigationStackService navigationStack,
         INavigationService navigation,
         IHapticService haptics,
@@ -143,6 +160,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _dialogs = dialogs;
         _summaryService = summaryService;
         _personalRecords = personalRecords;
+        _suggestions = suggestions;
         _navigationStack = navigationStack;
         _navigation = navigation;
         _haptics = haptics;
@@ -155,6 +173,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         _timer.Ticked += OnTimerTicked;
         CurrentSets.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CurrentVolumeText));
         Rest.PropertyChanged += OnRestPropertyChanged;
+        SetInput.PropertyChanged += OnSetInputPropertyChanged;
         localization.LanguageChanged += OnLanguageChanged;
         SaveSetCommand.NotifyCanExecuteChangedWhen(SetInput, nameof(SetInputViewModel.IsValid));
         SetActions.ShowCommand.NotifyCanExecuteChangedWhen(this, nameof(IsBusy));
@@ -189,6 +208,14 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         }
     }
 
+    private void OnSetInputPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SetInputViewModel.IsEdited) && SetInput.IsEdited)
+        {
+            _exercisesHandedOver.Add(CurrentExercise.Id);
+        }
+    }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         OnPropertyChanged(nameof(WorkoutTitle));
@@ -197,6 +224,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         {
             ShowExerciseProgress();
             ShowLastSession();
+            ShowSuggestion();
             ShowSetProgress();
         }
 
@@ -339,9 +367,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasNextExercise = false;
         HasLastSession = false;
         _lastSessionSets = [];
+        _suggestion = null;
+        Suggestion = null;
+        IsPrefilledFromSuggestion = false;
         ExerciseProgressText = string.Empty;
         SetProgressText = string.Empty;
         LastSessionResultsText = string.Empty;
+        LastSessionDescription = string.Empty;
         SetInput.Clear();
     }
 
@@ -366,8 +398,11 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         HasLastSession = _lastSessionSets.Count > 0;
         ShowLastSession();
 
+        _suggestion = await _suggestions.SuggestAsync(exercise);
+        ShowSuggestion();
+
         await LoadSetsForCurrentExerciseAsync();
-        PrefillInputs(CurrentSets.LastOrDefault()?.Set ?? _lastSessionSets.FirstOrDefault());
+        PrefillInputs();
         UpdateSetProgress();
         await SaveStateAsync();
     }
@@ -375,14 +410,27 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
     private void ShowExerciseProgress() =>
         ExerciseProgressText = string.Format(CultureInfo.CurrentCulture, AppResources.ExerciseProgressFormat, _currentExerciseIndex + 1, Exercises.Count);
 
-    private void ShowLastSession() =>
-        LastSessionResultsText = HasLastSession
-            ? AppResources.LastSessionPrefix + string.Join(AppResources.ResultSeparator, _lastSessionSets.Select(set => string.Format(CultureInfo.CurrentCulture, AppResources.SetResultFormat, set.Weight, set.Reps)))
-            : AppResources.FirstTimePerformingExercise;
-
-    private void PrefillInputs(WorkoutSet? source)
+    private void ShowLastSession()
     {
-        if (source is null)
+        var lastSession = LastSessionItem.Create(_lastSessionSets);
+        LastSessionResultsText = lastSession.Text;
+        LastSessionDescription = lastSession.Description;
+    }
+
+    private void ShowSuggestion() =>
+        Suggestion = _suggestion is { TargetReps.Count: > 0 } suggestion ? SuggestionItem.Create(suggestion) : null;
+
+    private void PrefillInputs()
+    {
+        if (SuggestedFirstSet() is { } suggested)
+        {
+            SetInput.Fill(suggested.Weight, suggested.Reps);
+            IsPrefilledFromSuggestion = true;
+            return;
+        }
+
+        IsPrefilledFromSuggestion = false;
+        if ((CurrentSets.LastOrDefault()?.Set ?? _lastSessionSets.FirstOrDefault()) is not { } source)
         {
             SetInput.Clear();
             return;
@@ -390,6 +438,13 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
 
         SetInput.Fill(source.Weight, source.Reps);
     }
+
+    private SetValues? SuggestedFirstSet() =>
+        _suggestion is { TargetReps: [var firstTarget, ..] } suggestion
+        && CurrentSets.Count == 0
+        && !_exercisesHandedOver.Contains(CurrentExercise.Id)
+            ? new SetValues(suggestion.Weight, firstTarget)
+            : null;
 
     private async Task LoadSetsForCurrentExerciseAsync()
     {
@@ -450,6 +505,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         };
 
         await _sessions.AddSetAsync(newSet);
+        _exercisesHandedOver.Add(CurrentExercise.Id);
         var newRecords = await FindNewRecordsOfCurrentExerciseAsync();
         _haptics.Click();
         SetInput.Fill(newSet.Weight, newSet.Reps);
@@ -615,6 +671,7 @@ public partial class ActiveWorkoutViewModel : ObservableObject, IQueryAttributab
         IsExercisesEmpty = false;
         IsPlanComplete = false;
         Exercises.Clear();
+        _exercisesHandedOver.Clear();
 
         WorkoutName = null;
         TimerText = ZeroTimeText;

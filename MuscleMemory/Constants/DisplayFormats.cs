@@ -8,4 +8,5 @@ public static class DisplayFormats
     public const string MissingValue = "—";
     public const string SignedRate = "+#,##0.0;−#,##0.0;0";
     public const string GroupedNumber = "N";
+    public const string RepTargetSeparator = " / ";
 }

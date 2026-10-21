@@ -24,6 +24,9 @@ leaves the page.
 - A workout is a named list of exercises. Each entry has its own sets (1–20), target reps (1–100),
   rest time and target RPE (1–10). Rest is a 60, 90 or 120 s preset, or a custom value from 0 to
   600 s in 15 s steps.
+- An entry can also have an optional **rep range** ("Reps from" and "Reps to", 1 ≤ from ≤ to ≤ 30).
+  Both fields are filled or both are left empty; with a range, the live session suggests the next
+  weight and reps (see [Progression suggestions](#progression-suggestions)).
 - Exercises are added from a picker sheet with search, muscle-group filters and a shortcut to create
   a new exercise. Tap an entry or its **Edit** button to change it or remove it. Entries cannot be
   reordered.
@@ -37,6 +40,10 @@ leaves the page.
 - Weight and reps are prefilled from the last session of that exercise, and that session's sets are
   shown as "Last: …". The weight stepper moves in 2.5 kg steps, and typed weights accept either `.`
   or `,` as the decimal separator.
+- For an entry with a rep range, a suggestion line such as "Increase: 82.5 kg × 8" or
+  "Hold: 80 kg × 9 / 9 / 8" appears under the target, and the input starts with the suggested weight
+  and the first set's target reps instead of the last session's values. Once you edit the input or
+  log a set, the usual prefill takes over again.
 - **Save set** logs a set and starts the rest timer for that exercise. **Undo** removes the last
   set. Tapping a logged set opens a sheet to edit or delete it.
 - A logged set that beats the exercise's personal record carries a **PR** badge (see
@@ -108,10 +115,36 @@ date, using the same eligible sets and the same e1RM as the records.
   the card says there are not enough sessions for a trend.
 - With fewer than 2 points in the range the card shows a message instead of the chart, and an
   exercise with no eligible sets has no chart at all.
-- Tapping or dragging across the chart selects the nearest session by date and shows its value
-  and date above the chart; tapping where no session is near clears the selection.
+- Tapping or dragging sideways across the chart selects the nearest session by date and shows its
+  value and date above the chart; tapping where no session is near clears the selection. A vertical
+  swipe that starts on the chart scrolls the page and selects nothing.
 - For screen readers the chart is a single element that reads the series, the range, the first and
   last values with their dates, the best value and the trend.
+
+### Progression suggestions
+
+For a plan entry with a rep range [m, M] and n planned sets, the live session suggests the next
+weight and reps by double progression: add reps inside the range, then add weight and start again
+at the bottom. The suggestion is computed when the exercise is shown and never stored.
+
+The input is the exercise's eligible sets (as for records) from the most recent finished session
+that contains logged sets of it — the **last session**, from any workout — and from the finished
+session before that, the **previous session**. The working weight W is the heaviest weight in the
+last session, and the **working sets** are its sets at W, in the order they were logged; lighter
+back-off sets are ignored. Δ is the weight step, 2.5 kg.
+
+| # | Condition (checked in this order) | Suggestion |
+|---|---|---|
+| 1 | No rep range, or no finished session with the exercise | none |
+| 2 | W = 0 (bodyweight) | Hold at 0, target r + 1 for each working set (no cap) |
+| 3 | At least n working sets, and every one has r ≥ M | Increase to W + Δ, m reps × n sets |
+| 4 | Every working set has r < m, the previous session's working weight is also W with every working set r < m, and W − Δ > 0 | Decrease to W − Δ, m reps × n sets |
+| 5 | Anything else | Hold at W, target min(r + 1, M) for each working set in order |
+
+In both Hold rows, when fewer than n working sets were done, the missing sets get a target of m.
+The range is always the current one, also when judging the previous session. History and summary
+screens show no suggestion. For screen readers the line is one sentence, for example "Suggestion:
+keep 80 kg, sets of 9, 9 and 8 reps."
 
 ### Settings
 
@@ -131,7 +164,8 @@ date, using the same eligible sets and the same e1RM as the records.
 ## Privacy and data
 
 - Everything is stored locally, in the SQLite file `MuscleMemory.db3` in the app's private data
-  directory. There is no account and no network code.
+  directory. There is no account and no network code. The schema only ever grows (new nullable
+  columns or tables), and an existing database gains new columns on startup with its rows intact.
 - The manifest declares one permission, `VIBRATE`, and no `INTERNET`. A Release APK merges in only
   AndroidX's app-private `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`. Debug builds also get
   `INTERNET`, which the .NET Android debugger needs. `android:allowBackup` is `false`.
@@ -140,9 +174,10 @@ date, using the same eligible sets and the same e1RM as the records.
   only if you pick a target. The copy is deleted the next time the app starts.
 - **Import data** reads the file you choose in the system file picker, so it needs no permission.
   The file is copied to the app's cache as `MuscleMemory-import.db3` and checked before anything
-  changes: the SQLite header, `PRAGMA quick_check`, and every table and column the app uses. A file
-  that is not a backup, is damaged, or comes from an incompatible version is rejected with a
-  message. After you confirm, all current data is replaced in one transaction; an active-session
+  changes: the SQLite header, `PRAGMA quick_check`, and every table and column the app uses. A
+  column added after a release (today the rep range) may be missing, so backups from older versions
+  still import, with those values left empty. A file that is not a backup, is damaged, or lacks any
+  other column is rejected with a message. After you confirm, all current data is replaced in one transaction; an active-session
   row in the file is not imported. The temporary copy, and the copy the file picker makes in the
   cache, are deleted when the import ends, and any leftover temporary copy is deleted the next time
   the app starts.
@@ -207,6 +242,7 @@ Every service and repository is a singleton registered in `MauiProgram.cs`:
 | `IActiveWorkoutStateRepository` | The single active-session row, written through a serial queue |
 | `IHistoryQueryService` | Builds workout and exercise history from batched reads |
 | `IPersonalRecordService` | An exercise's personal records, and the sets of a session that set new ones |
+| `IProgressionSuggestionService` | The double-progression suggestion for a session exercise with a rep range, from its last two sessions |
 | `IDatabaseMaintenanceService` | Export snapshot; import with validation, replacing all data in one transaction; deletion of temporary copies; erase-all in one transaction |
 | `IExerciseCatalogService` | The exercise list, exercise create, edit and delete with the data-changed notification for them, and how many workouts use an exercise |
 | `IWorkoutTemplateService` | Workout plans: list, load, save and delete |
@@ -285,7 +321,7 @@ and the sheet view models (exercise form, filter, picker and configuration) are 
     ├── Models/                  SQLite tables and persisted enums
     ├── Platforms/Android/       MainActivity, MainApplication, manifest and Android-only code
     │   └── Resources/           Page transition animations and colours
-    ├── Progression/             Pure domain rules: the Epley e1RM and personal records
+    ├── Progression/             Pure domain rules: the Epley e1RM, personal records, progress series and double progression
     ├── Resources/
     │   ├── AppIcon/  Fonts/  Images/  Raw/  Splash/
     │   ├── Strings/             AppResources.resx (English) and one AppResources.<code>.resx per language
@@ -359,7 +395,7 @@ The test folders mirror the app's:
 | `Constants/`, `Converters/`, `Extensions/`, `Threading/` | Formatting, conversion and helper logic |
 | `Data/` | Every repository, against a real SQLite file |
 | `Localization/` | Plural rules and formatting, and the consistency of the resource files |
-| `Progression/` | The e1RM formula, record selection and new-record detection, with exact expected values |
+| `Progression/` | The e1RM formula, record selection, new-record detection and the double-progression decision table, with exact expected values |
 | `Services/` | The services, over a real temporary database |
 | `ViewModels/` | The view models, over the real services |
 | `Testing/` | Shared helpers: temporary database, fake clock, culture scopes, data builders |

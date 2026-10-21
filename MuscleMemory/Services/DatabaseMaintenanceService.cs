@@ -23,6 +23,7 @@ public sealed class DatabaseMaintenanceService(
     private const string AttachImportSql = "ATTACH DATABASE ? AS " + ImportSchema;
     private const string DetachImportSql = "DETACH DATABASE " + ImportSchema;
     private const string CopyTableSqlFormat = "INSERT INTO main.\"{0}\" ({1}) SELECT {1} FROM " + ImportSchema + ".\"{0}\"";
+    private const string ImportTableInfoSqlFormat = "PRAGMA " + ImportSchema + ".table_info(\"{0}\")";
     private const string QuotedColumnFormat = "\"{0}\"";
     private const string ColumnSeparator = ", ";
     private const string QuickCheckSql = "PRAGMA quick_check";
@@ -167,7 +168,9 @@ public sealed class DatabaseMaintenanceService(
     {
         foreach (var mapping in ImportedTables.Select(table => transaction.GetMapping(table)))
         {
-            var columns = string.Join(ColumnSeparator, mapping.Columns.Select(column => string.Format(QuotedColumnFormat, column.Name)));
+            var importColumns = ToColumnNames(transaction.Query<SQLiteConnection.ColumnInfo>(string.Format(ImportTableInfoSqlFormat, mapping.TableName)));
+            var columns = string.Join(ColumnSeparator, mapping.Columns.Where(column => importColumns.Contains(column.Name))
+                                                                      .Select(column => string.Format(QuotedColumnFormat, column.Name)));
             transaction.Execute(string.Format(CopyTableSqlFormat, mapping.TableName, columns));
         }
     }
@@ -225,15 +228,19 @@ public sealed class DatabaseMaintenanceService(
             return ImportFileStatus.NotBackup;
         }
 
-        return tables.All(table => table.Mapping.Columns.All(column => table.FileColumns.Contains(column.Name)))
+        return tables.All(table => table.Mapping.Columns.All(column => table.FileColumns.Contains(column.Name) || IsAdded(table.Mapping, column)))
             ? ImportFileStatus.Valid
             : ImportFileStatus.Incompatible;
     }
 
+    private static bool IsAdded(TableMapping table, TableMapping.Column column) =>
+        DatabaseContext.AddedColumns.Contains(new AddedColumn(table.MappedType, column.PropertyName));
+
     private static HashSet<string> ReadFileColumns(SQLiteConnection connection, string tableName) =>
-        connection.GetTableInfo(tableName)
-                  .Select(column => column.Name)
-                  .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        ToColumnNames(connection.GetTableInfo(tableName));
+
+    private static HashSet<string> ToColumnNames(IEnumerable<SQLiteConnection.ColumnInfo> columns) =>
+        columns.Select(column => column.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     private static ImportCounts ReadCounts(SQLiteConnection connection) => new(
         connection.ExecuteScalar<int>(CountExercisesSql),

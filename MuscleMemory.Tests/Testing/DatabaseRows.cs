@@ -8,6 +8,9 @@ public static class DatabaseRows
     private const string Separator = "|";
     private const string SelectOrderedFormat = "SELECT * FROM \"{0}\" ORDER BY \"{1}\"";
     private const string QuickCheckSql = "PRAGMA quick_check";
+    private const string QuotedColumnFormat = "quote(\"{0}\")";
+    private const string QuotedSeparator = " || '|' || ";
+    private const string SelectQuotedFormat = "SELECT {0} FROM \"{1}\" ORDER BY \"Id\"";
 
     public static IReadOnlyDictionary<string, IReadOnlyList<string>> Read(string path, IEnumerable<Type> tables)
     {
@@ -23,6 +26,19 @@ public static class DatabaseRows
     }
 
     public static IReadOnlyDictionary<string, IReadOnlyList<string>> ReadAll(string path) => Read(path, DatabaseContext.Tables);
+
+    public static IReadOnlyList<string> ReadColumns(string path, string table, IEnumerable<string> columns)
+    {
+        using var connection = DatabaseContext.OpenReadOnly(path);
+        var row = string.Join(QuotedSeparator, columns.Select(column => string.Format(QuotedColumnFormat, column)));
+        return connection.QueryScalars<string>(string.Format(SelectQuotedFormat, row, table));
+    }
+
+    public static IReadOnlyList<string> ColumnNames(string path, string table)
+    {
+        using var connection = DatabaseContext.OpenReadOnly(path);
+        return [.. connection.GetTableInfo(table).Select(column => column.Name)];
+    }
 
     public static string QuickCheck(string path)
     {

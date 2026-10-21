@@ -23,4 +23,7 @@ public class WorkoutExercise
     public string ExerciseName { get; set; } = string.Empty;
 
     public int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
+
+    public int? MinReps { get; set; }
+    public int? MaxReps { get; set; }
 }

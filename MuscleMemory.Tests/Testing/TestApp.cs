@@ -29,6 +29,7 @@ public sealed class TestApp : IAsyncDisposable
         History = new HistoryQueryService(Sessions, SessionExercises, Sets);
         Records = new PersonalRecordService(Sets);
         Progress = new ExerciseProgressService(Sets, Clock);
+        Suggestions = new ProgressionSuggestionService(Sets);
         Summary = new WorkoutSummaryService(Sets, Records);
         Maintenance = new DatabaseMaintenanceService(
             Database.Context, Exercises, Workouts, Sessions, SessionExercises, Sets, ActiveState, DataChanges, Database.FileSystem);
@@ -65,6 +66,8 @@ public sealed class TestApp : IAsyncDisposable
     public PersonalRecordService Records { get; }
 
     public ExerciseProgressService Progress { get; }
+
+    public ProgressionSuggestionService Suggestions { get; }
 
     public WorkoutSummaryService Summary { get; }
 

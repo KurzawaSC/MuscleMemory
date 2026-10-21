@@ -12,6 +12,7 @@ public interface IWorkoutSetRepository
     Task<List<WorkoutSet>> GetForSessionExerciseAsync(int sessionExerciseId);
     Task<List<WorkoutSet>> GetForSessionExercisesAsync(IReadOnlyCollection<int> sessionExerciseIds);
     Task<List<WorkoutSet>> GetLastSessionSetsAsync(int exerciseId, int currentSessionId);
+    Task<List<PerformedSet>> GetRecentSessionSetsAsync(int exerciseId, int sessionCount);
     Task<List<PerformedSet>> GetRepMaxesAsync(IReadOnlyCollection<int> exerciseIds);
     Task<List<SessionVolume>> GetSessionVolumesAsync(int exerciseId);
     Task<List<SessionRepTotals>> GetSessionRepTotalsAsync(int exerciseId);

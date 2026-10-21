@@ -20,6 +20,14 @@ public sealed class DatabaseContext(IFileSystem fileSystem)
         typeof(ActiveWorkoutState)
     ];
 
+    public static IReadOnlyList<AddedColumn> AddedColumns { get; } =
+    [
+        new(typeof(WorkoutExercise), nameof(WorkoutExercise.MinReps)),
+        new(typeof(WorkoutExercise), nameof(WorkoutExercise.MaxReps)),
+        new(typeof(SessionExercise), nameof(SessionExercise.MinReps)),
+        new(typeof(SessionExercise), nameof(SessionExercise.MaxReps))
+    ];
+
     public string DatabasePath { get; } = Path.Combine(fileSystem.AppDataDirectory, DatabaseNames.DatabaseFileName);
 
     public static SQLiteConnection OpenReadOnly(string path)

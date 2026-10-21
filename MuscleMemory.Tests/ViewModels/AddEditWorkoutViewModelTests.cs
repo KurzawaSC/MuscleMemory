@@ -367,6 +367,90 @@ public sealed class AddEditWorkoutViewModelTests : IAsyncLifetime
         Assert.False(_editor.HasUnsavedChanges);
     }
 
+    [Fact]
+    public async Task ConfirmConfigurationCommand_InvalidRepRange_CannotExecuteUntilFixed()
+    {
+        await _editor.PickExerciseCommand.ExecuteAsync(_bench);
+        var raised = 0;
+        _editor.ConfirmConfigurationCommand.CanExecuteChanged += (_, _) => raised++;
+
+        _editor.ExerciseConfiguration.MinRepsInput = "8";
+
+        Assert.False(_editor.ConfirmConfigurationCommand.CanExecute(null));
+        _editor.ExerciseConfiguration.MaxRepsInput = "12";
+        Assert.True(_editor.ConfirmConfigurationCommand.CanExecute(null));
+        Assert.True(raised >= 2);
+    }
+
+    [Fact]
+    public async Task SaveWorkout_NewExerciseWithRepRange_StoresTheRange()
+    {
+        await _editor.PickExerciseCommand.ExecuteAsync(_bench);
+        _editor.ExerciseConfiguration.MinRepsInput = "8";
+        _editor.ExerciseConfiguration.MaxRepsInput = "12";
+        _editor.ConfirmConfigurationCommand.Execute(null);
+        await AddAsync(_press, sets: 3);
+        _editor.WorkoutName = PushDay;
+
+        await _editor.SaveWorkoutCommand.ExecuteAsync(null);
+
+        var stored = Assert.Single(await _ui.App.Workouts.GetAllAsync());
+        Assert.Equal<(int?, int?)>(
+            [(8, 12), (null, null)],
+            (await _ui.App.Workouts.GetExercisesAsync(stored.Id)).Select(exercise => (exercise.MinReps, exercise.MaxReps)));
+    }
+
+    [Fact]
+    public async Task EditExercise_RepRangeChanged_MarksUnsavedChangesAndSavesIt()
+    {
+        var push = await _ui.App.Data.PlannedWorkoutAsync(PushDay, TestDataBuilder.Plan(_bench, 8, 12), TestDataBuilder.Plan(_press));
+        await OpenAsync(push);
+
+        _editor.EditExerciseCommand.Execute(_editor.Exercises[0]);
+        Assert.Equal(("8", "12"), (_editor.ExerciseConfiguration.MinRepsInput, _editor.ExerciseConfiguration.MaxRepsInput));
+        _editor.ExerciseConfiguration.MinRepsInput = "6";
+        _editor.ExerciseConfiguration.MaxRepsInput = "10";
+        _editor.ConfirmConfigurationCommand.Execute(null);
+
+        Assert.True(_editor.HasUnsavedChanges);
+        await _editor.SaveWorkoutCommand.ExecuteAsync(null);
+        var stored = (await _ui.App.Workouts.GetExercisesAsync(push.Id))[0];
+        Assert.Equal((6, 10), (stored.MinReps, stored.MaxReps));
+    }
+
+    [Fact]
+    public async Task EditExercise_RepRangeCleared_SavesNoRange()
+    {
+        var push = await _ui.App.Data.PlannedWorkoutAsync(PushDay, TestDataBuilder.Plan(_bench, 8, 12));
+        await OpenAsync(push);
+
+        _editor.EditExerciseCommand.Execute(_editor.Exercises[0]);
+        _editor.ExerciseConfiguration.MinRepsInput = string.Empty;
+        _editor.ExerciseConfiguration.MaxRepsInput = string.Empty;
+        _editor.ConfirmConfigurationCommand.Execute(null);
+        await _editor.SaveWorkoutCommand.ExecuteAsync(null);
+
+        var stored = Assert.Single(await _ui.App.Workouts.GetExercisesAsync(push.Id));
+        Assert.Equal((null, null), (stored.MinReps, stored.MaxReps));
+    }
+
+    [Fact]
+    public async Task NavigateBack_AfterChangingOnlyTheRange_AsksBeforeDiscarding()
+    {
+        var push = await _ui.App.Data.PlannedWorkoutAsync(PushDay, TestDataBuilder.Plan(_bench, 8, 12));
+        await OpenAsync(push);
+        _editor.EditExerciseCommand.Execute(_editor.Exercises[0]);
+        _editor.ExerciseConfiguration.MaxRepsInput = "15";
+        _editor.ConfirmConfigurationCommand.Execute(null);
+        _ui.AnswerConfirmations(false);
+
+        await _editor.NavigateBackCommand.ExecuteAsync(null);
+
+        await _ui.Dialogs.Received(1).ConfirmAsync(AppResources.TitleUnsavedChanges, AppResources.BodyUnsavedChangesConfirmation, AppResources.ButtonDiscard, AppResources.ButtonCancel);
+        await _ui.Navigation.DidNotReceive().GoToAsync(Route.Is(NavigationRoutes.GoBack));
+        Assert.Equal(12, (await _ui.App.Workouts.GetExercisesAsync(push.Id))[0].MaxReps);
+    }
+
     private async Task AddAsync(Exercise exercise, int sets)
     {
         await _editor.PickExerciseCommand.ExecuteAsync(exercise);

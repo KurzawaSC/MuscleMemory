@@ -22,4 +22,7 @@ public class SessionExercise
     public int PlannedReps { get; set; }
     public int BreakTimeInSeconds { get; set; }
     public int TargetRPE { get; set; } = DomainDefaults.TargetRPE;
+
+    public int? MinReps { get; set; }
+    public int? MaxReps { get; set; }
 }

@@ -48,6 +48,8 @@ public sealed partial class WorkoutExerciseItem : ObservableObject
         Reps = configuration.Reps;
         BreakTimeInSeconds = configuration.BreakTimeInSeconds;
         TargetRPE = configuration.TargetRPE;
+        Exercise.MinReps = configuration.MinReps;
+        Exercise.MaxReps = configuration.MaxReps;
     }
 
     partial void OnSetsChanged(int value) => Exercise.Sets = value;

@@ -118,5 +118,5 @@ public sealed class TestViewModels : IAsyncDisposable
     }
 
     private ActiveWorkoutViewModel CreateActiveWorkout() =>
-        new(App.ActiveSessions, Timer, Clock, AudioCues, Dialogs, App.Summary, App.Records, NavigationStack, Navigation, Haptics, Errors, Localization);
+        new(App.ActiveSessions, Timer, Clock, AudioCues, Dialogs, App.Summary, App.Records, App.Suggestions, NavigationStack, Navigation, Haptics, Errors, Localization);
 }

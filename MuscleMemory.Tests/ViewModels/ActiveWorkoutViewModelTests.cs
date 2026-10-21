@@ -17,6 +17,8 @@ public sealed class ActiveWorkoutViewModelTests : IAsyncLifetime
     private const string BenchPress = "Bench Press";
     private const string OverheadPress = "Overhead Press";
     private const int RestSeconds = TestDataBuilder.BreakSeconds;
+    private const int RangeMin = 8;
+    private const int RangeMax = 12;
 
     private readonly TestViewModels _ui = new();
     private Exercise _bench = null!;
@@ -789,6 +791,232 @@ public sealed class ActiveWorkoutViewModelTests : IAsyncLifetime
         Assert.False(Workout.SetActions.IsActionSheetOpen);
         await _ui.Navigation.DidNotReceiveWithAnyArgs().GoToAsync(default!);
     }
+
+    [Fact]
+    public async Task Start_RangeReachedAtTheTop_ShowsIncreaseAndPrefillsIt()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+
+        await StartAsync(ranged);
+
+        Assert.True(Workout.HasSuggestion);
+        Assert.Equal("Increase: 82.5 kg × 8", Workout.Suggestion?.Text);
+        Assert.Equal(("82.5", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.True(Workout.IsPrefilledFromSuggestion);
+        Assert.Equal("Last: 80×12, 80×12, 80×12", Workout.LastSessionResultsText);
+    }
+
+    [Fact]
+    public async Task Start_RangeNotReached_ShowsHoldAndPrefillsTheFirstSetsTarget()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 7));
+
+        await StartAsync(ranged);
+
+        Assert.Equal("Hold: 80 kg × 9 / 9 / 8", Workout.Suggestion?.Text);
+        Assert.Equal(("80", "9"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task Start_BelowTheRangeTwice_ShowsDecreaseAndPrefillsIt()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 7), new LoggedSet(0, 80, 6));
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc + TimeSpan.FromDays(2), new LoggedSet(0, 80, 7), new LoggedSet(0, 80, 6), new LoggedSet(0, 80, 6));
+
+        await StartAsync(ranged);
+
+        Assert.Equal("Decrease: 77.5 kg × 8", Workout.Suggestion?.Text);
+        Assert.Equal(("77.5", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task Start_NoRange_ShowsNoSuggestionAndPrefillsFromTheLastSession()
+    {
+        await _ui.App.Data.CompletedSessionAsync(_push, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+
+        await StartAsync(_push);
+
+        Assert.False(Workout.HasSuggestion);
+        Assert.Null(Workout.Suggestion);
+        Assert.False(Workout.IsPrefilledFromSuggestion);
+        Assert.Equal(("80", "12"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task Start_RangeWithoutHistory_ShowsNoSuggestionAndLeavesTheInputsEmpty()
+    {
+        await StartAsync(await RangedPushAsync());
+
+        Assert.False(Workout.HasSuggestion);
+        Assert.Equal((string.Empty, string.Empty), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task Start_Suggestion_RaisesTheBoundProperties()
+    {
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 9));
+        var changed = PropertyChanges.Record(Workout);
+
+        await StartAsync(ranged);
+
+        Assert.Contains(nameof(ActiveWorkoutViewModel.Suggestion), changed);
+        Assert.Contains(nameof(ActiveWorkoutViewModel.HasSuggestion), changed);
+        Assert.Contains(nameof(ActiveWorkoutViewModel.IsPrefilledFromSuggestion), changed);
+        Assert.Contains(nameof(ActiveWorkoutViewModel.LastSessionDescription), changed);
+    }
+
+    [Fact]
+    public async Task Start_Suggestion_SpeaksBothLinesAsFullSentences()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 7));
+
+        await StartAsync(ranged);
+
+        Assert.Equal("Suggestion: keep 80 kg, sets of 9, 9 and 8 reps.", Workout.Suggestion?.Description);
+        Assert.Equal("Last time: 80 kg for 8 reps, 80 kg for 8 reps, 80 kg for 7 reps.", Workout.LastSessionDescription);
+    }
+
+    [Fact]
+    public async Task Start_ExerciseNeverDone_SpeaksThatItIsTheFirstTime()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+
+        await StartAsync(_push);
+
+        Assert.Equal("First time doing this exercise.", Workout.LastSessionDescription);
+    }
+
+    [Fact]
+    public async Task NextAndBack_SuggestedPrefillUntouched_PrefillsTheSuggestionAgain()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await StartAsync(ranged);
+
+        await Workout.NextExerciseCommand.ExecuteAsync(null);
+        await Workout.PreviousExerciseCommand.ExecuteAsync(null);
+
+        Assert.Equal(("82.5", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.True(Workout.IsPrefilledFromSuggestion);
+    }
+
+    [Fact]
+    public async Task NextAndBack_AfterTheUserEditedTheInput_HandsOverToTheLastSessionPrefill()
+    {
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await StartAsync(ranged);
+        Workout.SetInput.RepsInput = "6";
+
+        await Workout.NextExerciseCommand.ExecuteAsync(null);
+        await Workout.PreviousExerciseCommand.ExecuteAsync(null);
+
+        Assert.Equal(("80", "12"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.False(Workout.IsPrefilledFromSuggestion);
+        Assert.True(Workout.HasSuggestion);
+    }
+
+    [Fact]
+    public async Task Edit_SteppingTheSuggestedWeight_KeepsTheUsersValue()
+    {
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await StartAsync(ranged);
+
+        Workout.SetInput.IncreaseWeightCommand.Execute(null);
+
+        Assert.Equal(("85", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.True(Workout.SetInput.IsEdited);
+    }
+
+    [Fact]
+    public async Task SaveSet_AfterTheSuggestedPrefill_KeepsTheLoggedValuesForTheNextSet()
+    {
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 8), new LoggedSet(0, 80, 7));
+        await StartAsync(ranged);
+
+        await Workout.SaveSetCommand.ExecuteAsync(null);
+
+        Assert.Equal((80.0, 9), (Workout.CurrentSets[0].Set.Weight, Workout.CurrentSets[0].Set.Reps));
+        Assert.Equal(("80", "9"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task UndoAndReturn_AfterLoggingASet_UsesTheExistingPrefill()
+    {
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await StartAsync(ranged);
+        await Workout.SaveSetCommand.ExecuteAsync(null);
+        await Workout.UndoLastSetCommand.ExecuteAsync(null);
+
+        await Workout.NextExerciseCommand.ExecuteAsync(null);
+        await Workout.PreviousExerciseCommand.ExecuteAsync(null);
+
+        Assert.Empty(Workout.CurrentSets);
+        Assert.Equal(("80", "12"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.False(Workout.IsPrefilledFromSuggestion);
+    }
+
+    [Fact]
+    public async Task ExerciseAdvance_NextExerciseWithASuggestion_PrefillsItsSuggestion()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await _ui.App.Data.PlannedWorkoutAsync(LegDay, TestDataBuilder.Plan(_press), TestDataBuilder.Plan(_bench, RangeMin, RangeMax));
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(1, 80, 12), new LoggedSet(1, 80, 12), new LoggedSet(1, 80, 12));
+        await StartAsync(ranged);
+
+        await LogPlannedSetsAsync();
+
+        Assert.Equal(BenchPress, Workout.CurrentExercise.ExerciseName);
+        Assert.Equal(("82.5", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+    }
+
+    [Fact]
+    public async Task Resume_SessionWithoutSetsOfTheExercise_PrefillsTheSuggestion()
+    {
+        using var scope = new CultureScope(Cultures.EnglishUs);
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await _ui.App.Data.SaveActiveStateAsync(await _ui.App.Data.StartAsync(ranged));
+
+        await Workout.LoadStateAsync();
+
+        Assert.Equal(("82.5", "8"), (Workout.SetInput.WeightInput, Workout.SetInput.RepsInput));
+        Assert.True(Workout.HasSuggestion);
+    }
+
+    [Fact]
+    public async Task LanguageChange_WithASuggestion_ReformatsBothLines()
+    {
+        using var defaults = new DefaultCultureScope();
+        _ui.Localization.RestoreSavedLanguage();
+        var ranged = await RangedPushAsync();
+        await _ui.App.Data.CompletedSessionAsync(ranged, TestApp.StartUtc, new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12), new LoggedSet(0, 80, 12));
+        await StartAsync(ranged);
+
+        _ui.Localization.ChangeLanguage(CultureInfo.GetCultureInfo(Cultures.PolishLanguage));
+
+        Assert.Equal("Zwiększ: 82,5 kg × 8", Workout.Suggestion?.Text);
+        Assert.Equal("Sugestia: zwiększ ciężar do 82,5 kg, 3 serie po 8 powtórzeń.", Workout.Suggestion?.Description);
+        Assert.Equal("Ostatnio: 80 kg na 12 powtórzeń, 80 kg na 12 powtórzeń, 80 kg na 12 powtórzeń.", Workout.LastSessionDescription);
+        Assert.Equal("82,5", Workout.SetInput.WeightInput);
+        Assert.False(Workout.SetInput.IsEdited);
+    }
+
+    private Task<Workout> RangedPushAsync() =>
+        _ui.App.Data.PlannedWorkoutAsync(LegDay, TestDataBuilder.Plan(_bench, RangeMin, RangeMax), TestDataBuilder.Plan(_press));
 
     private void Open(Workout workout) =>
         Workout.ApplyQueryAttributes(new Dictionary<string, object> { [QueryKeys.Workout] = workout });
